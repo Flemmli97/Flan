@@ -1,6 +1,6 @@
 package com.flemmli97.flan;
 
-import com.flemmli97.flan.claim.ObjectToPermissionMap;
+import com.flemmli97.flan.claim.BlockToPermissionMap;
 import com.flemmli97.flan.commands.CommandClaim;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.event.BlockInteractEvents;
@@ -19,19 +19,14 @@ public class Flan implements ModInitializer {
 
     @Override
     public void onInitialize() {
-
-        //Events
         AttackBlockCallback.EVENT.register(BlockInteractEvents::breakBlocks);
         UseBlockCallback.EVENT.register(BlockInteractEvents::useBlocks);
         UseEntityCallback.EVENT.register(EntityInteractEvents::useAtEntity);
         AttackEntityCallback.EVENT.register(EntityInteractEvents::attackEntity);
         UseItemCallback.EVENT.register(ItemInteractEvents::useItem);
         ServerLifecycleEvents.SERVER_STARTING.register(ConfigHandler::serverLoad);
-        ServerLifecycleEvents.SERVER_STARTING.register(ObjectToPermissionMap::reload);
-        //Explosion
-        //XP
-        //TARGETBLOCK
-        //Commands
+        ServerLifecycleEvents.SERVER_STARTING.register(BlockToPermissionMap::reload);
+
         CommandRegistrationCallback.EVENT.register(CommandClaim::register);
     }
 }

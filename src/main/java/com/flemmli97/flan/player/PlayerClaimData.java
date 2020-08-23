@@ -86,6 +86,11 @@ public class PlayerClaimData {
         return true;
     }
 
+    public int usedClaimBlocks(){
+        this.calculateUsedClaimBlocks();
+        return this.usedClaimsBlocks;
+    }
+
     public Claim currentEdit() {
         return this.editingClaim;
     }
@@ -94,8 +99,11 @@ public class PlayerClaimData {
         this.editingClaim = claim;
     }
 
-    public void addDisplayClaim(Claim claim) {
-        this.displayToAdd.add(new ClaimDisplay(claim));
+    public void addDisplayClaim(Claim claim, EnumDisplayType type) {
+        this.displayToAdd.add(new ClaimDisplay(claim, type));
+        if(type==EnumDisplayType.MAIN)
+            for(Claim sub : claim.getAllSubclaims())
+                this.displayToAdd.add(new ClaimDisplay(sub, EnumDisplayType.SUB));
     }
 
     public EnumEditMode getEditMode() {
@@ -173,7 +181,7 @@ public class PlayerClaimData {
             JsonObject obj = new JsonObject();
             obj.addProperty("ClaimBlocks", this.claimBlocks);
             obj.addProperty("AdditionalBlocks", this.additionalClaimBlocks);
-            ClaimStorage.GSON.toJson(obj, writer);
+            ConfigHandler.GSON.toJson(obj, writer);
             writer.close();
         } catch (IOException e) {
 
@@ -189,7 +197,7 @@ public class PlayerClaimData {
             if (!file.exists())
                 return;
             FileReader reader = new FileReader(file);
-            JsonObject obj = ClaimStorage.GSON.fromJson(reader, JsonObject.class);
+            JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
             this.claimBlocks = obj.get("ClaimBlocks").getAsInt();
             this.additionalClaimBlocks = obj.get("AdditionalBlocks").getAsInt();
             reader.close();
@@ -207,14 +215,14 @@ public class PlayerClaimData {
             if (!file.exists())
                 file.createNewFile();
             FileReader reader = new FileReader(file);
-            JsonObject obj = ClaimStorage.GSON.fromJson(reader, JsonObject.class);
+            JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
             reader.close();
             if (obj == null)
                 obj = new JsonObject();
             int additionalBlocks = obj.get("AdditionalBlocks").getAsInt();
             obj.addProperty("AdditionalBlocks", additionalBlocks + additionalClaimBlocks);
             FileWriter writer = new FileWriter(file);
-            ClaimStorage.GSON.toJson(obj, writer);
+            ConfigHandler.GSON.toJson(obj, writer);
             writer.close();
         } catch (IOException e) {
 
@@ -258,7 +266,7 @@ public class PlayerClaimData {
                         JsonObject obj = new JsonObject();
                         obj.addProperty("ClaimBlocks", reader.readLine());
                         obj.addProperty("AdditionalBlocks", reader.readLine());
-                        ClaimStorage.GSON.toJson(obj, writer);
+                        ConfigHandler.GSON.toJson(obj, writer);
                         writer.close();
                     }
                     reader.close();

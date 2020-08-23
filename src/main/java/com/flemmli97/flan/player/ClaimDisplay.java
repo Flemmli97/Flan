@@ -6,6 +6,7 @@ import com.flemmli97.flan.config.ConfigHandler;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
@@ -23,10 +24,25 @@ public class ClaimDisplay {
 
     private int[] prevDims;
 
-    public ClaimDisplay(Claim claim) {
+    private final DustParticleEffect corner, middle;
+    public ClaimDisplay(Claim claim, EnumDisplayType type) {
         this.toDisplay = claim;
         this.displayTime = ConfigHandler.config.claimDisplayTime;
         this.prevDims = claim.getDimensions();
+        switch (type){
+            case SUB:
+                this.corner = ParticleIndicators.SUBCLAIMCORNER;
+                this.middle = ParticleIndicators.SUBCLAIMMIDDLE;
+                break;
+            case CONFLICT:
+                this.corner = ParticleIndicators.OVERLAPCLAIM;
+                this.middle = ParticleIndicators.OVERLAPCLAIM;
+                break;
+            default:
+                this.corner = ParticleIndicators.CLAIMCORNER;
+                this.middle = ParticleIndicators.CLAIMMIDDLE;
+                break;
+        }
     }
 
     public boolean display(ServerPlayerEntity player) {
@@ -41,13 +57,13 @@ public class ClaimDisplay {
                     this.getPosFrom(player.world, this.prevDims[1], this.prevDims[3], this.prevDims[4]),
             };
         }
-
         for (int[] pos : this.poss) {
-            player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.CLAIMCORNER, true, pos[0] + 0.5, pos[1] + 0.25, pos[2] + 0.5, 0, 0.25f, 0, 0, 1));
+            player.networkHandler.sendPacket(new ParticleS2CPacket(this.corner, true, pos[0] + 0.5, pos[1] + 0.25, pos[2] + 0.5, 0, 0.25f, 0, 0, 1));
         }
-        for (int[] pos : this.middlePoss) {
-            player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.CLAIMMIDDLE, true, pos[0] + 0.5, pos[1] + 0.25, pos[2] + 0.5, 0, 0.25f, 0, 0, 1));
-        }
+        if(this.middlePoss!=null)
+            for (int[] pos : this.middlePoss) {
+                player.networkHandler.sendPacket(new ParticleS2CPacket(this.middle, true, pos[0] + 0.5, pos[1] + 0.25, pos[2] + 0.5, 0, 0.25f, 0, 0, 1));
+            }
         this.prevDims = dims;
         return toDisplay.isRemoved() || displayTime < 0;
     }
@@ -63,8 +79,12 @@ public class ClaimDisplay {
         List<int[]> l = Lists.newArrayList();
         Set<Integer> xs = Sets.newHashSet();
         this.addEvenly(this.prevDims[0], this.prevDims[1], 10, xs);
+        xs.add(this.prevDims[0]+1);
+        xs.add(this.prevDims[1]-1);
         Set<Integer> zs = Sets.newHashSet();
         this.addEvenly(this.prevDims[2], this.prevDims[3], 10, zs);
+        zs.add(this.prevDims[2]+1);
+        zs.add(this.prevDims[3]-1);
         for (int x : xs) {
             l.add(this.getPosFrom(world, x, this.prevDims[2], this.prevDims[4]));
             l.add(this.getPosFrom(world, x, this.prevDims[3], this.prevDims[4]));

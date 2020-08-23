@@ -10,10 +10,10 @@
   ],
   "contact": {
     "homepage": "",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "sources": "https://github.com/Flemmli97/Flan"
   },
 
-  "license": "CC0-1.0",
+  "license": "ARR",
   "icon": "assets/modid/icon.png",
 
   "environment": "*",

@@ -96,7 +96,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
                 break;
             case 8:
                 ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
-                storage.deleteClaim(this.claim);
+                storage.deleteClaim(this.claim, player.getServer());
                 player.closeHandledScreen();
                 player.sendMessage(Text.of(ConfigHandler.lang.deleteClaim), false);
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_PLACE, 1, 1f);

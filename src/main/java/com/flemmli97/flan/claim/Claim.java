@@ -1,20 +1,28 @@
 package com.flemmli97.flan.claim;
 
+import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.player.PlayerClaimData;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.RunArgs;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -25,6 +33,7 @@ public class Claim {
     private int minX, minZ, maxX, maxZ, minY;
 
     private UUID owner;
+
     private UUID claimID;
     private final EnumSet<EnumPermission> globalPerm = EnumSet.noneOf(EnumPermission.class);
     private final Map<String, EnumMap<EnumPermission, Boolean>> permissions = Maps.newHashMap();
@@ -54,12 +63,6 @@ public class Claim {
         this.owner = creator;
     }
 
-    public static Claim fromTag(CompoundTag tag) {
-        Claim claim = new Claim();
-        claim.read(tag);
-        return claim;
-    }
-
     public static Claim fromJson(JsonObject obj, UUID owner) {
         Claim claim = new Claim();
         claim.readJson(obj, owner);
@@ -77,6 +80,10 @@ public class Claim {
 
     public UUID getOwner() {
         return this.owner;
+    }
+
+    public void setAdminClaim(){
+        this.owner = null;
     }
 
     public int getPlane() {
@@ -111,7 +118,7 @@ public class Claim {
         return this.removed;
     }
 
-    public boolean canInteract(PlayerEntity player, EnumPermission perm, BlockPos pos) {
+    public boolean canInteract(ServerPlayerEntity player, EnumPermission perm, BlockPos pos) {
         if (perm == EnumPermission.EXPLOSIONS || perm == EnumPermission.WITHER) {
             for (Claim claim : this.subClaims) {
                 if (claim.insideClaim(pos)) {
@@ -127,13 +134,14 @@ public class Claim {
         PlayerClaimData data = PlayerClaimData.get(player);
         if (player.hasPermissionLevel(2) && data.isAdminIgnoreClaim())
             return true;
-        for (Claim claim : this.subClaims) {
-            if (claim.insideClaim(pos)) {
-                if (claim.canInteract(player, perm, pos))
-                    return true;
-                break;
+        if(perm!=EnumPermission.EDITCLAIM && perm != EnumPermission.EDITPERMS)
+            for (Claim claim : this.subClaims) {
+                if (claim.insideClaim(pos)) {
+                    if (claim.canInteract(player, perm, pos))
+                        return true;
+                    break;
+                }
             }
-        }
         if (this.playersGroups.containsKey(player.getUuid())) {
             EnumMap<EnumPermission, Boolean> map = this.permissions.get(this.playersGroups.get(player.getUuid()));
             if (map != null && map.containsKey(perm))
@@ -147,7 +155,13 @@ public class Claim {
     }
 
     public boolean tryCreateSubClaim(BlockPos pos1, BlockPos pos2) {
-        return false;
+        Claim sub = new Claim(pos1, pos2, this.owner);
+        for(Claim other : this.subClaims)
+            if (sub.intersects(other)) {
+                return false;
+            }
+        this.subClaims.add(sub);
+        return true;
     }
 
     public Claim getSubClaim(BlockPos pos) {
@@ -157,12 +171,19 @@ public class Claim {
         return null;
     }
 
+    public List<Claim> getAllSubclaims(){
+        return ImmutableList.copyOf(this.subClaims);
+    }
+
     public boolean setPlayerGroup(UUID player, String group, boolean force) {
+        if(this.owner!=null && this.owner.equals(player))
+            return false;
         if (group == null) {
             this.playersGroups.remove(player);
             this.setDirty();
             return true;
         }
+
         if (!this.playersGroups.containsKey(player) || force) {
             this.playersGroups.put(player, group);
             this.setDirty();
@@ -201,8 +222,8 @@ public class Claim {
      * @param mode -1 = makes it resort to the global perm, 0 = deny perm, 1 = allow perm
      * @return If editing was successful or not
      */
-    public boolean editPerms(PlayerEntity player, String group, EnumPermission perm, int mode) {
-        if (player.getUuid().equals(this.owner) || this.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos())) {
+    public boolean editPerms(ServerPlayerEntity player, String group, EnumPermission perm, int mode) {
+        if (this.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos())) {
             if (mode > 1)
                 mode = -1;
             boolean has = this.permissions.containsKey(group);
@@ -219,8 +240,8 @@ public class Claim {
         return false;
     }
 
-    public boolean removePermGroup(PlayerEntity player, String group) {
-        if (player.getUuid().equals(this.owner) || this.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos())) {
+    public boolean removePermGroup(ServerPlayerEntity player, String group) {
+        if (this.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos())) {
             this.permissions.remove(group);
             List<UUID> toRemove = Lists.newArrayList();
             this.playersGroups.forEach((uuid, g) -> {
@@ -328,90 +349,61 @@ public class Claim {
         return obj;
     }
 
-    public CompoundTag save(CompoundTag tag) {
-        tag.putIntArray("PosxXzZY", new int[]{this.minX, this.maxX, this.minZ, this.maxZ, this.minY});
-        tag.putUuid("Owner", this.owner);
-        tag.putUuid("ID", this.claimID);
-        if (!this.globalPerm.isEmpty()) {
-            ListTag list = new ListTag();
-            this.globalPerm.forEach(p -> list.add(StringTag.of(p.toString())));
-            tag.put("GlobalPerms", list);
-        }
-        if (!this.permissions.isEmpty()) {
-            CompoundTag perms = new CompoundTag();
-            this.permissions.forEach((s, pmap) -> {
-                CompoundTag group = new CompoundTag();
-                pmap.forEach((perm, bool) -> group.putBoolean(perm.toString(), bool));
-                perms.put(s, group);
-            });
-            tag.put("PermGroup", perms);
-        }
-        if (!this.playersGroups.isEmpty()) {
-            CompoundTag pl = new CompoundTag();
-            this.playersGroups.forEach((uuid, s) -> pl.putString(uuid.toString(), s));
-            tag.put("PlayerPerms", pl);
-        }
-        if (!this.subClaims.isEmpty()) {
-            ListTag list = new ListTag();
-            this.subClaims.forEach(p -> list.add(p.save(new CompoundTag())));
-            tag.put("SubClaims", list);
-        }
-        return tag;
-    }
-
-    public void read(CompoundTag tag) {
-        int[] pos = tag.getIntArray("PosxXzZY");
-        this.minY = pos[0];
-        this.maxX = pos[1];
-        this.minZ = pos[2];
-        this.maxZ = pos[3];
-        this.minY = pos[4];
-        this.owner = tag.getUuid("Owner");
-        this.claimID = tag.getUuid("ID");
-        this.globalPerm.clear();
-        this.permissions.clear();
-        this.subClaims.clear();
-        if (tag.contains("GlobalPerms")) {
-            tag.getList("GlobalPerms", 8).forEach(perm -> this.globalPerm.add(EnumPermission.valueOf(perm.asString())));
-        }
-        if (tag.contains("PermGroup")) {
-            CompoundTag perms = tag.getCompound("PermGroup");
-            perms.getKeys().forEach(key -> {
-                EnumMap<EnumPermission, Boolean> map = new EnumMap<>(EnumPermission.class);
-                CompoundTag group = perms.getCompound(key);
-                group.getKeys().forEach(gkey -> map.put(EnumPermission.valueOf(gkey), group.getBoolean(gkey)));
-                this.permissions.put(key, map);
-            });
-        }
-        if (tag.contains("PlayerPerms")) {
-            CompoundTag pl = tag.getCompound("PlayerPerms");
-            pl.getKeys().forEach(key -> this.playersGroups.put(UUID.fromString(key), pl.getString(key)));
-        }
-        if (tag.contains("SubClaims")) {
-            tag.getList("SubClaims", 10).forEach(sub -> this.subClaims.add(Claim.fromTag((CompoundTag) sub)));
-        }
-    }
-
     @Override
     public int hashCode() {
-        return this.claimID.hashCode();
+        return this.claimID==null?Arrays.hashCode(this.getDimensions()):this.claimID.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj instanceof Claim)
-            return this.claimID.equals(((Claim) obj).claimID);
+        if (obj instanceof Claim) {
+            Claim other = (Claim) obj;
+            if (this.claimID==null && other.claimID==null)
+                return Arrays.equals(this.getDimensions(), ((Claim) obj).getDimensions());
+            if(this.claimID!=null)
+                return this.claimID.equals(((Claim) obj).claimID);
+        }
         return false;
     }
 
     @Override
     public String toString() {
-        return String.format("Claim:[Owner:%s, from: x=%d; z=%d, to: x=%d, z=%d", this.owner.toString(), this.minX, this.minZ, this.maxX, this.maxZ);
+        return String.format("Claim:[ID=%s, Owner=%s, from: x=%d; z=%d, to: x=%d, z=%d", this.claimID!=null?this.claimID.toString():"null", this.owner.toString(), this.minX, this.minZ, this.maxX, this.maxZ);
     }
 
     public String formattedClaim() {
-        return String.format("[x=%d,z=%d] to: [x=%d,z=%d]", this.minX, this.minZ, this.maxX, this.maxZ);
+        return String.format("[x=%d,z=%d] - [x=%d,z=%d]", this.minX, this.minZ, this.maxX, this.maxZ);
+    }
+
+    public List<Text> infoString(ServerPlayerEntity player){
+        boolean perms = this.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos());
+        List<Text> l = Lists.newArrayList();
+        l.add(PermissionChecker.simpleColoredText("=============================================", Formatting.GREEN));
+        GameProfile prof = this.owner!=null?player.getServer().getUserCache().getByUuid(this.owner):null;
+        String ownerName = this.owner==null?"Admin":prof!=null?prof.getName():"<UNKNOWN>";
+        l.add(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfo, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), Formatting.GOLD));
+        if(perms) {
+            l.add(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.claimInfoPerms, this.globalPerm), Formatting.RED));
+            l.add(PermissionChecker.simpleColoredText(ConfigHandler.lang.claimGroupInfoHeader, Formatting.RED));
+            Map<String, List<String>> nameToGroup = Maps.newHashMap();
+            for (Map.Entry<UUID, String> e : this.playersGroups.entrySet()) {
+                GameProfile pgroup = player.getServer().getUserCache().getByUuid(e.getKey());
+                if (prof != null) {
+                    nameToGroup.merge(e.getValue(), Lists.newArrayList(pgroup.getName()), (old, val) -> {
+                        old.add(pgroup.getName());
+                        return old;
+                    });
+                }
+            }
+            for (Map.Entry<String, EnumMap<EnumPermission, Boolean>> e : this.permissions.entrySet()) {
+                l.add(PermissionChecker.simpleColoredText(String.format("  %s:", e.getKey()), Formatting.DARK_RED));
+                l.add(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPerms, e.getValue()), Formatting.RED));
+                l.add(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPlayers, nameToGroup.getOrDefault(e.getKey(), Lists.newArrayList())), Formatting.RED));
+            }
+        }
+        l.add(PermissionChecker.simpleColoredText("=============================================", Formatting.GREEN));
+        return l;
     }
 }

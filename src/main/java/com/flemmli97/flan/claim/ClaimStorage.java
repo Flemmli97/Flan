@@ -1,6 +1,8 @@
 package com.flemmli97.flan.claim;
 
 import com.flemmli97.flan.IClaimData;
+import com.flemmli97.flan.config.ConfigHandler;
+import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.PlayerClaimData;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -16,6 +18,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.WorldSavePath;
@@ -38,8 +41,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public class ClaimStorage {
-
-    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     public final Long2ObjectArrayMap<List<Claim>> claims = new Long2ObjectArrayMap<>();
     public final Map<UUID, Claim> claimUUIDMap = Maps.newHashMap();
@@ -69,7 +70,7 @@ public class ClaimStorage {
                 return false;
             claim.setClaimID(this.generateUUID());
             this.addClaim(claim);
-            data.addDisplayClaim(claim);
+            data.addDisplayClaim(claim, EnumDisplayType.MAIN);
             return true;
         }
         player.sendMessage(Text.of("Error creating claim"), false);
@@ -91,13 +92,9 @@ public class ClaimStorage {
         return false;
     }
 
-    public boolean deleteClaim(Claim claim) {
-        System.out.println("claim " + claim);
-        System.out.println("claimmap " + this.claims);
-
+    public boolean deleteClaim(Claim claim, MinecraftServer server) {
         claim.remove();
         int[] pos = getChunkPos(claim);
-        System.out.println("" + Arrays.toString(pos));
         for (int x = pos[0]; x <= pos[1]; x++)
             for (int z = pos[2]; z <= pos[3]; z++) {
                 ChunkPos chunkPos = new ChunkPos(x, z);
@@ -108,8 +105,10 @@ public class ClaimStorage {
                     return val.isEmpty() ? null : val;
                 });
             }
-        System.out.println(this.claims);
         this.playerClaimMap.getOrDefault(claim.getOwner(), Sets.newHashSet()).remove(claim);
+        ServerPlayerEntity owner = claim.getOwner()!=null?server.getPlayerManager().getPlayer(claim.getOwner()):null;
+        if(owner!=null)
+            PlayerClaimData.get(owner).usedClaimBlocks();
         return this.claimUUIDMap.remove(claim.getClaimID()) != null;
     }
 
@@ -128,22 +127,19 @@ public class ClaimStorage {
     }
 
     private void addClaim(Claim claim) {
-        System.out.println("adding claim " + claim);
         int[] pos = getChunkPos(claim);
-        System.out.println("" + Arrays.toString(pos));
         for (int x = pos[0]; x <= pos[1]; x++)
             for (int z = pos[2]; z <= pos[3]; z++) {
                 ChunkPos chunkPos = new ChunkPos(x, z);
-                this.claims.merge(chunkPos.toLong(), Lists.newArrayList(claim), (key, val) -> {
-                    val.add(claim);
-                    return val;
+                this.claims.merge(chunkPos.toLong(), Lists.newArrayList(claim), (old, val) -> {
+                    old.add(claim);
+                    return old;
                 });
             }
-        System.out.println("claimmap " + this.claims);
         this.claimUUIDMap.put(claim.getClaimID(), claim);
-        this.playerClaimMap.merge(claim.getOwner(), Sets.newHashSet(claim), (key, val) -> {
-            val.add(claim);
-            return val;
+        this.playerClaimMap.merge(claim.getOwner(), Sets.newHashSet(claim), (old, val) -> {
+            old.add(claim);
+            return old;
         });
     }
 
@@ -161,22 +157,6 @@ public class ClaimStorage {
         return pos;
     }
 
-    public void fromTag(CompoundTag compoundTag) {
-        ListTag list = compoundTag.getList("Claims", 10);
-        list.forEach(tag -> {
-            Claim claim = Claim.fromTag((CompoundTag) tag);
-            this.addClaim(claim);
-        });
-    }
-
-    public CompoundTag toTag(CompoundTag compoundTag) {
-        ListTag list = new ListTag();
-        this.claims.forEach((l, cList) ->
-                cList.forEach(claim -> list.add(claim.save(new CompoundTag()))));
-        compoundTag.put("Claims", list);
-        return compoundTag;
-    }
-
     public void read(MinecraftServer server, RegistryKey<World> reg) {
         File dir = new File(DimensionType.getSaveDirectory(reg, server.getSavePath(WorldSavePath.ROOT).toFile()), "/data/claims/");
         if (dir.exists()) {
@@ -186,7 +166,7 @@ public class ClaimStorage {
                         continue;
                     UUID uuid = UUID.fromString(file.getName().replace(".json", ""));
                     FileReader reader = new FileReader(file);
-                    JsonArray arr = GSON.fromJson(reader, JsonArray.class);
+                    JsonArray arr = ConfigHandler.GSON.fromJson(reader, JsonArray.class);
                     if (arr == null)
                         continue;
                     arr.forEach(el -> {
@@ -218,7 +198,7 @@ public class ClaimStorage {
                 FileWriter writer = new FileWriter(file);
                 JsonArray arr = new JsonArray();
                 e.getValue().forEach(claim -> arr.add(claim.toJson(new JsonObject())));
-                GSON.toJson(arr, writer);
+                ConfigHandler.GSON.toJson(arr, writer);
                 writer.close();
             }
         } catch (IOException e) {

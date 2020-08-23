@@ -21,7 +21,7 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
 
     private final Claim claim;
     private final String group;
-    private final int page;
+    private int page;
 
     private PermissionScreenHandler(int syncId, PlayerInventory playerInventory, Claim claim, String group, int page) {
         super(syncId, playerInventory, 6, claim, group, page);
@@ -80,11 +80,46 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
                 inv.setStack(i, ServerScreenHelper.emptyFiller());
             else {
                 int row = i / 9 - 1;
-                int id = (i % 9) + row * 7 - 1 + page * 54;
+                int id = (i % 9) + row * 7 - 1 + page * 28;
                 if (id < EnumPermission.values().length)
                     inv.setStack(i, ServerScreenHelper.fromPermission((Claim) additionalData[0], EnumPermission.values()[id], String.valueOf(additionalData[1])));
             }
         }
+    }
+
+    private void flipPage(){
+        for (int i = 0; i < 54; i++) {
+            if (i == 0) {
+                ItemStack close = new ItemStack(Items.TNT);
+                close.setCustomName(new LiteralText("Back").setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)));
+                this.slots.get(i).setStack(close);
+            } else if (this.page == 1 && i == 47) {
+                ItemStack stack = ItemStack.EMPTY;
+                if(this.page == 1){
+                    stack =new ItemStack(Items.ARROW);
+                    stack.setCustomName(new LiteralText("Prev").setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
+                }
+                this.slots.get(i).setStack(stack);
+            } else if (this.page == 0 && i == 51) {
+                ItemStack stack = ItemStack.EMPTY;
+                if(this.page == 1) {
+                    stack = new ItemStack(Items.ARROW);
+                    stack.setCustomName(new LiteralText("Next").setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
+                }
+                this.slots.get(i).setStack(stack);
+            }
+            else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
+                this.slots.get(i).setStack(ServerScreenHelper.emptyFiller());
+            else {
+                int row = i / 9 - 1;
+                int id = (i % 9) + row * 7 - 1 + this.page * 28;
+                if (id < EnumPermission.values().length)
+                    this.slots.get(i).setStack(ServerScreenHelper.fromPermission(this.claim, EnumPermission.values()[id], this.group));
+                else
+                    this.slots.get(i).setStack(ItemStack.EMPTY);
+            }
+        }
+        this.sendContentUpdates();
     }
 
     @Override
@@ -101,13 +136,13 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
             return true;
         }
         if (index == 47) {
-            player.closeHandledScreen();
-            player.getServer().execute(() -> PermissionScreenHandler.openClaimMenu(player, this.claim, this.group, 0));
+            this.page = 0;
+            this.flipPage();
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
         }
         if (index == 51) {
-            player.closeHandledScreen();
-            player.getServer().execute(() -> PermissionScreenHandler.openClaimMenu(player, this.claim, this.group, 1));
+            this.page = 1;
+            this.flipPage();
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
         }
         ItemStack stack = slot.getStack();

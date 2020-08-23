@@ -4,6 +4,7 @@ import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.EnumPermission;
 import com.flemmli97.flan.config.ConfigHandler;
+import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.EnumEditMode;
 import com.flemmli97.flan.player.PlayerClaimData;
 import com.mojang.authlib.GameProfile;
@@ -11,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
@@ -22,9 +24,10 @@ import net.minecraft.world.World;
 
 public class ItemInteractEvents {
 
-    public static TypedActionResult<ItemStack> useItem(PlayerEntity player, World world, Hand hand) {
+    public static TypedActionResult<ItemStack> useItem(PlayerEntity p, World world, Hand hand) {
         if (world.isClient)
-            return TypedActionResult.pass(player.getStackInHand(hand));
+            return TypedActionResult.pass(p.getStackInHand(hand));
+        ServerPlayerEntity player = (ServerPlayerEntity) p;
         ItemStack stack = player.getStackInHand(hand);
         if (stack.getItem() == ConfigHandler.config.claimingItem) {
             HitResult ray = player.rayTrace(64, 0, false);
@@ -57,7 +60,7 @@ public class ItemInteractEvents {
                                 data.setEditClaim(claim);
                         }
                     } else {
-                        data.addDisplayClaim(claim);
+                        data.addDisplayClaim(claim, EnumDisplayType.MAIN);
                         player.sendMessage(Text.of(ConfigHandler.lang.cantClaimHere), false);
                     }
                 } else {
@@ -89,7 +92,7 @@ public class ItemInteractEvents {
                             owner,
                             blockRay.getBlockPos().getX(), blockRay.getBlockPos().getY(), blockRay.getBlockPos().getZ()));
                     player.sendMessage(text, false);
-                    PlayerClaimData.get(player).addDisplayClaim(claim);
+                    PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN);
                 } else
                     player.sendMessage(Text.of(ConfigHandler.lang.inspectNoClaim), false);
             }

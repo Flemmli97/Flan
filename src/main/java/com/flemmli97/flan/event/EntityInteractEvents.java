@@ -3,7 +3,7 @@ package com.flemmli97.flan.event;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.EnumPermission;
-import com.flemmli97.flan.claim.ObjectToPermissionMap;
+import com.flemmli97.flan.claim.BlockToPermissionMap;
 import com.flemmli97.flan.mixin.IPersistentProjectileVars;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -20,6 +20,8 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.entity.vehicle.StorageMinecartEntity;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
+import net.minecraft.server.ServerTask;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -46,14 +48,17 @@ public class EntityInteractEvents {
         Claim claim = storage.getClaimAt(pos);
         if (claim != null) {
             if (entity instanceof ArmorStandEntity) {
-                if (!claim.canInteract(player, EnumPermission.ARMORSTAND, pos))
+                if (!claim.canInteract((ServerPlayerEntity) player, EnumPermission.ARMORSTAND, pos))
                     return ActionResult.FAIL;
             }
         }
         return ActionResult.PASS;
     }
 
-    public static ActionResult useEntity(PlayerEntity player, World world, Hand hand, Entity entity) {
+    public static ActionResult useEntity(PlayerEntity p, World world, Hand hand, Entity entity) {
+        if(p.world.isClient)
+            return ActionResult.PASS;
+        ServerPlayerEntity player = (ServerPlayerEntity) p;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
         BlockPos pos = entity.getBlockPos();
         Claim claim = storage.getClaimAt(pos);
@@ -80,13 +85,13 @@ public class EntityInteractEvents {
         if (proj.world.isClient)
             return false;
         Entity owner = proj.getOwner();
-        if (owner instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) owner;
+        if (owner instanceof ServerPlayerEntity) {
+            ServerPlayerEntity player = (ServerPlayerEntity) owner;
             if (res.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult blockRes = (BlockHitResult) res;
                 BlockPos pos = blockRes.getBlockPos();
                 BlockState state = proj.world.getBlockState(pos);
-                EnumPermission perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
+                EnumPermission perm = BlockToPermissionMap.getFromBlock(state.getBlock());
                 if (proj instanceof EnderPearlEntity)
                     perm = EnumPermission.ENDERPEARL;
                 if (perm != EnumPermission.ENDERPEARL && perm != EnumPermission.TARGETBLOCK && perm != EnumPermission.PROJECTILES)
@@ -96,21 +101,24 @@ public class EntityInteractEvents {
                 if (claim == null)
                     return false;
                 boolean flag = !claim.canInteract(player, perm, pos);
-                if (flag && proj instanceof PersistentProjectileEntity) {
-                    PersistentProjectileEntity pers = (PersistentProjectileEntity) proj;
-                    ((IPersistentProjectileVars) pers).setInBlockState(pers.world.getBlockState(pos));
-                    Vec3d vec3d = blockRes.getPos().subtract(pers.getX(), pers.getY(), pers.getZ());
-                    pers.setVelocity(vec3d);
-                    Vec3d vec3d2 = vec3d.normalize().multiply(0.05000000074505806D);
-                    pers.setPos(pers.getX() - vec3d2.x, pers.getY() - vec3d2.y, pers.getZ() - vec3d2.z);
-                    pers.playSound(((IPersistentProjectileVars) pers).getSoundEvent(), 1.0F, 1.2F / (pers.world.random.nextFloat() * 0.2F + 0.9F));
-                    ((IPersistentProjectileVars) pers).setInGround(true);
-                    pers.shake = 7;
-                    pers.setCritical(false);
-                    pers.setPierceLevel((byte) 0);
-                    pers.setSound(SoundEvents.ENTITY_ARROW_HIT);
-                    pers.setShotFromCrossbow(false);
-                    ((IPersistentProjectileVars) pers).resetPiercingStatus();
+                if (flag) {
+                    if(proj instanceof PersistentProjectileEntity) {
+                        PersistentProjectileEntity pers = (PersistentProjectileEntity) proj;
+                        ((IPersistentProjectileVars) pers).setInBlockState(pers.world.getBlockState(pos));
+                        Vec3d vec3d = blockRes.getPos().subtract(pers.getX(), pers.getY(), pers.getZ());
+                        pers.setVelocity(vec3d);
+                        Vec3d vec3d2 = vec3d.normalize().multiply(0.05000000074505806D);
+                        pers.setPos(pers.getX() - vec3d2.x, pers.getY() - vec3d2.y, pers.getZ() - vec3d2.z);
+                        pers.playSound(((IPersistentProjectileVars) pers).getSoundEvent(), 1.0F, 1.2F / (pers.world.random.nextFloat() * 0.2F + 0.9F));
+                        ((IPersistentProjectileVars) pers).setInGround(true);
+                        pers.shake = 7;
+                        pers.setCritical(false);
+                        pers.setPierceLevel((byte) 0);
+                        pers.setSound(SoundEvents.ENTITY_ARROW_HIT);
+                        pers.setShotFromCrossbow(false);
+                        ((IPersistentProjectileVars) pers).resetPiercingStatus();
+                    }
+                    //player.getServer().send(new ServerTask(player.getServer().getTicks()+2, ()->player.world.updateListeners(pos, state, state, 2)));
                 }
                 return flag;
             } else if (res.getType() == HitResult.Type.ENTITY)
@@ -119,12 +127,13 @@ public class EntityInteractEvents {
         return false;
     }
 
-    public static ActionResult attackSimple(PlayerEntity player, Entity entity) {
-        if (player.world.isClient)
+    public static ActionResult attackSimple(PlayerEntity p, Entity entity) {
+        if (p.world.isClient)
             return ActionResult.PASS;
         if (entity instanceof Monster)
             return ActionResult.PASS;
-        ClaimStorage storage = ClaimStorage.get((ServerWorld) player.world);
+        ServerPlayerEntity player = (ServerPlayerEntity) p;
+        ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
         BlockPos pos = entity.getBlockPos();
         Claim claim = storage.getClaimAt(pos);
         if (claim != null) {
@@ -143,7 +152,7 @@ public class EntityInteractEvents {
             BlockPos pos = player.getBlockPos();
             Claim claim = storage.getClaimAt(pos);
             if (claim != null)
-                return !claim.canInteract(player, EnumPermission.XP, pos);
+                return !claim.canInteract((ServerPlayerEntity) player, EnumPermission.XP, pos);
         }
         return false;
     }

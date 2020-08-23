@@ -29,7 +29,7 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.Map;
 
-public class ObjectToPermissionMap {
+public class BlockToPermissionMap {
 
     private static final Map<Block, EnumPermission> blockToPermission = Maps.newHashMap();
 

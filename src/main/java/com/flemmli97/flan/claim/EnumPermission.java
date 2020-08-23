@@ -6,11 +6,11 @@ import net.minecraft.item.Items;
 
 public enum EnumPermission {
 
-    EDITPERMS(Items.COMMAND_BLOCK), //---
-    EDITCLAIM(ConfigHandler.config.claimingItem), //---
+    EDITPERMS(Items.COMMAND_BLOCK),
+    EDITCLAIM(ConfigHandler.config.claimingItem),
     BREAK(Items.DIAMOND_PICKAXE),
     PLACE(Items.GRASS_BLOCK),
-    OPENCONTAINER(Items.CHEST), //---
+    OPENCONTAINER(Items.CHEST),
     ANVIL(Items.ANVIL),
     BED(Items.RED_BED),
     BEACON(Items.BEACON),
