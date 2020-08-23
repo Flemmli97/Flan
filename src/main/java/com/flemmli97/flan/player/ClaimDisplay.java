@@ -16,7 +16,7 @@ import java.util.Set;
 public class ClaimDisplay {
 
     private int displayTime;
-    private Claim toDisplay;
+    private final Claim toDisplay;
     private int[][] poss;
 
     private int[][] middlePoss;
@@ -42,14 +42,12 @@ public class ClaimDisplay {
             };
         }
 
-        if (this.poss != null)
-            for (int[] pos : this.poss) {
-                player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.CLAIMCORNER, true, pos[0] + 0.5, pos[1] + 0.25, pos[2] + 0.5, 0, 0.25f, 0, 0, 1));
-            }
-        if (this.middlePoss != null)
-            for (int[] pos : this.middlePoss) {
-                player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.CLAIMMIDDLE, true, pos[0] + 0.5, pos[1] + 0.25, pos[2] + 0.5, 0, 0.25f, 0, 0, 1));
-            }
+        for (int[] pos : this.poss) {
+            player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.CLAIMCORNER, true, pos[0] + 0.5, pos[1] + 0.25, pos[2] + 0.5, 0, 0.25f, 0, 0, 1));
+        }
+        for (int[] pos : this.middlePoss) {
+            player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.CLAIMMIDDLE, true, pos[0] + 0.5, pos[1] + 0.25, pos[2] + 0.5, 0, 0.25f, 0, 0, 1));
+        }
         this.prevDims = dims;
         return toDisplay.isRemoved() || displayTime < 0;
     }

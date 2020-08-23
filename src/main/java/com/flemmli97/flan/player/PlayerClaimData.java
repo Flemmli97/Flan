@@ -35,10 +35,10 @@ public class PlayerClaimData {
 
     private BlockPos firstCorner;
 
-    private Set<ClaimDisplay> claimDisplayList = Sets.newHashSet();
-    private Set<ClaimDisplay> displayToAdd = Sets.newHashSet();
+    private final Set<ClaimDisplay> claimDisplayList = Sets.newHashSet();
+    private final Set<ClaimDisplay> displayToAdd = Sets.newHashSet();
 
-    private ServerPlayerEntity player;
+    private final ServerPlayerEntity player;
 
     private boolean confirmDeleteAll, adminIgnoreClaim;
     private boolean dirty;
@@ -141,10 +141,9 @@ public class PlayerClaimData {
     }
 
     public void tick() {
-        ServerPlayerEntity sPlayer = this.player;
         this.claimDisplayList.addAll(this.displayToAdd);
         this.displayToAdd.clear();
-        this.claimDisplayList.removeIf(d -> d.display(sPlayer));
+        this.claimDisplayList.removeIf(d -> d.display(this.player));
         if (++this.lastBlockTick > ConfigHandler.config.ticksForNextBlock) {
             this.addClaimBlocks(1);
             this.lastBlockTick = 0;

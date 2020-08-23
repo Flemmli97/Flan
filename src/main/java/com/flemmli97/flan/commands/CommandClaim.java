@@ -71,7 +71,7 @@ public class CommandClaim {
                     if (data.confirmedDeleteAll()) {
                         for (ServerWorld world : src.getWorld().getServer().getWorlds()) {
                             ClaimStorage storage = ClaimStorage.get(world);
-                            storage.allClaimsFromPlayer(src.getPlayer().getUuid()).forEach(claim -> storage.deleteClaim(claim));
+                            storage.allClaimsFromPlayer(src.getPlayer().getUuid()).forEach(storage::deleteClaim);
                         }
                         src.getPlayer().sendMessage(Text.of(ConfigHandler.lang.deleteAllClaim), false);
                         data.setConfirmDeleteAll(false);
@@ -133,7 +133,7 @@ public class CommandClaim {
                         GameProfile prof = it.next();
                         for (ServerWorld world : src.getWorld().getServer().getWorlds()) {
                             ClaimStorage storage = ClaimStorage.get(world);
-                            storage.allClaimsFromPlayer(prof.getId()).forEach(claim -> storage.deleteClaim(claim));
+                            storage.allClaimsFromPlayer(prof.getId()).forEach(storage::deleteClaim);
                         }
                         players.add(prof.getName());
                     }

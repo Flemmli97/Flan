@@ -69,7 +69,7 @@ public class BlockInteractEvents {
             return false;
         if (entity instanceof PlayerEntity) {
             EnumPermission perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
-            if (perm == null || (perm != EnumPermission.PRESSUREPLATE && perm != EnumPermission.PORTAL))
+            if (perm != EnumPermission.PRESSUREPLATE && perm != EnumPermission.PORTAL)
                 return false;
             ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
             Claim claim = storage.getClaimAt(pos);
@@ -77,7 +77,7 @@ public class BlockInteractEvents {
                 return !claim.canInteract((PlayerEntity) entity, perm, pos);
         } else if (entity instanceof ProjectileEntity) {
             EnumPermission perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
-            if (perm == null || (perm != EnumPermission.PRESSUREPLATE && perm != EnumPermission.BUTTONLEVER))
+            if (perm != EnumPermission.PRESSUREPLATE && perm != EnumPermission.BUTTONLEVER)
                 return false;
             Entity owner = ((ProjectileEntity) entity).getOwner();
             if (owner instanceof PlayerEntity) {
@@ -97,7 +97,7 @@ public class BlockInteractEvents {
             ClaimStorage storage = ClaimStorage.get((ServerWorld) entity.world);
             Claim claim = storage.getClaimAt(landedPosition);
             EnumPermission perm = ObjectToPermissionMap.getFromBlock(landedState.getBlock());
-            if (perm != null && perm == EnumPermission.TRAMPLE)
+            if (perm == EnumPermission.TRAMPLE)
                 return !claim.canInteract((PlayerEntity) entity, perm, landedPosition);
         } else if (entity instanceof ProjectileEntity) {
             Entity owner = ((ProjectileEntity) entity).getOwner();
@@ -105,7 +105,7 @@ public class BlockInteractEvents {
                 ClaimStorage storage = ClaimStorage.get((ServerWorld) entity.world);
                 Claim claim = storage.getClaimAt(landedPosition);
                 EnumPermission perm = ObjectToPermissionMap.getFromBlock(landedState.getBlock());
-                if (perm != null && perm == EnumPermission.TRAMPLE)
+                if (perm == EnumPermission.TRAMPLE)
                     return !claim.canInteract((PlayerEntity) owner, perm, landedPosition);
             }
         }

@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class ObjectToPermissionMap {
 
-    private static Map<Block, EnumPermission> blockToPermission = Maps.newHashMap();
+    private static final Map<Block, EnumPermission> blockToPermission = Maps.newHashMap();
 
     public static void reload(MinecraftServer server) {
         blockToPermission.clear();

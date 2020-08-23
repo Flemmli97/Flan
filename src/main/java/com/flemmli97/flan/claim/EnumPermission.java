@@ -41,7 +41,7 @@ public enum EnumPermission {
     ARMORSTAND(Items.ARMOR_STAND),
     BREAKNONLIVING(Items.COMMAND_BLOCK_MINECART);
 
-    private Item item;
+    private final Item item;
 
     EnumPermission(Item item) {
         this.item = item;

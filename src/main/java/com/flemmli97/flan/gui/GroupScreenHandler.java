@@ -21,7 +21,7 @@ import java.util.List;
 
 public class GroupScreenHandler extends ServerOnlyScreenHandler {
 
-    private Claim claim;
+    private final Claim claim;
 
     private boolean removeMode;
 
@@ -125,12 +125,11 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler {
                 if (clickType == 1) {
                     player.closeHandledScreen();
                     player.getServer().execute(() -> PermissionScreenHandler.openClaimMenu(player, this.claim, name));
-                    ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else {
                     player.closeHandledScreen();
                     player.getServer().execute(() -> GroupPlayerScreenHandler.openPlayerGroupMenu(player, this.claim, name));
-                    ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 }
+                ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             }
         }
         return false;

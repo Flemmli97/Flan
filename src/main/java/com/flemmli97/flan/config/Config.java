@@ -9,7 +9,7 @@ import java.io.File;
 
 public class Config {
 
-    private File configDir;
+    private final File configDir;
 
     public int startingBlocks = 500;
     public int maxClaimBlocks = 5000;

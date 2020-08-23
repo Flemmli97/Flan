@@ -25,8 +25,8 @@ import java.util.List;
 
 public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
 
-    private Claim claim;
-    private String group;
+    private final Claim claim;
+    private final String group;
     private boolean removeMode;
 
     private GroupPlayerScreenHandler(int syncId, PlayerInventory playerInventory, Claim claim, String group) {

@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.ScreenHandlerType;
@@ -13,7 +14,6 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.util.Iterator;
 import java.util.List;
 
 public abstract class ServerOnlyScreenHandler extends ScreenHandler {
@@ -45,7 +45,7 @@ public abstract class ServerOnlyScreenHandler extends ScreenHandler {
         }
     }
 
-    private static ScreenHandlerType fromRows(int rows) {
+    private static ScreenHandlerType<GenericContainerScreenHandler> fromRows(int rows) {
         switch (rows) {
             case 2:
                 return ScreenHandlerType.GENERIC_9X2;
@@ -104,10 +104,8 @@ public abstract class ServerOnlyScreenHandler extends ScreenHandler {
         int j;
         for (j = 0; j < this.slots.size(); ++j) {
             ItemStack itemStack = this.slots.get(j).getStack();
-            Iterator var5 = this.listeners.iterator();
 
-            while (var5.hasNext()) {
-                ScreenHandlerListener screenHandlerListener = (ScreenHandlerListener) var5.next();
+            for (ScreenHandlerListener screenHandlerListener : this.listeners) {
                 screenHandlerListener.onSlotUpdate(this, j, itemStack.copy());
             }
         }

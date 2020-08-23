@@ -16,10 +16,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
+import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.entity.vehicle.ChestMinecartEntity;
-import net.minecraft.entity.vehicle.HopperMinecartEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
+import net.minecraft.entity.vehicle.StorageMinecartEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -61,8 +61,8 @@ public class EntityInteractEvents {
             //works
             if (entity instanceof BoatEntity)
                 return claim.canInteract(player, EnumPermission.BOAT, pos) ? ActionResult.PASS : ActionResult.FAIL;
-            if (entity instanceof MinecartEntity) {
-                if (entity instanceof HopperMinecartEntity || entity instanceof ChestMinecartEntity)
+            if (entity instanceof AbstractMinecartEntity) {
+                if (entity instanceof StorageMinecartEntity)
                     return claim.canInteract(player, EnumPermission.OPENCONTAINER, pos) ? ActionResult.PASS : ActionResult.FAIL;
                 return claim.canInteract(player, EnumPermission.MINECART, pos) ? ActionResult.PASS : ActionResult.FAIL;
             }
@@ -89,7 +89,7 @@ public class EntityInteractEvents {
                 EnumPermission perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
                 if (proj instanceof EnderPearlEntity)
                     perm = EnumPermission.ENDERPEARL;
-                if (perm == null || (perm != EnumPermission.ENDERPEARL && perm != EnumPermission.TARGETBLOCK && perm != EnumPermission.PROJECTILES))
+                if (perm != EnumPermission.ENDERPEARL && perm != EnumPermission.TARGETBLOCK && perm != EnumPermission.PROJECTILES)
                     return false;
                 ClaimStorage storage = ClaimStorage.get((ServerWorld) proj.world);
                 Claim claim = storage.getClaimAt(pos);

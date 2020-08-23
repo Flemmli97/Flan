@@ -7,7 +7,7 @@ import java.io.File;
 
 public class LangConfig {
 
-    private File configDir;
+    private final File configDir;
 
     public String inspectBlockOwner = "This is %1$s's claim";
     public String inspectNoClaim = "Nobody owns this block";

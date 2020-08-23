@@ -205,8 +205,8 @@ public class Claim {
         if (player.getUuid().equals(this.owner) || this.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos())) {
             if (mode > 1)
                 mode = -1;
-            boolean has = this.permissions.containsKey(perm);
-            EnumMap<EnumPermission, Boolean> perms = has ? this.permissions.get(group) : new EnumMap(EnumPermission.class);
+            boolean has = this.permissions.containsKey(group);
+            EnumMap<EnumPermission, Boolean> perms = has ? this.permissions.get(group) : new EnumMap<>(EnumPermission.class);
             if (mode == -1)
                 perms.remove(perm);
             else
@@ -227,7 +227,7 @@ public class Claim {
                 if (g.equals(group))
                     toRemove.add(uuid);
             });
-            toRemove.forEach(uuid -> this.playersGroups.remove(uuid));
+            toRemove.forEach(this.playersGroups::remove);
             this.setDirty();
             return true;
         }
@@ -276,7 +276,7 @@ public class Claim {
         if (obj.has("PermGroup")) {
             JsonObject perms = obj.getAsJsonObject("PermGroup");
             perms.entrySet().forEach(key -> {
-                EnumMap<EnumPermission, Boolean> map = new EnumMap(EnumPermission.class);
+                EnumMap<EnumPermission, Boolean> map = new EnumMap<>(EnumPermission.class);
                 JsonObject group = key.getValue().getAsJsonObject();
                 group.entrySet().forEach(gkey -> map.put(EnumPermission.valueOf(gkey.getKey()), gkey.getValue().getAsBoolean()));
                 this.permissions.put(key.getKey(), map);
@@ -377,7 +377,7 @@ public class Claim {
         if (tag.contains("PermGroup")) {
             CompoundTag perms = tag.getCompound("PermGroup");
             perms.getKeys().forEach(key -> {
-                EnumMap<EnumPermission, Boolean> map = new EnumMap(EnumPermission.class);
+                EnumMap<EnumPermission, Boolean> map = new EnumMap<>(EnumPermission.class);
                 CompoundTag group = perms.getCompound(key);
                 group.getKeys().forEach(gkey -> map.put(EnumPermission.valueOf(gkey), group.getBoolean(gkey)));
                 this.permissions.put(key, map);

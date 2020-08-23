@@ -19,9 +19,9 @@ import net.minecraft.util.Formatting;
 
 public class PermissionScreenHandler extends ServerOnlyScreenHandler {
 
-    private Claim claim;
-    private String group;
-    private int page;
+    private final Claim claim;
+    private final String group;
+    private final int page;
 
     private PermissionScreenHandler(int syncId, PlayerInventory playerInventory, Claim claim, String group, int page) {
         super(syncId, playerInventory, 6, claim, group, page);
@@ -62,8 +62,6 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
 
     @Override
     protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object... additionalData) {
-        if (additionalData == null)
-            return;
         for (int i = 0; i < 54; i++) {
             int page = (int) additionalData[2];
             if (i == 0) {
@@ -84,7 +82,7 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + page * 54;
                 if (id < EnumPermission.values().length)
-                    inv.setStack(i, ServerScreenHelper.fromPermission((Claim) additionalData[0], EnumPermission.values()[id], additionalData.length == 1 ? null : String.valueOf(additionalData[1])));
+                    inv.setStack(i, ServerScreenHelper.fromPermission((Claim) additionalData[0], EnumPermission.values()[id], String.valueOf(additionalData[1])));
             }
         }
     }
@@ -95,12 +93,11 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
             if (this.group == null) {
                 player.closeHandledScreen();
                 player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.claim));
-                ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             } else {
                 player.closeHandledScreen();
                 player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.claim));
-                ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             }
+            ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;
         }
         if (index == 47) {

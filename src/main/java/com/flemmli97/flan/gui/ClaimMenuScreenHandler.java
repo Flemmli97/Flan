@@ -20,7 +20,7 @@ import net.minecraft.util.Formatting;
 
 public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
 
-    private Claim claim;
+    private final Claim claim;
 
     private ClaimMenuScreenHandler(int syncId, PlayerInventory playerInventory, Claim claim) {
         super(syncId, playerInventory, 1);

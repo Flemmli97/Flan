@@ -41,7 +41,7 @@ public class ClaimStorage {
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
-    public final Long2ObjectArrayMap<List<Claim>> claims = new Long2ObjectArrayMap();
+    public final Long2ObjectArrayMap<List<Claim>> claims = new Long2ObjectArrayMap<>();
     public final Map<UUID, Claim> claimUUIDMap = Maps.newHashMap();
     public final Map<UUID, Set<Claim>> playerClaimMap = Maps.newHashMap();
 
@@ -240,7 +240,7 @@ public class ClaimStorage {
                 if (f.getName().endsWith(".yml")) {
                     FileReader reader = new FileReader(f);
                     Map<String, Object> values = yml.load(reader);
-                    if (values.get("Parent Claim ID").equals(Integer.valueOf(-1))) {
+                    if (values.get("Parent Claim ID").equals(-1)) {
                         intFileMap.put(Integer.valueOf(values.get("Parent Claim ID").toString()), f);
                     }
                 }
@@ -250,7 +250,7 @@ public class ClaimStorage {
                 if (f.getName().endsWith(".yml")) {
                     FileReader reader = new FileReader(f);
                     Map<String, Object> values = yml.load(reader);
-                    if (!values.get("Parent Claim ID").equals(Integer.valueOf(-1))) {
+                    if (!values.get("Parent Claim ID").equals(-1)) {
                         subClaimMap.merge(intFileMap.get(Integer.valueOf(values.get("Parent Claim ID").toString()))
                                 , Lists.newArrayList(f), (key, val) -> {
                                     val.add(f);

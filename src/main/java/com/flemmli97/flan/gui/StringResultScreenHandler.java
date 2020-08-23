@@ -17,7 +17,6 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -113,10 +112,8 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
         int j;
         for (j = 0; j < this.slots.size(); ++j) {
             ItemStack itemStack = this.slots.get(j).getStack();
-            Iterator var5 = this.listeners.iterator();
 
-            while (var5.hasNext()) {
-                ScreenHandlerListener screenHandlerListener = (ScreenHandlerListener) var5.next();
+            for (ScreenHandlerListener screenHandlerListener : this.listeners) {
                 screenHandlerListener.onSlotUpdate(this, j, itemStack.copy());
             }
         }
