@@ -8,6 +8,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.LiteralText;
@@ -28,8 +29,23 @@ public class ServerScreenHelper {
         stack.setCustomName(new LiteralText(perm.toString()).setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
         ListTag lore = new ListTag();
         String permFlag;
-        if (group == null)
-            permFlag = "" + claim.permEnabled(perm);
+        if (group == null) {
+            if(claim.parentClaim()==null)
+                permFlag = "" + (claim.permEnabled(perm)==1);
+            else {
+                switch (claim.permEnabled(perm)) {
+                    case -1:
+                        permFlag = "default";
+                        break;
+                    case 1:
+                        permFlag = "true";
+                        break;
+                    default:
+                        permFlag = "false";
+                        break;
+                }
+            }
+        }
         else {
             switch (claim.groupHasPerm(group, perm)) {
                 case -1:

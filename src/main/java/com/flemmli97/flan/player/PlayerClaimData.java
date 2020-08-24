@@ -22,16 +22,19 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 public class PlayerClaimData {
 
-    private int claimBlocks, additionalClaimBlocks, usedClaimsBlocks, confirmTick;
+    private int claimBlocks, additionalClaimBlocks, confirmTick;
 
     private int lastBlockTick;
     private EnumEditMode mode = EnumEditMode.DEFAULT;
     private Claim editingClaim;
+    private ClaimDisplay displayEditing;
 
     private BlockPos firstCorner;
 
@@ -78,17 +81,15 @@ public class PlayerClaimData {
         this.dirty = true;
     }
 
-    public boolean useClaimBlocks(int amount) {
-        if (this.usedClaimsBlocks + amount > this.claimBlocks + this.additionalClaimBlocks)
+    public boolean canUseClaimBlocks(int amount) {
+        int usedClaimsBlocks = this.usedClaimBlocks();
+        if (usedClaimsBlocks + amount > this.claimBlocks + this.additionalClaimBlocks)
             return false;
-        this.usedClaimsBlocks += amount;
-        this.dirty = true;
         return true;
     }
 
     public int usedClaimBlocks(){
-        this.calculateUsedClaimBlocks();
-        return this.usedClaimsBlocks;
+        return this.calculateUsedClaimBlocks();
     }
 
     public Claim currentEdit() {
@@ -96,6 +97,10 @@ public class PlayerClaimData {
     }
 
     public void setEditClaim(Claim claim) {
+        if(claim!=null)
+            this.displayEditing = new ClaimDisplay(claim, EnumDisplayType.EDIT);
+        else
+            this.displayEditing = null;
         this.editingClaim = claim;
     }
 
@@ -149,22 +154,28 @@ public class PlayerClaimData {
     }
 
     public void tick() {
-        this.claimDisplayList.addAll(this.displayToAdd);
+        this.displayToAdd.forEach(add->{
+            if(!this.claimDisplayList.add(add)){
+                this.claimDisplayList.removeIf(c->c.equals(add) && c.type!=add.type);
+                this.claimDisplayList.add(add);
+            }
+        });
         this.displayToAdd.clear();
         this.claimDisplayList.removeIf(d -> d.display(this.player));
         if (++this.lastBlockTick > ConfigHandler.config.ticksForNextBlock) {
             this.addClaimBlocks(1);
             this.lastBlockTick = 0;
         }
-        if (this.firstCorner != null) {
+        if (this.firstCorner != null)
             this.player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.SETCORNER, true, this.firstCorner.getX() + 0.5, this.firstCorner.getY() + 1.25, this.firstCorner.getZ() + 0.5, 0, 0.25f, 0, 0, 3));
-            if (this.player.getMainHandStack().getItem() != ConfigHandler.config.claimingItem && this.player.getOffHandStack().getItem() != ConfigHandler.config.claimingItem) {
-                this.firstCorner = null;
-                this.editingClaim = null;
-            }
-        }
         if (--this.confirmTick < 0)
             this.confirmDeleteAll = false;
+        if(this.displayEditing!=null)
+            this.displayEditing.display(this.player);
+        if (this.player.getMainHandStack().getItem() != ConfigHandler.config.claimingItem && this.player.getOffHandStack().getItem() != ConfigHandler.config.claimingItem) {
+            this.firstCorner = null;
+            this.editingClaim = null;
+        }
     }
 
     public void save(MinecraftServer server) {
@@ -229,17 +240,18 @@ public class PlayerClaimData {
         }
     }
 
-    private void calculateUsedClaimBlocks() {
-        this.usedClaimsBlocks = 0;
+    private int calculateUsedClaimBlocks() {
+        int usedClaimsBlocks = 0;
         for (ServerWorld world : this.player.getServer().getWorlds()) {
             Collection<Claim> claims = ClaimStorage.get(world).playerClaimMap.get(this.player.getUuid());
             if (claims != null)
-                claims.forEach(claim -> this.usedClaimsBlocks += claim.getPlane());
+                usedClaimsBlocks += claims.stream().mapToInt(Claim::getPlane).sum();
         }
+        return usedClaimsBlocks;
     }
 
     public static void readGriefPreventionPlayerData(MinecraftServer server) {
-        File griefPrevention = server.getSavePath(WorldSavePath.ROOT).resolve("GriefPreventionData/PlayerData").toFile();
+        File griefPrevention = server.getSavePath(WorldSavePath.ROOT).resolve("plugins/GriefPreventionData/PlayerData").toFile();
         if (!griefPrevention.exists())
             return;
         try {

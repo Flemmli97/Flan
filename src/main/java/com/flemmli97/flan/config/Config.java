@@ -19,8 +19,10 @@ public class Config {
     public int startingBlocks = 500;
     public int maxClaimBlocks = 5000;
     public int ticksForNextBlock = 1200;
+    public int minClaimsize = 100;
+    public int defaultClaimDepth = 255;
 
-    public String[] blacklistedWorlds = new String[0];
+    public String[] blacklistedWorlds = new String[] {"minecraft:the_nether"};
     public boolean worldWhitelist;
 
     public Item claimingItem = Items.GOLDEN_HOE;

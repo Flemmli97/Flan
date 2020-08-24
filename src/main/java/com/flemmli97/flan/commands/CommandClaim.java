@@ -3,7 +3,7 @@ package com.flemmli97.flan.commands;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.EnumPermission;
-import com.flemmli97.flan.claim.PermissionChecker;
+import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.gui.ClaimMenuScreenHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
@@ -47,9 +47,13 @@ public class CommandClaim {
                 CommandManager.literal("claimInfo").executes(CommandClaim::claimInfo),
                 CommandManager.literal("delete").executes(CommandClaim::deleteClaim),
                 CommandManager.literal("deleteAll").executes(CommandClaim::deleteAllClaim),
+                CommandManager.literal("deleteSubClaim").executes(CommandClaim::deleteSubClaim),
+                CommandManager.literal("deleteAllSubClaims").executes(CommandClaim::deleteAllSubClaim),
                 CommandManager.literal("list").executes(CommandClaim::listClaims),
                 CommandManager.literal("switchMode").executes(CommandClaim::switchClaimMode),
                 CommandManager.literal("adminMode").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::switchAdminMode),
+                CommandManager.literal("readGriefPrevention").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::readGriefPreventionData),
+                CommandManager.literal("setAdminClaim").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::setAdminClaim),
                 CommandManager.literal("adminDelete").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::adminDelete)
                         .then(CommandManager.literal("all").then(CommandManager.argument("players", GameProfileArgumentType.gameProfile()))
                                 .executes(CommandClaim::adminDeleteAll)),
@@ -93,22 +97,45 @@ public class CommandClaim {
 
     private static int openMenu(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
-        Claim claim = PermissionChecker.checkReturn(player, EnumPermission.EDITPERMS, PermissionChecker.genericNoPermMessage(player));
-        if (claim == null)
-            return 0;
-        ClaimMenuScreenHandler.openClaimMenu(player, claim);
         PlayerClaimData data = PlayerClaimData.get(player);
-        data.addDisplayClaim(claim, EnumDisplayType.MAIN);
+        if(data.getEditMode() == EnumEditMode.DEFAULT) {
+            Claim claim = PermHelper.checkReturn(player, EnumPermission.EDITPERMS, PermHelper.genericNoPermMessage(player));
+            if (claim == null)
+                return 0;
+            ClaimMenuScreenHandler.openClaimMenu(player, claim);
+            data.addDisplayClaim(claim, EnumDisplayType.MAIN);
+        }
+        else{
+            Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(player.getBlockPos());
+            Claim sub = claim.getSubClaim(player.getBlockPos());
+            if(sub!=null && (claim.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos()) ||sub.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos())))
+                ClaimMenuScreenHandler.openClaimMenu(player, sub);
+            else if(claim.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos()))
+                ClaimMenuScreenHandler.openClaimMenu(player, claim);
+            else
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermission, Formatting.DARK_RED), false);
+        }
         return Command.SINGLE_SUCCESS;
     }
 
     private static int claimInfo(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
         Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(player.getBlockPos());
+        PlayerClaimData data = PlayerClaimData.get(player);
         if (claim == null)
             return 0;
+        if(data.getEditMode() == EnumEditMode.SUBCLAIM){
+            Claim sub = claim.getSubClaim(player.getBlockPos());
+            if(sub!=null){
+                List<Text> info = sub.infoString(player);
+                player.sendMessage(PermHelper.simpleColoredText("==SubclaimInfo==", Formatting.AQUA), false);
+                for (Text text : info)
+                    player.sendMessage(text, false);
+                return Command.SINGLE_SUCCESS;
+            }
+        }
         List<Text> info = claim.infoString(player);
-        for(Text text : info)
+        for (Text text : info)
             player.sendMessage(text, false);
         return Command.SINGLE_SUCCESS;
     }
@@ -117,17 +144,17 @@ public class CommandClaim {
         ServerPlayerEntity player = context.getSource().getPlayer();
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
         Claim claim = storage.getClaimAt(player.getBlockPos());
-        boolean check = PermissionChecker.check(player, player.getBlockPos(), claim, EnumPermission.EDITCLAIM, b ->{
+        boolean check = PermHelper.check(player, player.getBlockPos(), claim, EnumPermission.EDITCLAIM, b ->{
             if(!b.isPresent())
-                PermissionChecker.noClaimMessage(player);
+                PermHelper.noClaimMessage(player);
             else if(!b.get())
-                player.sendMessage(PermissionChecker.simpleColoredText(ConfigHandler.lang.deleteClaimError, Formatting.DARK_RED), false);
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteClaimError, Formatting.DARK_RED), false);
             else
-                player.sendMessage(PermissionChecker.simpleColoredText(ConfigHandler.lang.deleteClaim, Formatting.DARK_RED), false);
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteClaim, Formatting.DARK_RED), false);
         });
         if (!check)
             return 0;
-        storage.deleteClaim(claim, player.getServer());
+        storage.deleteClaim(claim, true, PlayerClaimData.get(player).getEditMode(), player.getServerWorld());
         return Command.SINGLE_SUCCESS;
     }
 
@@ -137,14 +164,52 @@ public class CommandClaim {
         if (data.confirmedDeleteAll()) {
             for (ServerWorld world : player.getServer().getWorlds()) {
                 ClaimStorage storage = ClaimStorage.get(world);
-                storage.allClaimsFromPlayer(player.getUuid()).forEach((claim)->storage.deleteClaim(claim, player.getServer()));
+                storage.allClaimsFromPlayer(player.getUuid()).forEach((claim)->storage.deleteClaim(claim, true, PlayerClaimData.get(player).getEditMode(), player.getServerWorld()));
             }
-            player.sendMessage(PermissionChecker.simpleColoredText(ConfigHandler.lang.deleteAllClaim, Formatting.GOLD), false);
+            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteAllClaim, Formatting.GOLD), false);
             data.setConfirmDeleteAll(false);
         } else {
             data.setConfirmDeleteAll(true);
-            player.sendMessage(PermissionChecker.simpleColoredText(ConfigHandler.lang.deleteAllClaimConfirm, Formatting.DARK_RED), false);
+            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteAllClaimConfirm, Formatting.DARK_RED), false);
         }
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int deleteSubClaim(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
+        Claim claim = storage.getClaimAt(player.getBlockPos());
+        if(claim==null) {
+            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noClaim, Formatting.RED), false);
+            return 0;
+        }
+        Claim sub = claim.getSubClaim(player.getBlockPos());
+        if(sub==null) {
+            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noClaim, Formatting.RED), false);
+            return 0;
+        }
+        boolean check = PermHelper.check(player, player.getBlockPos(), sub, EnumPermission.EDITCLAIM, b ->{
+            if(!b.isPresent())
+                PermHelper.noClaimMessage(player);
+            else if(!b.get())
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteClaimError, Formatting.DARK_RED), false);
+            else
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteSubClaim, Formatting.DARK_RED), false);
+        });
+        if (!check)
+            return 0;
+        claim.deleteSubClaim(sub);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int deleteAllSubClaim(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        Claim claim = PermHelper.checkReturn(player, EnumPermission.EDITCLAIM, PermHelper.genericNoPermMessage(player));
+        if(claim==null)
+            return 0;
+        List<Claim> subs = claim.getAllSubclaims();
+        subs.forEach(claim::deleteSubClaim);
+        player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteSubClaimAll, Formatting.DARK_RED), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -156,12 +221,12 @@ public class CommandClaim {
             claims.put(world, storage.allClaimsFromPlayer(player.getUuid()));
         }
         PlayerClaimData data = PlayerClaimData.get(player);
-        player.sendMessage(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
+        player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
                 data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks()), Formatting.GOLD), false);
-        player.sendMessage(PermissionChecker.simpleColoredText(ConfigHandler.lang.listClaims, Formatting.GOLD), false);
+        player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.listClaims, Formatting.GOLD), false);
         for (Map.Entry<World, Collection<Claim>> entry : claims.entrySet())
             for (Claim claim : entry.getValue())
-                player.sendMessage(PermissionChecker.simpleColoredText(
+                player.sendMessage(PermHelper.simpleColoredText(
                         entry.getKey().getRegistryKey().getValue().toString() + " # " + claim.formattedClaim(), Formatting.YELLOW), false);
         return Command.SINGLE_SUCCESS;
     }
@@ -170,7 +235,7 @@ public class CommandClaim {
         ServerPlayerEntity player = context.getSource().getPlayer();
         PlayerClaimData data = PlayerClaimData.get(player);
         data.setEditMode(data.getEditMode() == EnumEditMode.DEFAULT ? EnumEditMode.SUBCLAIM : EnumEditMode.DEFAULT);
-        player.sendMessage(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.editMode, data.getEditMode()), Formatting.GOLD), false);
+        player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.editMode, data.getEditMode()), Formatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -178,7 +243,7 @@ public class CommandClaim {
         ServerPlayerEntity player = context.getSource().getPlayer();
         PlayerClaimData data = PlayerClaimData.get(player);
         data.setAdminIgnoreClaim(!data.isAdminIgnoreClaim());
-        player.sendMessage(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.adminMode, data.isAdminIgnoreClaim()), Formatting.GOLD), false);
+        player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.adminMode, data.isAdminIgnoreClaim()), Formatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -187,7 +252,7 @@ public class CommandClaim {
         ClaimStorage storage = ClaimStorage.get(src.getWorld());
         Claim claim = storage.getClaimAt(new BlockPos(src.getPosition()));
         if (claim == null) {
-            src.sendFeedback(PermissionChecker.simpleColoredText(ConfigHandler.lang.noClaim, Formatting.RED), false);
+            src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.noClaim, Formatting.RED), false);
             return 0;
         }
         if(src.getEntity() instanceof ServerPlayerEntity){
@@ -195,12 +260,12 @@ public class CommandClaim {
             PlayerClaimData data = PlayerClaimData.get(player);
             if(!data.confirmedDeleteAll()) {
                 data.setConfirmDeleteAll(true);
-                player.sendMessage(PermissionChecker.simpleColoredText(ConfigHandler.lang.deleteAllClaimConfirm, Formatting.DARK_RED), false);
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteAllClaimConfirm, Formatting.DARK_RED), false);
                 return Command.SINGLE_SUCCESS;
             }
         }
-        storage.deleteClaim(claim, src.getMinecraftServer());
-        src.sendFeedback(PermissionChecker.simpleColoredText(ConfigHandler.lang.deleteClaim, Formatting.RED), true);
+        storage.deleteClaim(claim, true, EnumEditMode.DEFAULT, src.getWorld());
+        src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.deleteClaim, Formatting.RED), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -211,7 +276,7 @@ public class CommandClaim {
             PlayerClaimData data = PlayerClaimData.get(player);
             if(!data.confirmedDeleteAll()) {
                 data.setConfirmDeleteAll(true);
-                player.sendMessage(PermissionChecker.simpleColoredText(ConfigHandler.lang.deleteAllClaimConfirm, Formatting.DARK_RED), false);
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteAllClaimConfirm, Formatting.DARK_RED), false);
                 return Command.SINGLE_SUCCESS;
             }
         }
@@ -219,11 +284,11 @@ public class CommandClaim {
         for(GameProfile prof : GameProfileArgumentType.getProfileArgument(context, "players")) {
             for (ServerWorld world : src.getWorld().getServer().getWorlds()) {
                 ClaimStorage storage = ClaimStorage.get(world);
-                storage.allClaimsFromPlayer(prof.getId()).forEach((claim)->storage.deleteClaim(claim, src.getMinecraftServer()));
+                storage.allClaimsFromPlayer(prof.getId()).forEach((claim)->storage.deleteClaim(claim, true, EnumEditMode.DEFAULT, world));
             }
             players.add(prof.getName());
         }
-        src.sendFeedback(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.adminDeleteAll, players.toString()), Formatting.GOLD), true);
+        src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.adminDeleteAll, players.toString()), Formatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -232,11 +297,20 @@ public class CommandClaim {
         ClaimStorage storage = ClaimStorage.get(src.getWorld());
         Claim claim = storage.getClaimAt(new BlockPos(src.getPosition()));
         if (claim == null) {
-            src.sendFeedback(PermissionChecker.simpleColoredText(ConfigHandler.lang.noClaim, Formatting.RED), false);
+            src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.noClaim, Formatting.RED), false);
             return 0;
         }
         claim.setAdminClaim();
-        src.sendFeedback(PermissionChecker.simpleColoredText(ConfigHandler.lang.setAdminClaim, Formatting.GOLD), true);
+        src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.setAdminClaim, Formatting.GOLD), true);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int readGriefPreventionData(CommandContext<ServerCommandSource> context){
+        ServerCommandSource src = context.getSource();
+        src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.readGriefpreventionData, Formatting.GOLD), true);
+        ClaimStorage.readGriefPreventionData(src.getMinecraftServer());
+        PlayerClaimData.readGriefPreventionPlayerData(src.getMinecraftServer());
+        src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.readGriefpreventionDataSuccess, Formatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -253,7 +327,7 @@ public class CommandClaim {
                 PlayerClaimData.editForOfflinePlayer(src.getMinecraftServer(), prof.getId(), amount);
             players.add(prof.getName());
         }
-        src.sendFeedback(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.giveClaimBlocks, players.toString(), amount), Formatting.GOLD), true);
+        src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.giveClaimBlocks, players.toString(), amount), Formatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -283,26 +357,26 @@ public class CommandClaim {
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
         Claim claim = storage.getClaimAt(player.getBlockPos());
         if (claim == null) {
-            PermissionChecker.noClaimMessage(player);
+            PermHelper.noClaimMessage(player);
             return 0;
         }
         if(remove) {
             if (claim.removePermGroup(player, group))
-                player.sendMessage(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.groupRemove, group), Formatting.GOLD), false);
+                player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.groupRemove, group), Formatting.GOLD), false);
             else {
-                PermissionChecker.genericNoPermMessage(player);
+                PermHelper.genericNoPermMessage(player);
                 return 0;
             }
         }
         else{
             if(claim.groups().contains(group)){
-                player.sendMessage(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.groupExist, group), Formatting.RED), false);
+                player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.groupExist, group), Formatting.RED), false);
                 return 0;
             }
             else if(claim.editPerms(player, group, EnumPermission.EDITCLAIM, -1))
-                player.sendMessage(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.groupAdd, group), Formatting.GOLD), false);
+                player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.groupAdd, group), Formatting.GOLD), false);
             else {
-                PermissionChecker.genericNoPermMessage(player);
+                PermHelper.genericNoPermMessage(player);
                 return 0;
             }
         }
@@ -328,11 +402,11 @@ public class CommandClaim {
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
         Claim claim = storage.getClaimAt(player.getBlockPos());
         if (claim == null) {
-            PermissionChecker.noClaimMessage(player);
+            PermHelper.noClaimMessage(player);
             return 0;
         }
         if(!claim.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos())){
-            PermissionChecker.genericNoPermMessage(player);
+            PermHelper.genericNoPermMessage(player);
             return 0;
         }
         List<String> modified = Lists.newArrayList();
@@ -341,9 +415,9 @@ public class CommandClaim {
                 modified.add(prof.getName());
         }
         if(!modified.isEmpty())
-            player.sendMessage(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.playerModify, group, modified), Formatting.GOLD), false);
+            player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.playerModify, group, modified), Formatting.GOLD), false);
         else
-            player.sendMessage(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.playerModifyNo, group, modified), Formatting.RED), false);
+            player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.playerModifyNo, group, modified), Formatting.RED), false);
         return Command.SINGLE_SUCCESS;
     }
 }

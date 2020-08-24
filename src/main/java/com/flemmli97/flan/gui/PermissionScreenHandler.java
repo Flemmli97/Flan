@@ -11,6 +11,7 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
@@ -153,8 +154,14 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
         } catch (IllegalArgumentException e) {
             return false;
         }
-        if (this.group == null)
-            this.claim.editGlobalPerms(perm);
+        if (this.group == null) {
+            int mode = -1;
+            if(this.claim.parentClaim()==null)
+                mode = this.claim.permEnabled(perm)==1?-1:1;
+            else
+                mode = this.claim.permEnabled(perm)+1;
+            this.claim.editGlobalPerms(perm, mode);
+        }
         else
             this.claim.editPerms(player, this.group, perm, this.claim.groupHasPerm(this.group, perm) + 1);
         slot.setStack(ServerScreenHelper.fromPermission(this.claim, perm, this.group));

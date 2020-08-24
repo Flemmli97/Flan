@@ -17,22 +17,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.Supplier;
 
 @Mixin(ServerWorld.class)
-public abstract class WorldClaimMixin extends World implements IClaimData {
+public abstract class WorldClaimMixin implements IClaimData {
     @Unique
     private ClaimStorage claimData;
 
-    protected WorldClaimMixin(MutableWorldProperties properties, RegistryKey<World> registryKey, DimensionType dimensionType, Supplier<Profiler> supplier, boolean bl, boolean bl2, long l) {
-        super(properties, registryKey, dimensionType, supplier, bl, bl2, l);
-    }
-
     @Inject(method = "<init>*", at = @At("RETURN"))
     private void initData(CallbackInfo info) {
-        this.claimData = new ClaimStorage(this.getServer(), this.getRegistryKey());
+        ServerWorld world = ((ServerWorld)(Object)this);
+        this.claimData = new ClaimStorage(world.getServer(), world);
     }
 
     @Inject(method = "saveLevel()V", at = @At("RETURN"))
     private void saveClaimData(CallbackInfo info) {
-        this.claimData.save(this.getServer(), this.getRegistryKey());
+        ServerWorld world = ((ServerWorld)(Object)this);
+        this.claimData.save(world.getServer(), world.getRegistryKey());
     }
 
     @Override

@@ -48,7 +48,7 @@ public class EntityInteractEvents {
         Claim claim = storage.getClaimAt(pos);
         if (claim != null) {
             if (entity instanceof ArmorStandEntity) {
-                if (!claim.canInteract((ServerPlayerEntity) player, EnumPermission.ARMORSTAND, pos))
+                if (!claim.canInteract((ServerPlayerEntity) player, EnumPermission.ARMORSTAND, pos, true))
                     return ActionResult.FAIL;
             }
         }
@@ -65,18 +65,18 @@ public class EntityInteractEvents {
         if (claim != null) {
             //works
             if (entity instanceof BoatEntity)
-                return claim.canInteract(player, EnumPermission.BOAT, pos) ? ActionResult.PASS : ActionResult.FAIL;
+                return claim.canInteract(player, EnumPermission.BOAT, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
             if (entity instanceof AbstractMinecartEntity) {
                 if (entity instanceof StorageMinecartEntity)
-                    return claim.canInteract(player, EnumPermission.OPENCONTAINER, pos) ? ActionResult.PASS : ActionResult.FAIL;
-                return claim.canInteract(player, EnumPermission.MINECART, pos) ? ActionResult.PASS : ActionResult.FAIL;
+                    return claim.canInteract(player, EnumPermission.OPENCONTAINER, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
+                return claim.canInteract(player, EnumPermission.MINECART, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
             }
             if (entity instanceof VillagerEntity)
-                return claim.canInteract(player, EnumPermission.TRADING, pos) ? ActionResult.PASS : ActionResult.FAIL;
+                return claim.canInteract(player, EnumPermission.TRADING, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
             if (entity instanceof ItemFrameEntity)
-                return claim.canInteract(player, EnumPermission.ITEMFRAMEROTATE, pos) ? ActionResult.PASS : ActionResult.FAIL;
+                return claim.canInteract(player, EnumPermission.ITEMFRAMEROTATE, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
 
-            return claim.canInteract(player, EnumPermission.ANIMALINTERACT, pos) ? ActionResult.PASS : ActionResult.FAIL;
+            return claim.canInteract(player, EnumPermission.ANIMALINTERACT, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
         }
         return ActionResult.PASS;
     }
@@ -100,7 +100,7 @@ public class EntityInteractEvents {
                 Claim claim = storage.getClaimAt(pos);
                 if (claim == null)
                     return false;
-                boolean flag = !claim.canInteract(player, perm, pos);
+                boolean flag = !claim.canInteract(player, perm, pos, true);
                 if (flag) {
                     if(proj instanceof PersistentProjectileEntity) {
                         PersistentProjectileEntity pers = (PersistentProjectileEntity) proj;
@@ -138,10 +138,10 @@ public class EntityInteractEvents {
         Claim claim = storage.getClaimAt(pos);
         if (claim != null) {
             if (entity instanceof ArmorStandEntity || entity instanceof MinecartEntity || entity instanceof BoatEntity || entity instanceof ItemFrameEntity)
-                return claim.canInteract(player, EnumPermission.BREAKNONLIVING, pos) ? ActionResult.PASS : ActionResult.FAIL;
+                return claim.canInteract(player, EnumPermission.BREAKNONLIVING, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
             if (entity instanceof PlayerEntity)
-                return claim.canInteract(player, EnumPermission.HURTPLAYER, pos) ? ActionResult.PASS : ActionResult.FAIL;
-            return claim.canInteract(player, EnumPermission.HURTANIMAL, pos) ? ActionResult.PASS : ActionResult.FAIL;
+                return claim.canInteract(player, EnumPermission.HURTPLAYER, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
+            return claim.canInteract(player, EnumPermission.HURTANIMAL, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
         }
         return ActionResult.PASS;
     }
@@ -152,7 +152,7 @@ public class EntityInteractEvents {
             BlockPos pos = player.getBlockPos();
             Claim claim = storage.getClaimAt(pos);
             if (claim != null)
-                return !claim.canInteract((ServerPlayerEntity) player, EnumPermission.XP, pos);
+                return !claim.canInteract((ServerPlayerEntity) player, EnumPermission.XP, pos, false);
         }
         return false;
     }

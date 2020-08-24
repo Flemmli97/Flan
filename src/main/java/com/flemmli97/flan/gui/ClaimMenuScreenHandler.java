@@ -3,6 +3,8 @@ package com.flemmli97.flan.gui;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.config.ConfigHandler;
+import com.flemmli97.flan.player.EnumEditMode;
+import com.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -27,7 +29,8 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
         this.claim = claim;
     }
 
-    public static void openClaimMenu(PlayerEntity player, Claim claim) {
+    public static void openClaimMenu(ServerPlayerEntity player, Claim claim) {
+
         NamedScreenHandlerFactory fac = new NamedScreenHandlerFactory() {
             @Override
             public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
@@ -36,7 +39,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
 
             @Override
             public Text getDisplayName() {
-                return Text.of("Claim-Menu");
+                return Text.of(claim.parentClaim()!=null?"SubClaim-Menu":"Claim-Menu");
             }
         };
         player.openHandledScreen(fac);
@@ -96,7 +99,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
                 break;
             case 8:
                 ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
-                storage.deleteClaim(this.claim, player.getServer());
+                storage.deleteClaim(this.claim, true, PlayerClaimData.get(player).getEditMode(), player.getServerWorld());
                 player.closeHandledScreen();
                 player.sendMessage(Text.of(ConfigHandler.lang.deleteClaim), false);
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_PLACE, 1, 1f);

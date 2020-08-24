@@ -18,6 +18,7 @@ public class ClaimDisplay {
 
     private int displayTime;
     private final Claim toDisplay;
+    public final EnumDisplayType type;
     private int[][] poss;
 
     private int[][] middlePoss;
@@ -29,6 +30,7 @@ public class ClaimDisplay {
         this.toDisplay = claim;
         this.displayTime = ConfigHandler.config.claimDisplayTime;
         this.prevDims = claim.getDimensions();
+        this.type = type;
         switch (type){
             case SUB:
                 this.corner = ParticleIndicators.SUBCLAIMCORNER;
@@ -37,6 +39,10 @@ public class ClaimDisplay {
             case CONFLICT:
                 this.corner = ParticleIndicators.OVERLAPCLAIM;
                 this.middle = ParticleIndicators.OVERLAPCLAIM;
+                break;
+            case EDIT:
+                this.corner = ParticleIndicators.EDITCLAIMCORNER;
+                this.middle = ParticleIndicators.EDITCLAIMMIDDLE;
                 break;
             default:
                 this.corner = ParticleIndicators.CLAIMCORNER;
@@ -49,12 +55,12 @@ public class ClaimDisplay {
         this.displayTime--;
         int[] dims = this.toDisplay.getDimensions();
         if (this.poss == null || this.changed(dims)) {
-            this.middlePoss = this.calculateDisplayPos(player.world);
+            this.middlePoss = calculateDisplayPos(player.world, dims);
             this.poss = new int[][]{
-                    this.getPosFrom(player.world, this.prevDims[0], this.prevDims[2], this.prevDims[4]),
-                    this.getPosFrom(player.world, this.prevDims[1], this.prevDims[2], this.prevDims[4]),
-                    this.getPosFrom(player.world, this.prevDims[0], this.prevDims[3], this.prevDims[4]),
-                    this.getPosFrom(player.world, this.prevDims[1], this.prevDims[3], this.prevDims[4]),
+                    this.getPosFrom(player.world, dims[0], dims[2], dims[4]),
+                    this.getPosFrom(player.world, dims[1], dims[2], dims[4]),
+                    this.getPosFrom(player.world, dims[0], dims[3], dims[4]),
+                    this.getPosFrom(player.world, dims[1], dims[3], dims[4]),
             };
         }
         for (int[] pos : this.poss) {
@@ -75,30 +81,30 @@ public class ClaimDisplay {
         return false;
     }
 
-    private int[][] calculateDisplayPos(World world) {
+    public static int[][] calculateDisplayPos(World world, int[] from) {
         List<int[]> l = Lists.newArrayList();
         Set<Integer> xs = Sets.newHashSet();
-        this.addEvenly(this.prevDims[0], this.prevDims[1], 10, xs);
-        xs.add(this.prevDims[0]+1);
-        xs.add(this.prevDims[1]-1);
+        addEvenly(from[0], from[1], 10, xs);
+        xs.add(from[0]+1);
+        xs.add(from[1]-1);
         Set<Integer> zs = Sets.newHashSet();
-        this.addEvenly(this.prevDims[2], this.prevDims[3], 10, zs);
-        zs.add(this.prevDims[2]+1);
-        zs.add(this.prevDims[3]-1);
+        addEvenly(from[2], from[3], 10, zs);
+        zs.add(from[2]+1);
+        zs.add(from[3]-1);
         for (int x : xs) {
-            l.add(this.getPosFrom(world, x, this.prevDims[2], this.prevDims[4]));
-            l.add(this.getPosFrom(world, x, this.prevDims[3], this.prevDims[4]));
+            l.add(getPosFrom(world, x, from[2], from[4]));
+            l.add(getPosFrom(world, x, from[3], from[4]));
 
         }
         for (int z : zs) {
-            l.add(this.getPosFrom(world, this.prevDims[0], z, this.prevDims[4]));
-            l.add(this.getPosFrom(world, this.prevDims[1], z, this.prevDims[4]));
+            l.add(getPosFrom(world, from[0], z, from[4]));
+            l.add(getPosFrom(world, from[1], z, from[4]));
         }
 
         return l.toArray(new int[0][]);
     }
 
-    private void addEvenly(int min, int max, int step, Set<Integer> l) {
+    private static void addEvenly(int min, int max, int step, Set<Integer> l) {
         if (max - min < step * 1.5)
             return;
         if (max - min > 0 && max - min <= step * 0.5) {
@@ -108,10 +114,10 @@ public class ClaimDisplay {
         }
         l.add(max - step);
         l.add(min + step);
-        this.addEvenly(min + step, max - step, step, l);
+        addEvenly(min + step, max - step, step, l);
     }
 
-    private int[] getPosFrom(World world, int x, int z, int maxY) {
+    private static int[] getPosFrom(World world, int x, int z, int maxY) {
         return new int[]{x, Math.max(maxY, world.getChunk(x >> 4, z >> 4).sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x & 15, z & 15) + 1), z};
     }
 

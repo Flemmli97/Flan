@@ -6,23 +6,18 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.client.RunArgs;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -35,36 +30,43 @@ public class Claim {
     private UUID owner;
 
     private UUID claimID;
-    private final EnumSet<EnumPermission> globalPerm = EnumSet.noneOf(EnumPermission.class);
+    private final EnumMap<EnumPermission, Boolean> globalPerm = Maps.newEnumMap(EnumPermission.class);
     private final Map<String, EnumMap<EnumPermission, Boolean>> permissions = Maps.newHashMap();
 
     private final Map<UUID, String> playersGroups = Maps.newHashMap();
 
     private final List<Claim> subClaims = Lists.newArrayList();
 
+    private UUID parent;
+    private Claim parentClaim;
+
     /**
      * Flag for players tracking this claim
      */
     private boolean removed;
 
-    private Claim() {
+    private final ServerWorld world;
+
+    private Claim(ServerWorld world) {
+        this.world = world;
     }
 
-    public Claim(BlockPos pos1, BlockPos pos2, UUID creator) {
-        this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator);
+    public Claim(BlockPos pos1, BlockPos pos2, UUID creator, ServerWorld world) {
+        this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator, world);
     }
 
-    public Claim(int x1, int x2, int z1, int z2, int minY, UUID creator) {
+    public Claim(int x1, int x2, int z1, int z2, int minY, UUID creator, ServerWorld world) {
         this.minX = Math.min(x1, x2);
         this.minZ = Math.min(z1, z2);
         this.maxX = Math.max(x1, x2);
         this.maxZ = Math.max(z1, z2);
         this.minY = Math.max(0, minY);
         this.owner = creator;
+        this.world = world;
     }
 
-    public static Claim fromJson(JsonObject obj, UUID owner) {
-        Claim claim = new Claim();
+    public static Claim fromJson(JsonObject obj, UUID owner, ServerWorld world) {
+        Claim claim = new Claim(world);
         claim.readJson(obj, owner);
         return claim;
     }
@@ -80,6 +82,25 @@ public class Claim {
 
     public UUID getOwner() {
         return this.owner;
+    }
+
+    public Claim parentClaim(){
+        if(this.parent==null)
+            return null;
+        if(this.parentClaim==null){
+            ClaimStorage storage = ClaimStorage.get(this.world);
+            this.parentClaim = storage.claimUUIDMap.get(this.parent);
+        }
+        return this.parentClaim;
+    }
+
+    public void copySizes(Claim claim){
+        this.minX = claim.minX;
+        this.maxX = claim.maxX;
+        this.minZ = claim.minZ;
+        this.maxZ = claim.maxZ;
+        this.minY = claim.minY;
+        this.removed = false;
     }
 
     public void setAdminClaim(){
@@ -118,50 +139,95 @@ public class Claim {
         return this.removed;
     }
 
-    public boolean canInteract(ServerPlayerEntity player, EnumPermission perm, BlockPos pos) {
+    public boolean canInteract(ServerPlayerEntity player, EnumPermission perm, BlockPos pos){
+        return this.canInteract(player, perm, pos, false);
+    }
+
+    public boolean canInteract(ServerPlayerEntity player, EnumPermission perm, BlockPos pos, boolean message) {
         if (perm == EnumPermission.EXPLOSIONS || perm == EnumPermission.WITHER) {
             for (Claim claim : this.subClaims) {
                 if (claim.insideClaim(pos)) {
-                    if (claim.canInteract(player, perm, pos))
-                        return true;
-                    break;
+                    return claim.canInteract(player, perm, pos, message);
                 }
             }
-            return this.permEnabled(perm);
+            if(this.hasPerm(perm))
+                return true;
+            if(message)
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), false);
+            return false;
         }
         if (player.getUuid().equals(this.owner))
             return true;
         PlayerClaimData data = PlayerClaimData.get(player);
         if (player.hasPermissionLevel(2) && data.isAdminIgnoreClaim())
             return true;
-        if(perm!=EnumPermission.EDITCLAIM && perm != EnumPermission.EDITPERMS)
-            for (Claim claim : this.subClaims) {
-                if (claim.insideClaim(pos)) {
-                    if (claim.canInteract(player, perm, pos))
-                        return true;
-                    break;
-                }
+        for (Claim claim : this.subClaims) {
+            if (claim.insideClaim(pos)) {
+                if(perm!=EnumPermission.EDITCLAIM && perm != EnumPermission.EDITPERMS)
+                    return claim.canInteract(player, perm, pos, message);
+                else if(claim.canInteract(player, perm, pos, message))
+                    return true;
             }
+        }
         if (this.playersGroups.containsKey(player.getUuid())) {
             EnumMap<EnumPermission, Boolean> map = this.permissions.get(this.playersGroups.get(player.getUuid()));
-            if (map != null && map.containsKey(perm))
-                return map.get(perm);
+            if (map != null && map.containsKey(perm)) {
+                if(map.get(perm))
+                    return true;
+                if(message)
+                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), false);
+                return false;
+            }
         }
-        return this.permEnabled(perm);
+        if(this.hasPerm(perm))
+            return true;
+        if(message)
+            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), false);
+        return false;
     }
 
-    public boolean permEnabled(EnumPermission perm) {
-        return this.globalPerm.contains(perm);
+    /**
+     * @return -1 for default, 0 for false, 1 for true
+     */
+    public int permEnabled(EnumPermission perm) {
+        return !this.globalPerm.containsKey(perm)?-1:this.globalPerm.get(perm)?1:0;
+    }
+
+    private boolean hasPerm(EnumPermission perm){
+        if(this.parentClaim()==null)
+            return this.permEnabled(perm) == 1;
+        if(this.permEnabled(perm)==-1)
+            return this.parentClaim().permEnabled(perm)==1;
+        return this.permEnabled(perm) == 1;
+    }
+
+    private UUID generateUUID() {
+        UUID uuid = UUID.randomUUID();
+        for (Claim claim : this.subClaims)
+            if(claim.claimID.equals(uuid)) {
+                return generateUUID();
+            }
+        return uuid;
     }
 
     public boolean tryCreateSubClaim(BlockPos pos1, BlockPos pos2) {
-        Claim sub = new Claim(pos1, pos2, this.owner);
+        Claim sub = new Claim(pos1, new BlockPos(pos2.getX(), 0, pos2.getZ()), this.owner, this.world);
+        sub.setClaimID(this.generateUUID());
         for(Claim other : this.subClaims)
             if (sub.intersects(other)) {
                 return false;
             }
+        sub.parent = this.claimID;
+        sub.parentClaim = this;
         this.subClaims.add(sub);
         return true;
+    }
+
+    public void addSubClaimGriefprevention(Claim claim){
+        claim.setClaimID(this.generateUUID());
+        claim.parent = this.claimID;
+        claim.parentClaim = this;
+        this.subClaims.add(claim);
     }
 
     public Claim getSubClaim(BlockPos pos) {
@@ -171,8 +237,23 @@ public class Claim {
         return null;
     }
 
+    public boolean deleteSubClaim(Claim claim){
+        return this.subClaims.remove(claim);
+    }
+
     public List<Claim> getAllSubclaims(){
         return ImmutableList.copyOf(this.subClaims);
+    }
+
+    public boolean resizeSubclaim(Claim claim, BlockPos from, BlockPos to){
+        int[] dims = claim.getDimensions();
+        BlockPos opposite = new BlockPos(dims[0]==from.getX()?dims[1]:dims[0], dims[4], dims[2]==from.getZ()?dims[3]:dims[2]);
+        Claim newClaim = new Claim(opposite, to, claim.claimID, this.world);
+        for(Claim other : this.subClaims)
+            if (!claim.equals(other) && newClaim.intersects(other))
+                return false;
+        claim.copySizes(newClaim);
+        return true;
     }
 
     public boolean setPlayerGroup(UUID player, String group, boolean force) {
@@ -208,11 +289,13 @@ public class Claim {
         return names;
     }
 
-    public void editGlobalPerms(EnumPermission toggle) {
-        if (this.globalPerm.contains(toggle))
+    public void editGlobalPerms(EnumPermission toggle, int mode) {
+        if (mode > 1)
+            mode = -1;
+        if (mode == -1)
             this.globalPerm.remove(toggle);
         else
-            this.globalPerm.add(toggle);
+            this.globalPerm.put(toggle, mode == 1);
         this.setDirty();
     }
 
@@ -267,10 +350,6 @@ public class Claim {
         return l;
     }
 
-    public boolean addSubClaims(Claim claim) {
-        return false;
-    }
-
     public void setDirty() {
         this.dirty = true;
     }
@@ -291,8 +370,19 @@ public class Claim {
         this.globalPerm.clear();
         this.permissions.clear();
         this.subClaims.clear();
+        if(obj.has("Parent"))
+            this.parent = UUID.fromString(obj.get("Parent").getAsString());
         if (obj.has("GlobalPerms")) {
-            obj.getAsJsonArray("GlobalPerms").forEach(perm -> this.globalPerm.add(EnumPermission.valueOf(perm.getAsString())));
+            if(this.parent==null) {
+                obj.getAsJsonArray("GlobalPerms").forEach(perm -> {
+                    this.globalPerm.put(EnumPermission.valueOf(perm.getAsString()), true);
+                });
+            }
+            else{
+                obj.getAsJsonObject("GlobalPerms").entrySet().forEach(entry->{
+                    this.globalPerm.put(EnumPermission.valueOf(entry.getKey()), entry.getValue().getAsBoolean());
+                });
+            }
         }
         if (obj.has("PermGroup")) {
             JsonObject perms = obj.getAsJsonObject("PermGroup");
@@ -308,7 +398,7 @@ public class Claim {
             pl.entrySet().forEach(key -> this.playersGroups.put(UUID.fromString(key.getKey()), key.getValue().getAsString()));
         }
         if (obj.has("SubClaims")) {
-            obj.getAsJsonArray("SubClaims").forEach(sub -> this.subClaims.add(Claim.fromJson(sub.getAsJsonObject(), this.owner)));
+            obj.getAsJsonArray("SubClaims").forEach(sub -> this.subClaims.add(Claim.fromJson(sub.getAsJsonObject(), this.owner, this.world)));
         }
     }
 
@@ -320,11 +410,24 @@ public class Claim {
         pos.add(this.maxZ);
         pos.add(this.minY);
         obj.add("PosxXzZY", pos);
-
         obj.addProperty("ID", this.claimID.toString());
+        if(this.parent!=null)
+            obj.addProperty("Parent", this.parent.toString());
         if (!this.globalPerm.isEmpty()) {
-            JsonArray gPerm = new JsonArray();
-            this.globalPerm.forEach(p -> gPerm.add(p.toString()));
+            JsonElement gPerm;
+            if(this.parent==null) {
+                gPerm = new JsonArray();
+                this.globalPerm.forEach((perm, bool) -> {
+                    if (bool)
+                        ((JsonArray) gPerm).add(perm.toString());
+                });
+            }
+            else{
+                gPerm = new JsonObject();
+                this.globalPerm.forEach((perm, bool) -> {
+                    ((JsonObject) gPerm).addProperty(perm.toString(), bool);
+                });
+            }
             obj.add("GlobalPerms", gPerm);
         }
         if (!this.permissions.isEmpty()) {
@@ -380,13 +483,13 @@ public class Claim {
     public List<Text> infoString(ServerPlayerEntity player){
         boolean perms = this.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos());
         List<Text> l = Lists.newArrayList();
-        l.add(PermissionChecker.simpleColoredText("=============================================", Formatting.GREEN));
+        l.add(PermHelper.simpleColoredText("=============================================", Formatting.GREEN));
         GameProfile prof = this.owner!=null?player.getServer().getUserCache().getByUuid(this.owner):null;
         String ownerName = this.owner==null?"Admin":prof!=null?prof.getName():"<UNKNOWN>";
-        l.add(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfo, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), Formatting.GOLD));
+        l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfo, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), Formatting.GOLD));
         if(perms) {
-            l.add(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.claimInfoPerms, this.globalPerm), Formatting.RED));
-            l.add(PermissionChecker.simpleColoredText(ConfigHandler.lang.claimGroupInfoHeader, Formatting.RED));
+            l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimInfoPerms, this.globalPerm), Formatting.RED));
+            l.add(PermHelper.simpleColoredText(ConfigHandler.lang.claimGroupInfoHeader, Formatting.RED));
             Map<String, List<String>> nameToGroup = Maps.newHashMap();
             for (Map.Entry<UUID, String> e : this.playersGroups.entrySet()) {
                 GameProfile pgroup = player.getServer().getUserCache().getByUuid(e.getKey());
@@ -398,12 +501,12 @@ public class Claim {
                 }
             }
             for (Map.Entry<String, EnumMap<EnumPermission, Boolean>> e : this.permissions.entrySet()) {
-                l.add(PermissionChecker.simpleColoredText(String.format("  %s:", e.getKey()), Formatting.DARK_RED));
-                l.add(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPerms, e.getValue()), Formatting.RED));
-                l.add(PermissionChecker.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPlayers, nameToGroup.getOrDefault(e.getKey(), Lists.newArrayList())), Formatting.RED));
+                l.add(PermHelper.simpleColoredText(String.format("  %s:", e.getKey()), Formatting.DARK_RED));
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPerms, e.getValue()), Formatting.RED));
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPlayers, nameToGroup.getOrDefault(e.getKey(), Lists.newArrayList())), Formatting.RED));
             }
         }
-        l.add(PermissionChecker.simpleColoredText("=============================================", Formatting.GREEN));
+        l.add(PermHelper.simpleColoredText("=============================================", Formatting.GREEN));
         return l;
     }
 }
