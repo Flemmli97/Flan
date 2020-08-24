@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WitherEntity.class)
-public class WitherMixin {
+public abstract class WitherMixin {
 
     @Shadow
     private int field_7082;

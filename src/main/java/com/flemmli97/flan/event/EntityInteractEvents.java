@@ -46,7 +46,7 @@ public class EntityInteractEvents {
     }
 
     public static ActionResult useAtEntity(PlayerEntity player, World world, Hand hand, Entity entity, /* Nullable */ EntityHitResult hitResult) {
-        if (player.world.isClient)
+        if (player.world.isClient || player.isSpectator())
             return ActionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
         BlockPos pos = entity.getBlockPos();
@@ -61,7 +61,7 @@ public class EntityInteractEvents {
     }
 
     public static ActionResult useEntity(PlayerEntity p, World world, Hand hand, Entity entity) {
-        if(p.world.isClient)
+        if(p.world.isClient || p.isSpectator())
             return ActionResult.PASS;
         ServerPlayerEntity player = (ServerPlayerEntity) p;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
@@ -150,7 +150,7 @@ public class EntityInteractEvents {
     }
 
     public static ActionResult attackSimple(PlayerEntity p, Entity entity, boolean message) {
-        if (p.world.isClient)
+        if (p.world.isClient || p.isSpectator())
             return ActionResult.PASS;
         if (entity instanceof Monster)
             return ActionResult.PASS;

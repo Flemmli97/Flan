@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(Explosion.class)
-public class ExplosionMixin {
+public abstract class ExplosionMixin {
 
     @Shadow
     private List<BlockPos> affectedBlocks;

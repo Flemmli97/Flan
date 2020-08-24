@@ -16,7 +16,9 @@
     "ExplosionMixin",
     "EnderPearlEntityMixin",
     "IPersistentProjectileVars",
-    "LivingEntityMixin"
+    "LivingEntityMixin",
+    "ItemStackMixin",
+    "ILecternBlockValues"
   ],
   "server": [
   ],

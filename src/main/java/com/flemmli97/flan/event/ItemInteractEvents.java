@@ -8,14 +8,24 @@ import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.EnumEditMode;
 import com.flemmli97.flan.player.PlayerClaimData;
+import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.LecternBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.BucketItem;
+import net.minecraft.item.EndCrystalItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
+import net.minecraft.item.ToolItem;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -29,7 +39,7 @@ import java.util.Set;
 public class ItemInteractEvents {
 
     public static TypedActionResult<ItemStack> useItem(PlayerEntity p, World world, Hand hand) {
-        if (world.isClient)
+        if (world.isClient || p.isSpectator())
             return TypedActionResult.pass(p.getStackInHand(hand));
         ServerPlayerEntity player = (ServerPlayerEntity) p;
         ItemStack stack = player.getStackInHand(hand);
@@ -59,6 +69,31 @@ public class ItemInteractEvents {
         if (stack.getItem() instanceof BucketItem)
             return claim.canInteract(player, EnumPermission.BUCKET, pos, true) ? TypedActionResult.pass(stack) : TypedActionResult.fail(stack);
         return TypedActionResult.pass(stack);
+    }
+
+    private static Set<Item> blackListedItems = Sets.newHashSet(Items.COMPASS, Items.FILLED_MAP, Items.FIREWORK_ROCKET);
+    public static ActionResult onItemUseBlock(ItemUsageContext context){
+        if(context.getWorld().isClient || context.getStack().isEmpty())
+            return ActionResult.PASS;
+        ClaimStorage storage = ClaimStorage.get((ServerWorld) context.getWorld());
+        BlockPos placePos = context.getBlockPos().offset(context.getSide());
+        Claim claim = storage.getClaimAt(placePos);
+        if(claim==null)
+            return ActionResult.PASS;
+        if(blackListedItems.contains(context.getStack().getItem()))
+            return ActionResult.PASS;
+        ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
+        if(context.getStack().getItem() == Items.END_CRYSTAL) {
+            if(claim.canInteract(player, EnumPermission.ENDCRYSTALPLACE, placePos, true))
+                return ActionResult.PASS;
+            return ActionResult.FAIL;
+        }
+        if(claim.canInteract(player, EnumPermission.PLACE, placePos, true))
+            return ActionResult.PASS;
+        BlockState other = context.getWorld().getBlockState(placePos.up());
+        player.world.updateListeners(placePos.up(), other, other, 2);
+        PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+        return ActionResult.FAIL;
     }
 
     private static boolean cantClaimInWorld(ServerWorld world){

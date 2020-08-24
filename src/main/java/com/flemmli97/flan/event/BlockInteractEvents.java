@@ -6,11 +6,16 @@ import com.flemmli97.flan.claim.EnumPermission;
 import com.flemmli97.flan.claim.BlockToPermissionMap;
 import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
+import com.flemmli97.flan.gui.LockedLecternScreenHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.DoorBlock;
+import net.minecraft.block.LecternBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.LecternBlockEntity;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
+import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,7 +36,7 @@ import net.minecraft.world.World;
 public class BlockInteractEvents {
 
     public static ActionResult breakBlocks(PlayerEntity p, World world, Hand hand, BlockPos pos, Direction dir) {
-        if (world.isClient)
+        if (world.isClient || p.isSpectator())
             return ActionResult.PASS;
         ServerPlayerEntity player = (ServerPlayerEntity) p;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
@@ -74,24 +79,32 @@ public class BlockInteractEvents {
                         PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                         return ActionResult.FAIL;
                     }
+                    if(blockEntity instanceof LecternBlockEntity) {
+                        if (claim.canInteract(player, EnumPermission.LECTERNTAKE, hitResult.getBlockPos(), false))
+                            return ActionResult.PASS;
+                        LockedLecternScreenHandler.create(player, (LecternBlockEntity) blockEntity);
+                        return ActionResult.FAIL;
+                    }
                 }
                 EnumPermission perm = BlockToPermissionMap.getFromBlock(state.getBlock());
-                if (perm != null) {
+                //Pressureplate handled elsewhere
+                if (perm!=null && perm != EnumPermission.PRESSUREPLATE) {
                     if(claim.canInteract(player, perm, hitResult.getBlockPos(), true))
                         return ActionResult.PASS;
+                    if(state.getBlock() instanceof DoorBlock){
+                        DoubleBlockHalf half = state.get(DoorBlock.HALF);
+                        if(half==DoubleBlockHalf.LOWER) {
+                            BlockState other = world.getBlockState(hitResult.getBlockPos().up());
+                            player.world.updateListeners(hitResult.getBlockPos().up(), other, other, 2);
+                        }
+                        else {
+                            BlockState other = world.getBlockState(hitResult.getBlockPos().down());
+                            player.world.updateListeners(hitResult.getBlockPos().down(), other, other, 2);
+                        }
+                    }
                     PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                     return ActionResult.FAIL;
                 }
-            }
-            BlockPos placePos = hitResult.getBlockPos().offset(hitResult.getSide());
-            claim = storage.getClaimAt(placePos);
-            if(claim==null)
-                return ActionResult.PASS;
-            if (stack.getItem() instanceof BlockItem || stack.getItem() instanceof ToolItem || stack.getItem() == Items.ARMOR_STAND) {
-                if(claim.canInteract(player, EnumPermission.PLACE, placePos, true))
-                    return ActionResult.PASS;
-                PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
-                return ActionResult.FAIL;
             }
         }
         return ActionResult.PASS;

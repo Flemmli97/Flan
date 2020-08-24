@@ -16,6 +16,7 @@ import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FarmlandBlock;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.JukeboxBlock;
+import net.minecraft.block.LecternBlock;
 import net.minecraft.block.LeverBlock;
 import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.NoteBlock;

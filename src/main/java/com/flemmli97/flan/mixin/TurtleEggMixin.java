@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TurtleEggBlock.class)
-public class TurtleEggMixin {
+public abstract class TurtleEggMixin {
 
     @Inject(method = "onSteppedOn", at = @At(value = "HEAD"), cancellable = true)
     public void collision(World world, BlockPos pos, Entity entity, CallbackInfo info) {
