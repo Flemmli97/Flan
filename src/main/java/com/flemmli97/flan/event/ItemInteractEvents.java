@@ -24,6 +24,8 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.Set;
+
 public class ItemInteractEvents {
 
     public static TypedActionResult<ItemStack> useItem(PlayerEntity p, World world, Hand hand) {
@@ -98,18 +100,22 @@ public class ItemInteractEvents {
                         }
                     } else {
                         if(data.currentEdit()!=null){
-                            boolean fl = claim.resizeSubclaim(data.currentEdit(), data.editingCorner(), target);
-                            if(!fl)
+                            Set<Claim> fl = claim.resizeSubclaim(data.currentEdit(), data.editingCorner(), target);
+                            if(!fl.isEmpty()) {
+                                fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.MAIN, player.getBlockPos().getY()));
                                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
+                            }
                             data.setEditClaim(null, 0);
                             data.setEditingCorner(null);
                         }
                         else if (data.editingCorner() != null) {
-                            boolean fl = claim.tryCreateSubClaim(data.editingCorner(), target);
-                            if(!fl)
+                            Set<Claim> fl = claim.tryCreateSubClaim(data.editingCorner(), target);
+                            data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+                            if(!fl.isEmpty()) {
+                                fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.MAIN, player.getBlockPos().getY()));
                                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
+                            }
                             else{
-                                data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.subClaimCreateSuccess, Formatting.GOLD), false);
                             }
                             data.setEditingCorner(null);

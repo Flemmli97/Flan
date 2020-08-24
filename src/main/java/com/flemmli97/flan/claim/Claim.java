@@ -5,6 +5,7 @@ import com.flemmli97.flan.player.PlayerClaimData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class Claim {
@@ -210,17 +212,20 @@ public class Claim {
         return uuid;
     }
 
-    public boolean tryCreateSubClaim(BlockPos pos1, BlockPos pos2) {
+    public Set<Claim> tryCreateSubClaim(BlockPos pos1, BlockPos pos2) {
         Claim sub = new Claim(pos1, new BlockPos(pos2.getX(), 0, pos2.getZ()), this.owner, this.world);
         sub.setClaimID(this.generateUUID());
+        Set<Claim> conflicts = Sets.newHashSet();
         for(Claim other : this.subClaims)
             if (sub.intersects(other)) {
-                return false;
+                conflicts.add(sub);
             }
-        sub.parent = this.claimID;
-        sub.parentClaim = this;
-        this.subClaims.add(sub);
-        return true;
+        if(conflicts.isEmpty()) {
+            sub.parent = this.claimID;
+            sub.parentClaim = this;
+            this.subClaims.add(sub);
+        }
+        return conflicts;
     }
 
     public void addSubClaimGriefprevention(Claim claim){
@@ -245,15 +250,17 @@ public class Claim {
         return ImmutableList.copyOf(this.subClaims);
     }
 
-    public boolean resizeSubclaim(Claim claim, BlockPos from, BlockPos to){
+    public Set<Claim> resizeSubclaim(Claim claim, BlockPos from, BlockPos to){
         int[] dims = claim.getDimensions();
         BlockPos opposite = new BlockPos(dims[0]==from.getX()?dims[1]:dims[0], dims[4], dims[2]==from.getZ()?dims[3]:dims[2]);
         Claim newClaim = new Claim(opposite, to, claim.claimID, this.world);
+        Set<Claim> conflicts = Sets.newHashSet();
         for(Claim other : this.subClaims)
             if (!claim.equals(other) && newClaim.intersects(other))
-                return false;
-        claim.copySizes(newClaim);
-        return true;
+                conflicts.add(other);
+        if(conflicts.isEmpty())
+            claim.copySizes(newClaim);
+        return conflicts;
     }
 
     public boolean setPlayerGroup(UUID player, String group, boolean force) {

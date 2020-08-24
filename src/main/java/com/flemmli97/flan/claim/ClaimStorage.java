@@ -76,6 +76,8 @@ public class ClaimStorage {
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.claimCreateSuccess, Formatting.GOLD), false);
             return true;
         }
+        PlayerClaimData data = PlayerClaimData.get(player);
+        conflicts.forEach(conf->data.addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.getBlockPos().getY()));
         player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
         return false;
     }
@@ -89,7 +91,7 @@ public class ClaimStorage {
                 if (claims != null)
                     for (Claim other : claims) {
                         if (claim.intersects(other) && !other.equals(except)) {
-                            conflicted.add(claim);
+                            conflicted.add(other);
                         }
                     }
             }
