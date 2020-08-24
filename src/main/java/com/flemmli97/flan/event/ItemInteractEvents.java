@@ -59,12 +59,25 @@ public class ItemInteractEvents {
         return TypedActionResult.pass(stack);
     }
 
-    public static void claimLandHandling(ServerPlayerEntity player, BlockPos target){
+    private static boolean cantClaimInWorld(ServerWorld world){
         for(String s : ConfigHandler.config.blacklistedWorlds){
-            if(s.equals(player.getServerWorld().getRegistryKey().getValue().toString())) {
+            if(s.equals(world.getRegistryKey().getValue().toString())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void claimLandHandling(ServerPlayerEntity player, BlockPos target){
+        if(ConfigHandler.config.worldWhitelist){
+            if(!cantClaimInWorld(player.getServerWorld())) {
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.landClaimDisabledWorld, Formatting.DARK_RED), false);
                 return;
             }
+        }
+        else if(cantClaimInWorld(player.getServerWorld())) {
+            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.landClaimDisabledWorld, Formatting.DARK_RED), false);
+            return;
         }
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
         Claim claim = storage.getClaimAt(target);

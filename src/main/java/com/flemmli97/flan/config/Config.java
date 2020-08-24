@@ -5,16 +5,19 @@ import com.google.gson.JsonObject;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.registry.Registry;
+import org.lwjgl.system.CallbackI;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class Config {
 
-    private final File configDir;
+    private File config;
 
     public int startingBlocks = 500;
     public int maxClaimBlocks = 5000;
@@ -31,29 +34,50 @@ public class Config {
     public int claimDisplayTime = 1000;
 
     public Config(MinecraftServer server) {
-        this.configDir = server.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();
+        File configDir = server.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();
         try {
-            if(!this.configDir.exists())
-                this.configDir.mkdirs();
-            File file = new File(this.configDir, "flan_config.json");
-            if(!file.exists())
-                file.createNewFile();
-            this.save(file);
+            if(!configDir.exists())
+                configDir.mkdirs();
+            this.config = new File(configDir, "flan_config.json");
+            if(!this.config.exists()) {
+                this.config.createNewFile();
+                this.save();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
     public void load() {
-
+        try {
+            FileReader reader = new FileReader(this.config);
+            JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
+            reader.close();
+            this.startingBlocks = obj.get("startingBlocks").getAsInt();
+            this.maxClaimBlocks = obj.get("maxClaimBlocks").getAsInt();
+            this.ticksForNextBlock = obj.get("ticksForNextBlock").getAsInt();
+            this.minClaimsize = obj.get("minClaimsize").getAsInt();
+            this.defaultClaimDepth = obj.get("defaultClaimDepth").getAsInt();
+            JsonArray arr = obj.getAsJsonArray("blacklistedWorlds");
+            this.blacklistedWorlds = new String[arr.size()];
+            for(int i = 0; i < arr.size(); i ++)
+                this.blacklistedWorlds[i] = arr.get(i).getAsString();
+            this.worldWhitelist = obj.get("worldWhitelist").getAsBoolean();
+            this.claimingItem = Registry.ITEM.get(new Identifier((obj.get("claimingItem").getAsString())));
+            this.inspectionItem = Registry.ITEM.get(new Identifier((obj.get("inspectionItem").getAsString())));
+            this.claimDisplayTime = obj.get("claimDisplayTime").getAsInt();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void save(File file) {
+    private void save() {
         JsonObject obj = new JsonObject();
         obj.addProperty("startingBlocks", this.startingBlocks);
         obj.addProperty("maxClaimBlocks", this.maxClaimBlocks);
         obj.addProperty("ticksForNextBlock", this.ticksForNextBlock);
+        obj.addProperty("minClaimsize", this.minClaimsize);
+        obj.addProperty("defaultClaimDepth", this.defaultClaimDepth);
         JsonArray arr = new JsonArray();
         obj.add("blacklistedWorlds", arr);
         obj.addProperty("worldWhitelist", this.worldWhitelist);
@@ -61,7 +85,7 @@ public class Config {
         obj.addProperty("inspectionItem", Registry.ITEM.getId(this.inspectionItem).toString());
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
         try {
-            FileWriter writer = new FileWriter(file);
+            FileWriter writer = new FileWriter(this.config);
             ConfigHandler.GSON.toJson(obj, writer);
             writer.close();
         } catch (IOException e) {
