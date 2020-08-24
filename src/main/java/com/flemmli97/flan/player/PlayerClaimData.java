@@ -96,19 +96,19 @@ public class PlayerClaimData {
         return this.editingClaim;
     }
 
-    public void setEditClaim(Claim claim) {
+    public void setEditClaim(Claim claim, int height) {
         if(claim!=null)
-            this.displayEditing = new ClaimDisplay(claim, EnumDisplayType.EDIT);
+            this.displayEditing = new ClaimDisplay(claim, EnumDisplayType.EDIT, height);
         else
             this.displayEditing = null;
         this.editingClaim = claim;
     }
 
-    public void addDisplayClaim(Claim claim, EnumDisplayType type) {
-        this.displayToAdd.add(new ClaimDisplay(claim, type));
+    public void addDisplayClaim(Claim claim, EnumDisplayType type, int height) {
+        this.displayToAdd.add(new ClaimDisplay(claim, type, height));
         if(type==EnumDisplayType.MAIN)
             for(Claim sub : claim.getAllSubclaims())
-                this.displayToAdd.add(new ClaimDisplay(sub, EnumDisplayType.SUB));
+                this.displayToAdd.add(new ClaimDisplay(sub, EnumDisplayType.SUB, height));
     }
 
     public EnumEditMode getEditMode() {

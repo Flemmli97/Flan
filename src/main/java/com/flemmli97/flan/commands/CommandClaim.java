@@ -103,7 +103,7 @@ public class CommandClaim {
             if (claim == null)
                 return 0;
             ClaimMenuScreenHandler.openClaimMenu(player, claim);
-            data.addDisplayClaim(claim, EnumDisplayType.MAIN);
+            data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
         }
         else{
             Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(player.getBlockPos());

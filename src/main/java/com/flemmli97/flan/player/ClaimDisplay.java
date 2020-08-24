@@ -5,18 +5,20 @@ import com.flemmli97.flan.claim.ParticleIndicators;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import net.minecraft.block.BlockState;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.World;
+import net.minecraft.server.world.ServerWorld;
 
 import java.util.List;
 import java.util.Set;
 
 public class ClaimDisplay {
 
-    private int displayTime;
+    private int displayTime, height;
     private final Claim toDisplay;
     public final EnumDisplayType type;
     private int[][] poss;
@@ -26,11 +28,12 @@ public class ClaimDisplay {
     private int[] prevDims;
 
     private final DustParticleEffect corner, middle;
-    public ClaimDisplay(Claim claim, EnumDisplayType type) {
+    public ClaimDisplay(Claim claim, EnumDisplayType type, int y) {
         this.toDisplay = claim;
         this.displayTime = ConfigHandler.config.claimDisplayTime;
         this.prevDims = claim.getDimensions();
         this.type = type;
+        this.height = y;
         switch (type){
             case SUB:
                 this.corner = ParticleIndicators.SUBCLAIMCORNER;
@@ -55,12 +58,12 @@ public class ClaimDisplay {
         this.displayTime--;
         int[] dims = this.toDisplay.getDimensions();
         if (this.poss == null || this.changed(dims)) {
-            this.middlePoss = calculateDisplayPos(player.world, dims);
+            this.middlePoss = calculateDisplayPos(player.getServerWorld(), dims, this.height);
             this.poss = new int[][]{
-                    this.getPosFrom(player.world, dims[0], dims[2], dims[4]),
-                    this.getPosFrom(player.world, dims[1], dims[2], dims[4]),
-                    this.getPosFrom(player.world, dims[0], dims[3], dims[4]),
-                    this.getPosFrom(player.world, dims[1], dims[3], dims[4]),
+                    this.getPosFrom(player.getServerWorld(), dims[0], dims[2], this.height),
+                    this.getPosFrom(player.getServerWorld(), dims[1], dims[2], this.height),
+                    this.getPosFrom(player.getServerWorld(), dims[0], dims[3], this.height),
+                    this.getPosFrom(player.getServerWorld(), dims[1], dims[3], this.height),
             };
         }
         for (int[] pos : this.poss) {
@@ -81,7 +84,7 @@ public class ClaimDisplay {
         return false;
     }
 
-    public static int[][] calculateDisplayPos(World world, int[] from) {
+    public static int[][] calculateDisplayPos(ServerWorld world, int[] from, int height) {
         List<int[]> l = Lists.newArrayList();
         Set<Integer> xs = Sets.newHashSet();
         addEvenly(from[0], from[1], 10, xs);
@@ -92,13 +95,13 @@ public class ClaimDisplay {
         zs.add(from[2]+1);
         zs.add(from[3]-1);
         for (int x : xs) {
-            l.add(getPosFrom(world, x, from[2], from[4]));
-            l.add(getPosFrom(world, x, from[3], from[4]));
+            l.add(getPosFrom(world, x, from[2], height));
+            l.add(getPosFrom(world, x, from[3], height));
 
         }
         for (int z : zs) {
-            l.add(getPosFrom(world, from[0], z, from[4]));
-            l.add(getPosFrom(world, from[1], z, from[4]));
+            l.add(getPosFrom(world, from[0], z, height));
+            l.add(getPosFrom(world, from[1], z, height));
         }
 
         return l.toArray(new int[0][]);
@@ -117,8 +120,28 @@ public class ClaimDisplay {
         addEvenly(min + step, max - step, step, l);
     }
 
-    private static int[] getPosFrom(World world, int x, int z, int maxY) {
-        return new int[]{x, Math.max(maxY, world.getChunk(x >> 4, z >> 4).sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x & 15, z & 15) + 1), z};
+    private static int[] getPosFrom(ServerWorld world, int x, int z, int maxY) {
+        int y = nextAirBlockFrom(world, x, maxY, z);
+        return new int[]{x, y, z};
+    }
+
+    private static int nextAirBlockFrom(ServerWorld world, int x, int y, int z){
+        BlockPos pos = new BlockPos(x,y,z);
+        BlockState state = world.getBlockState(pos);
+        if(state.getMaterial().isReplaceable()){
+            pos = pos.down();
+            while(world.getBlockState(pos).getMaterial().isReplaceable()){
+                pos = pos.down();
+            }
+            pos = pos.up();
+        }
+        else{
+            pos = pos.up();
+            while(!world.getBlockState(pos).getMaterial().isReplaceable()){
+                pos = pos.up();
+            }
+        }
+        return pos.getY();
     }
 
     @Override

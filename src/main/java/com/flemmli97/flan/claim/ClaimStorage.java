@@ -72,7 +72,7 @@ public class ClaimStorage {
             }
             claim.setClaimID(this.generateUUID());
             this.addClaim(claim);
-            data.addDisplayClaim(claim, EnumDisplayType.MAIN);
+            data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.claimCreateSuccess, Formatting.GOLD), false);
             return true;
         }
@@ -125,7 +125,7 @@ public class ClaimStorage {
         Claim newClaim = new Claim(opposite, to, player.getUuid(), player.getServerWorld());
         Set<Claim> conflicts = conflicts(newClaim, claim);
         if(!conflicts.isEmpty()) {
-            conflicts.forEach(conf->PlayerClaimData.get(player).addDisplayClaim(conf, EnumDisplayType.CONFLICT));
+            conflicts.forEach(conf->PlayerClaimData.get(player).addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.getBlockPos().getY()));
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
             return false;
         }
@@ -135,7 +135,7 @@ public class ClaimStorage {
             this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.getServerWorld());
             claim.copySizes(newClaim);
             this.addClaim(claim);
-            data.addDisplayClaim(claim, EnumDisplayType.MAIN);
+            data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.resizeSuccess, Formatting.GOLD), false);
             return true;
         }
@@ -231,12 +231,13 @@ public class ClaimStorage {
                             break;
                         }
                 }
-                FileWriter writer = new FileWriter(file);
-                JsonArray arr = new JsonArray();
-                if(dirty)
+                if(dirty){
+                    FileWriter writer = new FileWriter(file);
+                    JsonArray arr = new JsonArray();
                     e.getValue().forEach(claim -> arr.add(claim.toJson(new JsonObject())));
-                ConfigHandler.GSON.toJson(arr, writer);
-                writer.close();
+                    ConfigHandler.GSON.toJson(arr, writer);
+                    writer.close();
+                }
             }
         } catch (IOException e) {
 
