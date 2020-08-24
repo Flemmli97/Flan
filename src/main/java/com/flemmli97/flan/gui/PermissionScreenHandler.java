@@ -94,16 +94,16 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
                 ItemStack close = new ItemStack(Items.TNT);
                 close.setCustomName(new LiteralText("Back").setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)));
                 this.slots.get(i).setStack(close);
-            } else if (this.page == 1 && i == 47) {
+            } else if (i == 47) {
                 ItemStack stack = ItemStack.EMPTY;
                 if(this.page == 1){
                     stack =new ItemStack(Items.ARROW);
                     stack.setCustomName(new LiteralText("Prev").setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
                 }
                 this.slots.get(i).setStack(stack);
-            } else if (this.page == 0 && i == 51) {
+            } else if (i == 51) {
                 ItemStack stack = ItemStack.EMPTY;
-                if(this.page == 1) {
+                if(this.page == 0) {
                     stack = new ItemStack(Items.ARROW);
                     stack.setCustomName(new LiteralText("Next").setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
                 }
