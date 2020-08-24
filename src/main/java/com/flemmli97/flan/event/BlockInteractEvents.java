@@ -82,7 +82,8 @@ public class BlockInteractEvents {
                     if(blockEntity instanceof LecternBlockEntity) {
                         if (claim.canInteract(player, EnumPermission.LECTERNTAKE, hitResult.getBlockPos(), false))
                             return ActionResult.PASS;
-                        LockedLecternScreenHandler.create(player, (LecternBlockEntity) blockEntity);
+                        if (state.get(LecternBlock.HAS_BOOK))
+                            LockedLecternScreenHandler.create(player, (LecternBlockEntity) blockEntity);
                         return ActionResult.FAIL;
                     }
                 }
@@ -120,7 +121,7 @@ public class BlockInteractEvents {
             ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
             Claim claim = storage.getClaimAt(pos);
             if (claim != null)
-                return !claim.canInteract((ServerPlayerEntity) entity, perm, pos, true);
+                return !claim.canInteract((ServerPlayerEntity) entity, perm, pos, false);
         } else if (entity instanceof ProjectileEntity) {
             EnumPermission perm = BlockToPermissionMap.getFromBlock(state.getBlock());
             if (perm != EnumPermission.PRESSUREPLATE && perm != EnumPermission.BUTTONLEVER)
@@ -130,7 +131,7 @@ public class BlockInteractEvents {
                 ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
                 Claim claim = storage.getClaimAt(pos);
                 if (claim != null)
-                    return !claim.canInteract((ServerPlayerEntity) owner, perm, pos, true);
+                    return !claim.canInteract((ServerPlayerEntity) owner, perm, pos, false);
             }
         }
         return false;
