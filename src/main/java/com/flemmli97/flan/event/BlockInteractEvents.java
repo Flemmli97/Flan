@@ -6,6 +6,8 @@ import com.flemmli97.flan.claim.EnumPermission;
 import com.flemmli97.flan.claim.BlockToPermissionMap;
 import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
+import com.flemmli97.flan.player.EnumDisplayType;
+import com.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
@@ -35,8 +37,10 @@ public class BlockInteractEvents {
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
         Claim claim = storage.getClaimAt(pos);
         if (claim != null) {
-            if (!claim.canInteract(player, EnumPermission.BREAK, pos, true))
+            if (!claim.canInteract(player, EnumPermission.BREAK, pos, true)) {
+                PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                 return ActionResult.SUCCESS;
+            }
         }
         return ActionResult.PASS;
     }
@@ -64,15 +68,29 @@ public class BlockInteractEvents {
                 BlockState state = world.getBlockState(hitResult.getBlockPos());
                 BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
                 if (blockEntity != null) {
-                    if (blockEntity instanceof LockableContainerBlockEntity)
-                        return claim.canInteract(player, EnumPermission.OPENCONTAINER, hitResult.getBlockPos(), true) ? ActionResult.PASS : ActionResult.FAIL;
+                    if (blockEntity instanceof LockableContainerBlockEntity) {
+                        if(claim.canInteract(player, EnumPermission.OPENCONTAINER, hitResult.getBlockPos(), true))
+                            return ActionResult.PASS;
+                        PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+                        return ActionResult.FAIL;
+                    }
                 }
                 EnumPermission perm = BlockToPermissionMap.getFromBlock(state.getBlock());
-                if (perm != null)
-                    return claim.canInteract(player, perm, hitResult.getBlockPos(), true) ? ActionResult.PASS : ActionResult.FAIL;
+                if (perm != null) {
+                    if(claim.canInteract(player, perm, hitResult.getBlockPos(), true))
+                        return ActionResult.PASS;
+                    PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+                    return ActionResult.FAIL;
+                }
             }
-            if (stack.getItem() instanceof BlockItem || stack.getItem() instanceof ToolItem || stack.getItem() == Items.ARMOR_STAND)
-                return claim.canInteract(player, EnumPermission.PLACE, hitResult.getBlockPos(), true) ? ActionResult.PASS : ActionResult.FAIL;
+            BlockPos placePos = hitResult.getBlockPos().offset(hitResult.getSide());
+            claim = storage.getClaimAt(placePos);
+            if (stack.getItem() instanceof BlockItem || stack.getItem() instanceof ToolItem || stack.getItem() == Items.ARMOR_STAND) {
+                if(claim.canInteract(player, EnumPermission.PLACE, placePos, true))
+                    return ActionResult.PASS;
+                PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+                return ActionResult.FAIL;
+            }
         }
         return ActionResult.PASS;
     }

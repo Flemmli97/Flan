@@ -7,14 +7,19 @@ import com.flemmli97.flan.claim.BlockToPermissionMap;
 import com.flemmli97.flan.mixin.IPersistentProjectileVars;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -37,7 +42,7 @@ import net.minecraft.world.World;
 public class EntityInteractEvents {
 
     public static ActionResult attackEntity(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
-        return attackSimple(player, entity);
+        return attackSimple(player, entity, true);
     }
 
     public static ActionResult useAtEntity(PlayerEntity player, World world, Hand hand, Entity entity, /* Nullable */ EntityHitResult hitResult) {
@@ -121,13 +126,30 @@ public class EntityInteractEvents {
                     //player.getServer().send(new ServerTask(player.getServer().getTicks()+2, ()->player.world.updateListeners(pos, state, state, 2)));
                 }
                 return flag;
-            } else if (res.getType() == HitResult.Type.ENTITY)
-                return attackSimple(player, ((EntityHitResult) res).getEntity()) != ActionResult.PASS;
+            } else if (res.getType() == HitResult.Type.ENTITY){
+                if(proj instanceof EnderPearlEntity) {
+                    ClaimStorage storage = ClaimStorage.get((ServerWorld) proj.world);
+                    Claim claim = storage.getClaimAt(proj.getBlockPos());
+                    return claim.canInteract(player, EnumPermission.ENDERPEARL, proj.getBlockPos(), true);
+                }
+                return attackSimple(player, ((EntityHitResult) res).getEntity(), true) != ActionResult.PASS;
+            }
         }
         return false;
     }
 
-    public static ActionResult attackSimple(PlayerEntity p, Entity entity) {
+    public static boolean hurtEntity(LivingEntity entity, DamageSource source){
+        if(source.getAttacker() instanceof ServerPlayerEntity)
+            return attackSimple((ServerPlayerEntity) source.getAttacker(), entity, false)!=ActionResult.PASS;
+        else if(source.isExplosive() && !entity.world.isClient){
+            Claim claim = ClaimStorage.get((ServerWorld) entity.world).getClaimAt(entity.getBlockPos());
+            if(claim!=null && !claim.canInteract(null, EnumPermission.EXPLOSIONS, entity.getBlockPos()))
+                return true;
+        }
+        return false;
+    }
+
+    public static ActionResult attackSimple(PlayerEntity p, Entity entity, boolean message) {
         if (p.world.isClient)
             return ActionResult.PASS;
         if (entity instanceof Monster)
@@ -138,10 +160,10 @@ public class EntityInteractEvents {
         Claim claim = storage.getClaimAt(pos);
         if (claim != null) {
             if (entity instanceof ArmorStandEntity || entity instanceof MinecartEntity || entity instanceof BoatEntity || entity instanceof ItemFrameEntity)
-                return claim.canInteract(player, EnumPermission.BREAKNONLIVING, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
+                return claim.canInteract(player, EnumPermission.BREAKNONLIVING, pos, message) ? ActionResult.PASS : ActionResult.FAIL;
             if (entity instanceof PlayerEntity)
-                return claim.canInteract(player, EnumPermission.HURTPLAYER, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
-            return claim.canInteract(player, EnumPermission.HURTANIMAL, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
+                return claim.canInteract(player, EnumPermission.HURTPLAYER, pos, message) ? ActionResult.PASS : ActionResult.FAIL;
+            return claim.canInteract(player, EnumPermission.HURTANIMAL, pos, message) ? ActionResult.PASS : ActionResult.FAIL;
         }
         return ActionResult.PASS;
     }

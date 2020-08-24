@@ -15,7 +15,8 @@
     "WitherMixin",
     "ExplosionMixin",
     "EnderPearlEntityMixin",
-    "IPersistentProjectileVars"
+    "IPersistentProjectileVars",
+    "LivingEntityMixin"
   ],
   "server": [
   ],
