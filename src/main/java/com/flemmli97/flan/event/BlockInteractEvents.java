@@ -85,6 +85,8 @@ public class BlockInteractEvents {
             }
             BlockPos placePos = hitResult.getBlockPos().offset(hitResult.getSide());
             claim = storage.getClaimAt(placePos);
+            if(claim==null)
+                return ActionResult.PASS;
             if (stack.getItem() instanceof BlockItem || stack.getItem() instanceof ToolItem || stack.getItem() == Items.ARMOR_STAND) {
                 if(claim.canInteract(player, EnumPermission.PLACE, placePos, true))
                     return ActionResult.PASS;
