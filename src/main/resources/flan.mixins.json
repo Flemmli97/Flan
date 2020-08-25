@@ -18,7 +18,9 @@
     "IPersistentProjectileVars",
     "LivingEntityMixin",
     "ItemStackMixin",
-    "ILecternBlockValues"
+    "ILecternBlockValues",
+    "FluidMixin",
+    "PistonMixin"
   ],
   "server": [
   ],
