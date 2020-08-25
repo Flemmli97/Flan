@@ -82,7 +82,7 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + page * 28;
                 if (id < EnumPermission.values().length)
-                    inv.setStack(i, ServerScreenHelper.fromPermission((Claim) additionalData[0], EnumPermission.values()[id], String.valueOf(additionalData[1])));
+                    inv.setStack(i, ServerScreenHelper.fromPermission((Claim) additionalData[0], EnumPermission.values()[id], additionalData[1]==null?null:additionalData[1].toString()));
             }
         }
     }
