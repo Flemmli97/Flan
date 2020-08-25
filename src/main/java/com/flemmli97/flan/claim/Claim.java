@@ -65,6 +65,7 @@ public class Claim {
         this.minY = Math.max(0, minY);
         this.owner = creator;
         this.world = world;
+        this.setDirty();
     }
 
     public static Claim fromJson(JsonObject obj, UUID owner, ServerWorld world) {
@@ -103,10 +104,13 @@ public class Claim {
         this.maxZ = claim.maxZ;
         this.minY = claim.minY;
         this.removed = false;
+        this.setDirty();
     }
 
     public void setAdminClaim() {
         this.owner = null;
+        this.subClaims.forEach(claim->claim.owner = null);
+        this.setDirty();
     }
 
     public int getPlane() {
@@ -196,7 +200,6 @@ public class Claim {
     }
 
     private boolean hasPerm(EnumPermission perm) {
-        System.out.println("claim " + this + " perm " + perm);
         if (this.parentClaim() == null)
             return this.permEnabled(perm) == 1;
         if (this.permEnabled(perm) == -1)
@@ -225,6 +228,7 @@ public class Claim {
             sub.parent = this.claimID;
             sub.parentClaim = this;
             this.subClaims.add(sub);
+            this.setDirty();
         }
         return conflicts;
     }
@@ -234,6 +238,7 @@ public class Claim {
         claim.parent = this.claimID;
         claim.parentClaim = this;
         this.subClaims.add(claim);
+        this.setDirty();
     }
 
     public Claim getSubClaim(BlockPos pos) {
@@ -244,6 +249,8 @@ public class Claim {
     }
 
     public boolean deleteSubClaim(Claim claim) {
+        claim.remove();
+        this.setDirty();
         return this.subClaims.remove(claim);
     }
 
@@ -259,8 +266,10 @@ public class Claim {
         for (Claim other : this.subClaims)
             if (!claim.equals(other) && newClaim.intersects(other))
                 conflicts.add(other);
-        if (conflicts.isEmpty())
+        if (conflicts.isEmpty()) {
             claim.copySizes(newClaim);
+            this.setDirty();
+        }
         return conflicts;
     }
 
@@ -357,8 +366,14 @@ public class Claim {
         return l;
     }
 
+    /**
+     * Only marks non sub claims
+     */
     public void setDirty() {
-        this.dirty = true;
+        if(this.parentClaim()!=null)
+            this.parentClaim().setDirty();
+        else
+            this.dirty = true;
     }
 
     public boolean isDirty() {

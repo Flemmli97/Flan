@@ -124,28 +124,32 @@ public class ItemInteractEvents {
                             data.setEditingCorner(target);
                             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.resizeClaim, Formatting.GOLD), false);
                         } else {
-                            data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.cantClaimHere, Formatting.RED), false);
                         }
+                        data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                     } else {
                         if (data.currentEdit() != null) {
-                            Set<Claim> fl = claim.resizeSubclaim(data.currentEdit(), data.editingCorner(), target);
-                            if (!fl.isEmpty()) {
-                                fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.MAIN, player.getBlockPos().getY()));
-                                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
+                            if(data.editingCorner()!=target) {
+                                Set<Claim> fl = claim.resizeSubclaim(data.currentEdit(), data.editingCorner(), target);
+                                if (!fl.isEmpty()) {
+                                    fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.MAIN, player.getBlockPos().getY()));
+                                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
+                                }
+                                data.setEditClaim(null, 0);
+                                data.setEditingCorner(null);
                             }
-                            data.setEditClaim(null, 0);
-                            data.setEditingCorner(null);
                         } else if (data.editingCorner() != null) {
-                            Set<Claim> fl = claim.tryCreateSubClaim(data.editingCorner(), target);
-                            data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
-                            if (!fl.isEmpty()) {
-                                fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.MAIN, player.getBlockPos().getY()));
-                                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
-                            } else {
-                                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.subClaimCreateSuccess, Formatting.GOLD), false);
+                            if(data.editingCorner()!=target) {
+                                Set<Claim> fl = claim.tryCreateSubClaim(data.editingCorner(), target);
+                                data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+                                if (!fl.isEmpty()) {
+                                    fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.MAIN, player.getBlockPos().getY()));
+                                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
+                                } else {
+                                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.subClaimCreateSuccess, Formatting.GOLD), false);
+                                }
+                                data.setEditingCorner(null);
                             }
-                            data.setEditingCorner(null);
                         } else
                             data.setEditingCorner(target);
                     }
