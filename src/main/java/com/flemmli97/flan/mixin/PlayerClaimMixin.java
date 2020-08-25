@@ -31,7 +31,7 @@ public abstract class PlayerClaimMixin implements IClaimData {
         this.claimData.read(this.server);
     }
 
-    @Inject(method = "readCustomDataFromTag", at = @At("RETURN"))
+    @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
     private void writeData(CompoundTag tag, CallbackInfo info) {
         this.claimData.save(this.server);
     }
