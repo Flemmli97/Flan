@@ -5,7 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "PlayerClaimMixin",
-    "WorldClaimMixin",
+    "ServerWorldMixin",
     "ServerPlayNetworkHandlerMixin",
     "AbstractBlockStateMixin",
     "EntityMixin",
