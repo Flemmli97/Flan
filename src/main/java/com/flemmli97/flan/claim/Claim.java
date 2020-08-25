@@ -161,7 +161,7 @@ public class Claim {
         if (player.getUuid().equals(this.owner))
             return true;
         PlayerClaimData data = PlayerClaimData.get(player);
-        if (player.hasPermissionLevel(2) || data.isAdminIgnoreClaim())
+        if ((this.owner==null && player.hasPermissionLevel(2)) || data.isAdminIgnoreClaim())
             return true;
         for (Claim claim : this.subClaims) {
             if (claim.insideClaim(pos)) {
@@ -196,6 +196,7 @@ public class Claim {
     }
 
     private boolean hasPerm(EnumPermission perm) {
+        System.out.println("claim " + this + " perm " + perm);
         if (this.parentClaim() == null)
             return this.permEnabled(perm) == 1;
         if (this.permEnabled(perm) == -1)
@@ -487,7 +488,10 @@ public class Claim {
         l.add(PermHelper.simpleColoredText("=============================================", Formatting.GREEN));
         GameProfile prof = this.owner != null ? player.getServer().getUserCache().getByUuid(this.owner) : null;
         String ownerName = this.owner == null ? "Admin" : prof != null ? prof.getName() : "<UNKNOWN>";
-        l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfo, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), Formatting.GOLD));
+        if(this.parent==null)
+            l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfo, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), Formatting.GOLD));
+        else
+            l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoSub, ownerName, this.minX, this.minZ, this.maxX, this.maxZ), Formatting.GOLD));
         if (perms) {
             l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimInfoPerms, this.globalPerm), Formatting.RED));
             l.add(PermHelper.simpleColoredText(ConfigHandler.lang.claimGroupInfoHeader, Formatting.RED));

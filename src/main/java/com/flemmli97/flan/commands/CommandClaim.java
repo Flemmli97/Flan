@@ -57,8 +57,8 @@ public class CommandClaim {
                 CommandManager.literal("setAdminClaim").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::setAdminClaim),
                 CommandManager.literal("listAdminClaims").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::listAdminClaims),
                 CommandManager.literal("adminDelete").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::adminDelete)
-                        .then(CommandManager.literal("all").then(CommandManager.argument("players", GameProfileArgumentType.gameProfile()))
-                                .executes(CommandClaim::adminDeleteAll)),
+                        .then(CommandManager.literal("all").then(CommandManager.argument("players", GameProfileArgumentType.gameProfile())
+                                .executes(CommandClaim::adminDeleteAll))),
                 CommandManager.literal("giveClaimBlocks").requires(src -> src.hasPermissionLevel(2)).then(CommandManager.argument("players", GameProfileArgumentType.gameProfile())
                         .then(CommandManager.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::giveClaimBlocks))),
                 addToMainCommand(CommandManager.literal("group"),

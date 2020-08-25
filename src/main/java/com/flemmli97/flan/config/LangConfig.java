@@ -62,6 +62,7 @@ public class LangConfig {
     public String giveClaimBlocks = "Gave following players %2$d claimblocks: %1$s";
 
     public String claimBasicInfo = "Owner: %1$s, from: [x=%2$d,z=%3$d] to [x=%4$d,z=%5$d]; Subclaim-amount: %6$d";
+    public String claimBasicInfoSub = "Owner: %1$s, from: [x=%2$d,z=%3$d] to [x=%4$d,z=%5$d]";
     public String claimInfoPerms = "Permissions: %s";
     public String claimGroupInfoHeader = "Groups: ";
     public String claimGroupPerms = "    Permissions: %s";
