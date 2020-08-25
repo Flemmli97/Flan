@@ -11,7 +11,6 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
@@ -88,7 +87,7 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
         }
     }
 
-    private void flipPage(){
+    private void flipPage() {
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
@@ -96,20 +95,19 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
                 this.slots.get(i).setStack(close);
             } else if (i == 47) {
                 ItemStack stack = ItemStack.EMPTY;
-                if(this.page == 1){
-                    stack =new ItemStack(Items.ARROW);
+                if (this.page == 1) {
+                    stack = new ItemStack(Items.ARROW);
                     stack.setCustomName(new LiteralText("Prev").setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
                 }
                 this.slots.get(i).setStack(stack);
             } else if (i == 51) {
                 ItemStack stack = ItemStack.EMPTY;
-                if(this.page == 0) {
+                if (this.page == 0) {
                     stack = new ItemStack(Items.ARROW);
                     stack.setCustomName(new LiteralText("Next").setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
                 }
                 this.slots.get(i).setStack(stack);
-            }
-            else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
+            } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 this.slots.get(i).setStack(ServerScreenHelper.emptyFiller());
             else {
                 int row = i / 9 - 1;
@@ -155,14 +153,13 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
             return false;
         }
         if (this.group == null) {
-            int mode = -1;
-            if(this.claim.parentClaim()==null)
-                mode = this.claim.permEnabled(perm)==1?-1:1;
+            int mode;
+            if (this.claim.parentClaim() == null)
+                mode = this.claim.permEnabled(perm) == 1 ? -1 : 1;
             else
-                mode = this.claim.permEnabled(perm)+1;
+                mode = this.claim.permEnabled(perm) + 1;
             this.claim.editGlobalPerms(perm, mode);
-        }
-        else
+        } else
             this.claim.editPerms(player, this.group, perm, this.claim.groupHasPerm(this.group, perm) + 1);
         slot.setStack(ServerScreenHelper.fromPermission(this.claim, perm, this.group));
         ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_NOTE_BLOCK_PLING, 1, 1.2f);

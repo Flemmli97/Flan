@@ -1,7 +1,6 @@
 package com.flemmli97.flan.claim;
 
 import com.flemmli97.flan.IClaimData;
-import com.flemmli97.flan.config.Config;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.EnumEditMode;
@@ -62,7 +61,7 @@ public class ClaimStorage {
         Set<Claim> conflicts = conflicts(claim, null);
         if (conflicts.isEmpty()) {
             PlayerClaimData data = PlayerClaimData.get(player);
-            if(claim.getPlane()<ConfigHandler.config.minClaimsize){
+            if (claim.getPlane() < ConfigHandler.config.minClaimsize) {
                 player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.minClaimSize, ConfigHandler.config.minClaimsize), Formatting.RED), false);
                 return false;
             }
@@ -77,7 +76,7 @@ public class ClaimStorage {
             return true;
         }
         PlayerClaimData data = PlayerClaimData.get(player);
-        conflicts.forEach(conf->data.addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.getBlockPos().getY()));
+        conflicts.forEach(conf -> data.addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.getBlockPos().getY()));
         player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
         return false;
     }
@@ -99,12 +98,12 @@ public class ClaimStorage {
     }
 
     public boolean deleteClaim(Claim claim, boolean updateClaim, EnumEditMode mode, ServerWorld world) {
-        if(mode==EnumEditMode.SUBCLAIM){
-            if(claim.parentClaim()!=null)
+        if (mode == EnumEditMode.SUBCLAIM) {
+            if (claim.parentClaim() != null)
                 return claim.parentClaim().deleteSubClaim(claim);
             return false;
         }
-        if(updateClaim)
+        if (updateClaim)
             claim.remove();
         int[] pos = getChunkPos(claim);
         for (int x = pos[0]; x <= pos[1]; x++)
@@ -122,18 +121,18 @@ public class ClaimStorage {
     }
 
     public boolean resizeClaim(Claim claim, BlockPos from, BlockPos to, ServerPlayerEntity player) {
-        int[] dims = claim.getDimensions(); //BlockPos from, BlockPos to
-        BlockPos opposite = new BlockPos(dims[0]==from.getX()?dims[1]:dims[0], dims[4], dims[2]==from.getZ()?dims[3]:dims[2]);
+        int[] dims = claim.getDimensions();
+        BlockPos opposite = new BlockPos(dims[0] == from.getX() ? dims[1] : dims[0], dims[4], dims[2] == from.getZ() ? dims[3] : dims[2]);
         Claim newClaim = new Claim(opposite, to, player.getUuid(), player.getServerWorld());
         Set<Claim> conflicts = conflicts(newClaim, claim);
-        if(!conflicts.isEmpty()) {
-            conflicts.forEach(conf->PlayerClaimData.get(player).addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.getBlockPos().getY()));
+        if (!conflicts.isEmpty()) {
+            conflicts.forEach(conf -> PlayerClaimData.get(player).addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.getBlockPos().getY()));
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
             return false;
         }
         PlayerClaimData data = PlayerClaimData.get(player);
-        int diff = newClaim.getPlane()-claim.getPlane();
-        if(data.canUseClaimBlocks(diff)) {
+        int diff = newClaim.getPlane() - claim.getPlane();
+        if (data.canUseClaimBlocks(diff)) {
             this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.getServerWorld());
             claim.copySizes(newClaim);
             this.addClaim(claim);
@@ -206,7 +205,7 @@ public class ClaimStorage {
                     reader.close();
                 }
             } catch (IOException e) {
-
+                e.printStackTrace();
             }
         }
     }
@@ -225,15 +224,14 @@ public class ClaimStorage {
                         continue;
                     file.createNewFile();
                     dirty = true;
-                }
-                else {
-                    for(Claim claim : e.getValue())
-                        if(claim.isDirty()) {
+                } else {
+                    for (Claim claim : e.getValue())
+                        if (claim.isDirty()) {
                             dirty = true;
                             break;
                         }
                 }
-                if(dirty){
+                if (dirty) {
                     FileWriter writer = new FileWriter(file);
                     JsonArray arr = new JsonArray();
                     e.getValue().forEach(claim -> arr.add(claim.toJson(new JsonObject())));
@@ -242,15 +240,15 @@ public class ClaimStorage {
                 }
             }
         } catch (IOException e) {
-
+            e.printStackTrace();
         }
     }
 
-    public static void readGriefPreventionData(MinecraftServer server) {
+    public static List<String> readGriefPreventionData(MinecraftServer server) {
         Yaml yml = new Yaml();
         File griefPrevention = server.getSavePath(WorldSavePath.ROOT).resolve("plugins/GriefPreventionData/ClaimData").toFile();
         if (!griefPrevention.exists())
-            return;
+            return null;
         Map<File, List<File>> subClaimMap = Maps.newHashMap();
         Map<Integer, File> intFileMap = Maps.newHashMap();
 
@@ -279,6 +277,7 @@ public class ClaimStorage {
                     }
                 }
             }
+            List<String> failedClaimsFile = Lists.newArrayList();
             for (File parent : intFileMap.values()) {
                 Pair<ServerWorld, Claim> parentClaim = parseFromYaml(parent, yml, server);
                 List<File> childs = subClaimMap.get(parent);
@@ -286,11 +285,18 @@ public class ClaimStorage {
                     for (File childF : childs)
                         parentClaim.second.addSubClaimGriefprevention(parseFromYaml(childF, yml, server).second);
                 }
-                ClaimStorage.get(parentClaim.first).addClaim(parentClaim.second);
+                ClaimStorage storage = ClaimStorage.get(parentClaim.first);
+                if (storage.conflicts(parentClaim.second, null).isEmpty())
+                    storage.addClaim(parentClaim.second);
+                else
+                    failedClaimsFile.add(parent.getName());
             }
+            if (!failedClaimsFile.isEmpty())
+                return failedClaimsFile;
         } catch (IOException e) {
-
+            e.printStackTrace();
         }
+        return null;
     }
 
     private static Pair<ServerWorld, Claim> parseFromYaml(File file, Yaml yml, MinecraftServer server) throws IOException {

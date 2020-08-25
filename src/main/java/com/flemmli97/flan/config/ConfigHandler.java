@@ -17,7 +17,7 @@ public class ConfigHandler {
         reloadConfigs();
     }
 
-    public static void reloadConfigs(){
+    public static void reloadConfigs() {
         config.load();
         lang.load();
     }

@@ -1,10 +1,9 @@
 package com.flemmli97.flan.event;
 
+import com.flemmli97.flan.claim.BlockToPermissionMap;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.EnumPermission;
-import com.flemmli97.flan.claim.BlockToPermissionMap;
-import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.gui.LockedLecternScreenHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
@@ -20,10 +19,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.ToolItem;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -74,12 +70,12 @@ public class BlockInteractEvents {
                 BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
                 if (blockEntity != null) {
                     if (blockEntity instanceof LockableContainerBlockEntity) {
-                        if(claim.canInteract(player, EnumPermission.OPENCONTAINER, hitResult.getBlockPos(), true))
+                        if (claim.canInteract(player, EnumPermission.OPENCONTAINER, hitResult.getBlockPos(), true))
                             return ActionResult.PASS;
                         PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                         return ActionResult.FAIL;
                     }
-                    if(blockEntity instanceof LecternBlockEntity) {
+                    if (blockEntity instanceof LecternBlockEntity) {
                         if (claim.canInteract(player, EnumPermission.LECTERNTAKE, hitResult.getBlockPos(), false))
                             return ActionResult.PASS;
                         if (state.get(LecternBlock.HAS_BOOK))
@@ -89,16 +85,15 @@ public class BlockInteractEvents {
                 }
                 EnumPermission perm = BlockToPermissionMap.getFromBlock(state.getBlock());
                 //Pressureplate handled elsewhere
-                if (perm!=null && perm != EnumPermission.PRESSUREPLATE) {
-                    if(claim.canInteract(player, perm, hitResult.getBlockPos(), true))
+                if (perm != null && perm != EnumPermission.PRESSUREPLATE) {
+                    if (claim.canInteract(player, perm, hitResult.getBlockPos(), true))
                         return ActionResult.PASS;
-                    if(state.getBlock() instanceof DoorBlock){
+                    if (state.getBlock() instanceof DoorBlock) {
                         DoubleBlockHalf half = state.get(DoorBlock.HALF);
-                        if(half==DoubleBlockHalf.LOWER) {
+                        if (half == DoubleBlockHalf.LOWER) {
                             BlockState other = world.getBlockState(hitResult.getBlockPos().up());
                             player.world.updateListeners(hitResult.getBlockPos().up(), other, other, 2);
-                        }
-                        else {
+                        } else {
                             BlockState other = world.getBlockState(hitResult.getBlockPos().down());
                             player.world.updateListeners(hitResult.getBlockPos().down(), other, other, 2);
                         }
@@ -111,7 +106,7 @@ public class BlockInteractEvents {
         return ActionResult.PASS;
     }
 
-    public static boolean blockCollisionEntity(BlockState state, World world, BlockPos pos, Entity entity) {
+    public static boolean cancelEntityBlockCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (entity.world.isClient)
             return false;
         if (entity instanceof ServerPlayerEntity) {
@@ -137,7 +132,7 @@ public class BlockInteractEvents {
         return false;
     }
 
-    public static boolean entityFall(Entity entity, double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
+    public static boolean preventFallOn(Entity entity, double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
         if (entity.world.isClient)
             return false;
         if (entity instanceof ServerPlayerEntity) {
@@ -159,7 +154,7 @@ public class BlockInteractEvents {
         return false;
     }
 
-    public static boolean turtleEggHandle(World world, BlockPos pos, Entity entity) {
+    public static boolean canBreakTurtleEgg(World world, BlockPos pos, Entity entity) {
         if (world.isClient)
             return false;
         ServerWorld serverWorld = (ServerWorld) world;

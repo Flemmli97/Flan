@@ -15,7 +15,7 @@ public abstract class TurtleEggMixin {
 
     @Inject(method = "onSteppedOn", at = @At(value = "HEAD"), cancellable = true)
     public void collision(World world, BlockPos pos, Entity entity, CallbackInfo info) {
-        if (BlockInteractEvents.turtleEggHandle(world, pos, entity)) {
+        if (BlockInteractEvents.canBreakTurtleEgg(world, pos, entity)) {
             info.cancel();
         }
     }

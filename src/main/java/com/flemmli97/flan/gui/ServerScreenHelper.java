@@ -8,7 +8,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.LiteralText;
@@ -30,8 +29,8 @@ public class ServerScreenHelper {
         ListTag lore = new ListTag();
         String permFlag;
         if (group == null) {
-            if(claim.parentClaim()==null)
-                permFlag = "" + (claim.permEnabled(perm)==1);
+            if (claim.parentClaim() == null)
+                permFlag = "" + (claim.permEnabled(perm) == 1);
             else {
                 switch (claim.permEnabled(perm)) {
                     case -1:
@@ -45,8 +44,7 @@ public class ServerScreenHelper {
                         break;
                 }
             }
-        }
-        else {
+        } else {
             switch (claim.groupHasPerm(group, perm)) {
                 case -1:
                     permFlag = "default";

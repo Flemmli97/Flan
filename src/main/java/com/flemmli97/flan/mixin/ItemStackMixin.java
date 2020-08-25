@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ItemStackMixin {
 
     @Inject(method = "useOnBlock", at = @At(value = "HEAD"), cancellable = true)
-    public void blockUse(ItemUsageContext context, CallbackInfoReturnable<ActionResult> info){
+    public void blockUse(ItemUsageContext context, CallbackInfoReturnable<ActionResult> info) {
         ActionResult result = ItemInteractEvents.onItemUseBlock(context);
         if (result != ActionResult.PASS) {
             info.setReturnValue(result);

@@ -86,17 +86,17 @@ public class Claim {
         return this.owner;
     }
 
-    public Claim parentClaim(){
-        if(this.parent==null)
+    public Claim parentClaim() {
+        if (this.parent == null)
             return null;
-        if(this.parentClaim==null){
+        if (this.parentClaim == null) {
             ClaimStorage storage = ClaimStorage.get(this.world);
             this.parentClaim = storage.claimUUIDMap.get(this.parent);
         }
         return this.parentClaim;
     }
 
-    public void copySizes(Claim claim){
+    public void copySizes(Claim claim) {
         this.minX = claim.minX;
         this.maxX = claim.maxX;
         this.minZ = claim.minZ;
@@ -105,7 +105,7 @@ public class Claim {
         this.removed = false;
     }
 
-    public void setAdminClaim(){
+    public void setAdminClaim() {
         this.owner = null;
     }
 
@@ -141,7 +141,7 @@ public class Claim {
         return this.removed;
     }
 
-    public boolean canInteract(ServerPlayerEntity player, EnumPermission perm, BlockPos pos){
+    public boolean canInteract(ServerPlayerEntity player, EnumPermission perm, BlockPos pos) {
         return this.canInteract(player, perm, pos, false);
     }
 
@@ -152,9 +152,9 @@ public class Claim {
                     return claim.canInteract(player, perm, pos, message);
                 }
             }
-            if(this.hasPerm(perm))
+            if (this.hasPerm(perm))
                 return true;
-            if(message)
+            if (message)
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), false);
             return false;
         }
@@ -165,25 +165,25 @@ public class Claim {
             return true;
         for (Claim claim : this.subClaims) {
             if (claim.insideClaim(pos)) {
-                if(perm!=EnumPermission.EDITCLAIM && perm != EnumPermission.EDITPERMS)
+                if (perm != EnumPermission.EDITCLAIM && perm != EnumPermission.EDITPERMS)
                     return claim.canInteract(player, perm, pos, message);
-                else if(claim.canInteract(player, perm, pos, message))
+                else if (claim.canInteract(player, perm, pos, message))
                     return true;
             }
         }
         if (this.playersGroups.containsKey(player.getUuid())) {
             EnumMap<EnumPermission, Boolean> map = this.permissions.get(this.playersGroups.get(player.getUuid()));
             if (map != null && map.containsKey(perm)) {
-                if(map.get(perm))
+                if (map.get(perm))
                     return true;
-                if(message)
+                if (message)
                     player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), false);
                 return false;
             }
         }
-        if(this.hasPerm(perm))
+        if (this.hasPerm(perm))
             return true;
-        if(message)
+        if (message)
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), false);
         return false;
     }
@@ -192,21 +192,21 @@ public class Claim {
      * @return -1 for default, 0 for false, 1 for true
      */
     public int permEnabled(EnumPermission perm) {
-        return !this.globalPerm.containsKey(perm)?-1:this.globalPerm.get(perm)?1:0;
+        return !this.globalPerm.containsKey(perm) ? -1 : this.globalPerm.get(perm) ? 1 : 0;
     }
 
-    private boolean hasPerm(EnumPermission perm){
-        if(this.parentClaim()==null)
+    private boolean hasPerm(EnumPermission perm) {
+        if (this.parentClaim() == null)
             return this.permEnabled(perm) == 1;
-        if(this.permEnabled(perm)==-1)
-            return this.parentClaim().permEnabled(perm)==1;
+        if (this.permEnabled(perm) == -1)
+            return this.parentClaim().permEnabled(perm) == 1;
         return this.permEnabled(perm) == 1;
     }
 
     private UUID generateUUID() {
         UUID uuid = UUID.randomUUID();
         for (Claim claim : this.subClaims)
-            if(claim.claimID.equals(uuid)) {
+            if (claim.claimID.equals(uuid)) {
                 return generateUUID();
             }
         return uuid;
@@ -216,11 +216,11 @@ public class Claim {
         Claim sub = new Claim(pos1, new BlockPos(pos2.getX(), 0, pos2.getZ()), this.owner, this.world);
         sub.setClaimID(this.generateUUID());
         Set<Claim> conflicts = Sets.newHashSet();
-        for(Claim other : this.subClaims)
+        for (Claim other : this.subClaims)
             if (sub.intersects(other)) {
                 conflicts.add(sub);
             }
-        if(conflicts.isEmpty()) {
+        if (conflicts.isEmpty()) {
             sub.parent = this.claimID;
             sub.parentClaim = this;
             this.subClaims.add(sub);
@@ -228,7 +228,7 @@ public class Claim {
         return conflicts;
     }
 
-    public void addSubClaimGriefprevention(Claim claim){
+    public void addSubClaimGriefprevention(Claim claim) {
         claim.setClaimID(this.generateUUID());
         claim.parent = this.claimID;
         claim.parentClaim = this;
@@ -242,36 +242,35 @@ public class Claim {
         return null;
     }
 
-    public boolean deleteSubClaim(Claim claim){
+    public boolean deleteSubClaim(Claim claim) {
         return this.subClaims.remove(claim);
     }
 
-    public List<Claim> getAllSubclaims(){
+    public List<Claim> getAllSubclaims() {
         return ImmutableList.copyOf(this.subClaims);
     }
 
-    public Set<Claim> resizeSubclaim(Claim claim, BlockPos from, BlockPos to){
+    public Set<Claim> resizeSubclaim(Claim claim, BlockPos from, BlockPos to) {
         int[] dims = claim.getDimensions();
-        BlockPos opposite = new BlockPos(dims[0]==from.getX()?dims[1]:dims[0], dims[4], dims[2]==from.getZ()?dims[3]:dims[2]);
+        BlockPos opposite = new BlockPos(dims[0] == from.getX() ? dims[1] : dims[0], dims[4], dims[2] == from.getZ() ? dims[3] : dims[2]);
         Claim newClaim = new Claim(opposite, to, claim.claimID, this.world);
         Set<Claim> conflicts = Sets.newHashSet();
-        for(Claim other : this.subClaims)
+        for (Claim other : this.subClaims)
             if (!claim.equals(other) && newClaim.intersects(other))
                 conflicts.add(other);
-        if(conflicts.isEmpty())
+        if (conflicts.isEmpty())
             claim.copySizes(newClaim);
         return conflicts;
     }
 
     public boolean setPlayerGroup(UUID player, String group, boolean force) {
-        if(this.owner!=null && this.owner.equals(player))
+        if (this.owner != null && this.owner.equals(player))
             return false;
         if (group == null) {
             this.playersGroups.remove(player);
             this.setDirty();
             return true;
         }
-
         if (!this.playersGroups.containsKey(player) || force) {
             this.playersGroups.put(player, group);
             this.setDirty();
@@ -377,18 +376,13 @@ public class Claim {
         this.globalPerm.clear();
         this.permissions.clear();
         this.subClaims.clear();
-        if(obj.has("Parent"))
+        if (obj.has("Parent"))
             this.parent = UUID.fromString(obj.get("Parent").getAsString());
         if (obj.has("GlobalPerms")) {
-            if(this.parent==null) {
-                obj.getAsJsonArray("GlobalPerms").forEach(perm -> {
-                    this.globalPerm.put(EnumPermission.valueOf(perm.getAsString()), true);
-                });
-            }
-            else{
-                obj.getAsJsonObject("GlobalPerms").entrySet().forEach(entry->{
-                    this.globalPerm.put(EnumPermission.valueOf(entry.getKey()), entry.getValue().getAsBoolean());
-                });
+            if (this.parent == null) {
+                obj.getAsJsonArray("GlobalPerms").forEach(perm -> this.globalPerm.put(EnumPermission.valueOf(perm.getAsString()), true));
+            } else {
+                obj.getAsJsonObject("GlobalPerms").entrySet().forEach(entry -> this.globalPerm.put(EnumPermission.valueOf(entry.getKey()), entry.getValue().getAsBoolean()));
             }
         }
         if (obj.has("PermGroup")) {
@@ -418,22 +412,19 @@ public class Claim {
         pos.add(this.minY);
         obj.add("PosxXzZY", pos);
         obj.addProperty("ID", this.claimID.toString());
-        if(this.parent!=null)
+        if (this.parent != null)
             obj.addProperty("Parent", this.parent.toString());
         if (!this.globalPerm.isEmpty()) {
             JsonElement gPerm;
-            if(this.parent==null) {
+            if (this.parent == null) {
                 gPerm = new JsonArray();
                 this.globalPerm.forEach((perm, bool) -> {
                     if (bool)
                         ((JsonArray) gPerm).add(perm.toString());
                 });
-            }
-            else{
+            } else {
                 gPerm = new JsonObject();
-                this.globalPerm.forEach((perm, bool) -> {
-                    ((JsonObject) gPerm).addProperty(perm.toString(), bool);
-                });
+                this.globalPerm.forEach((perm, bool) -> ((JsonObject) gPerm).addProperty(perm.toString(), bool));
             }
             obj.add("GlobalPerms", gPerm);
         }
@@ -461,7 +452,7 @@ public class Claim {
 
     @Override
     public int hashCode() {
-        return this.claimID==null?Arrays.hashCode(this.getDimensions()):this.claimID.hashCode();
+        return this.claimID == null ? Arrays.hashCode(this.getDimensions()) : this.claimID.hashCode();
     }
 
     @Override
@@ -470,9 +461,9 @@ public class Claim {
             return true;
         if (obj instanceof Claim) {
             Claim other = (Claim) obj;
-            if (this.claimID==null && other.claimID==null)
+            if (this.claimID == null && other.claimID == null)
                 return Arrays.equals(this.getDimensions(), ((Claim) obj).getDimensions());
-            if(this.claimID!=null)
+            if (this.claimID != null)
                 return this.claimID.equals(((Claim) obj).claimID);
         }
         return false;
@@ -480,21 +471,21 @@ public class Claim {
 
     @Override
     public String toString() {
-        return String.format("Claim:[ID=%s, Owner=%s, from: x=%d; z=%d, to: x=%d, z=%d", this.claimID!=null?this.claimID.toString():"null", this.owner.toString(), this.minX, this.minZ, this.maxX, this.maxZ);
+        return String.format("Claim:[ID=%s, Owner=%s, from: x=%d; z=%d, to: x=%d, z=%d", this.claimID != null ? this.claimID.toString() : "null", this.owner.toString(), this.minX, this.minZ, this.maxX, this.maxZ);
     }
 
     public String formattedClaim() {
         return String.format("[x=%d,z=%d] - [x=%d,z=%d]", this.minX, this.minZ, this.maxX, this.maxZ);
     }
 
-    public List<Text> infoString(ServerPlayerEntity player){
+    public List<Text> infoString(ServerPlayerEntity player) {
         boolean perms = this.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos());
         List<Text> l = Lists.newArrayList();
         l.add(PermHelper.simpleColoredText("=============================================", Formatting.GREEN));
-        GameProfile prof = this.owner!=null?player.getServer().getUserCache().getByUuid(this.owner):null;
-        String ownerName = this.owner==null?"Admin":prof!=null?prof.getName():"<UNKNOWN>";
+        GameProfile prof = this.owner != null ? player.getServer().getUserCache().getByUuid(this.owner) : null;
+        String ownerName = this.owner == null ? "Admin" : prof != null ? prof.getName() : "<UNKNOWN>";
         l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfo, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), Formatting.GOLD));
-        if(perms) {
+        if (perms) {
             l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimInfoPerms, this.globalPerm), Formatting.RED));
             l.add(PermHelper.simpleColoredText(ConfigHandler.lang.claimGroupInfoHeader, Formatting.RED));
             Map<String, List<String>> nameToGroup = Maps.newHashMap();

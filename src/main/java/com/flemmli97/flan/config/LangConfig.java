@@ -1,12 +1,10 @@
 package com.flemmli97.flan.config;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WorldSavePath;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -59,6 +57,7 @@ public class LangConfig {
     public String setAdminClaim = "Claim changed to an Adminclaim";
     public String readGriefpreventionData = "Reading data from GriefPrevention";
     public String readGriefpreventionDataSuccess = "Successfully read data";
+    public String readGriefpreventionDataFail = "Failed reading data for following claim files (Check the logs!): %s";
     public String giveClaimBlocks = "Gave following players %2$d claimblocks: %1$s";
 
     public String claimBasicInfo = "Owner: %1$s, from: [x=%2$d,z=%3$d] to [x=%4$d,z=%5$d]; Subclaim-amount: %6$d";
@@ -70,10 +69,10 @@ public class LangConfig {
     public LangConfig(MinecraftServer server) {
         File configDir = server.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();
         try {
-            if(!configDir.exists())
+            if (!configDir.exists())
                 configDir.mkdirs();
             this.config = new File(configDir, "flan_lang.json");
-            if(!this.config.exists()) {
+            if (!this.config.exists()) {
                 this.config.createNewFile();
                 this.save();
             }
@@ -87,8 +86,8 @@ public class LangConfig {
             FileReader reader = new FileReader(this.config);
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
             reader.close();
-            for(Field field : this.getClass().getDeclaredFields()){
-                if(field.getDeclaringClass().equals(String.class)){
+            for (Field field : this.getClass().getDeclaredFields()) {
+                if (field.getDeclaringClass().equals(String.class)) {
                     field.set(this, obj.get(field.getName()).getAsString());
                 }
             }
@@ -97,11 +96,11 @@ public class LangConfig {
         }
     }
 
-    private void save(){
+    private void save() {
         JsonObject obj = new JsonObject();
         try {
-            for(Field field : this.getClass().getDeclaredFields()){
-                if(field.getType().equals(String.class)){
+            for (Field field : this.getClass().getDeclaredFields()) {
+                if (field.getType().equals(String.class)) {
                     obj.addProperty(field.getName(), (String) field.get(this));
                 }
             }

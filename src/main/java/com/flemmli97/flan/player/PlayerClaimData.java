@@ -22,8 +22,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -83,12 +81,10 @@ public class PlayerClaimData {
 
     public boolean canUseClaimBlocks(int amount) {
         int usedClaimsBlocks = this.usedClaimBlocks();
-        if (usedClaimsBlocks + amount > this.claimBlocks + this.additionalClaimBlocks)
-            return false;
-        return true;
+        return usedClaimsBlocks + amount <= this.claimBlocks + this.additionalClaimBlocks;
     }
 
-    public int usedClaimBlocks(){
+    public int usedClaimBlocks() {
         return this.calculateUsedClaimBlocks();
     }
 
@@ -97,7 +93,7 @@ public class PlayerClaimData {
     }
 
     public void setEditClaim(Claim claim, int height) {
-        if(claim!=null)
+        if (claim != null)
             this.displayEditing = new ClaimDisplay(claim, EnumDisplayType.EDIT, height);
         else
             this.displayEditing = null;
@@ -106,8 +102,8 @@ public class PlayerClaimData {
 
     public void addDisplayClaim(Claim claim, EnumDisplayType type, int height) {
         this.displayToAdd.add(new ClaimDisplay(claim, type, height));
-        if(type==EnumDisplayType.MAIN)
-            for(Claim sub : claim.getAllSubclaims())
+        if (type == EnumDisplayType.MAIN)
+            for (Claim sub : claim.getAllSubclaims())
                 this.displayToAdd.add(new ClaimDisplay(sub, EnumDisplayType.SUB, height));
     }
 
@@ -154,9 +150,9 @@ public class PlayerClaimData {
     }
 
     public void tick() {
-        this.displayToAdd.forEach(add->{
-            if(!this.claimDisplayList.add(add)){
-                this.claimDisplayList.removeIf(c->c.equals(add) && c.type!=add.type);
+        this.displayToAdd.forEach(add -> {
+            if (!this.claimDisplayList.add(add)) {
+                this.claimDisplayList.removeIf(c -> c.equals(add) && c.type != add.type);
                 this.claimDisplayList.add(add);
             }
         });
@@ -170,7 +166,7 @@ public class PlayerClaimData {
             this.player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.SETCORNER, true, this.firstCorner.getX() + 0.5, this.firstCorner.getY() + 1.25, this.firstCorner.getZ() + 0.5, 0, 0.25f, 0, 0, 3));
         if (--this.confirmTick < 0)
             this.confirmDeleteAll = false;
-        if(this.displayEditing!=null)
+        if (this.displayEditing != null)
             this.displayEditing.display(this.player);
         if (this.player.getMainHandStack().getItem() != ConfigHandler.config.claimingItem && this.player.getOffHandStack().getItem() != ConfigHandler.config.claimingItem) {
             this.firstCorner = null;
@@ -195,7 +191,7 @@ public class PlayerClaimData {
             ConfigHandler.GSON.toJson(obj, writer);
             writer.close();
         } catch (IOException e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -213,7 +209,7 @@ public class PlayerClaimData {
             this.additionalClaimBlocks = obj.get("AdditionalBlocks").getAsInt();
             reader.close();
         } catch (IOException e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -236,7 +232,7 @@ public class PlayerClaimData {
             ConfigHandler.GSON.toJson(obj, writer);
             writer.close();
         } catch (IOException e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -285,7 +281,7 @@ public class PlayerClaimData {
                 }
             }
         } catch (IOException e) {
-
+            e.printStackTrace();
         }
     }
 }

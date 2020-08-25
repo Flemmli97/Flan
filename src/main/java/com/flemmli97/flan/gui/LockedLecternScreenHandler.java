@@ -1,10 +1,8 @@
 package com.flemmli97.flan.gui;
 
-import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.mixin.ILecternBlockValues;
-import net.minecraft.block.LecternBlock;
 import net.minecraft.block.entity.LecternBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -27,7 +25,7 @@ public class LockedLecternScreenHandler extends LecternScreenHandler {
         NamedScreenHandlerFactory fac = new NamedScreenHandlerFactory() {
             @Override
             public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                return new LockedLecternScreenHandler(syncId, ((ILecternBlockValues)lectern).getInv(), ((ILecternBlockValues)lectern).getProp());
+                return new LockedLecternScreenHandler(syncId, ((ILecternBlockValues) lectern).getInv(), ((ILecternBlockValues) lectern).getProp());
             }
 
             @Override
@@ -40,7 +38,7 @@ public class LockedLecternScreenHandler extends LecternScreenHandler {
 
     @Override
     public boolean onButtonClick(PlayerEntity player, int id) {
-        if(id==3) {
+        if (id == 3) {
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), false);
             return false;
         }

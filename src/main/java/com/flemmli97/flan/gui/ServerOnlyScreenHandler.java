@@ -30,7 +30,7 @@ public abstract class ServerOnlyScreenHandler extends ScreenHandler {
         int m;
         for (n = 0; n < rows; ++n) {
             for (m = 0; m < 9; ++m) {
-                this.addSlot(new Slot(inventory, m + n * 9, 8 + m * 18, 18 + n * 18));
+                this.addSlot(new Slot(this.inventory, m + n * 9, 8 + m * 18, 18 + n * 18));
             }
         }
 

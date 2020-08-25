@@ -13,8 +13,8 @@ import java.util.function.Consumer;
 
 public class PermHelper {
 
-    public static boolean check(ServerPlayerEntity player, BlockPos pos, Claim claim, EnumPermission perm, Consumer<Optional<Boolean>> cons){
-        if(claim==null) {
+    public static boolean check(ServerPlayerEntity player, BlockPos pos, Claim claim, EnumPermission perm, Consumer<Optional<Boolean>> cons) {
+        if (claim == null) {
             cons.accept(Optional.empty());
             return false;
         }
@@ -26,23 +26,23 @@ public class PermHelper {
     public static Claim checkReturn(ServerPlayerEntity player, EnumPermission perm, Consumer<Optional<Boolean>> cons) {
         BlockPos pos = player.getBlockPos();
         Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(pos);
-        return check(player, pos, claim, perm, cons)?claim:null;
+        return check(player, pos, claim, perm, cons) ? claim : null;
     }
 
-    public static void noClaimMessage(ServerPlayerEntity player){
+    public static void noClaimMessage(ServerPlayerEntity player) {
         player.sendMessage(new LiteralText(ConfigHandler.lang.noClaim).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)), false);
     }
 
-    public static Consumer<Optional<Boolean>> genericNoPermMessage(ServerPlayerEntity player){
-        return (b ->{
-            if(!b.isPresent())
+    public static Consumer<Optional<Boolean>> genericNoPermMessage(ServerPlayerEntity player) {
+        return (b -> {
+            if (!b.isPresent())
                 PermHelper.noClaimMessage(player);
-            else if(!b.get())
+            else if (!b.get())
                 player.sendMessage(simpleColoredText(ConfigHandler.lang.noPermission, Formatting.DARK_RED), false);
         });
     }
 
-    public static Text simpleColoredText(String text, Formatting... formatting){
-        return new LiteralText(text).setStyle(formatting!=null?Style.EMPTY.withFormatting(formatting):Style.EMPTY);
+    public static Text simpleColoredText(String text, Formatting... formatting) {
+        return new LiteralText(text).setStyle(formatting != null ? Style.EMPTY.withFormatting(formatting) : Style.EMPTY);
     }
 }

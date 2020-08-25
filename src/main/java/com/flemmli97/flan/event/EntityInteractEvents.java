@@ -1,32 +1,27 @@
 package com.flemmli97.flan.event;
 
+import com.flemmli97.flan.claim.BlockToPermissionMap;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.EnumPermission;
-import com.flemmli97.flan.claim.BlockToPermissionMap;
 import com.flemmli97.flan.mixin.IPersistentProjectileVars;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.entity.vehicle.StorageMinecartEntity;
-import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
-import net.minecraft.server.ServerTask;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -61,14 +56,13 @@ public class EntityInteractEvents {
     }
 
     public static ActionResult useEntity(PlayerEntity p, World world, Hand hand, Entity entity) {
-        if(p.world.isClient || p.isSpectator())
+        if (p.world.isClient || p.isSpectator())
             return ActionResult.PASS;
         ServerPlayerEntity player = (ServerPlayerEntity) p;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
         BlockPos pos = entity.getBlockPos();
         Claim claim = storage.getClaimAt(pos);
         if (claim != null) {
-            //works
             if (entity instanceof BoatEntity)
                 return claim.canInteract(player, EnumPermission.BOAT, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
             if (entity instanceof AbstractMinecartEntity) {
@@ -80,7 +74,6 @@ public class EntityInteractEvents {
                 return claim.canInteract(player, EnumPermission.TRADING, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
             if (entity instanceof ItemFrameEntity)
                 return claim.canInteract(player, EnumPermission.ITEMFRAMEROTATE, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
-
             return claim.canInteract(player, EnumPermission.ANIMALINTERACT, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
         }
         return ActionResult.PASS;
@@ -107,7 +100,7 @@ public class EntityInteractEvents {
                     return false;
                 boolean flag = !claim.canInteract(player, perm, pos, true);
                 if (flag) {
-                    if(proj instanceof PersistentProjectileEntity) {
+                    if (proj instanceof PersistentProjectileEntity) {
                         PersistentProjectileEntity pers = (PersistentProjectileEntity) proj;
                         ((IPersistentProjectileVars) pers).setInBlockState(pers.world.getBlockState(pos));
                         Vec3d vec3d = blockRes.getPos().subtract(pers.getX(), pers.getY(), pers.getZ());
@@ -123,11 +116,12 @@ public class EntityInteractEvents {
                         pers.setShotFromCrossbow(false);
                         ((IPersistentProjectileVars) pers).resetPiercingStatus();
                     }
+                    //find a way to properly update chorus fruit break on hit
                     //player.getServer().send(new ServerTask(player.getServer().getTicks()+2, ()->player.world.updateListeners(pos, state, state, 2)));
                 }
                 return flag;
-            } else if (res.getType() == HitResult.Type.ENTITY){
-                if(proj instanceof EnderPearlEntity) {
+            } else if (res.getType() == HitResult.Type.ENTITY) {
+                if (proj instanceof EnderPearlEntity) {
                     ClaimStorage storage = ClaimStorage.get((ServerWorld) proj.world);
                     Claim claim = storage.getClaimAt(proj.getBlockPos());
                     return claim.canInteract(player, EnumPermission.ENDERPEARL, proj.getBlockPos(), true);
@@ -138,13 +132,12 @@ public class EntityInteractEvents {
         return false;
     }
 
-    public static boolean hurtEntity(LivingEntity entity, DamageSource source){
-        if(source.getAttacker() instanceof ServerPlayerEntity)
-            return attackSimple((ServerPlayerEntity) source.getAttacker(), entity, false)!=ActionResult.PASS;
-        else if(source.isExplosive() && !entity.world.isClient){
+    public static boolean preventDamage(LivingEntity entity, DamageSource source) {
+        if (source.getAttacker() instanceof ServerPlayerEntity)
+            return attackSimple((ServerPlayerEntity) source.getAttacker(), entity, false) != ActionResult.PASS;
+        else if (source.isExplosive() && !entity.world.isClient) {
             Claim claim = ClaimStorage.get((ServerWorld) entity.world).getClaimAt(entity.getBlockPos());
-            if(claim!=null && !claim.canInteract(null, EnumPermission.EXPLOSIONS, entity.getBlockPos()))
-                return true;
+            return claim != null && !claim.canInteract(null, EnumPermission.EXPLOSIONS, entity.getBlockPos());
         }
         return false;
     }

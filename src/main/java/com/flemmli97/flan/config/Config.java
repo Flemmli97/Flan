@@ -8,7 +8,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.registry.Registry;
-import org.lwjgl.system.CallbackI;
 
 import java.io.File;
 import java.io.FileReader;
@@ -25,7 +24,7 @@ public class Config {
     public int minClaimsize = 100;
     public int defaultClaimDepth = 255;
 
-    public String[] blacklistedWorlds = new String[] {"minecraft:the_nether"};
+    public String[] blacklistedWorlds = new String[0];
     public boolean worldWhitelist;
 
     public Item claimingItem = Items.GOLDEN_HOE;
@@ -36,10 +35,10 @@ public class Config {
     public Config(MinecraftServer server) {
         File configDir = server.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();
         try {
-            if(!configDir.exists())
+            if (!configDir.exists())
                 configDir.mkdirs();
             this.config = new File(configDir, "flan_config.json");
-            if(!this.config.exists()) {
+            if (!this.config.exists()) {
                 this.config.createNewFile();
                 this.save();
             }
@@ -60,7 +59,7 @@ public class Config {
             this.defaultClaimDepth = obj.get("defaultClaimDepth").getAsInt();
             JsonArray arr = obj.getAsJsonArray("blacklistedWorlds");
             this.blacklistedWorlds = new String[arr.size()];
-            for(int i = 0; i < arr.size(); i ++)
+            for (int i = 0; i < arr.size(); i++)
                 this.blacklistedWorlds[i] = arr.get(i).getAsString();
             this.worldWhitelist = obj.get("worldWhitelist").getAsBoolean();
             this.claimingItem = Registry.ITEM.get(new Identifier((obj.get("claimingItem").getAsString())));

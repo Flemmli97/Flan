@@ -3,7 +3,6 @@ package com.flemmli97.flan.gui;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.config.ConfigHandler;
-import com.flemmli97.flan.player.EnumEditMode;
 import com.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -30,7 +29,6 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
     }
 
     public static void openClaimMenu(ServerPlayerEntity player, Claim claim) {
-
         NamedScreenHandlerFactory fac = new NamedScreenHandlerFactory() {
             @Override
             public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
@@ -39,7 +37,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
 
             @Override
             public Text getDisplayName() {
-                return Text.of(claim.parentClaim()!=null?"SubClaim-Menu":"Claim-Menu");
+                return Text.of(claim.parentClaim() != null ? "SubClaim-Menu" : "Claim-Menu");
             }
         };
         player.openHandledScreen(fac);
@@ -98,11 +96,20 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 break;
             case 8:
-                ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
-                storage.deleteClaim(this.claim, true, PlayerClaimData.get(player).getEditMode(), player.getServerWorld());
                 player.closeHandledScreen();
-                player.sendMessage(Text.of(ConfigHandler.lang.deleteClaim), false);
-                ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_PLACE, 1, 1f);
+                player.getServer().execute(() -> ConfirmScreenHandler.openConfirmScreen(player, (bool) -> {
+                    if (bool) {
+                        ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
+                        storage.deleteClaim(this.claim, true, PlayerClaimData.get(player).getEditMode(), player.getServerWorld());
+                        player.closeHandledScreen();
+                        player.sendMessage(Text.of(ConfigHandler.lang.deleteClaim), false);
+                        ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_PLACE, 1, 1f);
+                    } else {
+                        player.closeHandledScreen();
+                        player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.claim));
+                        ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_VILLAGER_NO, 1, 1f);
+                    }
+                }));
                 break;
         }
         return true;

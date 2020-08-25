@@ -11,18 +11,13 @@ import com.flemmli97.flan.player.PlayerClaimData;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.LecternBlock;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.BucketItem;
-import net.minecraft.item.EndCrystalItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
-import net.minecraft.item.ToolItem;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -65,30 +60,31 @@ public class ItemInteractEvents {
         if (claim == null)
             return TypedActionResult.pass(stack);
         if (stack.getItem() == Items.ENDER_PEARL)
-            return claim.canInteract(player, EnumPermission.ENDERPEARL, pos, true)? TypedActionResult.pass(stack) : TypedActionResult.fail(stack);
+            return claim.canInteract(player, EnumPermission.ENDERPEARL, pos, true) ? TypedActionResult.pass(stack) : TypedActionResult.fail(stack);
         if (stack.getItem() instanceof BucketItem)
             return claim.canInteract(player, EnumPermission.BUCKET, pos, true) ? TypedActionResult.pass(stack) : TypedActionResult.fail(stack);
         return TypedActionResult.pass(stack);
     }
 
-    private static Set<Item> blackListedItems = Sets.newHashSet(Items.COMPASS, Items.FILLED_MAP, Items.FIREWORK_ROCKET);
-    public static ActionResult onItemUseBlock(ItemUsageContext context){
-        if(context.getWorld().isClient || context.getStack().isEmpty())
+    private static final Set<Item> blackListedItems = Sets.newHashSet(Items.COMPASS, Items.FILLED_MAP, Items.FIREWORK_ROCKET);
+
+    public static ActionResult onItemUseBlock(ItemUsageContext context) {
+        if (context.getWorld().isClient || context.getStack().isEmpty())
             return ActionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) context.getWorld());
         BlockPos placePos = context.getBlockPos().offset(context.getSide());
         Claim claim = storage.getClaimAt(placePos);
-        if(claim==null)
+        if (claim == null)
             return ActionResult.PASS;
-        if(blackListedItems.contains(context.getStack().getItem()))
+        if (blackListedItems.contains(context.getStack().getItem()))
             return ActionResult.PASS;
         ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
-        if(context.getStack().getItem() == Items.END_CRYSTAL) {
-            if(claim.canInteract(player, EnumPermission.ENDCRYSTALPLACE, placePos, true))
+        if (context.getStack().getItem() == Items.END_CRYSTAL) {
+            if (claim.canInteract(player, EnumPermission.ENDCRYSTALPLACE, placePos, true))
                 return ActionResult.PASS;
             return ActionResult.FAIL;
         }
-        if(claim.canInteract(player, EnumPermission.PLACE, placePos, true))
+        if (claim.canInteract(player, EnumPermission.PLACE, placePos, true))
             return ActionResult.PASS;
         BlockState other = context.getWorld().getBlockState(placePos.up());
         player.world.updateListeners(placePos.up(), other, other, 2);
@@ -96,23 +92,22 @@ public class ItemInteractEvents {
         return ActionResult.FAIL;
     }
 
-    private static boolean cantClaimInWorld(ServerWorld world){
-        for(String s : ConfigHandler.config.blacklistedWorlds){
-            if(s.equals(world.getRegistryKey().getValue().toString())) {
+    private static boolean cantClaimInWorld(ServerWorld world) {
+        for (String s : ConfigHandler.config.blacklistedWorlds) {
+            if (s.equals(world.getRegistryKey().getValue().toString())) {
                 return true;
             }
         }
         return false;
     }
 
-    public static void claimLandHandling(ServerPlayerEntity player, BlockPos target){
-        if(ConfigHandler.config.worldWhitelist){
-            if(!cantClaimInWorld(player.getServerWorld())) {
+    public static void claimLandHandling(ServerPlayerEntity player, BlockPos target) {
+        if (ConfigHandler.config.worldWhitelist) {
+            if (!cantClaimInWorld(player.getServerWorld())) {
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.landClaimDisabledWorld, Formatting.DARK_RED), false);
                 return;
             }
-        }
-        else if(cantClaimInWorld(player.getServerWorld())) {
+        } else if (cantClaimInWorld(player.getServerWorld())) {
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.landClaimDisabledWorld, Formatting.DARK_RED), false);
             return;
         }
@@ -123,34 +118,31 @@ public class ItemInteractEvents {
             if (claim.canInteract(player, EnumPermission.EDITCLAIM, target)) {
                 if (data.getEditMode() == EnumEditMode.SUBCLAIM) {
                     Claim subClaim = claim.getSubClaim(target);
-                    if (subClaim != null && data.currentEdit()==null) {
+                    if (subClaim != null && data.currentEdit() == null) {
                         if (subClaim.isCorner(target)) {
                             data.setEditClaim(subClaim, player.getBlockPos().getY());
                             data.setEditingCorner(target);
                             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.resizeClaim, Formatting.GOLD), false);
-                        }
-                        else {
+                        } else {
                             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.cantClaimHere, Formatting.RED), false);
                         }
                     } else {
-                        if(data.currentEdit()!=null){
+                        if (data.currentEdit() != null) {
                             Set<Claim> fl = claim.resizeSubclaim(data.currentEdit(), data.editingCorner(), target);
-                            if(!fl.isEmpty()) {
+                            if (!fl.isEmpty()) {
                                 fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.MAIN, player.getBlockPos().getY()));
                                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
                             }
                             data.setEditClaim(null, 0);
                             data.setEditingCorner(null);
-                        }
-                        else if (data.editingCorner() != null) {
+                        } else if (data.editingCorner() != null) {
                             Set<Claim> fl = claim.tryCreateSubClaim(data.editingCorner(), target);
                             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
-                            if(!fl.isEmpty()) {
+                            if (!fl.isEmpty()) {
                                 fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.MAIN, player.getBlockPos().getY()));
                                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
-                            }
-                            else{
+                            } else {
                                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.subClaimCreateSuccess, Formatting.GOLD), false);
                             }
                             data.setEditingCorner(null);
@@ -162,13 +154,11 @@ public class ItemInteractEvents {
                         data.setEditClaim(claim, player.getBlockPos().getY());
                         data.setEditingCorner(target);
                         player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.resizeClaim, Formatting.GOLD), false);
-                    }
-                    else if(data.currentEdit()!=null){
+                    } else if (data.currentEdit() != null) {
                         storage.resizeClaim(data.currentEdit(), data.editingCorner(), target, player);
                         data.setEditClaim(null, 0);
                         data.setEditingCorner(null);
-                    }
-                    else {
+                    } else {
                         data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                         player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.cantClaimHere, Formatting.RED), false);
                     }
@@ -177,30 +167,26 @@ public class ItemInteractEvents {
                 data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.cantClaimHere, Formatting.RED), false);
             }
-        }
-        else if(data.getEditMode() == EnumEditMode.SUBCLAIM){
+        } else if (data.getEditMode() == EnumEditMode.SUBCLAIM) {
             player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.wrongMode, data.getEditMode()), Formatting.RED), false);
-        }
-        else {
-            if(data.currentEdit()!=null){
+        } else {
+            if (data.currentEdit() != null) {
                 storage.resizeClaim(data.currentEdit(), data.editingCorner(), target, player);
                 data.setEditClaim(null, 0);
                 data.setEditingCorner(null);
-            }
-            else if (data.editingCorner() != null) {
+            } else if (data.editingCorner() != null) {
                 storage.createClaim(data.editingCorner(), target, player);
                 data.setEditingCorner(null);
-            }
-            else
+            } else
                 data.setEditingCorner(target);
         }
     }
 
-    public static void inspect(ServerPlayerEntity player, BlockPos target){
+    public static void inspect(ServerPlayerEntity player, BlockPos target) {
         Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(target);
         if (claim != null) {
-            String owner = claim.getOwner()==null?"<Admin>":"<UNKOWN>";
-            if(claim.getOwner()!=null) {
+            String owner = claim.getOwner() == null ? "<Admin>" : "<UNKOWN>";
+            if (claim.getOwner() != null) {
                 GameProfile prof = player.getServer().getUserCache().getByUuid(claim.getOwner());
                 if (prof != null && prof.getName() != null)
                     owner = prof.getName();
