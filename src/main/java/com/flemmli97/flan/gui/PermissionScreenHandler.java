@@ -2,6 +2,7 @@ package com.flemmli97.flan.gui;
 
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.EnumPermission;
+import com.flemmli97.flan.claim.PermHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -39,7 +40,7 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
 
             @Override
             public Text getDisplayName() {
-                return Text.of(group == null ? "Global-Permissions" : String.format("%s-Permissions", group));
+                return PermHelper.simpleColoredText(group == null ? "Global-Permissions" : String.format("%s-Permissions", group));
             }
         };
         player.openHandledScreen(fac);
@@ -54,7 +55,7 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
 
             @Override
             public Text getDisplayName() {
-                return Text.of(group == null ? "Global-Permissions" : String.format("%s-Permissions", group));
+                return PermHelper.simpleColoredText(group == null ? "Global-Permissions" : String.format("%s-Permissions", group));
             }
         };
         player.openHandledScreen(fac);
@@ -82,7 +83,7 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + page * 28;
                 if (id < EnumPermission.values().length)
-                    inv.setStack(i, ServerScreenHelper.fromPermission((Claim) additionalData[0], EnumPermission.values()[id], additionalData[1]==null?null:additionalData[1].toString()));
+                    inv.setStack(i, ServerScreenHelper.fromPermission((Claim) additionalData[0], EnumPermission.values()[id], additionalData[1] == null ? null : additionalData[1].toString()));
             }
         }
     }

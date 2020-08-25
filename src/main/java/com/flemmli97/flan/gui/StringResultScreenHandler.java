@@ -1,6 +1,7 @@
 package com.flemmli97.flan.gui;
 
 import com.flemmli97.flan.claim.Claim;
+import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,10 +34,10 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
     private StringResultScreenHandler(int syncId, PlayerInventory playerInventory, Consumer<String> cons, Runnable ret) {
         super(syncId, playerInventory);
         ItemStack stack = new ItemStack(Items.PAPER);
-        stack.setCustomName(Text.of(""));
+        stack.setCustomName(PermHelper.simpleColoredText(""));
         this.input.setStack(0, stack);
         ItemStack out = new ItemStack(Items.BOOK);
-        out.setCustomName(Text.of(ConfigHandler.lang.stringScreenReturn));
+        out.setCustomName(PermHelper.simpleColoredText(ConfigHandler.lang.stringScreenReturn));
         this.output.setStack(0, out);
         this.cons = cons;
         this.ret = ret;
@@ -52,7 +53,7 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
 
             @Override
             public Text getDisplayName() {
-                return Text.of("");
+                return PermHelper.simpleColoredText("");
             }
         };
         player.openHandledScreen(fac);

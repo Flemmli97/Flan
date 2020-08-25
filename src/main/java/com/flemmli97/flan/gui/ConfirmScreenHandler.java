@@ -1,5 +1,6 @@
 package com.flemmli97.flan.gui;
 
+import com.flemmli97.flan.claim.PermHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -34,7 +35,7 @@ public class ConfirmScreenHandler extends ServerOnlyScreenHandler {
 
             @Override
             public Text getDisplayName() {
-                return Text.of("Confirm");
+                return PermHelper.simpleColoredText("Confirm");
             }
         };
         player.openHandledScreen(fac);

@@ -2,6 +2,7 @@ package com.flemmli97.flan.gui;
 
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.EnumPermission;
+import com.flemmli97.flan.claim.PermHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -39,7 +40,7 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler {
 
             @Override
             public Text getDisplayName() {
-                return Text.of("Claim-Groups");
+                return PermHelper.simpleColoredText("Claim-Groups");
             }
         };
         player.openHandledScreen(fac);

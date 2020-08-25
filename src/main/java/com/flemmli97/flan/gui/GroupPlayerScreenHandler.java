@@ -1,6 +1,7 @@
 package com.flemmli97.flan.gui;
 
 import com.flemmli97.flan.claim.Claim;
+import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.entity.SkullBlockEntity;
@@ -44,7 +45,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
 
             @Override
             public Text getDisplayName() {
-                return Text.of(group + "-Players");
+                return PermHelper.simpleColoredText(group + "-Players");
             }
         };
         player.openHandledScreen(fac);
@@ -108,7 +109,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
                 if (fl)
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_USE, 1, 1f);
                 else {
-                    player.sendMessage(Text.of(ConfigHandler.lang.playerGroupAddFail), false);
+                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.playerGroupAddFail, Formatting.RED), false);
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_VILLAGER_NO, 1, 1f);
                 }
             }, () -> {

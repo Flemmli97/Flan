@@ -91,7 +91,7 @@ public class CommandClaim {
 
     private static int reloadConfig(CommandContext<ServerCommandSource> context) {
         ConfigHandler.reloadConfigs();
-        context.getSource().sendFeedback(Text.of(ConfigHandler.lang.configReload), true);
+        context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.configReload), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -149,7 +149,7 @@ public class CommandClaim {
             else if (!b.get())
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteClaimError, Formatting.DARK_RED), false);
             else
-                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteClaim, Formatting.DARK_RED), false);
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteClaim, Formatting.RED), false);
         });
         if (!check)
             return 0;

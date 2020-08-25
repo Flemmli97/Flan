@@ -2,6 +2,7 @@ package com.flemmli97.flan.gui;
 
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.EnumPermission;
+import com.flemmli97.flan.claim.PermHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.ListTag;
@@ -19,7 +20,7 @@ public class ServerScreenHelper {
 
     public static ItemStack emptyFiller() {
         ItemStack stack = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
-        stack.setCustomName(Text.of(""));
+        stack.setCustomName(PermHelper.simpleColoredText(""));
         return stack;
     }
 

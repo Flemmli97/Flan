@@ -2,6 +2,7 @@ package com.flemmli97.flan.gui;
 
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
+import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.entity.player.PlayerEntity;
@@ -37,7 +38,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
 
             @Override
             public Text getDisplayName() {
-                return Text.of(claim.parentClaim() != null ? "SubClaim-Menu" : "Claim-Menu");
+                return PermHelper.simpleColoredText(claim.parentClaim() != null ? "SubClaim-Menu" : "Claim-Menu");
             }
         };
         player.openHandledScreen(fac);
@@ -102,7 +103,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
                         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
                         storage.deleteClaim(this.claim, true, PlayerClaimData.get(player).getEditMode(), player.getServerWorld());
                         player.closeHandledScreen();
-                        player.sendMessage(Text.of(ConfigHandler.lang.deleteClaim), false);
+                        player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteClaim, Formatting.RED), false);
                         ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_PLACE, 1, 1f);
                     } else {
                         player.closeHandledScreen();
