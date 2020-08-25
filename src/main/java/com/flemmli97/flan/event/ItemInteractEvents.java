@@ -129,7 +129,7 @@ public class ItemInteractEvents {
                         data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                     } else {
                         if (data.currentEdit() != null) {
-                            if(data.editingCorner()!=target) {
+                            if(!data.editingCorner().equals(target)) {
                                 Set<Claim> fl = claim.resizeSubclaim(data.currentEdit(), data.editingCorner(), target);
                                 if (!fl.isEmpty()) {
                                     fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.MAIN, player.getBlockPos().getY()));
@@ -139,7 +139,7 @@ public class ItemInteractEvents {
                                 data.setEditingCorner(null);
                             }
                         } else if (data.editingCorner() != null) {
-                            if(data.editingCorner()!=target) {
+                            if(!data.editingCorner().equals(target)) {
                                 Set<Claim> fl = claim.tryCreateSubClaim(data.editingCorner(), target);
                                 data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                                 if (!fl.isEmpty()) {
