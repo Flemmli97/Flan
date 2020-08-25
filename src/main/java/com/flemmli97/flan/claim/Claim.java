@@ -91,7 +91,7 @@ public class Claim {
             return null;
         if (this.parentClaim == null) {
             ClaimStorage storage = ClaimStorage.get(this.world);
-            this.parentClaim = storage.claimUUIDMap.get(this.parent);
+            this.parentClaim = storage.getFromUUID(this.parent);
         }
         return this.parentClaim;
     }
@@ -155,13 +155,13 @@ public class Claim {
             if (this.hasPerm(perm))
                 return true;
             if (message)
-                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), false);
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
             return false;
         }
         if (player.getUuid().equals(this.owner))
             return true;
         PlayerClaimData data = PlayerClaimData.get(player);
-        if (player.hasPermissionLevel(2) && data.isAdminIgnoreClaim())
+        if (player.hasPermissionLevel(2) || data.isAdminIgnoreClaim())
             return true;
         for (Claim claim : this.subClaims) {
             if (claim.insideClaim(pos)) {
@@ -177,14 +177,14 @@ public class Claim {
                 if (map.get(perm))
                     return true;
                 if (message)
-                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), false);
+                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
                 return false;
             }
         }
         if (this.hasPerm(perm))
             return true;
         if (message)
-            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), false);
+            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
         return false;
     }
 
@@ -371,7 +371,8 @@ public class Claim {
         this.minZ = pos.get(2).getAsInt();
         this.maxZ = pos.get(3).getAsInt();
         this.minY = pos.get(4).getAsInt();
-        this.owner = uuid;
+        if(!obj.has("AdminClaim"))
+            this.owner = uuid;
         this.claimID = UUID.fromString(obj.get("ID").getAsString());
         this.globalPerm.clear();
         this.permissions.clear();
@@ -412,6 +413,8 @@ public class Claim {
         pos.add(this.minY);
         obj.add("PosxXzZY", pos);
         obj.addProperty("ID", this.claimID.toString());
+        if(this.owner==null)
+            obj.addProperty("AdminClaim", true);
         if (this.parent != null)
             obj.addProperty("Parent", this.parent.toString());
         if (!this.globalPerm.isEmpty()) {

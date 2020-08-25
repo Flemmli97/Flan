@@ -37,9 +37,9 @@ import java.util.UUID;
 
 public class ClaimStorage {
 
-    public final Long2ObjectArrayMap<List<Claim>> claims = new Long2ObjectArrayMap<>();
-    public final Map<UUID, Claim> claimUUIDMap = Maps.newHashMap();
-    public final Map<UUID, Set<Claim>> playerClaimMap = Maps.newHashMap();
+    private final Long2ObjectArrayMap<List<Claim>> claims = new Long2ObjectArrayMap<>();
+    private final Map<UUID, Claim> claimUUIDMap = Maps.newHashMap();
+    private final Map<UUID, Set<Claim>> playerClaimMap = Maps.newHashMap();
 
     public static ClaimStorage get(ServerWorld world) {
         return (ClaimStorage) ((IClaimData) world).getClaimData();
@@ -154,6 +154,10 @@ public class ClaimStorage {
         return null;
     }
 
+    public Claim getFromUUID(UUID uuid) {
+        return this.claimUUIDMap.get(uuid);
+    }
+
     private void addClaim(Claim claim) {
         int[] pos = getChunkPos(claim);
         for (int x = pos[0]; x <= pos[1]; x++)
@@ -173,6 +177,10 @@ public class ClaimStorage {
 
     public Collection<Claim> allClaimsFromPlayer(UUID player) {
         return this.playerClaimMap.containsKey(player) ? ImmutableSet.copyOf(this.playerClaimMap.get(player)) : ImmutableSet.of();
+    }
+
+    public Collection<Claim> getAdminClaims(){
+        return ImmutableSet.copyOf(this.claimUUIDMap.values().stream().filter(claim->claim.getOwner()==null).iterator());
     }
 
     public static int[] getChunkPos(Claim claim) {

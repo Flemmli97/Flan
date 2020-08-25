@@ -239,9 +239,9 @@ public class PlayerClaimData {
     private int calculateUsedClaimBlocks() {
         int usedClaimsBlocks = 0;
         for (ServerWorld world : this.player.getServer().getWorlds()) {
-            Collection<Claim> claims = ClaimStorage.get(world).playerClaimMap.get(this.player.getUuid());
+            Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.player.getUuid());
             if (claims != null)
-                usedClaimsBlocks += claims.stream().mapToInt(Claim::getPlane).sum();
+                usedClaimsBlocks += claims.stream().filter(claim->claim.getOwner()!=null).mapToInt(Claim::getPlane).sum();
         }
         return usedClaimsBlocks;
     }

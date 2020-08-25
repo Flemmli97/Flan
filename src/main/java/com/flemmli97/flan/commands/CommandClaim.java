@@ -9,6 +9,7 @@ import com.flemmli97.flan.gui.ClaimMenuScreenHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.EnumEditMode;
 import com.flemmli97.flan.player.PlayerClaimData;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
@@ -54,6 +55,7 @@ public class CommandClaim {
                 CommandManager.literal("adminMode").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::switchAdminMode),
                 CommandManager.literal("readGriefPrevention").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::readGriefPreventionData),
                 CommandManager.literal("setAdminClaim").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::setAdminClaim),
+                CommandManager.literal("listAdminClaims").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::listAdminClaims),
                 CommandManager.literal("adminDelete").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::adminDelete)
                         .then(CommandManager.literal("all").then(CommandManager.argument("players", GameProfileArgumentType.gameProfile()))
                                 .executes(CommandClaim::adminDeleteAll)),
@@ -301,6 +303,15 @@ public class CommandClaim {
         }
         claim.setAdminClaim();
         src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.setAdminClaim, Formatting.GOLD), true);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int listAdminClaims(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource src = context.getSource();
+        Collection<Claim> claims = ClaimStorage.get(src.getWorld()).getAdminClaims();
+        src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.listAdminClaims, src.getWorld().getRegistryKey().getValue()), Formatting.GOLD), false);
+        for (Claim claim : claims)
+            src.sendFeedback(PermHelper.simpleColoredText(claim.formattedClaim(), Formatting.YELLOW), false);
         return Command.SINGLE_SUCCESS;
     }
 

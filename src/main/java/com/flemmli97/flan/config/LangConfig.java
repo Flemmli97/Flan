@@ -19,6 +19,7 @@ public class LangConfig {
     public String inspectNoClaim = "Nobody owns this block";
     public String claimBlocksFormat = "Claim Blocks: %1$d + (Bonus) %2$d; Used: %3$d";
     public String listClaims = "Listing all claims:";
+    public String listAdminClaims = "Listing all admin-claims in %1:";
 
     public String noPermission = "You don't have the required permissions to do that here!";
     public String noPermissionSimple = "Sorry you can't do that here!";
