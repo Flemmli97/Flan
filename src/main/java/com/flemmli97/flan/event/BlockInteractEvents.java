@@ -20,6 +20,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -92,10 +93,10 @@ public class BlockInteractEvents {
                         DoubleBlockHalf half = state.get(DoorBlock.HALF);
                         if (half == DoubleBlockHalf.LOWER) {
                             BlockState other = world.getBlockState(hitResult.getBlockPos().up());
-                            player.world.updateListeners(hitResult.getBlockPos().up(), other, other, 2);
+                            player.networkHandler.sendPacket(new BlockUpdateS2CPacket(hitResult.getBlockPos().up(), other));
                         } else {
                             BlockState other = world.getBlockState(hitResult.getBlockPos().down());
-                            player.world.updateListeners(hitResult.getBlockPos().down(), other, other, 2);
+                            player.networkHandler.sendPacket(new BlockUpdateS2CPacket(hitResult.getBlockPos().down(), other));
                         }
                     }
                     PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());

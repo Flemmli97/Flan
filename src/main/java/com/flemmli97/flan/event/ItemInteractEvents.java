@@ -18,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -81,21 +82,28 @@ public class ItemInteractEvents {
             return ActionResult.PASS;
         boolean actualInClaim = placePos.getY()>=claim.getDimensions()[4];
         ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
-        if (actualInClaim && context.getStack().getItem() == Items.END_CRYSTAL) {
-            if (claim.canInteract(player, EnumPermission.ENDCRYSTALPLACE, placePos, true))
+        if (context.getStack().getItem() == Items.END_CRYSTAL) {
+            if (claim.canInteract(player, EnumPermission.ENDCRYSTALPLACE, placePos, false))
                 return ActionResult.PASS;
-            return ActionResult.FAIL;
+            else if(actualInClaim) {
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
+                return ActionResult.FAIL;
+            }
         }
-        if (claim.canInteract(player, EnumPermission.PLACE, placePos, true)) {
+        if (claim.canInteract(player, EnumPermission.PLACE, placePos, false)) {
             if(!actualInClaim && context.getStack().getItem() instanceof BlockItem){
                 claim.extendDownwards(placePos);
             }
             return ActionResult.PASS;
         }
-        BlockState other = context.getWorld().getBlockState(placePos.up());
-        player.world.updateListeners(placePos.up(), other, other, 2);
-        PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
-        return ActionResult.FAIL;
+        else if(actualInClaim) {
+            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
+            BlockState other = context.getWorld().getBlockState(placePos.up());
+            player.networkHandler.sendPacket(new BlockUpdateS2CPacket(placePos.up(), other));
+            PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+            return ActionResult.FAIL;
+        }
+        return ActionResult.PASS;
     }
 
     private static boolean cantClaimInWorld(ServerWorld world) {
@@ -118,8 +126,11 @@ public class ItemInteractEvents {
             return;
         }
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
-        Claim claim = storage.getClaimAt(target);
+        Claim claim = storage.getClaimAt(target.add(0,255,0));
         PlayerClaimData data = PlayerClaimData.get(player);
+        if(data.claimCooldown())
+            return;
+        data.setClaimActionCooldown();
         if (claim != null) {
             if (claim.canInteract(player, EnumPermission.EDITCLAIM, target)) {
                 if (data.getEditMode() == EnumEditMode.SUBCLAIM) {
