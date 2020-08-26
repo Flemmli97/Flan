@@ -15,6 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
@@ -31,6 +32,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.security.Permission;
 import java.util.Set;
 
 public class ItemInteractEvents {
@@ -74,7 +76,7 @@ public class ItemInteractEvents {
         if (context.getWorld().isClient || context.getStack().isEmpty())
             return ActionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) context.getWorld());
-        BlockPos placePos = context.getBlockPos().offset(context.getSide());
+        BlockPos placePos = new ItemPlacementContext(context).getBlockPos();
         Claim claim = storage.getClaimAt(placePos.add(0,255,0));
         if (claim == null)
             return ActionResult.PASS;
@@ -206,8 +208,8 @@ public class ItemInteractEvents {
     public static void inspect(ServerPlayerEntity player, BlockPos target) {
         Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(target);
         if (claim != null) {
-            String owner = claim.getOwner() == null ? "<Admin>" : "<UNKOWN>";
-            if (claim.getOwner() != null) {
+            String owner = claim.isAdminClaim() ? "<Admin>" : "<UNKOWN>";
+            if (!claim.isAdminClaim()) {
                 GameProfile prof = player.getServer().getUserCache().getByUuid(claim.getOwner());
                 if (prof != null && prof.getName() != null)
                     owner = prof.getName();
