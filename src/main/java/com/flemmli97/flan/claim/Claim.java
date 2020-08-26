@@ -79,6 +79,11 @@ public class Claim {
         this.setDirty();
     }
 
+    public void extendDownwards(BlockPos pos){
+        this.minY = pos.getY();
+        this.setDirty();
+    }
+
     public UUID getClaimID() {
         return this.claimID;
     }

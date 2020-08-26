@@ -12,6 +12,7 @@ import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -73,19 +74,24 @@ public class ItemInteractEvents {
             return ActionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) context.getWorld());
         BlockPos placePos = context.getBlockPos().offset(context.getSide());
-        Claim claim = storage.getClaimAt(placePos);
+        Claim claim = storage.getClaimAt(placePos.add(0,255,0));
         if (claim == null)
             return ActionResult.PASS;
         if (blackListedItems.contains(context.getStack().getItem()))
             return ActionResult.PASS;
+        boolean actualInClaim = placePos.getY()>=claim.getDimensions()[4];
         ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
-        if (context.getStack().getItem() == Items.END_CRYSTAL) {
+        if (actualInClaim && context.getStack().getItem() == Items.END_CRYSTAL) {
             if (claim.canInteract(player, EnumPermission.ENDCRYSTALPLACE, placePos, true))
                 return ActionResult.PASS;
             return ActionResult.FAIL;
         }
-        if (claim.canInteract(player, EnumPermission.PLACE, placePos, true))
+        if (claim.canInteract(player, EnumPermission.PLACE, placePos, true)) {
+            if(!actualInClaim && context.getStack().getItem() instanceof BlockItem){
+                claim.extendDownwards(placePos);
+            }
             return ActionResult.PASS;
+        }
         BlockState other = context.getWorld().getBlockState(placePos.up());
         player.world.updateListeners(placePos.up(), other, other, 2);
         PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
