@@ -262,7 +262,7 @@ public class PlayerClaimData {
         for (ServerWorld world : this.player.getServer().getWorlds()) {
             Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.player.getUuid());
             if (claims != null)
-                usedClaimsBlocks += claims.stream().filter(claim->claim.getOwner()!=null).mapToInt(Claim::getPlane).sum();
+                usedClaimsBlocks += claims.stream().filter(claim->!claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
         }
         return usedClaimsBlocks;
     }

@@ -180,7 +180,7 @@ public class ClaimStorage {
     }
 
     public Collection<Claim> getAdminClaims(){
-        return ImmutableSet.copyOf(this.claimUUIDMap.values().stream().filter(claim->claim.getOwner()==null).iterator());
+        return ImmutableSet.copyOf(this.claimUUIDMap.values().stream().filter(claim->claim.isAdminClaim()).iterator());
     }
 
     public static int[] getChunkPos(Claim claim) {

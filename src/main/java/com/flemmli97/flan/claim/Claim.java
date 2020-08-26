@@ -30,6 +30,7 @@ public class Claim {
     private int minX, minZ, maxX, maxZ, minY;
 
     private UUID owner;
+    private boolean adminClaim;
 
     private UUID claimID;
     private final EnumMap<EnumPermission, Boolean> globalPerm = Maps.newEnumMap(EnumPermission.class);
@@ -112,10 +113,14 @@ public class Claim {
         this.setDirty();
     }
 
-    public void setAdminClaim() {
-        this.owner = null;
-        this.subClaims.forEach(claim->claim.owner = null);
+    public void toggleAdminClaim(boolean flag) {
+        this.adminClaim = flag;
+        this.subClaims.forEach(claim->claim.adminClaim = flag);
         this.setDirty();
+    }
+
+    public boolean isAdminClaim(){
+        return this.adminClaim;
     }
 
     public int getPlane() {
@@ -170,7 +175,7 @@ public class Claim {
         if (player.getUuid().equals(this.owner))
             return true;
         PlayerClaimData data = PlayerClaimData.get(player);
-        if ((this.owner==null && player.hasPermissionLevel(2)) || data.isAdminIgnoreClaim())
+        if ((this.adminClaim && player.hasPermissionLevel(2)) || data.isAdminIgnoreClaim())
             return true;
         for (Claim claim : this.subClaims) {
             if (claim.insideClaim(pos)) {
@@ -279,7 +284,7 @@ public class Claim {
     }
 
     public boolean setPlayerGroup(UUID player, String group, boolean force) {
-        if (this.owner != null && this.owner.equals(player))
+        if (this.owner.equals(player))
             return false;
         if (group == null) {
             this.playersGroups.remove(player);
@@ -392,8 +397,8 @@ public class Claim {
         this.minZ = pos.get(2).getAsInt();
         this.maxZ = pos.get(3).getAsInt();
         this.minY = pos.get(4).getAsInt();
-        if(!obj.has("AdminClaim"))
-            this.owner = uuid;
+        this.owner = uuid;
+        this.adminClaim = obj.has("AdminClaim")?obj.get("AdminClaim").getAsBoolean():false;
         this.claimID = UUID.fromString(obj.get("ID").getAsString());
         this.globalPerm.clear();
         this.permissions.clear();
@@ -434,8 +439,7 @@ public class Claim {
         pos.add(this.minY);
         obj.add("PosxXzZY", pos);
         obj.addProperty("ID", this.claimID.toString());
-        if(this.owner==null)
-            obj.addProperty("AdminClaim", true);
+        obj.addProperty("AdminClaim", this.adminClaim);
         if (this.parent != null)
             obj.addProperty("Parent", this.parent.toString());
         if (!this.globalPerm.isEmpty()) {
@@ -506,8 +510,8 @@ public class Claim {
         boolean perms = this.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos());
         List<Text> l = Lists.newArrayList();
         l.add(PermHelper.simpleColoredText("=============================================", Formatting.GREEN));
-        GameProfile prof = this.owner != null ? player.getServer().getUserCache().getByUuid(this.owner) : null;
-        String ownerName = this.owner == null ? "Admin" : prof != null ? prof.getName() : "<UNKNOWN>";
+        GameProfile prof = player.getServer().getUserCache().getByUuid(this.owner);
+        String ownerName = this.adminClaim ? "Admin" : prof != null ? prof.getName() : "<UNKNOWN>";
         if(this.parent==null)
             l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfo, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), Formatting.GOLD));
         else

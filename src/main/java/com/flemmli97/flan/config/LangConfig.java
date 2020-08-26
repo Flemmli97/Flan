@@ -55,7 +55,7 @@ public class LangConfig {
 
     public String adminMode = "Adminmode (Ignore Claims) set to: %s";
     public String adminDeleteAll = "Deleted all claims for following players: %s";
-    public String setAdminClaim = "Claim changed to an Adminclaim";
+    public String setAdminClaim = "Adminclaim of this claim now: %s";
     public String readGriefpreventionData = "Reading data from GriefPrevention";
     public String readGriefpreventionDataSuccess = "Successfully read data";
     public String readGriefpreventionDataFail = "Failed reading data for following claim files (Check the logs!): %s";

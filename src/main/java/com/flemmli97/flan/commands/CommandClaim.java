@@ -9,12 +9,13 @@ import com.flemmli97.flan.gui.ClaimMenuScreenHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.EnumEditMode;
 import com.flemmli97.flan.player.PlayerClaimData;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -55,7 +56,7 @@ public class CommandClaim {
                 CommandManager.literal("switchMode").executes(CommandClaim::switchClaimMode),
                 CommandManager.literal("adminMode").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::switchAdminMode),
                 CommandManager.literal("readGriefPrevention").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::readGriefPreventionData),
-                CommandManager.literal("setAdminClaim").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::setAdminClaim),
+                CommandManager.literal("setAdminClaim").requires(src -> src.hasPermissionLevel(2)).then(CommandManager.argument("toggle", BoolArgumentType.bool()).executes(CommandClaim::toggleAdminClaim)),
                 CommandManager.literal("listAdminClaims").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::listAdminClaims),
                 CommandManager.literal("adminDelete").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::adminDelete)
                         .then(CommandManager.literal("all").then(CommandManager.argument("players", GameProfileArgumentType.gameProfile())
@@ -294,7 +295,7 @@ public class CommandClaim {
         return Command.SINGLE_SUCCESS;
     }
 
-    private static int setAdminClaim(CommandContext<ServerCommandSource> context) {
+    private static int toggleAdminClaim(CommandContext<ServerCommandSource> context) {
         ServerCommandSource src = context.getSource();
         ClaimStorage storage = ClaimStorage.get(src.getWorld());
         Claim claim = storage.getClaimAt(new BlockPos(src.getPosition()));
@@ -302,8 +303,8 @@ public class CommandClaim {
             src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.noClaim, Formatting.RED), false);
             return 0;
         }
-        claim.setAdminClaim();
-        src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.setAdminClaim, Formatting.GOLD), true);
+        claim.toggleAdminClaim(BoolArgumentType.getBool(context, "toggle"));
+        src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.setAdminClaim, claim.isAdminClaim()), Formatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 
