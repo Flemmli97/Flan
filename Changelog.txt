@@ -1,3 +1,9 @@
+Flan 1.0.2
+======================
+- Fix Nullpointer with admin claims
+- Removed unneccessary and wrong confirmation for admin single claim deletion
+- Fix block placing sometimes using the wrong position
+
 Flan 1.0.1
 ======================
 - Fix data being deleted when there was a saving error
