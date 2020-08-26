@@ -56,7 +56,8 @@ public class ClaimDisplay {
     }
 
     public boolean display(ServerPlayerEntity player) {
-        this.displayTime--;
+        if(--this.displayTime % 2 == 0)
+            return toDisplay.isRemoved();
         int[] dims = this.toDisplay.getDimensions();
         if (this.poss == null || this.changed(dims)) {
             this.middlePoss = calculateDisplayPos(player.getServerWorld(), dims, this.height);
@@ -68,11 +69,15 @@ public class ClaimDisplay {
             };
         }
         for (int[] pos : this.poss) {
-            player.networkHandler.sendPacket(new ParticleS2CPacket(this.corner, true, pos[0] + 0.5, pos[1] + 0.25, pos[2] + 0.5, 0, 0.25f, 0, 0, 1));
+            if(pos[1]!=pos[2])
+                player.networkHandler.sendPacket(new ParticleS2CPacket(this.corner, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
+            player.networkHandler.sendPacket(new ParticleS2CPacket(this.corner, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
         }
         if (this.middlePoss != null)
             for (int[] pos : this.middlePoss) {
-                player.networkHandler.sendPacket(new ParticleS2CPacket(this.middle, true, pos[0] + 0.5, pos[1] + 0.25, pos[2] + 0.5, 0, 0.25f, 0, 0, 1));
+                if(pos[1]!=pos[2])
+                    player.networkHandler.sendPacket(new ParticleS2CPacket(this.middle, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
+                player.networkHandler.sendPacket(new ParticleS2CPacket(this.middle, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
             }
         this.prevDims = dims;
         return toDisplay.isRemoved() || displayTime < 0;
@@ -121,27 +126,48 @@ public class ClaimDisplay {
         addEvenly(min + step, max - step, step, l);
     }
 
-    private static int[] getPosFrom(ServerWorld world, int x, int z, int maxY) {
-        int y = nextAirBlockFrom(world, x, maxY, z);
-        return new int[]{x, y, z};
+    /**
+     * Returns an array of of form [x,y1,y2,z] where y1 = height of the lowest replaceable block and y2 = height of the
+     * lowest air block above water (if possible)
+     */
+    public static int[] getPosFrom(ServerWorld world, int x, int z, int maxY) {
+        int[] y = nextAirAndWaterBlockFrom(world, x, maxY, z);
+        return new int[]{x, y[0], y[1], z};
     }
 
-    private static int nextAirBlockFrom(ServerWorld world, int x, int y, int z) {
+    private static int[] nextAirAndWaterBlockFrom(ServerWorld world, int x, int y, int z) {
         BlockPos pos = new BlockPos(x, y, z);
         BlockState state = world.getBlockState(pos);
         if (state.getMaterial().isReplaceable()) {
             pos = pos.down();
-            while (world.getBlockState(pos).getMaterial().isReplaceable()) {
+            state = world.getBlockState(pos);
+            while (state.getMaterial().isReplaceable()) {
                 pos = pos.down();
+                state = world.getBlockState(pos);
             }
             pos = pos.up();
+            state = world.getBlockState(pos);
         } else {
             pos = pos.up();
-            while (!world.getBlockState(pos).getMaterial().isReplaceable()) {
+            state = world.getBlockState(pos);
+            while (!state.getMaterial().isReplaceable()) {
                 pos = pos.up();
+                state = world.getBlockState(pos);
             }
         }
-        return pos.getY();
+        int[] yRet = new int[]{pos.getY(), pos.getY()};
+        if(state.getMaterial().isLiquid()){
+            pos = pos.up();
+            state = world.getBlockState(pos);
+            while (state.getMaterial().isLiquid()) {
+                pos = pos.up();
+                state = world.getBlockState(pos);
+            }
+            if(state.getMaterial().isReplaceable())
+                yRet[1] = pos.getY();
+        }
+
+        return yRet;
     }
 
     @Override

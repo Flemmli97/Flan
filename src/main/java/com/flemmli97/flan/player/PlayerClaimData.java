@@ -27,7 +27,7 @@ import java.util.UUID;
 
 public class PlayerClaimData {
 
-    private int claimBlocks, additionalClaimBlocks, confirmTick;
+    private int claimBlocks, additionalClaimBlocks, confirmTick, actionCooldown;
 
     private int lastBlockTick;
     private EnumEditMode mode = EnumEditMode.DEFAULT;
@@ -35,6 +35,7 @@ public class PlayerClaimData {
     private ClaimDisplay displayEditing;
 
     private BlockPos firstCorner;
+    private int[] cornerRenderPos;
 
     private final Set<ClaimDisplay> claimDisplayList = Sets.newHashSet();
     private final Set<ClaimDisplay> displayToAdd = Sets.newHashSet();
@@ -88,6 +89,19 @@ public class PlayerClaimData {
         return this.calculateUsedClaimBlocks();
     }
 
+    /**
+     * To prevent double processing. most notably when right clicking on a block and the block doesnt do anything ->
+     * block onUse -> item use. Might be a better way but for now this. But also handles having
+     * same items on both hands triggering
+     */
+    public void setClaimActionCooldown(){
+        this.actionCooldown = 10;
+    }
+
+    public boolean claimCooldown(){
+        return this.actionCooldown>0;
+    }
+
     public Claim currentEdit() {
         return this.editingClaim;
     }
@@ -113,8 +127,8 @@ public class PlayerClaimData {
 
     public void setEditMode(EnumEditMode mode) {
         this.mode = mode;
-        this.editingClaim = null;
-        this.firstCorner = null;
+        this.setEditClaim(null, 0);
+        this.setEditingCorner(null);
     }
 
     public BlockPos editingCorner() {
@@ -128,7 +142,10 @@ public class PlayerClaimData {
                 pos = pos.down();
                 state = this.player.world.getBlockState(pos);
             }
+            this.cornerRenderPos = ClaimDisplay.getPosFrom(this.player.getServerWorld(), pos.getX(), pos.getZ(), pos.getY());
         }
+        else
+            this.cornerRenderPos = null;
         this.firstCorner = pos;
     }
 
@@ -162,16 +179,20 @@ public class PlayerClaimData {
             this.addClaimBlocks(1);
             this.lastBlockTick = 0;
         }
-        if (this.firstCorner != null)
-            this.player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.SETCORNER, true, this.firstCorner.getX() + 0.5, this.firstCorner.getY() + 1.25, this.firstCorner.getZ() + 0.5, 0, 0.25f, 0, 0, 3));
+        if (this.cornerRenderPos != null) {
+            if(this.cornerRenderPos[1]!=this.cornerRenderPos[2])
+                player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.SETCORNER, true, this.cornerRenderPos[0] + 0.5, this.cornerRenderPos[2] + 0.25, this.cornerRenderPos[3] + 0.5, 0, 0.25f, 0, 0, 2));
+            player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.SETCORNER, true, this.cornerRenderPos[0] + 0.5, this.cornerRenderPos[1] + 0.25, this.cornerRenderPos[3] + 0.5, 0, 0.25f, 0, 0, 2));
+        }
         if (--this.confirmTick < 0)
             this.confirmDeleteAll = false;
         if (this.displayEditing != null)
             this.displayEditing.display(this.player);
         if (this.player.getMainHandStack().getItem() != ConfigHandler.config.claimingItem && this.player.getOffHandStack().getItem() != ConfigHandler.config.claimingItem) {
-            this.firstCorner = null;
-            this.editingClaim = null;
+            this.setEditingCorner(null);
+            this.setEditClaim(null, 0);
         }
+        this.actionCooldown--;
     }
 
     public void save(MinecraftServer server) {
