@@ -22,7 +22,7 @@ public class Config {
     public int maxClaimBlocks = 5000;
     public int ticksForNextBlock = 1200;
     public int minClaimsize = 100;
-    public int defaultClaimDepth = 255;
+    public int defaultClaimDepth = 10;
 
     public String[] blacklistedWorlds = new String[0];
     public boolean worldWhitelist;
