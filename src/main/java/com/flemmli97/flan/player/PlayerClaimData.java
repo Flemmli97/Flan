@@ -184,10 +184,10 @@ public class PlayerClaimData {
             File file = new File(dir, this.player.getUuid() + ".json");
             if (!file.exists())
                 file.createNewFile();
-            FileWriter writer = new FileWriter(file);
             JsonObject obj = new JsonObject();
             obj.addProperty("ClaimBlocks", this.claimBlocks);
             obj.addProperty("AdditionalBlocks", this.additionalClaimBlocks);
+            FileWriter writer = new FileWriter(file);
             ConfigHandler.GSON.toJson(obj, writer);
             writer.close();
         } catch (IOException e) {

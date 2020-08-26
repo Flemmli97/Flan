@@ -240,9 +240,9 @@ public class ClaimStorage {
                         }
                 }
                 if (dirty) {
-                    FileWriter writer = new FileWriter(file);
                     JsonArray arr = new JsonArray();
                     e.getValue().forEach(claim -> arr.add(claim.toJson(new JsonObject())));
+                    FileWriter writer = new FileWriter(file);
                     ConfigHandler.GSON.toJson(arr, writer);
                     writer.close();
                 }
@@ -252,7 +252,7 @@ public class ClaimStorage {
         }
     }
 
-    public static List<String> readGriefPreventionData(MinecraftServer server) {
+    public static Set<String> readGriefPreventionData(MinecraftServer server) {
         Yaml yml = new Yaml();
         File griefPrevention = server.getSavePath(WorldSavePath.ROOT).resolve("plugins/GriefPreventionData/ClaimData").toFile();
         if (!griefPrevention.exists())
@@ -262,15 +262,24 @@ public class ClaimStorage {
 
         try {
             //Get all parent claims
+            Set<String> failedClaimsFile = Sets.newHashSet();
             for (File f : griefPrevention.listFiles()) {
+                System.out.println("f " + f.getName());
                 if (f.getName().endsWith(".yml")) {
                     FileReader reader = new FileReader(f);
                     Map<String, Object> values = yml.load(reader);
                     if (values.get("Parent Claim ID").equals(-1)) {
-                        intFileMap.put(Integer.valueOf(values.get("Parent Claim ID").toString()), f);
+                        try {
+                            intFileMap.put(Integer.valueOf(f.getName().replace(".yml", "")), f);
+                        }
+                        catch (NumberFormatException e){
+                            failedClaimsFile.add(f.getName());
+                        }
                     }
                 }
             }
+            System.out.println(subClaimMap);
+            System.out.println(intFileMap);
             //Map child to parent claims
             for (File f : griefPrevention.listFiles()) {
                 if (f.getName().endsWith(".yml")) {
@@ -279,13 +288,12 @@ public class ClaimStorage {
                     if (!values.get("Parent Claim ID").equals(-1)) {
                         subClaimMap.merge(intFileMap.get(Integer.valueOf(values.get("Parent Claim ID").toString()))
                                 , Lists.newArrayList(f), (key, val) -> {
-                                    val.add(f);
-                                    return val;
+                                    key.add(f);
+                                    return key;
                                 });
                     }
                 }
             }
-            List<String> failedClaimsFile = Lists.newArrayList();
             for (File parent : intFileMap.values()) {
                 Pair<ServerWorld, Claim> parentClaim = parseFromYaml(parent, yml, server);
                 List<File> childs = subClaimMap.get(parent);
@@ -294,8 +302,10 @@ public class ClaimStorage {
                         parentClaim.second.addSubClaimGriefprevention(parseFromYaml(childF, yml, server).second);
                 }
                 ClaimStorage storage = ClaimStorage.get(parentClaim.first);
-                if (storage.conflicts(parentClaim.second, null).isEmpty())
+                if (storage.conflicts(parentClaim.second, null).isEmpty()) {
+                    parentClaim.second.setClaimID(storage.generateUUID());
                     storage.addClaim(parentClaim.second);
+                }
                 else
                     failedClaimsFile.add(parent.getName());
             }
@@ -316,7 +326,7 @@ public class ClaimStorage {
         String[] greaterCorner = values.get("Greater Boundary Corner").toString().split(";");
         ServerWorld world = server.getWorld(worldRegFromString(lesserCorner[0]));
         Claim claim = new Claim(Integer.parseInt(lesserCorner[1]), Integer.parseInt(greaterCorner[1]),
-                Integer.parseInt(lesserCorner[3]), Integer.parseInt(greaterCorner[3]),
+                Integer.parseInt(lesserCorner[3]), Integer.parseInt(greaterCorner[3]), ConfigHandler.config.defaultClaimDepth == 255?0:
                 Integer.parseInt(lesserCorner[2]), owner, world);
         return Pair.of(world, claim);
     }

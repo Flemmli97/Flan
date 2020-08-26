@@ -37,6 +37,7 @@ import net.minecraft.world.World;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class CommandClaim {
@@ -318,7 +319,7 @@ public class CommandClaim {
     private static int readGriefPreventionData(CommandContext<ServerCommandSource> context) {
         ServerCommandSource src = context.getSource();
         src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.readGriefpreventionData, Formatting.GOLD), true);
-        List<String> errors = ClaimStorage.readGriefPreventionData(src.getMinecraftServer());
+        Set<String> errors = ClaimStorage.readGriefPreventionData(src.getMinecraftServer());
         PlayerClaimData.readGriefPreventionPlayerData(src.getMinecraftServer());
         if (errors == null)
             src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.readGriefpreventionDataSuccess, Formatting.GOLD), true);
