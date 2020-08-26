@@ -258,15 +258,6 @@ public class CommandClaim {
             src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.noClaim, Formatting.RED), false);
             return 0;
         }
-        if (src.getEntity() instanceof ServerPlayerEntity) {
-            ServerPlayerEntity player = (ServerPlayerEntity) src.getEntity();
-            PlayerClaimData data = PlayerClaimData.get(player);
-            if (!data.confirmedDeleteAll()) {
-                data.setConfirmDeleteAll(true);
-                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteAllClaimConfirm, Formatting.DARK_RED), false);
-                return Command.SINGLE_SUCCESS;
-            }
-        }
         storage.deleteClaim(claim, true, EnumEditMode.DEFAULT, src.getWorld());
         src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.deleteClaim, Formatting.RED), true);
         return Command.SINGLE_SUCCESS;
