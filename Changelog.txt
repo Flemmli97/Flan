@@ -3,3 +3,6 @@ Flan 1.0.1
 - Fix data being deleted when there was a saving error
 - Fix reading GriefPrevention data
 - Add auto extend claims downwards
+- Prevent double processing when right clicking a block with a usable item
+- Add Raid permission flag
+- Improved visual for claims dealing with liquids
