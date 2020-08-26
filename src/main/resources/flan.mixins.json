@@ -19,7 +19,8 @@
     "ItemStackMixin",
     "ILecternBlockValues",
     "FluidMixin",
-    "PistonMixin"
+    "PistonMixin",
+    "RaidManagerMixin"
   ],
   "server": [
   ],

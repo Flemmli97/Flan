@@ -5,6 +5,7 @@ import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.EnumPermission;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -59,5 +60,12 @@ public class WorldEvents {
         if (from != null)
             fl = from.equals(to);
         return fl;
+    }
+
+    public static boolean canStartRaid(ServerPlayerEntity player){
+        Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(player.getBlockPos());
+        if(claim!=null && !claim.canInteract(player, EnumPermission.RAID, player.getBlockPos()))
+            return false;
+        return true;
     }
 }

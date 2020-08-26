@@ -2,7 +2,9 @@ package com.flemmli97.flan.claim;
 
 import com.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.village.raid.Raid;
 
 public enum EnumPermission {
 
@@ -29,6 +31,7 @@ public enum EnumPermission {
     PROJECTILES(Items.ARROW),
     TRAMPLE(Items.FARMLAND),
     PORTAL(Items.OBSIDIAN),
+    RAID(null),
     BOAT(Items.OAK_BOAT),
     MINECART(Items.MINECART),
     BUCKET(Items.BUCKET),
@@ -49,7 +52,9 @@ public enum EnumPermission {
         this.item = item;
     }
 
-    public Item getItem() {
-        return this.item;
+    public ItemStack getItem() {
+        if(this==RAID)
+            return Raid.getOminousBanner();
+        return new ItemStack(this.item);
     }
 }

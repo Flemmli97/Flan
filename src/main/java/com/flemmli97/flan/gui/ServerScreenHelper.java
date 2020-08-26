@@ -25,7 +25,7 @@ public class ServerScreenHelper {
     }
 
     public static ItemStack fromPermission(Claim claim, EnumPermission perm, String group) {
-        ItemStack stack = new ItemStack(perm.getItem());
+        ItemStack stack = perm.getItem();
         stack.setCustomName(new LiteralText(perm.toString()).setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
         ListTag lore = new ListTag();
         String permFlag;
