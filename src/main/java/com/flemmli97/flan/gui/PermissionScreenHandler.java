@@ -82,7 +82,10 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
             else {
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + page * 28;
-                if (id < EnumPermission.values().length)
+                int length = EnumPermission.values().length;
+                if(group!=null)
+                    length-=EnumPermission.alwaysGlobalLength();
+                if (id < length)
                     inv.setStack(i, ServerScreenHelper.fromPermission((Claim) additionalData[0], EnumPermission.values()[id], additionalData[1] == null ? null : additionalData[1].toString()));
             }
         }
@@ -113,8 +116,12 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
             else {
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + this.page * 28;
-                if (id < EnumPermission.values().length)
+                int length = EnumPermission.values().length;
+                if(group!=null)
+                    length-=EnumPermission.alwaysGlobalLength();
+                if (id < length) {
                     this.slots.get(i).setStack(ServerScreenHelper.fromPermission(this.claim, EnumPermission.values()[id], this.group));
+                }
                 else
                     this.slots.get(i).setStack(ItemStack.EMPTY);
             }

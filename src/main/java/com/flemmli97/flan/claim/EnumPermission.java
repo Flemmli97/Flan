@@ -6,6 +6,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.village.raid.Raid;
 
+import java.util.EnumSet;
+
 public enum EnumPermission {
 
     EDITCLAIM(ConfigHandler.config.claimingItem),
@@ -38,15 +40,18 @@ public enum EnumPermission {
     ENDERPEARL(Items.ENDER_PEARL),
     ANIMALINTERACT(Items.CHICKEN_SPAWN_EGG),
     HURTANIMAL(Items.BEEF),
-    HURTPLAYER(Items.DIAMOND_SWORD),
     XP(Items.EXPERIENCE_BOTTLE),
     TRADING(Items.EMERALD),
+    ARMORSTAND(Items.ARMOR_STAND),
+    BREAKNONLIVING(Items.COMMAND_BLOCK_MINECART),
+    HURTPLAYER(Items.DIAMOND_SWORD),
     EXPLOSIONS(Items.TNT),
     WITHER(Items.WITHER_SKELETON_SKULL),
-    ARMORSTAND(Items.ARMOR_STAND),
-    BREAKNONLIVING(Items.COMMAND_BLOCK_MINECART);
+    FIRESPREAD(Items.BLAZE_POWDER);
 
     private final Item item;
+
+    private static final EnumSet<EnumPermission> alwaysGlobal = EnumSet.of(HURTPLAYER, EXPLOSIONS, WITHER, FIRESPREAD);
 
     EnumPermission(Item item) {
         this.item = item;
@@ -56,5 +61,13 @@ public enum EnumPermission {
         if(this==RAID)
             return Raid.getOminousBanner();
         return new ItemStack(this.item);
+    }
+
+    public boolean isAlwaysGlobalPerm(){
+        return alwaysGlobal.contains(this);
+    }
+
+    public static int alwaysGlobalLength(){
+        return alwaysGlobal.size();
     }
 }

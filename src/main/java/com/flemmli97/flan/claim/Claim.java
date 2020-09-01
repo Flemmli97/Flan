@@ -160,7 +160,7 @@ public class Claim {
     }
 
     public boolean canInteract(ServerPlayerEntity player, EnumPermission perm, BlockPos pos, boolean message) {
-        if (perm == EnumPermission.EXPLOSIONS || perm == EnumPermission.WITHER) {
+        if (perm.isAlwaysGlobalPerm()) {
             for (Claim claim : this.subClaims) {
                 if (claim.insideClaim(pos)) {
                     return claim.canInteract(player, perm, pos, message);

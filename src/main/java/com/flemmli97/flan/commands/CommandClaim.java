@@ -86,9 +86,9 @@ public class CommandClaim {
                 )));
     }
 
-    private static LiteralArgumentBuilder<ServerCommandSource> addToMainCommand(LiteralArgumentBuilder<ServerCommandSource> main, ArgumentBuilder... other) {
+    private static <S, T extends ArgumentBuilder<S,T>> T addToMainCommand(T main, ArgumentBuilder<S,T>... other) {
         if (other != null)
-            for (ArgumentBuilder o : other)
+            for (ArgumentBuilder<S,T> o : other)
                 main.then(o);
         return main;
     }

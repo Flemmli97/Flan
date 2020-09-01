@@ -20,7 +20,8 @@
     "ILecternBlockValues",
     "FluidMixin",
     "PistonMixin",
-    "RaidManagerMixin"
+    "RaidManagerMixin",
+    "FireBlockMixin"
   ],
   "server": [
   ],

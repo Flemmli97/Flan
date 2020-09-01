@@ -68,4 +68,11 @@ public class WorldEvents {
             return false;
         return true;
     }
+
+    public static boolean canFireSpread(ServerWorld world, BlockPos pos){
+        Claim claim = ClaimStorage.get(world).getClaimAt(pos);
+        if(claim!=null && !claim.canInteract(null, EnumPermission.FIRESPREAD, pos))
+            return false;
+        return true;
+    }
 }

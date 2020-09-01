@@ -30,6 +30,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -260,11 +261,27 @@ public class ClaimStorage {
         Map<File, List<File>> subClaimMap = Maps.newHashMap();
         Map<Integer, File> intFileMap = Maps.newHashMap();
 
+        EnumSet<EnumPermission> managers = EnumSet.complementOf(EnumSet.of(EnumPermission.EDITCLAIM));
+        EnumSet<EnumPermission> builders = EnumSet.complementOf(EnumSet.of(EnumPermission.EDITPERMS, EnumPermission.EDITCLAIM));
+        EnumSet<EnumPermission> containers = EnumSet.complementOf(EnumSet.of(EnumPermission.EDITPERMS, EnumPermission.EDITCLAIM,
+                EnumPermission.BREAK, EnumPermission.PLACE, EnumPermission.NOTEBLOCK, EnumPermission.REDSTONE, EnumPermission.JUKEBOX,
+                EnumPermission.ITEMFRAMEROTATE, EnumPermission.LECTERNTAKE, EnumPermission.ENDCRYSTALPLACE, EnumPermission.PROJECTILES,
+                EnumPermission.TRAMPLE, EnumPermission.RAID, EnumPermission.BUCKET, EnumPermission.ARMORSTAND, EnumPermission.BREAKNONLIVING));
+        EnumSet<EnumPermission> accessors = EnumSet.complementOf(EnumSet.of(EnumPermission.EDITPERMS, EnumPermission.EDITCLAIM,
+                EnumPermission.BREAK, EnumPermission.PLACE, EnumPermission.OPENCONTAINER, EnumPermission.ANVIL, EnumPermission.BEACON,
+                EnumPermission.NOTEBLOCK, EnumPermission.REDSTONE, EnumPermission.JUKEBOX, EnumPermission.ITEMFRAMEROTATE,
+                EnumPermission.LECTERNTAKE, EnumPermission.ENDCRYSTALPLACE, EnumPermission.PROJECTILES, EnumPermission.TRAMPLE, EnumPermission.RAID,
+                EnumPermission.BUCKET, EnumPermission.ANIMALINTERACT, EnumPermission.HURTANIMAL, EnumPermission.TRADING, EnumPermission.ARMORSTAND,
+                EnumPermission.BREAKNONLIVING));
+        System.out.println(managers);
+        System.out.println(builders);
+        System.out.println(containers);
+        System.out.println(accessors);
+
         try {
             //Get all parent claims
             Set<String> failedClaimsFile = Sets.newHashSet();
             for (File f : griefPrevention.listFiles()) {
-                System.out.println("f " + f.getName());
                 if (f.getName().endsWith(".yml")) {
                     FileReader reader = new FileReader(f);
                     Map<String, Object> values = yml.load(reader);
@@ -278,8 +295,6 @@ public class ClaimStorage {
                     }
                 }
             }
-            System.out.println(subClaimMap);
-            System.out.println(intFileMap);
             //Map child to parent claims
             for (File f : griefPrevention.listFiles()) {
                 if (f.getName().endsWith(".yml")) {
