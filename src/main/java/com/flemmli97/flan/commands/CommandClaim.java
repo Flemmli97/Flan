@@ -55,16 +55,16 @@ public class CommandClaim {
                 CommandManager.literal("deleteAll").executes(CommandClaim::deleteAllClaim),
                 CommandManager.literal("deleteSubClaim").executes(CommandClaim::deleteSubClaim),
                 CommandManager.literal("deleteAllSubClaims").executes(CommandClaim::deleteAllSubClaim),
-                CommandManager.literal("list").executes(CommandClaim::listClaims).then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).requires(src -> src.hasPermissionLevel(2)).executes(cmd->listClaims(cmd, GameProfileArgumentType.getProfileArgument(cmd, "player")))),
+                CommandManager.literal("list").executes(CommandClaim::listClaims).then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(cmd->listClaims(cmd, GameProfileArgumentType.getProfileArgument(cmd, "player")))),
                 CommandManager.literal("switchMode").executes(CommandClaim::switchClaimMode),
-                CommandManager.literal("adminMode").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::switchAdminMode),
-                CommandManager.literal("readGriefPrevention").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::readGriefPreventionData),
-                CommandManager.literal("setAdminClaim").requires(src -> src.hasPermissionLevel(2)).then(CommandManager.argument("toggle", BoolArgumentType.bool()).executes(CommandClaim::toggleAdminClaim)),
-                CommandManager.literal("listAdminClaims").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::listAdminClaims),
-                CommandManager.literal("adminDelete").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::adminDelete)
+                CommandManager.literal("adminMode").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(CommandClaim::switchAdminMode),
+                CommandManager.literal("readGriefPrevention").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(CommandClaim::readGriefPreventionData),
+                CommandManager.literal("setAdminClaim").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).then(CommandManager.argument("toggle", BoolArgumentType.bool()).executes(CommandClaim::toggleAdminClaim)),
+                CommandManager.literal("listAdminClaims").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(CommandClaim::listAdminClaims),
+                CommandManager.literal("adminDelete").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(CommandClaim::adminDelete)
                         .then(CommandManager.literal("all").then(CommandManager.argument("players", GameProfileArgumentType.gameProfile())
                                 .executes(CommandClaim::adminDeleteAll))),
-                CommandManager.literal("giveClaimBlocks").requires(src -> src.hasPermissionLevel(2)).then(CommandManager.argument("players", GameProfileArgumentType.gameProfile())
+                CommandManager.literal("giveClaimBlocks").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).then(CommandManager.argument("players", GameProfileArgumentType.gameProfile())
                         .then(CommandManager.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::giveClaimBlocks))),
                 addToMainCommand(CommandManager.literal("group"),
                         CommandManager.literal("add").then(CommandManager.argument("group", StringArgumentType.word()).executes(CommandClaim::addGroup)),
@@ -220,7 +220,6 @@ public class CommandClaim {
     }
 
     private static int listClaims(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerPlayerEntity player = context.getSource().getPlayer();
         return listClaimsFromUUID(context, null);
     }
 

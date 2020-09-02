@@ -91,13 +91,14 @@ public class LangConfig {
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
             reader.close();
             for (Field field : this.getClass().getDeclaredFields()) {
-                if (field.getDeclaringClass().equals(String.class)) {
+                if (field.getDeclaringClass().equals(String.class) && obj.has(field.getName())) {
                     field.set(this, obj.get(field.getName()).getAsString());
                 }
             }
         } catch (IOException | IllegalAccessException e) {
             e.printStackTrace();
         }
+        this.save();
     }
 
     private void save() {

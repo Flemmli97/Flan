@@ -31,6 +31,7 @@ public class Config {
     public Item inspectionItem = Items.STICK;
 
     public int claimDisplayTime = 1000;
+    public int permissionLevel = 2;
 
     public Config(MinecraftServer server) {
         File configDir = server.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();
@@ -65,9 +66,12 @@ public class Config {
             this.claimingItem = Registry.ITEM.get(new Identifier((obj.get("claimingItem").getAsString())));
             this.inspectionItem = Registry.ITEM.get(new Identifier((obj.get("inspectionItem").getAsString())));
             this.claimDisplayTime = obj.get("claimDisplayTime").getAsInt();
+            if(obj.has("permissionLevel"))
+                this.permissionLevel = obj.get("permissionLevel").getAsInt();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        this.save();
     }
 
     private void save() {
@@ -83,6 +87,7 @@ public class Config {
         obj.addProperty("claimingItem", Registry.ITEM.getId(this.claimingItem).toString());
         obj.addProperty("inspectionItem", Registry.ITEM.getId(this.inspectionItem).toString());
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
+        obj.addProperty("permissionLevel", this.permissionLevel);
         try {
             FileWriter writer = new FileWriter(this.config);
             ConfigHandler.GSON.toJson(obj, writer);
