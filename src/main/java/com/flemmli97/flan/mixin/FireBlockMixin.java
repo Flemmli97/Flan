@@ -26,16 +26,16 @@ public abstract class FireBlockMixin {
     }
 
     @Inject(method = "getBurnChance(Lnet/minecraft/world/WorldView;Lnet/minecraft/util/math/BlockPos;)I", at = @At(value = "HEAD"), cancellable = true)
-    public void burn(WorldView worldView, BlockPos pos, CallbackInfoReturnable<Integer> info){
-        if(worldView instanceof ServerWorld && !WorldEvents.canFireSpread((ServerWorld) worldView, pos)){
+    public void burn(WorldView worldView, BlockPos pos, CallbackInfoReturnable<Integer> info) {
+        if (worldView instanceof ServerWorld && !WorldEvents.canFireSpread((ServerWorld) worldView, pos)) {
             info.setReturnValue(0);
             info.cancel();
         }
     }
 
     @Inject(method = "trySpreadingFire", at = @At(value = "HEAD"), cancellable = true)
-    public void spread(World world, BlockPos pos, int spreadFactor, Random rand, int currentAge, CallbackInfo info){
-        if(!world.isClient && !WorldEvents.canFireSpread((ServerWorld) world, pos)){
+    public void spread(World world, BlockPos pos, int spreadFactor, Random rand, int currentAge, CallbackInfo info) {
+        if (!world.isClient && !WorldEvents.canFireSpread((ServerWorld) world, pos)) {
             info.cancel();
         }
     }

@@ -66,7 +66,7 @@ public class Config {
             this.claimingItem = Registry.ITEM.get(new Identifier((obj.get("claimingItem").getAsString())));
             this.inspectionItem = Registry.ITEM.get(new Identifier((obj.get("inspectionItem").getAsString())));
             this.claimDisplayTime = obj.get("claimDisplayTime").getAsInt();
-            if(obj.has("permissionLevel"))
+            if (obj.has("permissionLevel"))
                 this.permissionLevel = obj.get("permissionLevel").getAsInt();
         } catch (IOException e) {
             e.printStackTrace();

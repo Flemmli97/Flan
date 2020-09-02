@@ -32,7 +32,6 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.security.Permission;
 import java.util.Set;
 
 public class ItemInteractEvents {
@@ -77,28 +76,27 @@ public class ItemInteractEvents {
             return ActionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) context.getWorld());
         BlockPos placePos = new ItemPlacementContext(context).getBlockPos();
-        Claim claim = storage.getClaimAt(placePos.add(0,255,0));
+        Claim claim = storage.getClaimAt(placePos.add(0, 255, 0));
         if (claim == null)
             return ActionResult.PASS;
         if (blackListedItems.contains(context.getStack().getItem()))
             return ActionResult.PASS;
-        boolean actualInClaim = placePos.getY()>=claim.getDimensions()[4];
+        boolean actualInClaim = placePos.getY() >= claim.getDimensions()[4];
         ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
         if (context.getStack().getItem() == Items.END_CRYSTAL) {
             if (claim.canInteract(player, EnumPermission.ENDCRYSTALPLACE, placePos, false))
                 return ActionResult.PASS;
-            else if(actualInClaim) {
+            else if (actualInClaim) {
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
                 return ActionResult.FAIL;
             }
         }
         if (claim.canInteract(player, EnumPermission.PLACE, placePos, false)) {
-            if(!actualInClaim && context.getStack().getItem() instanceof BlockItem){
+            if (!actualInClaim && context.getStack().getItem() instanceof BlockItem) {
                 claim.extendDownwards(placePos);
             }
             return ActionResult.PASS;
-        }
-        else if(actualInClaim) {
+        } else if (actualInClaim) {
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
             BlockState other = context.getWorld().getBlockState(placePos.up());
             player.networkHandler.sendPacket(new BlockUpdateS2CPacket(placePos.up(), other));
@@ -128,9 +126,9 @@ public class ItemInteractEvents {
             return;
         }
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
-        Claim claim = storage.getClaimAt(target.add(0,255,0));
+        Claim claim = storage.getClaimAt(target.add(0, 255, 0));
         PlayerClaimData data = PlayerClaimData.get(player);
-        if(data.claimCooldown())
+        if (data.claimCooldown())
             return;
         data.setClaimActionCooldown();
         if (claim != null) {
@@ -148,7 +146,7 @@ public class ItemInteractEvents {
                         data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                     } else {
                         if (data.currentEdit() != null) {
-                            if(!data.editingCorner().equals(target)) {
+                            if (!data.editingCorner().equals(target)) {
                                 Set<Claim> fl = claim.resizeSubclaim(data.currentEdit(), data.editingCorner(), target);
                                 if (!fl.isEmpty()) {
                                     fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.MAIN, player.getBlockPos().getY()));
@@ -158,7 +156,7 @@ public class ItemInteractEvents {
                                 data.setEditingCorner(null);
                             }
                         } else if (data.editingCorner() != null) {
-                            if(!data.editingCorner().equals(target)) {
+                            if (!data.editingCorner().equals(target)) {
                                 Set<Claim> fl = claim.tryCreateSubClaim(data.editingCorner(), target);
                                 data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                                 if (!fl.isEmpty()) {

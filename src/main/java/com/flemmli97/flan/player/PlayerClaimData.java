@@ -97,12 +97,12 @@ public class PlayerClaimData {
      * block onUse -> item use. Might be a better way but for now this. But also handles having
      * same items on both hands triggering
      */
-    public void setClaimActionCooldown(){
+    public void setClaimActionCooldown() {
         this.actionCooldown = 10;
     }
 
-    public boolean claimCooldown(){
-        return this.actionCooldown>0;
+    public boolean claimCooldown() {
+        return this.actionCooldown > 0;
     }
 
     public Claim currentEdit() {
@@ -146,8 +146,7 @@ public class PlayerClaimData {
                 state = this.player.world.getBlockState(pos);
             }
             this.cornerRenderPos = ClaimDisplay.getPosFrom(this.player.getServerWorld(), pos.getX(), pos.getZ(), pos.getY());
-        }
-        else
+        } else
             this.cornerRenderPos = null;
         this.firstCorner = pos;
     }
@@ -183,7 +182,7 @@ public class PlayerClaimData {
             this.lastBlockTick = 0;
         }
         if (this.cornerRenderPos != null) {
-            if(this.cornerRenderPos[1]!=this.cornerRenderPos[2])
+            if (this.cornerRenderPos[1] != this.cornerRenderPos[2])
                 player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.SETCORNER, true, this.cornerRenderPos[0] + 0.5, this.cornerRenderPos[2] + 0.25, this.cornerRenderPos[3] + 0.5, 0, 0.25f, 0, 0, 2));
             player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.SETCORNER, true, this.cornerRenderPos[0] + 0.5, this.cornerRenderPos[1] + 0.25, this.cornerRenderPos[3] + 0.5, 0, 0.25f, 0, 0, 2));
         }
@@ -265,7 +264,7 @@ public class PlayerClaimData {
         for (ServerWorld world : this.player.getServer().getWorlds()) {
             Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.player.getUuid());
             if (claims != null)
-                usedClaimsBlocks += claims.stream().filter(claim->!claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
+                usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
         }
         return usedClaimsBlocks;
     }
@@ -305,8 +304,7 @@ public class PlayerClaimData {
                     }
                     reader.close();
                 }
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.errorFile, f.getName(), Formatting.RED)), false);
             }
         }

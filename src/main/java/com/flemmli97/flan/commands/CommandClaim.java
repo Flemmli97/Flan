@@ -15,12 +15,10 @@ import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -40,7 +38,6 @@ import net.minecraft.world.World;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -55,7 +52,7 @@ public class CommandClaim {
                 CommandManager.literal("deleteAll").executes(CommandClaim::deleteAllClaim),
                 CommandManager.literal("deleteSubClaim").executes(CommandClaim::deleteSubClaim),
                 CommandManager.literal("deleteAllSubClaims").executes(CommandClaim::deleteAllSubClaim),
-                CommandManager.literal("list").executes(CommandClaim::listClaims).then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(cmd->listClaims(cmd, GameProfileArgumentType.getProfileArgument(cmd, "player")))),
+                CommandManager.literal("list").executes(CommandClaim::listClaims).then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(cmd -> listClaims(cmd, GameProfileArgumentType.getProfileArgument(cmd, "player")))),
                 CommandManager.literal("switchMode").executes(CommandClaim::switchClaimMode),
                 CommandManager.literal("adminMode").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(CommandClaim::switchAdminMode),
                 CommandManager.literal("readGriefPrevention").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(CommandClaim::readGriefPreventionData),
@@ -89,9 +86,9 @@ public class CommandClaim {
                 )));
     }
 
-    private static <S, T extends ArgumentBuilder<S,T>> T addToMainCommand(T main, ArgumentBuilder<S,T>... other) {
+    private static <S, T extends ArgumentBuilder<S, T>> T addToMainCommand(T main, ArgumentBuilder<S, T>... other) {
         if (other != null)
-            for (ArgumentBuilder<S,T> o : other)
+            for (ArgumentBuilder<S, T> o : other)
                 main.then(o);
         return main;
     }
@@ -224,30 +221,29 @@ public class CommandClaim {
     }
 
     private static int listClaims(CommandContext<ServerCommandSource> context, Collection<GameProfile> profs) throws CommandSyntaxException {
-        if(profs.size()!=1) {
+        if (profs.size() != 1) {
             context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.onlyOnePlayer, Formatting.RED), false);
             return 0;
         }
         GameProfile prof = profs.iterator().next();
-        if(prof == null || prof.getId()==null)
+        if (prof == null || prof.getId() == null)
             return 0;
         return listClaimsFromUUID(context, prof.getId());
     }
 
     private static int listClaimsFromUUID(CommandContext<ServerCommandSource> context, UUID of) throws CommandSyntaxException {
         MinecraftServer server = context.getSource().getMinecraftServer();
-        ServerPlayerEntity player = of==null?context.getSource().getPlayer():server.getPlayerManager().getPlayer(of);
+        ServerPlayerEntity player = of == null ? context.getSource().getPlayer() : server.getPlayerManager().getPlayer(of);
         Map<World, Collection<Claim>> claims = Maps.newHashMap();
         for (ServerWorld world : server.getWorlds()) {
             ClaimStorage storage = ClaimStorage.get(world);
-            claims.put(world, storage.allClaimsFromPlayer(player!=null?player.getUuid():of));
+            claims.put(world, storage.allClaimsFromPlayer(player != null ? player.getUuid() : of));
         }
-        if(player!=null) {
+        if (player != null) {
             PlayerClaimData data = PlayerClaimData.get(player);
             context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
                     data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks()), Formatting.GOLD), false);
-        }
-        else {
+        } else {
             OfflinePlayerData data = new OfflinePlayerData(server, of);
             context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
                     data.claimBlocks, data.additionalClaimBlocks, data.getUsedClaimBlocks(server)), Formatting.GOLD), false);

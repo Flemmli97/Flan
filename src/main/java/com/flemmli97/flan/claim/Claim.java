@@ -79,7 +79,7 @@ public class Claim {
         this.setDirty(true);
     }
 
-    public void extendDownwards(BlockPos pos){
+    public void extendDownwards(BlockPos pos) {
         this.minY = pos.getY();
         this.setDirty(true);
     }
@@ -113,7 +113,7 @@ public class Claim {
     }
 
     public void toggleAdminClaim(ServerPlayerEntity player, boolean flag) {
-        if(!flag)
+        if (!flag)
             this.transferOwner(player);
         else {
             this.owner = null;
@@ -122,13 +122,13 @@ public class Claim {
         this.setDirty(true);
     }
 
-    public boolean isAdminClaim(){
-        return this.owner==null;
+    public boolean isAdminClaim() {
+        return this.owner == null;
     }
 
-    public void transferOwner(ServerPlayerEntity player){
+    public void transferOwner(ServerPlayerEntity player) {
         this.owner = player.getUuid();
-        this.subClaims.forEach(claim->claim.owner = player.getUuid());
+        this.subClaims.forEach(claim -> claim.owner = player.getUuid());
         this.setDirty(true);
     }
 
@@ -337,6 +337,7 @@ public class Claim {
     public boolean editPerms(ServerPlayerEntity player, String group, EnumPermission perm, int mode) {
         return this.editPerms(player, group, perm, mode, false);
     }
+
     /**
      * Edit the permissions for a group. If not defined for the group creates a new default permission map for that group
      *
@@ -344,7 +345,7 @@ public class Claim {
      * @return If editing was successful or not
      */
     public boolean editPerms(ServerPlayerEntity player, String group, EnumPermission perm, int mode, boolean griefPrevention) {
-        if(perm.isAlwaysGlobalPerm())
+        if (perm.isAlwaysGlobalPerm())
             return false;
         if (griefPrevention || this.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos())) {
             if (mode > 1)
@@ -394,7 +395,7 @@ public class Claim {
      * Only marks non sub claims
      */
     public void setDirty(boolean flag) {
-        if(this.parentClaim()!=null)
+        if (this.parentClaim() != null)
             this.parentClaim().setDirty(flag);
         else
             this.dirty = flag;
@@ -412,7 +413,7 @@ public class Claim {
         this.minZ = pos.get(2).getAsInt();
         this.maxZ = pos.get(3).getAsInt();
         this.minY = pos.get(4).getAsInt();
-        if(obj.has("AdminClaim")?obj.get("AdminClaim").getAsBoolean():false)
+        if (obj.has("AdminClaim") ? obj.get("AdminClaim").getAsBoolean() : false)
             this.owner = null;
         else
             this.owner = uuid;
@@ -514,7 +515,7 @@ public class Claim {
 
     @Override
     public String toString() {
-        return String.format("Claim:[ID=%s, Owner=%s, from: x=%d; z=%d, to: x=%d, z=%d", this.claimID != null ? this.claimID.toString() : "null", this.owner!=null?this.owner.toString():"Admin", this.minX, this.minZ, this.maxX, this.maxZ);
+        return String.format("Claim:[ID=%s, Owner=%s, from: x=%d; z=%d, to: x=%d, z=%d", this.claimID != null ? this.claimID.toString() : "null", this.owner != null ? this.owner.toString() : "Admin", this.minX, this.minZ, this.maxX, this.maxZ);
     }
 
     public String formattedClaim() {
@@ -525,9 +526,9 @@ public class Claim {
         boolean perms = this.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos());
         List<Text> l = Lists.newArrayList();
         l.add(PermHelper.simpleColoredText("=============================================", Formatting.GREEN));
-        GameProfile prof = this.owner!=null?player.getServer().getUserCache().getByUuid(this.owner):null;
+        GameProfile prof = this.owner != null ? player.getServer().getUserCache().getByUuid(this.owner) : null;
         String ownerName = this.isAdminClaim() ? "Admin" : prof != null ? prof.getName() : "<UNKNOWN>";
-        if(this.parent==null)
+        if (this.parent == null)
             l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfo, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), Formatting.GOLD));
         else
             l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoSub, ownerName, this.minX, this.minZ, this.maxX, this.maxZ), Formatting.GOLD));

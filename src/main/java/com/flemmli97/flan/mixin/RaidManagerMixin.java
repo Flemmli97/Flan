@@ -13,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class RaidManagerMixin {
 
     @Inject(method = "startRaid", at = @At(value = "HEAD"), cancellable = true)
-    public void checkRaid(ServerPlayerEntity player, CallbackInfoReturnable<Raid> info){
-        if(!WorldEvents.canStartRaid(player)){
+    public void checkRaid(ServerPlayerEntity player, CallbackInfoReturnable<Raid> info) {
+        if (!WorldEvents.canStartRaid(player)) {
             info.setReturnValue(null);
             info.cancel();
         }

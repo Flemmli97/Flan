@@ -58,16 +58,16 @@ public enum EnumPermission {
     }
 
     public ItemStack getItem() {
-        if(this==RAID)
+        if (this == RAID)
             return Raid.getOminousBanner();
         return new ItemStack(this.item);
     }
 
-    public boolean isAlwaysGlobalPerm(){
+    public boolean isAlwaysGlobalPerm() {
         return alwaysGlobal.contains(this);
     }
 
-    public static int alwaysGlobalLength(){
+    public static int alwaysGlobalLength() {
         return alwaysGlobal.size();
     }
 }

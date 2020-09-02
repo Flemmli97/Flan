@@ -56,7 +56,7 @@ public class ClaimDisplay {
     }
 
     public boolean display(ServerPlayerEntity player) {
-        if(--this.displayTime % 2 == 0)
+        if (--this.displayTime % 2 == 0)
             return toDisplay.isRemoved();
         int[] dims = this.toDisplay.getDimensions();
         if (this.poss == null || this.changed(dims)) {
@@ -69,13 +69,13 @@ public class ClaimDisplay {
             };
         }
         for (int[] pos : this.poss) {
-            if(pos[1]!=pos[2])
+            if (pos[1] != pos[2])
                 player.networkHandler.sendPacket(new ParticleS2CPacket(this.corner, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
             player.networkHandler.sendPacket(new ParticleS2CPacket(this.corner, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
         }
         if (this.middlePoss != null)
             for (int[] pos : this.middlePoss) {
-                if(pos[1]!=pos[2])
+                if (pos[1] != pos[2])
                     player.networkHandler.sendPacket(new ParticleS2CPacket(this.middle, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
                 player.networkHandler.sendPacket(new ParticleS2CPacket(this.middle, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
             }
@@ -156,14 +156,14 @@ public class ClaimDisplay {
             }
         }
         int[] yRet = new int[]{pos.getY(), pos.getY()};
-        if(state.getMaterial().isLiquid()){
+        if (state.getMaterial().isLiquid()) {
             pos = pos.up();
             state = world.getBlockState(pos);
             while (state.getMaterial().isLiquid()) {
                 pos = pos.up();
                 state = world.getBlockState(pos);
             }
-            if(state.getMaterial().isReplaceable())
+            if (state.getMaterial().isReplaceable())
                 yRet[1] = pos.getY();
         }
 
