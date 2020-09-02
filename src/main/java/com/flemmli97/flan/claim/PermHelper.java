@@ -3,6 +3,7 @@ package com.flemmli97.flan.claim;
 import com.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -42,7 +43,7 @@ public class PermHelper {
         });
     }
 
-    public static Text simpleColoredText(String text, Formatting... formatting) {
+    public static MutableText simpleColoredText(String text, Formatting... formatting) {
         return new LiteralText(text).setStyle(formatting != null ? Style.EMPTY.withFormatting(formatting) : Style.EMPTY);
     }
 }

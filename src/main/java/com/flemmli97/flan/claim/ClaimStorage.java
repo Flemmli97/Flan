@@ -1,5 +1,6 @@
 package com.flemmli97.flan.claim;
 
+import com.flemmli97.flan.Flan;
 import com.flemmli97.flan.IClaimData;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
@@ -14,8 +15,17 @@ import com.google.gson.JsonObject;
 import com.ibm.icu.impl.Pair;
 import it.unimi.dsi.fastutil.longs.Long2ObjectArrayMap;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.LocateBiomeCommand;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.BaseText;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
@@ -30,18 +40,21 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class ClaimStorage {
 
+    public static final String adminClaimString = "!AdminClaims";
     private final Long2ObjectArrayMap<List<Claim>> claims = new Long2ObjectArrayMap<>();
     private final Map<UUID, Claim> claimUUIDMap = Maps.newHashMap();
     private final Map<UUID, Set<Claim>> playerClaimMap = Maps.newHashMap();
-
+    private final Set<UUID> dirty = Sets.newHashSet();
     public static ClaimStorage get(ServerWorld world) {
         return (ClaimStorage) ((IClaimData) world).getClaimData();
     }
@@ -118,7 +131,14 @@ public class ClaimStorage {
                 });
             }
         this.playerClaimMap.getOrDefault(claim.getOwner(), Sets.newHashSet()).remove(claim);
+        this.dirty.add(claim.getOwner());
         return this.claimUUIDMap.remove(claim.getClaimID()) != null;
+    }
+
+    public void toggleAdminClaim(ServerPlayerEntity player, Claim claim, boolean toggle){
+        this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.getServerWorld());
+        claim.toggleAdminClaim(player, toggle);
+        this.addClaim(claim);
     }
 
     public boolean resizeClaim(Claim claim, BlockPos from, BlockPos to, ServerPlayerEntity player) {
@@ -181,7 +201,7 @@ public class ClaimStorage {
     }
 
     public Collection<Claim> getAdminClaims(){
-        return ImmutableSet.copyOf(this.claimUUIDMap.values().stream().filter(claim->claim.isAdminClaim()).iterator());
+        return ImmutableSet.copyOf(this.playerClaimMap.get(null));
     }
 
     public static int[] getChunkPos(Claim claim) {
@@ -201,7 +221,8 @@ public class ClaimStorage {
                 for (File file : dir.listFiles()) {
                     if (!file.getName().endsWith(".json"))
                         continue;
-                    UUID uuid = UUID.fromString(file.getName().replace(".json", ""));
+                    String realName = file.getName().replace(".json", "");
+                    UUID uuid = realName.equals(adminClaimString)?null:UUID.fromString(file.getName().replace(".json", ""));
                     FileReader reader = new FileReader(file);
                     JsonArray arr = ConfigHandler.GSON.fromJson(reader, JsonArray.class);
                     if (arr == null)
@@ -225,8 +246,8 @@ public class ClaimStorage {
             dir.mkdir();
         try {
             for (Map.Entry<UUID, Set<Claim>> e : this.playerClaimMap.entrySet()) {
-
-                File file = new File(dir, e.getKey().toString() + ".json");
+                String owner = e.getKey()==null?adminClaimString:e.getKey().toString();
+                File file = new File(dir, owner + ".json");
                 boolean dirty = false;
                 if (!file.exists()) {
                     if (e.getValue().isEmpty())
@@ -234,11 +255,17 @@ public class ClaimStorage {
                     file.createNewFile();
                     dirty = true;
                 } else {
-                    for (Claim claim : e.getValue())
-                        if (claim.isDirty()) {
-                            dirty = true;
-                            break;
-                        }
+                    if(this.dirty.contains(owner.equals(adminClaimString)?null:e.getKey())) {
+                        dirty = true;
+                        this.dirty.clear();
+                    }
+                    else {
+                        for (Claim claim : e.getValue())
+                            if (claim.isDirty()) {
+                                dirty = true;
+                                claim.setDirty(false);
+                            }
+                    }
                 }
                 if (dirty) {
                     JsonArray arr = new JsonArray();
@@ -253,11 +280,11 @@ public class ClaimStorage {
         }
     }
 
-    public static Set<String> readGriefPreventionData(MinecraftServer server) {
+    public static void readGriefPreventionData(MinecraftServer server, ServerCommandSource src) {
         Yaml yml = new Yaml();
         File griefPrevention = server.getSavePath(WorldSavePath.ROOT).resolve("plugins/GriefPreventionData/ClaimData").toFile();
         if (!griefPrevention.exists())
-            return null;
+            return;
         Map<File, List<File>> subClaimMap = Maps.newHashMap();
         Map<Integer, File> intFileMap = Maps.newHashMap();
 
@@ -273,14 +300,14 @@ public class ClaimStorage {
                 EnumPermission.LECTERNTAKE, EnumPermission.ENDCRYSTALPLACE, EnumPermission.PROJECTILES, EnumPermission.TRAMPLE, EnumPermission.RAID,
                 EnumPermission.BUCKET, EnumPermission.ANIMALINTERACT, EnumPermission.HURTANIMAL, EnumPermission.TRADING, EnumPermission.ARMORSTAND,
                 EnumPermission.BREAKNONLIVING));
-        System.out.println(managers);
-        System.out.println(builders);
-        System.out.println(containers);
-        System.out.println(accessors);
+        Map<String, EnumSet<EnumPermission>> perms = Maps.newHashMap();
+        perms.put("managers", managers);
+        perms.put("builders", builders);
+        perms.put("containers", containers);
+        perms.put("accessors", accessors);
 
         try {
             //Get all parent claims
-            Set<String> failedClaimsFile = Sets.newHashSet();
             for (File f : griefPrevention.listFiles()) {
                 if (f.getName().endsWith(".yml")) {
                     FileReader reader = new FileReader(f);
@@ -290,7 +317,7 @@ public class ClaimStorage {
                             intFileMap.put(Integer.valueOf(f.getName().replace(".yml", "")), f);
                         }
                         catch (NumberFormatException e){
-                            failedClaimsFile.add(f.getName());
+                            src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.errorFile, f.getName(), Formatting.RED)), false);
                         }
                     }
                 }
@@ -310,40 +337,112 @@ public class ClaimStorage {
                 }
             }
             for (File parent : intFileMap.values()) {
-                Pair<ServerWorld, Claim> parentClaim = parseFromYaml(parent, yml, server);
-                List<File> childs = subClaimMap.get(parent);
-                if (childs != null && !childs.isEmpty()) {
-                    for (File childF : childs)
-                        parentClaim.second.addSubClaimGriefprevention(parseFromYaml(childF, yml, server).second);
+                try {
+                    Pair<ServerWorld, Claim> parentClaim = parseFromYaml(parent, yml, server, perms);
+                    List<File> childs = subClaimMap.get(parent);
+                    if (childs != null && !childs.isEmpty()) {
+                        for (File childF : childs)
+                            parentClaim.second.addSubClaimGriefprevention(parseFromYaml(childF, yml, server, perms).second);
+                    }
+                    ClaimStorage storage = ClaimStorage.get(parentClaim.first);
+                    Set<Claim> conflicts = storage.conflicts(parentClaim.second, null);
+                    if (conflicts.isEmpty()) {
+                        parentClaim.second.setClaimID(storage.generateUUID());
+                        storage.addClaim(parentClaim.second);
+                    } else {
+                        src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.readConflict, parent.getName(), conflicts), Formatting.DARK_RED), false);
+                        for(Claim claim : conflicts){
+                            int[] dim = claim.getDimensions();
+                            MutableText text = PermHelper.simpleColoredText(String.format("@[x=%d;z=%d]", dim[0], dim[2]), Formatting.RED);
+                            text.setStyle(text.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + dim[0] + " ~ " + dim[2])).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip"))));
+                            src.sendFeedback(text, false);
+                        }
+                    }
                 }
-                ClaimStorage storage = ClaimStorage.get(parentClaim.first);
-                if (storage.conflicts(parentClaim.second, null).isEmpty()) {
-                    parentClaim.second.setClaimID(storage.generateUUID());
-                    storage.addClaim(parentClaim.second);
+                catch (Exception e){
+                    src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.errorFile, parent.getName(), Formatting.RED)), false);
+                    e.printStackTrace();
                 }
-                else
-                    failedClaimsFile.add(parent.getName());
             }
-            if (!failedClaimsFile.isEmpty())
-                return failedClaimsFile;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    private static Pair<ServerWorld, Claim> parseFromYaml(File file, Yaml yml, MinecraftServer server) throws IOException {
+    private static Pair<ServerWorld, Claim> parseFromYaml(File file, Yaml yml, MinecraftServer server,
+        Map<String, EnumSet<EnumPermission>> perms) throws IOException {
         FileReader reader = new FileReader(file);
         Map<String, Object> values = yml.load(reader);
         reader.close();
-        UUID owner = UUID.fromString(values.get("Owner").toString());
+        String ownerString = (String) values.get("Owner");
+
+        UUID owner = ownerString.isEmpty()?null:UUID.fromString(ownerString);
+        List<String> builders = readList(values, "Builders");
+        List<String> managers = readList(values, "Managers");
+        List<String> containers = readList(values, "Containers");
+        List<String> accessors = readList(values, "Accessors");
         String[] lesserCorner = values.get("Lesser Boundary Corner").toString().split(";");
         String[] greaterCorner = values.get("Greater Boundary Corner").toString().split(";");
         ServerWorld world = server.getWorld(worldRegFromString(lesserCorner[0]));
         Claim claim = new Claim(Integer.parseInt(lesserCorner[1]), Integer.parseInt(greaterCorner[1]),
                 Integer.parseInt(lesserCorner[3]), Integer.parseInt(greaterCorner[3]), ConfigHandler.config.defaultClaimDepth == 255?0:
                 Integer.parseInt(lesserCorner[2]), owner, world);
+        if(!builders.isEmpty() && !builders.contains(ownerString)) {
+            if(builders.contains("public")){
+                perms.get("builders").forEach(perm -> {
+                    if(!perm.isAlwaysGlobalPerm())
+                        claim.editGlobalPerms(perm, 1);
+                });
+            }
+            else {
+                perms.get("builders").forEach(perm -> claim.editPerms(null, "Builders", perm, 1, true));
+                builders.forEach(s -> claim.setPlayerGroup(UUID.fromString(s), "Builders", true));
+            }
+        }
+        if(!managers.isEmpty() && !managers.contains(ownerString)) {
+            if(managers.contains("public")){
+                perms.get("managers").forEach(perm -> {
+                    if(!perm.isAlwaysGlobalPerm())
+                        claim.editGlobalPerms(perm, 1);
+                });
+            }
+            else {
+                perms.get("managers").forEach(perm -> claim.editPerms(null, "Managers", perm, 1, true));
+                managers.forEach(s -> claim.setPlayerGroup(UUID.fromString(s), "Managers", true));
+            }
+        }
+        if(!containers.isEmpty() && !containers.contains(ownerString)) {
+            if(containers.contains("public")){
+                perms.get("containers").forEach(perm -> {
+                    if(!perm.isAlwaysGlobalPerm())
+                        claim.editGlobalPerms(perm, 1);
+                });
+            }
+            else {
+                perms.get("containers").forEach(perm -> claim.editPerms(null, "Containers", perm, 1, true));
+                containers.forEach(s -> claim.setPlayerGroup(UUID.fromString(s), "Containers", true));
+            }
+        }
+        if(!accessors.isEmpty() && !accessors.contains(ownerString)) {
+            if(accessors.contains("public")){
+                perms.get("accessors").forEach(perm -> {
+                    if(!perm.isAlwaysGlobalPerm())
+                        claim.editGlobalPerms(perm, 1);
+                });
+            }
+            else {
+                perms.get("accessors").forEach(perm -> claim.editPerms(null, "Accessors", perm, 1, true));
+                accessors.forEach(s -> claim.setPlayerGroup(UUID.fromString(s), "Accessors", true));
+            }
+        }
         return Pair.of(world, claim);
+    }
+
+    private static <T> List<T> readList(Map<String, Object> values, String key){
+        Object obj = values.get(key);
+        if(obj instanceof List)
+            return (List<T>) obj;
+        return Lists.newArrayList();
     }
 
     public static RegistryKey<World> worldRegFromString(String spigot) {

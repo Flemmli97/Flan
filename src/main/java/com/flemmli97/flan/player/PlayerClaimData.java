@@ -4,6 +4,7 @@ import com.flemmli97.flan.IClaimData;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.ParticleIndicators;
+import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
@@ -11,8 +12,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 
@@ -267,12 +270,14 @@ public class PlayerClaimData {
         return usedClaimsBlocks;
     }
 
-    public static void readGriefPreventionPlayerData(MinecraftServer server) {
+    public static void readGriefPreventionPlayerData(MinecraftServer server, ServerCommandSource src) {
         File griefPrevention = server.getSavePath(WorldSavePath.ROOT).resolve("plugins/GriefPreventionData/PlayerData").toFile();
         if (!griefPrevention.exists())
             return;
-        try {
-            for (File f : griefPrevention.listFiles()) {
+        for (File f : griefPrevention.listFiles()) {
+            try {
+                if (f.getName().contains("."))
+                    continue;
                 if (f.getName().startsWith("$")) {
 
                 } else {
@@ -301,8 +306,9 @@ public class PlayerClaimData {
                     reader.close();
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            catch (Exception e){
+                src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.errorFile, f.getName(), Formatting.RED)), false);
+            }
         }
     }
 }

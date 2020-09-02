@@ -8,6 +8,7 @@ import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.gui.ClaimMenuScreenHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.EnumEditMode;
+import com.flemmli97.flan.player.OfflinePlayerData;
 import com.flemmli97.flan.player.PlayerClaimData;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -25,6 +26,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.argument.GameProfileArgumentType;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
@@ -39,6 +41,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class CommandClaim {
@@ -52,7 +55,7 @@ public class CommandClaim {
                 CommandManager.literal("deleteAll").executes(CommandClaim::deleteAllClaim),
                 CommandManager.literal("deleteSubClaim").executes(CommandClaim::deleteSubClaim),
                 CommandManager.literal("deleteAllSubClaims").executes(CommandClaim::deleteAllSubClaim),
-                CommandManager.literal("list").executes(CommandClaim::listClaims),
+                CommandManager.literal("list").executes(CommandClaim::listClaims).then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).requires(src -> src.hasPermissionLevel(2)).executes(cmd->listClaims(cmd, GameProfileArgumentType.getProfileArgument(cmd, "player")))),
                 CommandManager.literal("switchMode").executes(CommandClaim::switchClaimMode),
                 CommandManager.literal("adminMode").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::switchAdminMode),
                 CommandManager.literal("readGriefPrevention").requires(src -> src.hasPermissionLevel(2)).executes(CommandClaim::readGriefPreventionData),
@@ -218,18 +221,42 @@ public class CommandClaim {
 
     private static int listClaims(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
-        Map<World, Collection<Claim>> claims = Maps.newHashMap();
-        for (ServerWorld world : player.getServer().getWorlds()) {
-            ClaimStorage storage = ClaimStorage.get(world);
-            claims.put(world, storage.allClaimsFromPlayer(player.getUuid()));
+        return listClaimsFromUUID(context, null);
+    }
+
+    private static int listClaims(CommandContext<ServerCommandSource> context, Collection<GameProfile> profs) throws CommandSyntaxException {
+        if(profs.size()!=1) {
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.onlyOnePlayer, Formatting.RED), false);
+            return 0;
         }
-        PlayerClaimData data = PlayerClaimData.get(player);
-        player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
-                data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks()), Formatting.GOLD), false);
-        player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.listClaims, Formatting.GOLD), false);
+        GameProfile prof = profs.iterator().next();
+        if(prof == null || prof.getId()==null)
+            return 0;
+        return listClaimsFromUUID(context, prof.getId());
+    }
+
+    private static int listClaimsFromUUID(CommandContext<ServerCommandSource> context, UUID of) throws CommandSyntaxException {
+        MinecraftServer server = context.getSource().getMinecraftServer();
+        ServerPlayerEntity player = of==null?context.getSource().getPlayer():server.getPlayerManager().getPlayer(of);
+        Map<World, Collection<Claim>> claims = Maps.newHashMap();
+        for (ServerWorld world : server.getWorlds()) {
+            ClaimStorage storage = ClaimStorage.get(world);
+            claims.put(world, storage.allClaimsFromPlayer(player!=null?player.getUuid():of));
+        }
+        if(player!=null) {
+            PlayerClaimData data = PlayerClaimData.get(player);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
+                    data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks()), Formatting.GOLD), false);
+        }
+        else {
+            OfflinePlayerData data = new OfflinePlayerData(server, of);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
+                    data.claimBlocks, data.additionalClaimBlocks, data.getUsedClaimBlocks(server)), Formatting.GOLD), false);
+        }
+        context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.listClaims, Formatting.GOLD), false);
         for (Map.Entry<World, Collection<Claim>> entry : claims.entrySet())
             for (Claim claim : entry.getValue())
-                player.sendMessage(PermHelper.simpleColoredText(
+                context.getSource().sendFeedback(PermHelper.simpleColoredText(
                         entry.getKey().getRegistryKey().getValue().toString() + " # " + claim.formattedClaim(), Formatting.YELLOW), false);
         return Command.SINGLE_SUCCESS;
     }
@@ -286,16 +313,16 @@ public class CommandClaim {
         return Command.SINGLE_SUCCESS;
     }
 
-    private static int toggleAdminClaim(CommandContext<ServerCommandSource> context) {
-        ServerCommandSource src = context.getSource();
-        ClaimStorage storage = ClaimStorage.get(src.getWorld());
-        Claim claim = storage.getClaimAt(new BlockPos(src.getPosition()));
+    private static int toggleAdminClaim(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
+        Claim claim = storage.getClaimAt(player.getBlockPos());
         if (claim == null) {
-            src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.noClaim, Formatting.RED), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.noClaim, Formatting.RED), false);
             return 0;
         }
-        claim.toggleAdminClaim(BoolArgumentType.getBool(context, "toggle"));
-        src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.setAdminClaim, claim.isAdminClaim()), Formatting.GOLD), true);
+        storage.toggleAdminClaim(player, claim, BoolArgumentType.getBool(context, "toggle"));
+        context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.setAdminClaim, claim.isAdminClaim()), Formatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -311,12 +338,9 @@ public class CommandClaim {
     private static int readGriefPreventionData(CommandContext<ServerCommandSource> context) {
         ServerCommandSource src = context.getSource();
         src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.readGriefpreventionData, Formatting.GOLD), true);
-        Set<String> errors = ClaimStorage.readGriefPreventionData(src.getMinecraftServer());
-        PlayerClaimData.readGriefPreventionPlayerData(src.getMinecraftServer());
-        if (errors == null)
-            src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.readGriefpreventionDataSuccess, Formatting.GOLD), true);
-        else
-            src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.readGriefpreventionDataFail, errors), Formatting.RED), true);
+        ClaimStorage.readGriefPreventionData(src.getMinecraftServer(), src);
+        PlayerClaimData.readGriefPreventionPlayerData(src.getMinecraftServer(), src);
+        src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.readGriefpreventionDataSuccess, Formatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 

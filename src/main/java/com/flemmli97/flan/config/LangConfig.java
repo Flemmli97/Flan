@@ -20,6 +20,7 @@ public class LangConfig {
     public String claimBlocksFormat = "Claim Blocks: %1$d + (Bonus) %2$d; Used: %3$d";
     public String listClaims = "Listing all claims:";
     public String listAdminClaims = "Listing all admin-claims in %1:";
+    public String onlyOnePlayer = "Only one player can be used as argument";
 
     public String noPermission = "You don't have the required permissions to do that here!";
     public String noPermissionSimple = "Sorry you can't do that here!";
@@ -58,7 +59,8 @@ public class LangConfig {
     public String setAdminClaim = "Adminclaim of this claim now: %s";
     public String readGriefpreventionData = "Reading data from GriefPrevention";
     public String readGriefpreventionDataSuccess = "Successfully read data";
-    public String readGriefpreventionDataFail = "Failed reading data for following claim files (Check the logs!): %s";
+    public String errorFile = "Error reading file %s";
+    public String readConflict = "%1$s conflicts with existing claims. Not added to world! Conflicts:";
     public String giveClaimBlocks = "Gave following players %2$d claimblocks: %1$s";
 
     public String claimBasicInfo = "Owner: %1$s, from: [x=%2$d,z=%3$d] to [x=%4$d,z=%5$d]; Subclaim-amount: %6$d";
