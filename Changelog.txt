@@ -1,3 +1,11 @@
+Flan 1.0.3
+======================
+- Add permission to toggle firespreading in claims
+- PvP, Explosion, Wither and Firespread are now global permission only
+- Finished reading griefprevention data (previously set permissions were not read)
+- /flan list now has ability to list claims of other players (requires op)
+- Op level for op commands is now configurable
+
 Flan 1.0.2
 ======================
 - Fix Nullpointer with admin claims
