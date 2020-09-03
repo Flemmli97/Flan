@@ -23,6 +23,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
@@ -46,6 +47,7 @@ public class CommandClaim {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
         dispatcher.register(addToMainCommand(CommandManager.literal("flan"),
                 CommandManager.literal("reload").executes(CommandClaim::reloadConfig),
+                CommandManager.literal("addClaim").then(CommandManager.argument("from", BlockPosArgumentType.blockPos()).then(CommandManager.argument("to", BlockPosArgumentType.blockPos()).executes(CommandClaim::addClaim))),
                 CommandManager.literal("menu").executes(CommandClaim::openMenu),
                 CommandManager.literal("claimInfo").executes(CommandClaim::claimInfo),
                 CommandManager.literal("delete").executes(CommandClaim::deleteClaim),
@@ -96,6 +98,16 @@ public class CommandClaim {
     private static int reloadConfig(CommandContext<ServerCommandSource> context) {
         ConfigHandler.reloadConfigs();
         context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.configReload), true);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int addClaim(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
+        BlockPos from = BlockPosArgumentType.getLoadedBlockPos(context, "from");
+        BlockPos to = BlockPosArgumentType.getLoadedBlockPos(context, "to");
+
+        storage.createClaim(from, to, player);
         return Command.SINGLE_SUCCESS;
     }
 
