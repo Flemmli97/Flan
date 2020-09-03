@@ -21,6 +21,8 @@ public class LangConfig {
     public String listClaims = "Listing all claims:";
     public String listAdminClaims = "Listing all admin-claims in %1:";
     public String onlyOnePlayer = "Only one player can be used as argument";
+    public String ownerTransferSuccess = "New Claimowner now: %s";
+    public String ownerTransferFail = "Only the owner may transfer claims";
 
     public String noPermission = "You don't have the required permissions to do that here!";
     public String noPermissionSimple = "Sorry you can't do that here!";
@@ -53,6 +55,9 @@ public class LangConfig {
     public String deleteClaimError = "You can't delete this claim here";
     public String deleteSubClaim = "Subclaim deleted";
     public String deleteSubClaimAll = "All Subclaims from this claim deleted";
+    public String noSuchPerm = "No such Permission %s";
+    public String editPerm = "%1$s now set to %2$s";
+    public String editPermGroup = "%1$s for %2$s now set to %3$s";
 
     public String adminMode = "Adminmode (Ignore Claims) set to: %s";
     public String adminDeleteAll = "Deleted all claims for following players: %s";

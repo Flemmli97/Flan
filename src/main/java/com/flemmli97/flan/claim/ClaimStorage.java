@@ -190,6 +190,23 @@ public class ClaimStorage {
         });
     }
 
+    public boolean transferOwner(Claim claim, ServerPlayerEntity player, UUID newOwner) {
+        if (!player.getUuid().equals(claim.getOwner()))
+            return false;
+        this.playerClaimMap.merge(claim.getOwner(), Sets.newHashSet(), (old, val) -> {
+            old.remove(claim);
+            return old;
+        });
+        this.dirty.add(claim.getOwner());
+        claim.transferOwner(newOwner);
+        this.playerClaimMap.merge(claim.getOwner(), Sets.newHashSet(claim), (old, val) -> {
+            old.add(claim);
+            return old;
+        });
+        this.dirty.add(claim.getOwner());
+        return true;
+    }
+
     public Collection<Claim> allClaimsFromPlayer(UUID player) {
         return this.playerClaimMap.containsKey(player) ? ImmutableSet.copyOf(this.playerClaimMap.get(player)) : ImmutableSet.of();
     }

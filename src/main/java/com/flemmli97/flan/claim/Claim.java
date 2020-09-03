@@ -114,7 +114,7 @@ public class Claim {
 
     public void toggleAdminClaim(ServerPlayerEntity player, boolean flag) {
         if (!flag)
-            this.transferOwner(player);
+            this.transferOwner(player.getUuid());
         else {
             this.owner = null;
             this.subClaims.forEach(claim -> claim.owner = null);
@@ -126,9 +126,9 @@ public class Claim {
         return this.owner == null;
     }
 
-    public void transferOwner(ServerPlayerEntity player) {
-        this.owner = player.getUuid();
-        this.subClaims.forEach(claim -> claim.owner = player.getUuid());
+    public void transferOwner(UUID player) {
+        this.owner = player;
+        this.subClaims.forEach(claim -> claim.owner = player);
         this.setDirty(true);
     }
 
@@ -186,14 +186,12 @@ public class Claim {
         PlayerClaimData data = PlayerClaimData.get(player);
         if ((this.isAdminClaim() && player.hasPermissionLevel(2)) || data.isAdminIgnoreClaim())
             return true;
-        for (Claim claim : this.subClaims) {
-            if (claim.insideClaim(pos)) {
-                if (perm != EnumPermission.EDITCLAIM && perm != EnumPermission.EDITPERMS)
+        if (perm != EnumPermission.EDITCLAIM && perm != EnumPermission.EDITPERMS)
+            for (Claim claim : this.subClaims) {
+                if (claim.insideClaim(pos)) {
                     return claim.canInteract(player, perm, pos, message);
-                else if (claim.canInteract(player, perm, pos, message))
-                    return true;
+                }
             }
-        }
         if (this.playersGroups.containsKey(player.getUuid())) {
             EnumMap<EnumPermission, Boolean> map = this.permissions.get(this.playersGroups.get(player.getUuid()));
             if (map != null && map.containsKey(perm)) {
@@ -413,7 +411,7 @@ public class Claim {
         this.minZ = pos.get(2).getAsInt();
         this.maxZ = pos.get(3).getAsInt();
         this.minY = pos.get(4).getAsInt();
-        if (obj.has("AdminClaim") ? obj.get("AdminClaim").getAsBoolean() : false)
+        if (obj.has("AdminClaim") && obj.get("AdminClaim").getAsBoolean())
             this.owner = null;
         else
             this.owner = uuid;

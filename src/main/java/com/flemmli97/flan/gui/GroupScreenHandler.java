@@ -95,7 +95,7 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler {
         if (index == 3) {
             player.closeHandledScreen();
             player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, this.claim, (s) -> {
-                this.claim.editPerms(player, s, EnumPermission.EDITCLAIM, -1);
+                this.claim.editPerms(player, s, EnumPermission.EDITPERMS, -1);
                 player.closeHandledScreen();
                 player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.claim));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_USE, 1, 1f);

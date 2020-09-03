@@ -1,3 +1,9 @@
+Flan 1.0.4
+======================
+- BisUmTo: Add addClaim command to create claims via commands
+- Add transferClaim command to transfer owner of a claim to another player
+- Add editPermission command to edit claim permissions via commands
+
 Flan 1.0.3
 ======================
 - Add permission to toggle firespreading in claims
