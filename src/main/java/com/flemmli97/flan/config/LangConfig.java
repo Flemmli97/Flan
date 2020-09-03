@@ -1,6 +1,7 @@
 package com.flemmli97.flan.config;
 
 import com.google.gson.JsonObject;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WorldSavePath;
 
@@ -76,7 +77,8 @@ public class LangConfig {
     public String claimGroupPlayers = "    Players: %s";
 
     public LangConfig(MinecraftServer server) {
-        File configDir = server.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();
+        File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
+        //server.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();
         try {
             if (!configDir.exists())
                 configDir.mkdirs();

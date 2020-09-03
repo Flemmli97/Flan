@@ -1,3 +1,7 @@
+Flan 1.0.5
+======================
+- Moved the config files to the run/server root folder. (The place where all other mods configs are too)
+
 Flan 1.0.4
 ======================
 - BisUmTo: Add addClaim command to create claims via commands

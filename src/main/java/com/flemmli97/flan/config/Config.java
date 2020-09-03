@@ -2,6 +2,7 @@ package com.flemmli97.flan.config;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
@@ -13,6 +14,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Config {
 
@@ -34,7 +37,8 @@ public class Config {
     public int permissionLevel = 2;
 
     public Config(MinecraftServer server) {
-        File configDir = server.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();
+        File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
+        //.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();
         try {
             if (!configDir.exists())
                 configDir.mkdirs();
