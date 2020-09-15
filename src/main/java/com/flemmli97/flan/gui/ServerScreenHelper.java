@@ -28,6 +28,8 @@ public class ServerScreenHelper {
         ItemStack stack = perm.getItem();
         stack.setCustomName(new LiteralText(perm.toString()).setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
         ListTag lore = new ListTag();
+        Text trans = new LiteralText(perm.translation).setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
+        lore.add(StringTag.of(Text.Serializer.toJson(trans)));
         String permFlag;
         if (group == null) {
             if (claim.parentClaim() == null)

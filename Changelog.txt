@@ -1,3 +1,11 @@
+Flan 1.0.6
+======================
+- Update Fabric API to use the new PlayerBlockBreakEvent
+  Should fix issues with other mods bypassing claim protection
+  (If the mods dont directly break the blocks)
+- Fix the lang configs being overwritten constantly
+- Add description + translation for all permissions (used in the permission menu)
+
 Flan 1.0.5
 ======================
 - Moved the config files to the run/server root folder. (The place where all other mods configs are too)
