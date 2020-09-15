@@ -94,7 +94,7 @@ public class ClaimStorage {
         int[] chunks = getChunkPos(claim);
         for (int x = chunks[0]; x <= chunks[1]; x++)
             for (int z = chunks[2]; z <= chunks[3]; z++) {
-                List<Claim> claims = this.claims.get(new ChunkPos(x, z).toLong());
+                List<Claim> claims = this.claims.get(ChunkPos.toLong(x, z));
                 if (claims != null)
                     for (Claim other : claims) {
                         if (claim.intersects(other) && !other.equals(except)) {
@@ -116,8 +116,7 @@ public class ClaimStorage {
         int[] pos = getChunkPos(claim);
         for (int x = pos[0]; x <= pos[1]; x++)
             for (int z = pos[2]; z <= pos[3]; z++) {
-                ChunkPos chunkPos = new ChunkPos(x, z);
-                this.claims.compute(chunkPos.toLong(), (key, val) -> {
+                this.claims.compute(ChunkPos.toLong(x, z), (key, val) -> {
                     if (val == null)
                         return null;
                     val.remove(claim);
@@ -160,7 +159,7 @@ public class ClaimStorage {
     }
 
     public Claim getClaimAt(BlockPos pos) {
-        long chunk = new ChunkPos(pos).toLong();
+        long chunk = ChunkPos.toLong(pos.getX()>>4, pos.getZ()>>4);
         if (this.claims.containsKey(chunk))
             for (Claim claim : this.claims.get(chunk)) {
                 if (claim.insideClaim(pos))
@@ -177,8 +176,7 @@ public class ClaimStorage {
         int[] pos = getChunkPos(claim);
         for (int x = pos[0]; x <= pos[1]; x++)
             for (int z = pos[2]; z <= pos[3]; z++) {
-                ChunkPos chunkPos = new ChunkPos(x, z);
-                this.claims.merge(chunkPos.toLong(), Lists.newArrayList(claim), (old, val) -> {
+                this.claims.merge(ChunkPos.toLong(x, z), Lists.newArrayList(claim), (old, val) -> {
                     old.add(claim);
                     return old;
                 });
@@ -266,9 +264,8 @@ public class ClaimStorage {
                     file.createNewFile();
                     dirty = true;
                 } else {
-                    if (this.dirty.contains(owner.equals(adminClaimString) ? null : e.getKey())) {
+                    if (this.dirty.remove(owner.equals(adminClaimString) ? null : e.getKey())) {
                         dirty = true;
-                        this.dirty.clear();
                     } else {
                         for (Claim claim : e.getValue())
                             if (claim.isDirty()) {
