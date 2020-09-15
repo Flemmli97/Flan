@@ -160,7 +160,7 @@ public class ItemInteractEvents {
                                 Set<Claim> fl = claim.tryCreateSubClaim(data.editingCorner(), target);
                                 data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                                 if (!fl.isEmpty()) {
-                                    fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.MAIN, player.getBlockPos().getY()));
+                                    fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.CONFLICT, player.getBlockPos().getY()));
                                     player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
                                 } else {
                                     player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.subClaimCreateSuccess, Formatting.GOLD), false);

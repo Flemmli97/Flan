@@ -148,7 +148,7 @@ public class Claim {
     }
 
     public boolean intersects(Claim other) {
-        return this.minX < other.maxX && this.maxX > other.minX && this.minZ < other.maxZ && this.maxZ > other.minZ;
+        return this.minX <= other.maxX && this.maxX >= other.minX && this.minZ <= other.maxZ && this.maxZ >= other.minZ;
     }
 
     public boolean isCorner(BlockPos pos) {
@@ -239,7 +239,7 @@ public class Claim {
         Set<Claim> conflicts = Sets.newHashSet();
         for (Claim other : this.subClaims)
             if (sub.intersects(other)) {
-                conflicts.add(sub);
+                conflicts.add(other);
             }
         if (conflicts.isEmpty()) {
             sub.parent = this.claimID;
