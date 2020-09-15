@@ -9,8 +9,8 @@ import com.flemmli97.flan.event.ItemInteractEvents;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
@@ -19,7 +19,7 @@ public class Flan implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        AttackBlockCallback.EVENT.register(BlockInteractEvents::breakBlocks);
+        PlayerBlockBreakEvents.BEFORE.register(BlockInteractEvents::breakBlocks);
         UseBlockCallback.EVENT.register(BlockInteractEvents::useBlocks);
         UseEntityCallback.EVENT.register(EntityInteractEvents::useAtEntity);
         AttackEntityCallback.EVENT.register(EntityInteractEvents::attackEntity);

@@ -32,19 +32,19 @@ import net.minecraft.world.World;
 
 public class BlockInteractEvents {
 
-    public static ActionResult breakBlocks(PlayerEntity p, World world, Hand hand, BlockPos pos, Direction dir) {
+    public static boolean breakBlocks(World world, PlayerEntity p, BlockPos pos, BlockState state, BlockEntity tile){
         if (world.isClient || p.isSpectator())
-            return ActionResult.PASS;
+            return true;
         ServerPlayerEntity player = (ServerPlayerEntity) p;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
         Claim claim = storage.getClaimAt(pos);
         if (claim != null) {
             if (!claim.canInteract(player, EnumPermission.BREAK, pos, true)) {
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
-                return ActionResult.SUCCESS;
+                return false;
             }
         }
-        return ActionResult.PASS;
+        return true;
     }
 
     //Right click block
