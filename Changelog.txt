@@ -5,6 +5,8 @@ Flan 1.0.6
   (If the mods dont directly break the blocks)
 - Fix the lang configs being overwritten constantly
 - Add description + translation for all permissions (used in the permission menu)
+- Fix claim overlapping on edges not being detected
+- Fix subclaims showing wrong display on conflict
 
 Flan 1.0.5
 ======================
