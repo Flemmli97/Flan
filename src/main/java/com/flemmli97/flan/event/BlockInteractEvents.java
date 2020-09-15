@@ -27,7 +27,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class BlockInteractEvents {
@@ -139,6 +138,8 @@ public class BlockInteractEvents {
         if (entity instanceof ServerPlayerEntity) {
             ClaimStorage storage = ClaimStorage.get((ServerWorld) entity.world);
             Claim claim = storage.getClaimAt(landedPosition);
+            if(claim==null)
+                return false;
             EnumPermission perm = BlockToPermissionMap.getFromBlock(landedState.getBlock());
             if (perm == EnumPermission.TRAMPLE)
                 return !claim.canInteract((ServerPlayerEntity) entity, perm, landedPosition, true);
@@ -162,12 +163,16 @@ public class BlockInteractEvents {
         if (entity instanceof ServerPlayerEntity) {
             ClaimStorage storage = ClaimStorage.get(serverWorld);
             Claim claim = storage.getClaimAt(pos);
+            if(claim==null)
+                return false;
             return !claim.canInteract((ServerPlayerEntity) entity, EnumPermission.TRAMPLE, pos, true);
         } else if (entity instanceof ProjectileEntity) {
             Entity owner = ((ProjectileEntity) entity).getOwner();
             if (owner instanceof ServerPlayerEntity) {
                 ClaimStorage storage = ClaimStorage.get(serverWorld);
                 Claim claim = storage.getClaimAt(pos);
+                if(claim==null)
+                    return false;
                 return !claim.canInteract((ServerPlayerEntity) owner, EnumPermission.TRAMPLE, pos, true);
             }
         } else if (entity instanceof ItemEntity) {
@@ -175,6 +180,8 @@ public class BlockInteractEvents {
             if (owner instanceof ServerPlayerEntity) {
                 ClaimStorage storage = ClaimStorage.get(serverWorld);
                 Claim claim = storage.getClaimAt(pos);
+                if(claim==null)
+                    return false;
                 return !claim.canInteract((ServerPlayerEntity) owner, EnumPermission.TRAMPLE, pos, true);
             }
         }
