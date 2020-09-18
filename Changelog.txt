@@ -1,3 +1,7 @@
+Flan 1.0.7
+======================
+- Enable tamed pet interaction in claims for the owner
+
 Flan 1.0.6
 ======================
 - Update Fabric API to use the new PlayerBlockBreakEvent

@@ -13,7 +13,9 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.Monster;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -74,6 +76,11 @@ public class EntityInteractEvents {
                 return claim.canInteract(player, EnumPermission.TRADING, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
             if (entity instanceof ItemFrameEntity)
                 return claim.canInteract(player, EnumPermission.ITEMFRAMEROTATE, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
+            if(entity instanceof TameableEntity){
+                TameableEntity tame = (TameableEntity) entity;
+                if(tame.isOwner(player))
+                    return ActionResult.PASS;
+            }
             return claim.canInteract(player, EnumPermission.ANIMALINTERACT, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
         }
         return ActionResult.PASS;
