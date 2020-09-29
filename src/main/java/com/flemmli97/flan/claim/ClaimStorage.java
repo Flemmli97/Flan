@@ -11,7 +11,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.ibm.icu.impl.Pair;
 import it.unimi.dsi.fastutil.longs.Long2ObjectArrayMap;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -22,6 +21,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Pair;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -348,13 +348,13 @@ public class ClaimStorage {
                     List<File> childs = subClaimMap.get(parent);
                     if (childs != null && !childs.isEmpty()) {
                         for (File childF : childs)
-                            parentClaim.second.addSubClaimGriefprevention(parseFromYaml(childF, yml, server, perms).second);
+                            parentClaim.getRight().addSubClaimGriefprevention(parseFromYaml(childF, yml, server, perms).getRight());
                     }
-                    ClaimStorage storage = ClaimStorage.get(parentClaim.first);
-                    Set<Claim> conflicts = storage.conflicts(parentClaim.second, null);
+                    ClaimStorage storage = ClaimStorage.get(parentClaim.getLeft());
+                    Set<Claim> conflicts = storage.conflicts(parentClaim.getRight(), null);
                     if (conflicts.isEmpty()) {
-                        parentClaim.second.setClaimID(storage.generateUUID());
-                        storage.addClaim(parentClaim.second);
+                        parentClaim.getRight().setClaimID(storage.generateUUID());
+                        storage.addClaim(parentClaim.getRight());
                     } else {
                         src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.readConflict, parent.getName(), conflicts), Formatting.DARK_RED), false);
                         for (Claim claim : conflicts) {
@@ -436,7 +436,7 @@ public class ClaimStorage {
                 accessors.forEach(s -> claim.setPlayerGroup(UUID.fromString(s), "Accessors", true));
             }
         }
-        return Pair.of(world, claim);
+        return new Pair(world, claim);
     }
 
     private static <T> List<T> readList(Map<String, Object> values, String key) {
