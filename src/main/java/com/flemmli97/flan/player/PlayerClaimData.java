@@ -1,5 +1,6 @@
 package com.flemmli97.flan.player;
 
+import com.flemmli97.flan.Flan;
 import com.flemmli97.flan.IClaimData;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
@@ -84,6 +85,8 @@ public class PlayerClaimData {
     }
 
     public boolean canUseClaimBlocks(int amount) {
+        if(ConfigHandler.config.maxClaimBlocks==-1)
+            return true;
         int usedClaimsBlocks = this.usedClaimBlocks();
         return usedClaimsBlocks + amount <= this.claimBlocks + this.additionalClaimBlocks;
     }
@@ -198,6 +201,7 @@ public class PlayerClaimData {
     }
 
     public void save(MinecraftServer server) {
+        Flan.log("Saving player data for player {} with uuid {}", this.player.getName(), this.player.getUuid());
         File dir = new File(server.getSavePath(WorldSavePath.PLAYERDATA).toFile(), "/claimData/");
         if (!dir.exists())
             dir.mkdirs();
@@ -219,13 +223,16 @@ public class PlayerClaimData {
     }
 
     public void read(MinecraftServer server) {
+        Flan.log("Reading player data for player {} with uuid {}", this.player.getName(), this.player.getUuid());
         File dir = new File(server.getSavePath(WorldSavePath.PLAYERDATA).toFile(), "/claimData/");
         if (!dir.exists())
             return;
         try {
             File file = new File(dir, this.player.getUuid() + ".json");
-            if (!file.exists())
+            if (!file.exists()) {
+                Flan.log("No player data found for player {} with uuid {}", this.player.getName(), this.player.getUuid());
                 return;
+            }
             FileReader reader = new FileReader(file);
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
             this.claimBlocks = obj.get("ClaimBlocks").getAsInt();
@@ -237,6 +244,7 @@ public class PlayerClaimData {
     }
 
     public static void editForOfflinePlayer(MinecraftServer server, UUID uuid, int additionalClaimBlocks) {
+        Flan.log("Adding {} addional claimblocks for offline player with uuid {}", additionalClaimBlocks, uuid);
         File dir = new File(server.getSavePath(WorldSavePath.PLAYERDATA).toFile(), "/claimData/");
         if (!dir.exists())
             dir.mkdirs();

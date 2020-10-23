@@ -513,7 +513,7 @@ public class Claim {
 
     @Override
     public String toString() {
-        return String.format("Claim:[ID=%s, Owner=%s, from: x=%d; z=%d, to: x=%d, z=%d", this.claimID != null ? this.claimID.toString() : "null", this.owner != null ? this.owner.toString() : "Admin", this.minX, this.minZ, this.maxX, this.maxZ);
+        return String.format("Claim:[ID=%s, Owner=%s, from: [x=%d,z=%d], to: [x=%d,z=%d]", this.claimID != null ? this.claimID.toString() : "null", this.owner != null ? this.owner.toString() : "Admin", this.minX, this.minZ, this.maxX, this.maxZ);
     }
 
     public String formattedClaim() {

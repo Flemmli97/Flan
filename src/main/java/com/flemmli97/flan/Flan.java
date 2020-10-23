@@ -14,8 +14,12 @@ import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Flan implements ModInitializer {
+
+    public static final Logger logger = LogManager.getLogger("flan");
 
     @Override
     public void onInitialize() {
@@ -29,4 +33,9 @@ public class Flan implements ModInitializer {
 
         CommandRegistrationCallback.EVENT.register(CommandClaim::register);
     }
+
+    public static void log(String msg, Object... o){
+        logger.info(msg, o);
+    }
+
 }

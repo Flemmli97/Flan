@@ -1,5 +1,6 @@
 package com.flemmli97.flan.claim;
 
+import com.flemmli97.flan.Flan;
 import com.flemmli97.flan.IClaimData;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
@@ -78,6 +79,7 @@ public class ClaimStorage {
                 return false;
             }
             claim.setClaimID(this.generateUUID());
+            Flan.log("Creating new claim {}", claim);
             this.addClaim(claim);
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.claimCreateSuccess, Formatting.GOLD), false);
@@ -111,6 +113,7 @@ public class ClaimStorage {
                 return claim.parentClaim().deleteSubClaim(claim);
             return false;
         }
+        Flan.log("Try deleting claim {}", claim);
         if (updateClaim)
             claim.remove();
         int[] pos = getChunkPos(claim);
@@ -129,6 +132,7 @@ public class ClaimStorage {
     }
 
     public void toggleAdminClaim(ServerPlayerEntity player, Claim claim, boolean toggle) {
+        Flan.log("Set claim {} to an admin claim", claim);
         this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.getServerWorld());
         claim.toggleAdminClaim(player, toggle);
         this.addClaim(claim);
@@ -147,6 +151,7 @@ public class ClaimStorage {
         PlayerClaimData data = PlayerClaimData.get(player);
         int diff = newClaim.getPlane() - claim.getPlane();
         if (data.canUseClaimBlocks(diff)) {
+            Flan.log("Resizing claim {}", claim);
             this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.getServerWorld());
             claim.copySizes(newClaim);
             this.addClaim(claim);
@@ -224,6 +229,7 @@ public class ClaimStorage {
     }
 
     public void read(MinecraftServer server, ServerWorld world) {
+        Flan.log("Loading claim data for world {}", world.getRegistryKey());
         File dir = new File(DimensionType.getSaveDirectory(world.getRegistryKey(), server.getSavePath(WorldSavePath.ROOT).toFile()), "/data/claims/");
         if (dir.exists()) {
             try {
@@ -250,6 +256,7 @@ public class ClaimStorage {
     }
 
     public void save(MinecraftServer server, RegistryKey<World> reg) {
+        Flan.log("Saving claims for world {}", reg);
         File dir = new File(DimensionType.getSaveDirectory(reg, server.getSavePath(WorldSavePath.ROOT).toFile()), "/data/claims/");
         if (!dir.exists())
             dir.mkdir();
@@ -436,9 +443,10 @@ public class ClaimStorage {
                 accessors.forEach(s -> claim.setPlayerGroup(UUID.fromString(s), "Accessors", true));
             }
         }
-        return new Pair(world, claim);
+        return new Pair<>(world, claim);
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> List<T> readList(Map<String, Object> values, String key) {
         Object obj = values.get(key);
         if (obj instanceof List)

@@ -44,6 +44,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class CommandClaim {
 
+    @SuppressWarnings("unchecked")
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
         dispatcher.register(addToMainCommand(CommandManager.literal("flan"),
                 CommandManager.literal("reload").executes(CommandClaim::reloadConfig),
@@ -283,14 +284,16 @@ public class CommandClaim {
             ClaimStorage storage = ClaimStorage.get(world);
             claims.put(world, storage.allClaimsFromPlayer(player != null ? player.getUuid() : of));
         }
-        if (player != null) {
-            PlayerClaimData data = PlayerClaimData.get(player);
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
-                    data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks()), Formatting.GOLD), false);
-        } else {
-            OfflinePlayerData data = new OfflinePlayerData(server, of);
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
-                    data.claimBlocks, data.additionalClaimBlocks, data.getUsedClaimBlocks(server)), Formatting.GOLD), false);
+        if(ConfigHandler.config.maxClaimBlocks != -1) {
+            if (player != null) {
+                PlayerClaimData data = PlayerClaimData.get(player);
+                context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
+                        data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks()), Formatting.GOLD), false);
+            } else {
+                OfflinePlayerData data = new OfflinePlayerData(server, of);
+                context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
+                        data.claimBlocks, data.additionalClaimBlocks, data.getUsedClaimBlocks(server)), Formatting.GOLD), false);
+            }
         }
         context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.listClaims, Formatting.GOLD), false);
         for (Map.Entry<World, Collection<Claim>> entry : claims.entrySet())

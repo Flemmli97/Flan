@@ -7,15 +7,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.registry.Registry;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class Config {
 
@@ -35,6 +32,8 @@ public class Config {
 
     public int claimDisplayTime = 1000;
     public int permissionLevel = 2;
+
+    public boolean log;
 
     public Config(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
@@ -70,6 +69,7 @@ public class Config {
             this.claimingItem = Registry.ITEM.get(new Identifier((obj.get("claimingItem").getAsString())));
             this.inspectionItem = Registry.ITEM.get(new Identifier((obj.get("inspectionItem").getAsString())));
             this.claimDisplayTime = obj.get("claimDisplayTime").getAsInt();
+            this.log = obj.has("enableLogs") && obj.get("enableLogs").getAsBoolean();
             if (obj.has("permissionLevel"))
                 this.permissionLevel = obj.get("permissionLevel").getAsInt();
         } catch (IOException e) {
@@ -92,6 +92,7 @@ public class Config {
         obj.addProperty("inspectionItem", Registry.ITEM.getId(this.inspectionItem).toString());
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
         obj.addProperty("permissionLevel", this.permissionLevel);
+        obj.addProperty("enableLogs", this.log);
         try {
             FileWriter writer = new FileWriter(this.config);
             ConfigHandler.GSON.toJson(obj, writer);
