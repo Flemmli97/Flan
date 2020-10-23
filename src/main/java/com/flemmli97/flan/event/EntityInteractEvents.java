@@ -15,7 +15,6 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
