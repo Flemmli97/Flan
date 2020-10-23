@@ -1,4 +1,4 @@
-Flan 1.0.8
+Flan 1.0.9
 ======================
 - Add some logging stuff. Mostly with read/saving things
 - Add option to disable the need for claim blocks by setting maxClaimBlocks to -1 in the configs
