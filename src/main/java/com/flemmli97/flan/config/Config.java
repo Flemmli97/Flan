@@ -123,7 +123,7 @@ public class Config {
         JsonObject global = new JsonObject();
         this.globalDefaultPerms.entrySet().forEach(e->{
             JsonObject perm = new JsonObject();
-            e.getValue().entrySet().forEach(eperm->perm.addProperty(eperm.getKey().toString(), eperm.getValue().toString()));
+            e.getValue().entrySet().forEach(eperm->perm.addProperty(eperm.getKey().toString(), eperm.getValue().booleanValue()));
             global.add(e.getKey(), perm);
         });
         obj.add("globalDefaultPerms", global);

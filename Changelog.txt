@@ -1,6 +1,6 @@
 Flan 1.1.0
 ======================
-- Add global per world perms
+- Add global per world perms (for more info visit https://github.com/Flemmli97/Flan/wiki/Config)
 - Fail safe for config reading just in case the config contains "bad values"
 - Some more logs
 
