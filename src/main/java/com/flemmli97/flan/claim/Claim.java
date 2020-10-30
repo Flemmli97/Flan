@@ -10,7 +10,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -240,7 +239,7 @@ public class Claim implements IPermissionContainer{
         UUID uuid = UUID.randomUUID();
         for (Claim claim : this.subClaims)
             if (claim.claimID.equals(uuid)) {
-                return generateUUID();
+                return this.generateUUID();
             }
         return uuid;
     }

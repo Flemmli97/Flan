@@ -190,8 +190,8 @@ public class PlayerClaimData {
         }
         if (this.cornerRenderPos != null) {
             if (this.cornerRenderPos[1] != this.cornerRenderPos[2])
-                player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.SETCORNER, true, this.cornerRenderPos[0] + 0.5, this.cornerRenderPos[2] + 0.25, this.cornerRenderPos[3] + 0.5, 0, 0.25f, 0, 0, 2));
-            player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.SETCORNER, true, this.cornerRenderPos[0] + 0.5, this.cornerRenderPos[1] + 0.25, this.cornerRenderPos[3] + 0.5, 0, 0.25f, 0, 0, 2));
+                this.player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.SETCORNER, true, this.cornerRenderPos[0] + 0.5, this.cornerRenderPos[2] + 0.25, this.cornerRenderPos[3] + 0.5, 0, 0.25f, 0, 0, 2));
+            this.player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.SETCORNER, true, this.cornerRenderPos[0] + 0.5, this.cornerRenderPos[1] + 0.25, this.cornerRenderPos[3] + 0.5, 0, 0.25f, 0, 0, 2));
         }
         if (--this.confirmTick < 0)
             this.confirmDeleteAll = false;

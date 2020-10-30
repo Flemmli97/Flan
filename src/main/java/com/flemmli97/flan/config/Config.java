@@ -12,14 +12,12 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.lwjgl.system.CallbackI;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.Map;
 
 public class Config {
@@ -43,7 +41,7 @@ public class Config {
 
     public boolean log;
 
-    public Map<String,EnumMap<EnumPermission,Boolean>> globalDefaultPerms = Maps.newHashMap();
+    public final Map<String,EnumMap<EnumPermission,Boolean>> globalDefaultPerms = Maps.newHashMap();
 
     public Config(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
@@ -121,10 +119,10 @@ public class Config {
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
         obj.addProperty("permissionLevel", this.permissionLevel);
         JsonObject global = new JsonObject();
-        this.globalDefaultPerms.entrySet().forEach(e->{
+        this.globalDefaultPerms.forEach((key, value) -> {
             JsonObject perm = new JsonObject();
-            e.getValue().entrySet().forEach(eperm->perm.addProperty(eperm.getKey().toString(), eperm.getValue().booleanValue()));
-            global.add(e.getKey(), perm);
+            value.entrySet().forEach(eperm -> perm.addProperty(eperm.getKey().toString(), eperm.getValue()));
+            global.add(key, perm);
         });
         obj.add("globalDefaultPerms", global);
         obj.addProperty("enableLogs", this.log);
@@ -139,8 +137,5 @@ public class Config {
 
     public boolean globallyDefined(ServerWorld world, EnumPermission perm){
         EnumMap<EnumPermission,Boolean> global = ConfigHandler.config.globalDefaultPerms.get(world.getRegistryKey().getValue().toString());
-        if(global!=null && global.containsKey(perm)) {
-            return true;
-        }
-        return false;
+        return global != null && global.containsKey(perm);
     }}

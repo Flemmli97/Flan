@@ -105,7 +105,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
                 GameProfile prof = player.getServer().getUserCache().findByName(s);
                 boolean fl = prof == null || this.claim.setPlayerGroup(prof.getId(), this.group, false);
                 player.closeHandledScreen();
-                player.getServer().execute(() -> GroupPlayerScreenHandler.openPlayerGroupMenu(player, claim, group));
+                player.getServer().execute(() -> GroupPlayerScreenHandler.openPlayerGroupMenu(player, this.claim, this.group));
                 if (fl)
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_USE, 1, 1f);
                 else {
@@ -114,7 +114,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
                 }
             }, () -> {
                 player.closeHandledScreen();
-                player.getServer().execute(() -> GroupPlayerScreenHandler.openPlayerGroupMenu(player, claim, group));
+                player.getServer().execute(() -> GroupPlayerScreenHandler.openPlayerGroupMenu(player, this.claim, this.group));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_VILLAGER_NO, 1, 1f);
             }));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);

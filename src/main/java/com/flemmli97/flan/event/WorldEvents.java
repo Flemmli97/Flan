@@ -1,6 +1,5 @@
 package com.flemmli97.flan.event;
 
-import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.EnumPermission;
 import com.flemmli97.flan.claim.IPermissionContainer;

@@ -62,13 +62,13 @@ public class ClaimStorage {
     public UUID generateUUID() {
         UUID uuid = UUID.randomUUID();
         if (this.claimUUIDMap.containsKey(uuid))
-            return generateUUID();
+            return this.generateUUID();
         return uuid;
     }
 
     public boolean createClaim(BlockPos pos1, BlockPos pos2, ServerPlayerEntity player) {
         Claim claim = new Claim(pos1.down(ConfigHandler.config.defaultClaimDepth), pos2.down(ConfigHandler.config.defaultClaimDepth), player.getUuid(), player.getServerWorld());
-        Set<Claim> conflicts = conflicts(claim, null);
+        Set<Claim> conflicts = this.conflicts(claim, null);
         if (conflicts.isEmpty()) {
             PlayerClaimData data = PlayerClaimData.get(player);
             if (claim.getPlane() < ConfigHandler.config.minClaimsize) {
@@ -143,7 +143,7 @@ public class ClaimStorage {
         int[] dims = claim.getDimensions();
         BlockPos opposite = new BlockPos(dims[0] == from.getX() ? dims[1] : dims[0], dims[4], dims[2] == from.getZ() ? dims[3] : dims[2]);
         Claim newClaim = new Claim(opposite, to, player.getUuid(), player.getServerWorld());
-        Set<Claim> conflicts = conflicts(newClaim, claim);
+        Set<Claim> conflicts = this.conflicts(newClaim, claim);
         if (!conflicts.isEmpty()) {
             conflicts.forEach(conf -> PlayerClaimData.get(player).addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.getBlockPos().getY()));
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);

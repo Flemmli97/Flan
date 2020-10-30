@@ -122,7 +122,7 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
 
     @Override
     public void updateResult() {
-        if (!init)
+        if (!this.init)
             this.init = true;
         else {
             ItemStack out = this.slots.get(2).getStack();

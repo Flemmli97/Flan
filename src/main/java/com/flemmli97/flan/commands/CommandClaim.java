@@ -45,39 +45,38 @@ import java.util.concurrent.CompletableFuture;
 
 public class CommandClaim {
 
-    @SuppressWarnings("unchecked")
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
-        dispatcher.register(addToMainCommand(CommandManager.literal("flan"),
-                CommandManager.literal("reload").executes(CommandClaim::reloadConfig),
-                CommandManager.literal("addClaim").then(CommandManager.argument("from", BlockPosArgumentType.blockPos()).then(CommandManager.argument("to", BlockPosArgumentType.blockPos()).executes(CommandClaim::addClaim))),
-                CommandManager.literal("menu").executes(CommandClaim::openMenu),
-                CommandManager.literal("claimInfo").executes(CommandClaim::claimInfo),
-                CommandManager.literal("transferClaim").then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).executes(CommandClaim::transferClaim)),
-                CommandManager.literal("delete").executes(CommandClaim::deleteClaim),
-                CommandManager.literal("deleteAll").executes(CommandClaim::deleteAllClaim),
-                CommandManager.literal("deleteSubClaim").executes(CommandClaim::deleteSubClaim),
-                CommandManager.literal("deleteAllSubClaims").executes(CommandClaim::deleteAllSubClaim),
-                CommandManager.literal("list").executes(CommandClaim::listClaims).then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel))
-                        .executes(cmd -> listClaims(cmd, GameProfileArgumentType.getProfileArgument(cmd, "player")))),
-                CommandManager.literal("switchMode").executes(CommandClaim::switchClaimMode),
-                CommandManager.literal("adminMode").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(CommandClaim::switchAdminMode),
-                CommandManager.literal("readGriefPrevention").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(CommandClaim::readGriefPreventionData),
-                CommandManager.literal("setAdminClaim").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).then(CommandManager.argument("toggle", BoolArgumentType.bool()).executes(CommandClaim::toggleAdminClaim)),
-                CommandManager.literal("listAdminClaims").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(CommandClaim::listAdminClaims),
-                CommandManager.literal("adminDelete").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(CommandClaim::adminDelete)
+        dispatcher.register(CommandManager.literal("flan")
+                .then(CommandManager.literal("reload").executes(CommandClaim::reloadConfig))
+                .then(CommandManager.literal("addClaim").then(CommandManager.argument("from", BlockPosArgumentType.blockPos()).then(CommandManager.argument("to", BlockPosArgumentType.blockPos()).executes(CommandClaim::addClaim))))
+                .then(CommandManager.literal("menu").executes(CommandClaim::openMenu))
+                .then(CommandManager.literal("claimInfo").executes(CommandClaim::claimInfo))
+                .then(CommandManager.literal("transferClaim").then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).executes(CommandClaim::transferClaim)))
+                .then(CommandManager.literal("delete").executes(CommandClaim::deleteClaim))
+                .then(CommandManager.literal("deleteAll").executes(CommandClaim::deleteAllClaim))
+                .then(CommandManager.literal("deleteSubClaim").executes(CommandClaim::deleteSubClaim))
+                .then(CommandManager.literal("deleteAllSubClaims").executes(CommandClaim::deleteAllSubClaim))
+                .then(CommandManager.literal("list").executes(CommandClaim::listClaims).then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel))
+                        .executes(cmd -> listClaims(cmd, GameProfileArgumentType.getProfileArgument(cmd, "player")))))
+                .then(CommandManager.literal("switchMode").executes(CommandClaim::switchClaimMode))
+                .then(CommandManager.literal("adminMode").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(CommandClaim::switchAdminMode))
+                .then(CommandManager.literal("readGriefPrevention").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(CommandClaim::readGriefPreventionData))
+                .then(CommandManager.literal("setAdminClaim").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).then(CommandManager.argument("toggle", BoolArgumentType.bool()).executes(CommandClaim::toggleAdminClaim)))
+                .then(CommandManager.literal("listAdminClaims").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(CommandClaim::listAdminClaims))
+                .then(CommandManager.literal("adminDelete").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(CommandClaim::adminDelete)
                         .then(CommandManager.literal("all").then(CommandManager.argument("players", GameProfileArgumentType.gameProfile())
-                                .executes(CommandClaim::adminDeleteAll))),
-                CommandManager.literal("giveClaimBlocks").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).then(CommandManager.argument("players", GameProfileArgumentType.gameProfile())
-                        .then(CommandManager.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::giveClaimBlocks))),
-                addToMainCommand(CommandManager.literal("group"),
-                        CommandManager.literal("add").then(CommandManager.argument("group", StringArgumentType.word()).executes(CommandClaim::addGroup)),
-                        CommandManager.literal("remove").then(CommandManager.argument("group", StringArgumentType.word())
-                                .suggests(CommandClaim::groupSuggestion).executes(CommandClaim::removeGroup)),
-                        addToMainCommand(CommandManager.literal("players"),
-                                CommandManager.literal("add").then(CommandManager.argument("group", StringArgumentType.word()).suggests(CommandClaim::groupSuggestion)
+                                .executes(CommandClaim::adminDeleteAll))))
+                .then(CommandManager.literal("giveClaimBlocks").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).then(CommandManager.argument("players", GameProfileArgumentType.gameProfile())
+                        .then(CommandManager.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::giveClaimBlocks))))
+                .then(CommandManager.literal("group")
+                        .then(CommandManager.literal("add").then(CommandManager.argument("group", StringArgumentType.word()).executes(CommandClaim::addGroup)))
+                        .then(CommandManager.literal("remove").then(CommandManager.argument("group", StringArgumentType.word())
+                                .suggests(CommandClaim::groupSuggestion).executes(CommandClaim::removeGroup)))
+                        .then(CommandManager.literal("players")
+                                .then(CommandManager.literal("add").then(CommandManager.argument("group", StringArgumentType.word()).suggests(CommandClaim::groupSuggestion)
                                         .then(CommandManager.argument("players", GameProfileArgumentType.gameProfile()).executes(CommandClaim::addPlayer)
-                                                .then(CommandManager.literal("overwrite").executes(CommandClaim::forceAddPlayer)))),
-                                CommandManager.literal("remove").then(CommandManager.argument("group", StringArgumentType.word()).suggests(CommandClaim::groupSuggestion)
+                                                .then(CommandManager.literal("overwrite").executes(CommandClaim::forceAddPlayer)))))
+                                .then(CommandManager.literal("remove").then(CommandManager.argument("group", StringArgumentType.word()).suggests(CommandClaim::groupSuggestion)
                                         .then(CommandManager.argument("players", GameProfileArgumentType.gameProfile()).suggests((context, build) -> {
                                             ServerPlayerEntity player = context.getSource().getPlayer();
                                             List<String> list = Lists.newArrayList();
@@ -88,22 +87,15 @@ public class CommandClaim {
                                                 list = claim.playersFromGroup(player.getServer(), "");
                                             }
                                             return CommandSource.suggestMatching(list, build);
-                                        }).executes(CommandClaim::removePlayer))))),
-                addToMainCommand(CommandManager.literal("permission"),
-                        CommandManager.literal("global").then(CommandManager.argument("permission", StringArgumentType.word()).suggests((ctx, b) -> permSuggestions(ctx, b, false))
-                                .then(CommandManager.argument("toggle", StringArgumentType.word()).suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"default", "true", "false"}, b)).executes(CommandClaim::editGlobalPerm))),
-                        CommandManager.literal("group").then(CommandManager.argument("group", StringArgumentType.word()).suggests(CommandClaim::groupSuggestion)
+                                        }).executes(CommandClaim::removePlayer))))))
+                .then(CommandManager.literal("permission")
+                        .then(CommandManager.literal("global").then(CommandManager.argument("permission", StringArgumentType.word()).suggests((ctx, b) -> permSuggestions(ctx, b, false))
+                                .then(CommandManager.argument("toggle", StringArgumentType.word()).suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"default", "true", "false"}, b)).executes(CommandClaim::editGlobalPerm))))
+                        .then(CommandManager.literal("group").then(CommandManager.argument("group", StringArgumentType.word()).suggests(CommandClaim::groupSuggestion)
                                 .then(CommandManager.argument("permission", StringArgumentType.word()).suggests((ctx, b) -> permSuggestions(ctx, b, true))
                                         .then(CommandManager.argument("toggle", StringArgumentType.word())
-                                                .suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"default", "true", "false"}, b)).executes(CommandClaim::editGroupPerm)))))
-        ));
-    }
-
-    private static <S, T extends ArgumentBuilder<S, T>> T addToMainCommand(T main, T... other) {
-        if (other != null)
-            for (T o : other)
-                main.then(o);
-        return main;
+                                                .suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"default", "true", "false"}, b)).executes(CommandClaim::editGroupPerm))))))
+        );
     }
 
     private static int reloadConfig(CommandContext<ServerCommandSource> context) {
