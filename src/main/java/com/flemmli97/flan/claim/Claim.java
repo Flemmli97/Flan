@@ -10,6 +10,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -24,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class Claim {
+public class Claim implements IPermissionContainer{
 
     private boolean dirty;
     private int minX, minZ, maxX, maxZ, minY;
@@ -90,6 +91,10 @@ public class Claim {
 
     public UUID getOwner() {
         return this.owner;
+    }
+
+    public ServerWorld getWorld(){
+        return this.world;
     }
 
     public Claim parentClaim() {
@@ -164,11 +169,17 @@ public class Claim {
         return this.removed;
     }
 
-    public boolean canInteract(ServerPlayerEntity player, EnumPermission perm, BlockPos pos) {
-        return this.canInteract(player, perm, pos, false);
-    }
-
     public boolean canInteract(ServerPlayerEntity player, EnumPermission perm, BlockPos pos, boolean message) {
+        if(!this.isAdminClaim() && ConfigHandler.config.globalDefaultPerms.containsKey(this.world.getRegistryKey().getValue().toString())){
+            EnumMap<EnumPermission, Boolean> permMap = ConfigHandler.config.globalDefaultPerms.get(this.world.getRegistryKey().getValue().toString());
+            if(permMap.containsKey(perm)) {
+                if (permMap.get(perm) || this.isAdminIgnore(player))
+                    return true;
+                if (message)
+                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
+                return false;
+            }
+        }
         if (perm.isAlwaysGlobalPerm()) {
             for (Claim claim : this.subClaims) {
                 if (claim.insideClaim(pos)) {
@@ -181,10 +192,7 @@ public class Claim {
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
             return false;
         }
-        if (player.getUuid().equals(this.owner))
-            return true;
-        PlayerClaimData data = PlayerClaimData.get(player);
-        if ((this.isAdminClaim() && player.hasPermissionLevel(2)) || data.isAdminIgnoreClaim())
+        if (this.isAdminIgnore(player) || player.getUuid().equals(this.owner))
             return true;
         if (perm != EnumPermission.EDITCLAIM && perm != EnumPermission.EDITPERMS)
             for (Claim claim : this.subClaims) {
@@ -207,6 +215,10 @@ public class Claim {
         if (message)
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
         return false;
+    }
+
+    private boolean isAdminIgnore(ServerPlayerEntity player){
+        return player == null || ((this.isAdminClaim() && player.hasPermissionLevel(2)) || PlayerClaimData.get(player).isAdminIgnoreClaim());
     }
 
     /**
@@ -322,7 +334,9 @@ public class Claim {
         return names;
     }
 
-    public void editGlobalPerms(EnumPermission toggle, int mode) {
+    public boolean editGlobalPerms(ServerPlayerEntity player, EnumPermission toggle, int mode) {
+        if((player!= null && !this.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos())) || (!this.isAdminClaim() && ConfigHandler.config.globallyDefined(this.world, toggle)))
+            return false;
         if (mode > 1)
             mode = -1;
         if (mode == -1)
@@ -330,6 +344,7 @@ public class Claim {
         else
             this.globalPerm.put(toggle, mode == 1);
         this.setDirty(true);
+        return true;
     }
 
     public boolean editPerms(ServerPlayerEntity player, String group, EnumPermission perm, int mode) {
@@ -343,7 +358,7 @@ public class Claim {
      * @return If editing was successful or not
      */
     public boolean editPerms(ServerPlayerEntity player, String group, EnumPermission perm, int mode, boolean griefPrevention) {
-        if (perm.isAlwaysGlobalPerm())
+        if (perm.isAlwaysGlobalPerm() || (!this.isAdminClaim() && ConfigHandler.config.globallyDefined(this.world, perm)))
             return false;
         if (griefPrevention || this.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos())) {
             if (mode > 1)

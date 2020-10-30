@@ -159,17 +159,21 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
         } catch (IllegalArgumentException e) {
             return false;
         }
+        boolean success;
         if (this.group == null) {
             int mode;
             if (this.claim.parentClaim() == null)
                 mode = this.claim.permEnabled(perm) == 1 ? -1 : 1;
             else
                 mode = this.claim.permEnabled(perm) + 1;
-            this.claim.editGlobalPerms(perm, mode);
+            success = this.claim.editGlobalPerms(player, perm, mode);
         } else
-            this.claim.editPerms(player, this.group, perm, this.claim.groupHasPerm(this.group, perm) + 1);
+            success = this.claim.editPerms(player, this.group, perm, this.claim.groupHasPerm(this.group, perm) + 1);
         slot.setStack(ServerScreenHelper.fromPermission(this.claim, perm, this.group));
-        ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_NOTE_BLOCK_PLING, 1, 1.2f);
+        if(success)
+            ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_NOTE_BLOCK_PLING, 1, 1.2f);
+        else
+            ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_VILLAGER_NO, 1, 1f);
         return true;
     }
 

@@ -37,6 +37,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -492,7 +493,15 @@ public class CommandClaim {
     }
 
     private static CompletableFuture<Suggestions> permSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder build, boolean group) {
+        ServerWorld world = context.getSource().getWorld();
+        Claim claim = ClaimStorage.get(world).getClaimAt(new BlockPos(context.getSource().getPosition()));
+        boolean admin = claim != null && claim.isAdminClaim();
+        String serverWorld = world.getRegistryKey().getValue().toString();
+        EnumMap<EnumPermission,Boolean> global = ConfigHandler.config.globalDefaultPerms.get(serverWorld);
         for (EnumPermission perm : EnumPermission.values()) {
+            if(!admin && global!=null && global.containsKey(perm)) {
+                continue;
+            }
             if (!group || !perm.isAlwaysGlobalPerm())
                 build.suggest(perm.toString());
         }
@@ -560,7 +569,7 @@ public class CommandClaim {
         }
         String setPerm = mode == 1 ? "true" : mode == 0 ? "false" : "default";
         if (group == null) {
-            claim.editGlobalPerms(perm, mode);
+            claim.editGlobalPerms(player, perm, mode);
             player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.editPerm, perm, setPerm), Formatting.GOLD), false);
         } else {
             claim.editPerms(player, group, perm, mode);

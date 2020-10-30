@@ -1,3 +1,9 @@
+Flan 1.1.0
+======================
+- Add global per world perms
+- Fail safe for config reading just in case the config contains "bad values"
+- Some more logs
+
 Flan 1.0.9
 ======================
 - Add some logging stuff. Mostly with read/saving things

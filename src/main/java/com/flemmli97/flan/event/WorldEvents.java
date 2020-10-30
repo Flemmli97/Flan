@@ -3,6 +3,7 @@ package com.flemmli97.flan.event;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.EnumPermission;
+import com.flemmli97.flan.claim.IPermissionContainer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,7 +19,7 @@ public class WorldEvents {
     public static void modifyExplosion(Explosion explosion, ServerWorld world) {
         ClaimStorage storage = ClaimStorage.get(world);
         explosion.getAffectedBlocks().removeIf(pos -> {
-            Claim claim = storage.getClaimAt(pos);
+            IPermissionContainer claim = storage.getForPermissionCheck(pos);
             if (claim != null)
                 return !claim.canInteract(null, EnumPermission.EXPLOSIONS, pos);
             return false;
@@ -31,15 +32,15 @@ public class WorldEvents {
         boolean empty = state.isAir() || state.getPistonBehavior() == PistonBehavior.DESTROY;
         BlockPos dirPos = blockPos.offset(direction);
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
-        Claim from = storage.getClaimAt(blockPos);
-        Claim to = storage.getClaimAt(dirPos);
+        IPermissionContainer from = storage.getForPermissionCheck(blockPos);
+        IPermissionContainer to = storage.getForPermissionCheck(dirPos);
         boolean flag = true;
         if (!empty) {
             if ((from != null && !from.equals(to)) || (from == null && to != null))
                 flag = false;
         }
         if (from != null && from.equals(to)) {
-            Claim opp = storage.getClaimAt(blockPos.offset(direction.getOpposite()));
+            IPermissionContainer opp = storage.getForPermissionCheck(blockPos.offset(direction.getOpposite()));
             flag = from.equals(opp);
         }
         if (!flag) {
@@ -54,8 +55,8 @@ public class WorldEvents {
         if (!(world instanceof ServerWorld) || direction == Direction.UP || direction == Direction.DOWN)
             return true;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
-        Claim from = storage.getClaimAt(blockPos);
-        Claim to = storage.getClaimAt(blockPos.offset(direction));
+        IPermissionContainer from = storage.getForPermissionCheck(blockPos);
+        IPermissionContainer to = storage.getForPermissionCheck(blockPos.offset(direction));
         boolean fl = from == null && to == null;
         if (from != null)
             fl = from.equals(to);
@@ -63,12 +64,12 @@ public class WorldEvents {
     }
 
     public static boolean canStartRaid(ServerPlayerEntity player) {
-        Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(player.getBlockPos());
+        IPermissionContainer claim = ClaimStorage.get(player.getServerWorld()).getForPermissionCheck(player.getBlockPos());
         return claim == null || claim.canInteract(player, EnumPermission.RAID, player.getBlockPos());
     }
 
     public static boolean canFireSpread(ServerWorld world, BlockPos pos) {
-        Claim claim = ClaimStorage.get(world).getClaimAt(pos);
+        IPermissionContainer claim = ClaimStorage.get(world).getForPermissionCheck(pos);
         return claim == null || claim.canInteract(null, EnumPermission.FIRESPREAD, pos);
     }
 }

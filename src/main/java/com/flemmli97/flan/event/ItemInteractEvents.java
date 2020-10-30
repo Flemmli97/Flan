@@ -3,6 +3,7 @@ package com.flemmli97.flan.event;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.EnumPermission;
+import com.flemmli97.flan.claim.IPermissionContainer;
 import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
@@ -59,7 +60,7 @@ public class ItemInteractEvents {
         }
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
         BlockPos pos = player.getBlockPos();
-        Claim claim = storage.getClaimAt(pos);
+        IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim == null)
             return TypedActionResult.pass(stack);
         if (stack.getItem() == Items.ENDER_PEARL)
@@ -76,12 +77,12 @@ public class ItemInteractEvents {
             return ActionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) context.getWorld());
         BlockPos placePos = new ItemPlacementContext(context).getBlockPos();
-        Claim claim = storage.getClaimAt(placePos.add(0, 255, 0));
+        IPermissionContainer claim = storage.getForPermissionCheck(placePos.add(0, 255, 0));
         if (claim == null)
             return ActionResult.PASS;
         if (blackListedItems.contains(context.getStack().getItem()))
             return ActionResult.PASS;
-        boolean actualInClaim = placePos.getY() >= claim.getDimensions()[4];
+        boolean actualInClaim = !(claim instanceof Claim) || placePos.getY() >= ((Claim) claim).getDimensions()[4];
         ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
         if (context.getStack().getItem() == Items.END_CRYSTAL) {
             if (claim.canInteract(player, EnumPermission.ENDCRYSTALPLACE, placePos, false))
@@ -93,7 +94,7 @@ public class ItemInteractEvents {
         }
         if (claim.canInteract(player, EnumPermission.PLACE, placePos, false)) {
             if (!actualInClaim && context.getStack().getItem() instanceof BlockItem) {
-                claim.extendDownwards(placePos);
+                ((Claim) claim).extendDownwards(placePos);
             }
             return ActionResult.PASS;
         } else if (actualInClaim) {

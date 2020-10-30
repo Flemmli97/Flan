@@ -3,6 +3,7 @@ package com.flemmli97.flan.gui;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.EnumPermission;
 import com.flemmli97.flan.claim.PermHelper;
+import com.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.ListTag;
@@ -15,6 +16,8 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+
+import java.util.EnumMap;
 
 public class ServerScreenHelper {
 
@@ -30,12 +33,34 @@ public class ServerScreenHelper {
         ListTag lore = new ListTag();
         Text trans = new LiteralText(perm.translation).setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
         lore.add(StringTag.of(Text.Serializer.toJson(trans)));
-        String permFlag;
-        if (group == null) {
-            if (claim.parentClaim() == null)
-                permFlag = "" + (claim.permEnabled(perm) == 1);
-            else {
-                switch (claim.permEnabled(perm)) {
+        EnumMap<EnumPermission,Boolean> global = ConfigHandler.config.globalDefaultPerms.get(claim.getWorld().getRegistryKey().getValue().toString());
+        if(!claim.isAdminClaim() && global!=null && global.containsKey(perm)){
+            Text text = new LiteralText("Non Editable.").setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED));
+            lore.add(StringTag.of(Text.Serializer.toJson(text)));
+            String permFlag = global.get(perm).toString();
+            Text text2 = new LiteralText("Enabled: " + permFlag).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
+            lore.add(StringTag.of(Text.Serializer.toJson(text2)));
+        }
+        else {
+            String permFlag;
+            if (group == null) {
+                if (claim.parentClaim() == null)
+                    permFlag = "" + (claim.permEnabled(perm) == 1);
+                else {
+                    switch (claim.permEnabled(perm)) {
+                        case -1:
+                            permFlag = "default";
+                            break;
+                        case 1:
+                            permFlag = "true";
+                            break;
+                        default:
+                            permFlag = "false";
+                            break;
+                    }
+                }
+            } else {
+                switch (claim.groupHasPerm(group, perm)) {
                     case -1:
                         permFlag = "default";
                         break;
@@ -47,21 +72,9 @@ public class ServerScreenHelper {
                         break;
                 }
             }
-        } else {
-            switch (claim.groupHasPerm(group, perm)) {
-                case -1:
-                    permFlag = "default";
-                    break;
-                case 1:
-                    permFlag = "true";
-                    break;
-                default:
-                    permFlag = "false";
-                    break;
-            }
+            Text text = new LiteralText("Enabled: " + permFlag).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
+            lore.add(StringTag.of(Text.Serializer.toJson(text)));
         }
-        Text text = new LiteralText("Enabled: " + permFlag).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
-        lore.add(StringTag.of(Text.Serializer.toJson(text)));
         stack.getOrCreateSubTag("display").put("Lore", lore);
         return stack;
     }

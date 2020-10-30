@@ -1,18 +1,26 @@
 package com.flemmli97.flan.config;
 
+import com.flemmli97.flan.Flan;
+import com.flemmli97.flan.claim.EnumPermission;
+import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.lwjgl.system.CallbackI;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map;
 
 public class Config {
 
@@ -35,6 +43,8 @@ public class Config {
 
     public boolean log;
 
+    public Map<String,EnumMap<EnumPermission,Boolean>> globalDefaultPerms = Maps.newHashMap();
+
     public Config(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
         //.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();
@@ -56,22 +66,39 @@ public class Config {
             FileReader reader = new FileReader(this.config);
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
             reader.close();
-            this.startingBlocks = obj.get("startingBlocks").getAsInt();
-            this.maxClaimBlocks = obj.get("maxClaimBlocks").getAsInt();
-            this.ticksForNextBlock = obj.get("ticksForNextBlock").getAsInt();
-            this.minClaimsize = obj.get("minClaimsize").getAsInt();
-            this.defaultClaimDepth = obj.get("defaultClaimDepth").getAsInt();
-            JsonArray arr = obj.getAsJsonArray("blacklistedWorlds");
+            this.startingBlocks = ConfigHandler.fromJson(obj, "startingBlocks", this.startingBlocks);
+            this.maxClaimBlocks = ConfigHandler.fromJson(obj, "maxClaimBlocks", this.maxClaimBlocks);
+            this.ticksForNextBlock = ConfigHandler.fromJson(obj, "ticksForNextBlock", this.ticksForNextBlock);
+            this.minClaimsize = ConfigHandler.fromJson(obj, "minClaimsize", this.minClaimsize);
+            this.defaultClaimDepth = ConfigHandler.fromJson(obj, "defaultClaimDepth", this.defaultClaimDepth);
+            JsonArray arr = ConfigHandler.arryFromJson(obj, "blacklistedWorlds");
             this.blacklistedWorlds = new String[arr.size()];
             for (int i = 0; i < arr.size(); i++)
                 this.blacklistedWorlds[i] = arr.get(i).getAsString();
-            this.worldWhitelist = obj.get("worldWhitelist").getAsBoolean();
-            this.claimingItem = Registry.ITEM.get(new Identifier((obj.get("claimingItem").getAsString())));
-            this.inspectionItem = Registry.ITEM.get(new Identifier((obj.get("inspectionItem").getAsString())));
-            this.claimDisplayTime = obj.get("claimDisplayTime").getAsInt();
-            this.log = obj.has("enableLogs") && obj.get("enableLogs").getAsBoolean();
-            if (obj.has("permissionLevel"))
-                this.permissionLevel = obj.get("permissionLevel").getAsInt();
+            this.worldWhitelist = ConfigHandler.fromJson(obj, "worldWhitelist", this.worldWhitelist);
+            if(obj.has("claimingItem"))
+                this.claimingItem = Registry.ITEM.get(new Identifier((obj.get("claimingItem").getAsString())));
+            if(obj.has("inspectionItem"))
+                this.inspectionItem = Registry.ITEM.get(new Identifier((obj.get("inspectionItem").getAsString())));
+            this.claimDisplayTime = ConfigHandler.fromJson(obj, "claimDisplayTime", this.claimDisplayTime);
+            this.globalDefaultPerms.clear();
+            JsonObject glob = ConfigHandler.fromJson(obj, "globalDefaultPerms");
+            glob.entrySet().forEach(e->{
+                EnumMap<EnumPermission, Boolean> perms = new EnumMap<>(EnumPermission.class);
+                if(e.getValue().isJsonObject()){
+                    e.getValue().getAsJsonObject().entrySet().forEach(jperm->{
+                        try{
+                            perms.put(EnumPermission.valueOf(jperm.getKey()), jperm.getValue().getAsBoolean());
+                        }
+                        catch (IllegalArgumentException ex){
+                            Flan.log("No permmission with name {}", jperm.getKey());
+                        }
+                    });
+                }
+                this.globalDefaultPerms.put(e.getKey(), perms);
+            });
+            this.log = ConfigHandler.fromJson(obj, "enableLogs", this.log);
+            this.permissionLevel = ConfigHandler.fromJson(obj, "permissionLevel", this.permissionLevel);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -80,6 +107,7 @@ public class Config {
 
     private void save() {
         JsonObject obj = new JsonObject();
+        obj.addProperty("__comment", "For help with the config refer to https://github.com/Flemmli97/Flan/wiki/Config");
         obj.addProperty("startingBlocks", this.startingBlocks);
         obj.addProperty("maxClaimBlocks", this.maxClaimBlocks);
         obj.addProperty("ticksForNextBlock", this.ticksForNextBlock);
@@ -92,6 +120,13 @@ public class Config {
         obj.addProperty("inspectionItem", Registry.ITEM.getId(this.inspectionItem).toString());
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
         obj.addProperty("permissionLevel", this.permissionLevel);
+        JsonObject global = new JsonObject();
+        this.globalDefaultPerms.entrySet().forEach(e->{
+            JsonObject perm = new JsonObject();
+            e.getValue().entrySet().forEach(eperm->perm.addProperty(eperm.getKey().toString(), eperm.getValue().toString()));
+            global.add(e.getKey(), perm);
+        });
+        obj.add("globalDefaultPerms", global);
         obj.addProperty("enableLogs", this.log);
         try {
             FileWriter writer = new FileWriter(this.config);
@@ -101,4 +136,11 @@ public class Config {
             e.printStackTrace();
         }
     }
-}
+
+    public boolean globallyDefined(ServerWorld world, EnumPermission perm){
+        EnumMap<EnumPermission,Boolean> global = ConfigHandler.config.globalDefaultPerms.get(world.getRegistryKey().getValue().toString());
+        if(global!=null && global.containsKey(perm)) {
+            return true;
+        }
+        return false;
+    }}

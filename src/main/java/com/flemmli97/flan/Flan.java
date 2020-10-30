@@ -38,4 +38,7 @@ public class Flan implements ModInitializer {
         logger.info(msg, o);
     }
 
+    public static void debug(String msg, Object... o){
+        logger.debug(msg, o);
+    }
 }

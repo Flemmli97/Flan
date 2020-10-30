@@ -49,12 +49,13 @@ public class ClaimStorage {
     private final Map<UUID, Claim> claimUUIDMap = Maps.newHashMap();
     private final Map<UUID, Set<Claim>> playerClaimMap = Maps.newHashMap();
     private final Set<UUID> dirty = Sets.newHashSet();
-
+    private final GlobalClaim globalClaim;
     public static ClaimStorage get(ServerWorld world) {
         return (ClaimStorage) ((IClaimData) world).getClaimData();
     }
 
     public ClaimStorage(MinecraftServer server, ServerWorld world) {
+        this.globalClaim = new GlobalClaim(world);
         this.read(server, world);
     }
 
@@ -173,6 +174,13 @@ public class ClaimStorage {
         return null;
     }
 
+    public IPermissionContainer getForPermissionCheck(BlockPos pos){
+        Claim claim = this.getClaimAt(pos);
+        if(claim != null)
+            return claim;
+        return this.globalClaim;
+    }
+
     public Claim getFromUUID(UUID uuid) {
         return this.claimUUIDMap.get(uuid);
     }
@@ -240,14 +248,15 @@ public class ClaimStorage {
                     UUID uuid = realName.equals(adminClaimString) ? null : UUID.fromString(file.getName().replace(".json", ""));
                     FileReader reader = new FileReader(file);
                     JsonArray arr = ConfigHandler.GSON.fromJson(reader, JsonArray.class);
+                    reader.close();
                     if (arr == null)
                         continue;
+                    Flan.debug("Reading claim data from json {} for player uuid {}", arr, uuid);
                     arr.forEach(el -> {
                         if (el.isJsonObject()) {
                             this.addClaim(Claim.fromJson((JsonObject) el, uuid, world));
                         }
                     });
-                    reader.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -264,6 +273,7 @@ public class ClaimStorage {
             for (Map.Entry<UUID, Set<Claim>> e : this.playerClaimMap.entrySet()) {
                 String owner = e.getKey() == null ? adminClaimString : e.getKey().toString();
                 File file = new File(dir, owner + ".json");
+                Flan.debug("Attempting saving claim data for player uuid {}", owner);
                 boolean dirty = false;
                 if (!file.exists()) {
                     if (e.getValue().isEmpty())
@@ -284,6 +294,7 @@ public class ClaimStorage {
                 if (dirty) {
                     JsonArray arr = new JsonArray();
                     e.getValue().forEach(claim -> arr.add(claim.toJson(new JsonObject())));
+                    Flan.debug("Attempting saving changed claim data {} for player uuid {}", arr, owner);
                     FileWriter writer = new FileWriter(file);
                     ConfigHandler.GSON.toJson(arr, writer);
                     writer.close();
@@ -403,7 +414,7 @@ public class ClaimStorage {
             if (builders.contains("public")) {
                 perms.get("builders").forEach(perm -> {
                     if (!perm.isAlwaysGlobalPerm())
-                        claim.editGlobalPerms(perm, 1);
+                        claim.editGlobalPerms(null, perm, 1);
                 });
             } else {
                 perms.get("builders").forEach(perm -> claim.editPerms(null, "Builders", perm, 1, true));
@@ -414,7 +425,7 @@ public class ClaimStorage {
             if (managers.contains("public")) {
                 perms.get("managers").forEach(perm -> {
                     if (!perm.isAlwaysGlobalPerm())
-                        claim.editGlobalPerms(perm, 1);
+                        claim.editGlobalPerms(null, perm, 1);
                 });
             } else {
                 perms.get("managers").forEach(perm -> claim.editPerms(null, "Managers", perm, 1, true));
@@ -425,7 +436,7 @@ public class ClaimStorage {
             if (containers.contains("public")) {
                 perms.get("containers").forEach(perm -> {
                     if (!perm.isAlwaysGlobalPerm())
-                        claim.editGlobalPerms(perm, 1);
+                        claim.editGlobalPerms(null, perm, 1);
                 });
             } else {
                 perms.get("containers").forEach(perm -> claim.editPerms(null, "Containers", perm, 1, true));
@@ -436,7 +447,7 @@ public class ClaimStorage {
             if (accessors.contains("public")) {
                 perms.get("accessors").forEach(perm -> {
                     if (!perm.isAlwaysGlobalPerm())
-                        claim.editGlobalPerms(perm, 1);
+                        claim.editGlobalPerms(null, perm, 1);
                 });
             } else {
                 perms.get("accessors").forEach(perm -> claim.editPerms(null, "Accessors", perm, 1, true));

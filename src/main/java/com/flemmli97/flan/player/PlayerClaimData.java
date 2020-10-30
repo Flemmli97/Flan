@@ -4,6 +4,7 @@ import com.flemmli97.flan.Flan;
 import com.flemmli97.flan.IClaimData;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
+import com.flemmli97.flan.claim.IPermissionContainer;
 import com.flemmli97.flan.claim.ParticleIndicators;
 import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
@@ -120,11 +121,14 @@ public class PlayerClaimData {
         this.editingClaim = claim;
     }
 
-    public void addDisplayClaim(Claim claim, EnumDisplayType type, int height) {
-        this.displayToAdd.add(new ClaimDisplay(claim, type, height));
-        if (type == EnumDisplayType.MAIN)
-            for (Claim sub : claim.getAllSubclaims())
-                this.displayToAdd.add(new ClaimDisplay(sub, EnumDisplayType.SUB, height));
+    public void addDisplayClaim(IPermissionContainer cont, EnumDisplayType type, int height) {
+        if(cont instanceof Claim) {
+            Claim claim = (Claim) cont;
+            this.displayToAdd.add(new ClaimDisplay(claim, type, height));
+            if (type == EnumDisplayType.MAIN)
+                for (Claim sub : claim.getAllSubclaims())
+                    this.displayToAdd.add(new ClaimDisplay(sub, EnumDisplayType.SUB, height));
+        }
     }
 
     public EnumEditMode getEditMode() {
@@ -235,6 +239,7 @@ public class PlayerClaimData {
             }
             FileReader reader = new FileReader(file);
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
+            Flan.debug("Read following json data {} from file {}", obj, file.getName());
             this.claimBlocks = obj.get("ClaimBlocks").getAsInt();
             this.additionalClaimBlocks = obj.get("AdditionalBlocks").getAsInt();
             reader.close();
@@ -259,6 +264,7 @@ public class PlayerClaimData {
                 obj = new JsonObject();
             int additionalBlocks = obj.get("AdditionalBlocks").getAsInt();
             obj.addProperty("AdditionalBlocks", additionalBlocks + additionalClaimBlocks);
+            Flan.debug("Attempting to write following json data {} to file {}", obj, file.getName());
             FileWriter writer = new FileWriter(file);
             ConfigHandler.GSON.toJson(obj, writer);
             writer.close();
@@ -278,6 +284,7 @@ public class PlayerClaimData {
     }
 
     public static void readGriefPreventionPlayerData(MinecraftServer server, ServerCommandSource src) {
+        Flan.log("Reading grief prevention data");
         File griefPrevention = server.getSavePath(WorldSavePath.ROOT).resolve("plugins/GriefPreventionData/PlayerData").toFile();
         if (!griefPrevention.exists())
             return;

@@ -4,6 +4,7 @@ import com.flemmli97.flan.claim.BlockToPermissionMap;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.EnumPermission;
+import com.flemmli97.flan.claim.IPermissionContainer;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.gui.LockedLecternScreenHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
@@ -36,7 +37,7 @@ public class BlockInteractEvents {
             return true;
         ServerPlayerEntity player = (ServerPlayerEntity) p;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
-        Claim claim = storage.getClaimAt(pos);
+        IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
             if (!claim.canInteract(player, EnumPermission.BREAK, pos, true)) {
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
@@ -61,7 +62,7 @@ public class BlockInteractEvents {
             return ActionResult.SUCCESS;
         }
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
-        Claim claim = storage.getClaimAt(hitResult.getBlockPos());
+        IPermissionContainer claim = storage.getForPermissionCheck(hitResult.getBlockPos());
         if (claim != null) {
             boolean emptyHand = !player.getMainHandStack().isEmpty() || !player.getOffHandStack().isEmpty();
             boolean cancelBlockInteract = player.shouldCancelInteraction() && emptyHand;
@@ -114,7 +115,7 @@ public class BlockInteractEvents {
             if (perm != EnumPermission.PRESSUREPLATE && perm != EnumPermission.PORTAL)
                 return false;
             ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
-            Claim claim = storage.getClaimAt(pos);
+            IPermissionContainer claim = storage.getForPermissionCheck(pos);
             if (claim != null)
                 return !claim.canInteract((ServerPlayerEntity) entity, perm, pos, false);
         } else if (entity instanceof ProjectileEntity) {
@@ -124,7 +125,7 @@ public class BlockInteractEvents {
             Entity owner = ((ProjectileEntity) entity).getOwner();
             if (owner instanceof ServerPlayerEntity) {
                 ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
-                Claim claim = storage.getClaimAt(pos);
+                IPermissionContainer claim = storage.getForPermissionCheck(pos);
                 if (claim != null)
                     return !claim.canInteract((ServerPlayerEntity) owner, perm, pos, false);
             }
@@ -137,7 +138,7 @@ public class BlockInteractEvents {
             return false;
         if (entity instanceof ServerPlayerEntity) {
             ClaimStorage storage = ClaimStorage.get((ServerWorld) entity.world);
-            Claim claim = storage.getClaimAt(landedPosition);
+            IPermissionContainer claim = storage.getForPermissionCheck(landedPosition);
             if(claim==null)
                 return false;
             EnumPermission perm = BlockToPermissionMap.getFromBlock(landedState.getBlock());
@@ -147,7 +148,7 @@ public class BlockInteractEvents {
             Entity owner = ((ProjectileEntity) entity).getOwner();
             if (owner instanceof ServerPlayerEntity) {
                 ClaimStorage storage = ClaimStorage.get((ServerWorld) entity.world);
-                Claim claim = storage.getClaimAt(landedPosition);
+                IPermissionContainer claim = storage.getForPermissionCheck(landedPosition);
                 EnumPermission perm = BlockToPermissionMap.getFromBlock(landedState.getBlock());
                 if (perm == EnumPermission.TRAMPLE)
                     return !claim.canInteract((ServerPlayerEntity) owner, perm, landedPosition, true);
@@ -162,7 +163,7 @@ public class BlockInteractEvents {
         ServerWorld serverWorld = (ServerWorld) world;
         if (entity instanceof ServerPlayerEntity) {
             ClaimStorage storage = ClaimStorage.get(serverWorld);
-            Claim claim = storage.getClaimAt(pos);
+            IPermissionContainer claim = storage.getForPermissionCheck(pos);
             if(claim==null)
                 return false;
             return !claim.canInteract((ServerPlayerEntity) entity, EnumPermission.TRAMPLE, pos, true);
@@ -170,7 +171,7 @@ public class BlockInteractEvents {
             Entity owner = ((ProjectileEntity) entity).getOwner();
             if (owner instanceof ServerPlayerEntity) {
                 ClaimStorage storage = ClaimStorage.get(serverWorld);
-                Claim claim = storage.getClaimAt(pos);
+                IPermissionContainer claim = storage.getForPermissionCheck(pos);
                 if(claim==null)
                     return false;
                 return !claim.canInteract((ServerPlayerEntity) owner, EnumPermission.TRAMPLE, pos, true);
@@ -179,7 +180,7 @@ public class BlockInteractEvents {
             Entity owner = serverWorld.getEntity(((ItemEntity) entity).getThrower());
             if (owner instanceof ServerPlayerEntity) {
                 ClaimStorage storage = ClaimStorage.get(serverWorld);
-                Claim claim = storage.getClaimAt(pos);
+                IPermissionContainer claim = storage.getForPermissionCheck(pos);
                 if(claim==null)
                     return false;
                 return !claim.canInteract((ServerPlayerEntity) owner, EnumPermission.TRAMPLE, pos, true);
