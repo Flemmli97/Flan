@@ -13,12 +13,12 @@ import net.minecraft.block.DoorBlock;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
-import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -69,7 +69,7 @@ public class BlockInteractEvents {
                 BlockState state = world.getBlockState(hitResult.getBlockPos());
                 BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
                 if (blockEntity != null) {
-                    if (blockEntity instanceof LockableContainerBlockEntity) {
+                    if (blockEntity instanceof Inventory) {
                         if (claim.canInteract(player, EnumPermission.OPENCONTAINER, hitResult.getBlockPos(), true))
                             return ActionResult.PASS;
                         PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());

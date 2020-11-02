@@ -1,3 +1,7 @@
+Flan 1.1.1
+======================
+- Fix a wrong check regarding block entitys that affected modded container blocks to not be protected
+
 Flan 1.1.0
 ======================
 - Add global per world perms (for more info visit https://github.com/Flemmli97/Flan/wiki/Config)
