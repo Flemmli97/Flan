@@ -46,7 +46,7 @@ public class CommandClaim {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
         dispatcher.register(CommandManager.literal("flan")
-                .then(CommandManager.literal("reload").executes(CommandClaim::reloadConfig))
+                .then(CommandManager.literal("reload").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).executes(CommandClaim::reloadConfig))
                 .then(CommandManager.literal("addClaim").then(CommandManager.argument("from", BlockPosArgumentType.blockPos()).then(CommandManager.argument("to", BlockPosArgumentType.blockPos()).executes(CommandClaim::addClaim))))
                 .then(CommandManager.literal("menu").executes(CommandClaim::openMenu))
                 .then(CommandManager.literal("claimInfo").executes(CommandClaim::claimInfo))

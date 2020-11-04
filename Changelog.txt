@@ -1,3 +1,7 @@
+Flan 1.1.2
+======================
+- Fix reload command being not restricted to admins
+
 Flan 1.1.1
 ======================
 - Fix a wrong check regarding block entitys that affected modded container blocks to not be protected
