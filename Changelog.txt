@@ -1,3 +1,9 @@
+Flan 1.1.3
+======================
+- Ignore item usage with non player (e.g. with modded machines). Fix #12
+- Tell the player the amount of claimblocks etc. when switching to the claiming tool and creating/resizing claims
+- Fix resizing claims not taking into account the minClaimSize value
+
 Flan 1.1.2
 ======================
 - Fix reload command being not restricted to admins
