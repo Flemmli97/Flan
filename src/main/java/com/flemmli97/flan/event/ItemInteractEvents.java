@@ -84,6 +84,8 @@ public class ItemInteractEvents {
             return ActionResult.PASS;
         boolean actualInClaim = !(claim instanceof Claim) || placePos.getY() >= ((Claim) claim).getDimensions()[4];
         ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
+        if(player==null)
+            return ActionResult.PASS;
         if (context.getStack().getItem() == Items.END_CRYSTAL) {
             if (claim.canInteract(player, EnumPermission.ENDCRYSTALPLACE, placePos, false))
                 return ActionResult.PASS;
