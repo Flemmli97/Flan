@@ -145,6 +145,10 @@ public class ClaimStorage {
         int[] dims = claim.getDimensions();
         BlockPos opposite = new BlockPos(dims[0] == from.getX() ? dims[1] : dims[0], dims[4], dims[2] == from.getZ() ? dims[3] : dims[2]);
         Claim newClaim = new Claim(opposite, to, player.getUuid(), player.getServerWorld());
+        if(newClaim.getPlane() < ConfigHandler.config.minClaimsize){
+            player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.minClaimSize, ConfigHandler.config.minClaimsize), Formatting.RED), false);
+            return false;
+        }
         Set<Claim> conflicts = this.conflicts(newClaim, claim);
         if (!conflicts.isEmpty()) {
             conflicts.forEach(conf -> PlayerClaimData.get(player).addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.getBlockPos().getY()));
