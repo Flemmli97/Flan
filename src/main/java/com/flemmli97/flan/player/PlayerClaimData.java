@@ -47,7 +47,7 @@ public class PlayerClaimData {
 
     private final ServerPlayerEntity player;
 
-    private boolean confirmDeleteAll, adminIgnoreClaim;
+    private boolean confirmDeleteAll, adminIgnoreClaim, claimBlockMessage;
     private boolean dirty;
 
     public PlayerClaimData(ServerPlayerEntity player) {
@@ -200,6 +200,12 @@ public class PlayerClaimData {
         if (this.player.getMainHandStack().getItem() != ConfigHandler.config.claimingItem && this.player.getOffHandStack().getItem() != ConfigHandler.config.claimingItem) {
             this.setEditingCorner(null);
             this.setEditClaim(null, 0);
+            this.claimBlockMessage = false;
+        }
+        else if(!this.claimBlockMessage){
+            this.claimBlockMessage = true;
+            this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
+                    this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks()), Formatting.GOLD), false);
         }
         this.actionCooldown--;
     }

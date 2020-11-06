@@ -84,6 +84,8 @@ public class ClaimStorage {
             this.addClaim(claim);
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.claimCreateSuccess, Formatting.GOLD), false);
+            player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
+                    data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks()), Formatting.GOLD), false);
             return true;
         }
         PlayerClaimData data = PlayerClaimData.get(player);
@@ -158,6 +160,8 @@ public class ClaimStorage {
             this.addClaim(claim);
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.resizeSuccess, Formatting.GOLD), false);
+            player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
+                    data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks()), Formatting.GOLD), false);
             return true;
         }
         player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.notEnoughBlocks, Formatting.RED), false);
