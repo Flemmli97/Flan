@@ -73,7 +73,8 @@ public class ItemInteractEvents {
     private static final Set<Item> blackListedItems = Sets.newHashSet(Items.COMPASS, Items.FILLED_MAP, Items.FIREWORK_ROCKET);
 
     public static ActionResult onItemUseBlock(ItemUsageContext context) {
-        if (context.getWorld().isClient || context.getStack().isEmpty())
+        //Check for Fakeplayer. Since there is no api for that directly check the class
+        if (!(context.getPlayer() instanceof ServerPlayerEntity) || !context.getPlayer().getClass().equals(ServerPlayerEntity.class) || context.getStack().isEmpty())
             return ActionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) context.getWorld());
         BlockPos placePos = new ItemPlacementContext(context).getBlockPos();
@@ -84,8 +85,6 @@ public class ItemInteractEvents {
             return ActionResult.PASS;
         boolean actualInClaim = !(claim instanceof Claim) || placePos.getY() >= ((Claim) claim).getDimensions()[4];
         ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
-        if(player==null)
-            return ActionResult.PASS;
         if (context.getStack().getItem() == Items.END_CRYSTAL) {
             if (claim.canInteract(player, EnumPermission.ENDCRYSTALPLACE, placePos, false))
                 return ActionResult.PASS;
