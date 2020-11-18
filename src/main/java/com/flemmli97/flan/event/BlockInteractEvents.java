@@ -10,6 +10,7 @@ import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
+import net.minecraft.block.InventoryProvider;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
@@ -67,22 +68,6 @@ public class BlockInteractEvents {
             boolean cancelBlockInteract = player.shouldCancelInteraction() && emptyHand;
             if (!cancelBlockInteract) {
                 BlockState state = world.getBlockState(hitResult.getBlockPos());
-                BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
-                if (blockEntity != null) {
-                    if (blockEntity instanceof Inventory) {
-                        if (claim.canInteract(player, EnumPermission.OPENCONTAINER, hitResult.getBlockPos(), true))
-                            return ActionResult.PASS;
-                        PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
-                        return ActionResult.FAIL;
-                    }
-                    if (blockEntity instanceof LecternBlockEntity) {
-                        if (claim.canInteract(player, EnumPermission.LECTERNTAKE, hitResult.getBlockPos(), false))
-                            return ActionResult.PASS;
-                        if (state.get(LecternBlock.HAS_BOOK))
-                            LockedLecternScreenHandler.create(player, (LecternBlockEntity) blockEntity);
-                        return ActionResult.FAIL;
-                    }
-                }
                 EnumPermission perm = BlockToPermissionMap.getFromBlock(state.getBlock());
                 //Pressureplate handled elsewhere
                 if (perm != null && perm != EnumPermission.PRESSUREPLATE) {
@@ -100,6 +85,22 @@ public class BlockInteractEvents {
                     }
                     PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                     return ActionResult.FAIL;
+                }
+                BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
+                if (blockEntity != null) {
+                    if (blockEntity instanceof LecternBlockEntity) {
+                        if (claim.canInteract(player, EnumPermission.LECTERNTAKE, hitResult.getBlockPos(), false))
+                            return ActionResult.PASS;
+                        if (state.get(LecternBlock.HAS_BOOK))
+                            LockedLecternScreenHandler.create(player, (LecternBlockEntity) blockEntity);
+                        return ActionResult.FAIL;
+                    }
+                    if (!ConfigHandler.config.lenientBlockEntityCheck || blockEntity instanceof Inventory || blockEntity instanceof InventoryProvider) {
+                        if (claim.canInteract(player, EnumPermission.OPENCONTAINER, hitResult.getBlockPos(), true))
+                            return ActionResult.PASS;
+                        PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+                        return ActionResult.FAIL;
+                    }
                 }
             }
         }

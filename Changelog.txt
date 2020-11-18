@@ -1,3 +1,9 @@
+Flan 1.1.5
+======================
+- Make tile entitys always at least be in the open container flag.
+  Making them always be protected. This can be turned off to only include inventory type tile entities.
+  #14
+
 Flan 1.1.4
 ======================
 - Directly check player class for item usage. So fake players get ignored.

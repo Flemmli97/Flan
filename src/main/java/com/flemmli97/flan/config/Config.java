@@ -29,6 +29,7 @@ public class Config {
     public int ticksForNextBlock = 1200;
     public int minClaimsize = 100;
     public int defaultClaimDepth = 10;
+    public boolean lenientBlockEntityCheck;
 
     public String[] blacklistedWorlds = new String[0];
     public boolean worldWhitelist;
@@ -70,6 +71,8 @@ public class Config {
             this.minClaimsize = ConfigHandler.fromJson(obj, "minClaimsize", this.minClaimsize);
             this.defaultClaimDepth = ConfigHandler.fromJson(obj, "defaultClaimDepth", this.defaultClaimDepth);
             JsonArray arr = ConfigHandler.arryFromJson(obj, "blacklistedWorlds");
+            this.lenientBlockEntityCheck = ConfigHandler.fromJson(obj, "lenientBlockEntityCheck", this.lenientBlockEntityCheck);
+
             this.blacklistedWorlds = new String[arr.size()];
             for (int i = 0; i < arr.size(); i++)
                 this.blacklistedWorlds[i] = arr.get(i).getAsString();
@@ -111,6 +114,7 @@ public class Config {
         obj.addProperty("ticksForNextBlock", this.ticksForNextBlock);
         obj.addProperty("minClaimsize", this.minClaimsize);
         obj.addProperty("defaultClaimDepth", this.defaultClaimDepth);
+        obj.addProperty("lenientBlockEntityCheck", this.lenientBlockEntityCheck);
         JsonArray arr = new JsonArray();
         obj.add("blacklistedWorlds", arr);
         obj.addProperty("worldWhitelist", this.worldWhitelist);
