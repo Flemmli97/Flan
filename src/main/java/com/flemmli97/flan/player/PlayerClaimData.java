@@ -86,7 +86,7 @@ public class PlayerClaimData {
     }
 
     public boolean canUseClaimBlocks(int amount) {
-        if(ConfigHandler.config.maxClaimBlocks==-1)
+        if (ConfigHandler.config.maxClaimBlocks == -1)
             return true;
         int usedClaimsBlocks = this.usedClaimBlocks();
         return usedClaimsBlocks + amount <= this.claimBlocks + this.additionalClaimBlocks;
@@ -122,7 +122,7 @@ public class PlayerClaimData {
     }
 
     public void addDisplayClaim(IPermissionContainer cont, EnumDisplayType type, int height) {
-        if(cont instanceof Claim) {
+        if (cont instanceof Claim) {
             Claim claim = (Claim) cont;
             this.displayToAdd.add(new ClaimDisplay(claim, type, height));
             if (type == EnumDisplayType.MAIN)
@@ -180,7 +180,7 @@ public class PlayerClaimData {
                 || this.player.getOffHandStack().getItem() == ConfigHandler.config.claimingItem;
         boolean stick = this.player.getMainHandStack().getItem() == ConfigHandler.config.inspectionItem
                 || this.player.getOffHandStack().getItem() == ConfigHandler.config.inspectionItem;
-            this.displayToAdd.forEach(add -> {
+        this.displayToAdd.forEach(add -> {
             if (!this.claimDisplayList.add(add)) {
                 this.claimDisplayList.removeIf(c -> c.equals(add) && c.type != add.type);
                 this.claimDisplayList.add(add);
@@ -205,8 +205,7 @@ public class PlayerClaimData {
             this.setEditingCorner(null);
             this.setEditClaim(null, 0);
             this.claimBlockMessage = false;
-        }
-        else if(!this.claimBlockMessage){
+        } else if (!this.claimBlockMessage) {
             this.claimBlockMessage = true;
             this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
                     this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks()), Formatting.GOLD), false);

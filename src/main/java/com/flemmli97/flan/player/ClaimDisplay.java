@@ -55,10 +55,8 @@ public class ClaimDisplay {
         }
     }
 
-    public boolean display(ServerPlayerEntity player, boolean tick) {
-        if(tick)
-            --this.displayTime;
-        if (this.displayTime % 2 == 0)
+    public boolean display(ServerPlayerEntity player, boolean remove) {
+        if (--this.displayTime % 2 == 0)
             return this.toDisplay.isRemoved();
         int[] dims = this.toDisplay.getDimensions();
         if (this.poss == null || this.changed(dims)) {
@@ -82,7 +80,7 @@ public class ClaimDisplay {
                 player.networkHandler.sendPacket(new ParticleS2CPacket(this.middle, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
             }
         this.prevDims = dims;
-        return this.toDisplay.isRemoved() || this.displayTime < 0;
+        return this.toDisplay.isRemoved() || (remove && this.displayTime < 0);
     }
 
     private boolean changed(int[] dims) {
