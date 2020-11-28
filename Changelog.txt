@@ -1,3 +1,10 @@
+Flan 1.2.0
+======================
+- Claim display stays as long as you are holding either the inspection or the claiming tool
+- Fix things getting logged despite enableLogs set to false
+- Change the default time to get a claim block to 600 ticks instead of 1200
+- Change Permission to a registry instead of hardcoded enums
+
 Flan 1.1.5
 ======================
 - Make tile entitys always at least be in the open container flag.
