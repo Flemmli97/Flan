@@ -2,6 +2,8 @@ package com.flemmli97.flan.claim;
 
 import com.flemmli97.flan.Flan;
 import com.flemmli97.flan.IClaimData;
+import com.flemmli97.flan.api.ClaimPermission;
+import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.EnumEditMode;
@@ -36,7 +38,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +51,7 @@ public class ClaimStorage {
     private final Map<UUID, Set<Claim>> playerClaimMap = Maps.newHashMap();
     private final Set<UUID> dirty = Sets.newHashSet();
     private final GlobalClaim globalClaim;
+
     public static ClaimStorage get(ServerWorld world) {
         return (ClaimStorage) ((IClaimData) world).getClaimData();
     }
@@ -145,7 +147,7 @@ public class ClaimStorage {
         int[] dims = claim.getDimensions();
         BlockPos opposite = new BlockPos(dims[0] == from.getX() ? dims[1] : dims[0], dims[4], dims[2] == from.getZ() ? dims[3] : dims[2]);
         Claim newClaim = new Claim(opposite, to, player.getUuid(), player.getServerWorld());
-        if(newClaim.getPlane() < ConfigHandler.config.minClaimsize){
+        if (newClaim.getPlane() < ConfigHandler.config.minClaimsize) {
             player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.minClaimSize, ConfigHandler.config.minClaimsize), Formatting.RED), false);
             return false;
         }
@@ -173,7 +175,7 @@ public class ClaimStorage {
     }
 
     public Claim getClaimAt(BlockPos pos) {
-        long chunk = ChunkPos.toLong(pos.getX()>>4, pos.getZ()>>4);
+        long chunk = ChunkPos.toLong(pos.getX() >> 4, pos.getZ() >> 4);
         if (this.claims.containsKey(chunk))
             for (Claim claim : this.claims.get(chunk)) {
                 if (claim.insideClaim(pos))
@@ -182,9 +184,9 @@ public class ClaimStorage {
         return null;
     }
 
-    public IPermissionContainer getForPermissionCheck(BlockPos pos){
+    public IPermissionContainer getForPermissionCheck(BlockPos pos) {
         Claim claim = this.getClaimAt(pos);
-        if(claim != null)
+        if (claim != null)
             return claim;
         return this.globalClaim;
     }
@@ -321,19 +323,19 @@ public class ClaimStorage {
         Map<File, List<File>> subClaimMap = Maps.newHashMap();
         Map<Integer, File> intFileMap = Maps.newHashMap();
 
-        EnumSet<EnumPermission> managers = EnumSet.complementOf(EnumSet.of(EnumPermission.EDITCLAIM));
-        EnumSet<EnumPermission> builders = EnumSet.complementOf(EnumSet.of(EnumPermission.EDITPERMS, EnumPermission.EDITCLAIM));
-        EnumSet<EnumPermission> containers = EnumSet.complementOf(EnumSet.of(EnumPermission.EDITPERMS, EnumPermission.EDITCLAIM,
-                EnumPermission.BREAK, EnumPermission.PLACE, EnumPermission.NOTEBLOCK, EnumPermission.REDSTONE, EnumPermission.JUKEBOX,
-                EnumPermission.ITEMFRAMEROTATE, EnumPermission.LECTERNTAKE, EnumPermission.ENDCRYSTALPLACE, EnumPermission.PROJECTILES,
-                EnumPermission.TRAMPLE, EnumPermission.RAID, EnumPermission.BUCKET, EnumPermission.ARMORSTAND, EnumPermission.BREAKNONLIVING));
-        EnumSet<EnumPermission> accessors = EnumSet.complementOf(EnumSet.of(EnumPermission.EDITPERMS, EnumPermission.EDITCLAIM,
-                EnumPermission.BREAK, EnumPermission.PLACE, EnumPermission.OPENCONTAINER, EnumPermission.ANVIL, EnumPermission.BEACON,
-                EnumPermission.NOTEBLOCK, EnumPermission.REDSTONE, EnumPermission.JUKEBOX, EnumPermission.ITEMFRAMEROTATE,
-                EnumPermission.LECTERNTAKE, EnumPermission.ENDCRYSTALPLACE, EnumPermission.PROJECTILES, EnumPermission.TRAMPLE, EnumPermission.RAID,
-                EnumPermission.BUCKET, EnumPermission.ANIMALINTERACT, EnumPermission.HURTANIMAL, EnumPermission.TRADING, EnumPermission.ARMORSTAND,
-                EnumPermission.BREAKNONLIVING));
-        Map<String, EnumSet<EnumPermission>> perms = Maps.newHashMap();
+        Set<ClaimPermission> managers = complementOf(PermissionRegistry.EDITCLAIM);
+        Set<ClaimPermission> builders = complementOf(PermissionRegistry.EDITPERMS, PermissionRegistry.EDITCLAIM);
+        Set<ClaimPermission> containers = complementOf(PermissionRegistry.EDITPERMS, PermissionRegistry.EDITCLAIM,
+                PermissionRegistry.BREAK, PermissionRegistry.PLACE, PermissionRegistry.NOTEBLOCK, PermissionRegistry.REDSTONE, PermissionRegistry.JUKEBOX,
+                PermissionRegistry.ITEMFRAMEROTATE, PermissionRegistry.LECTERNTAKE, PermissionRegistry.ENDCRYSTALPLACE, PermissionRegistry.PROJECTILES,
+                PermissionRegistry.TRAMPLE, PermissionRegistry.RAID, PermissionRegistry.BUCKET, PermissionRegistry.ARMORSTAND, PermissionRegistry.BREAKNONLIVING);
+        Set<ClaimPermission> accessors = complementOf(PermissionRegistry.EDITPERMS, PermissionRegistry.EDITCLAIM,
+                PermissionRegistry.BREAK, PermissionRegistry.PLACE, PermissionRegistry.OPENCONTAINER, PermissionRegistry.ANVIL, PermissionRegistry.BEACON,
+                PermissionRegistry.NOTEBLOCK, PermissionRegistry.REDSTONE, PermissionRegistry.JUKEBOX, PermissionRegistry.ITEMFRAMEROTATE,
+                PermissionRegistry.LECTERNTAKE, PermissionRegistry.ENDCRYSTALPLACE, PermissionRegistry.PROJECTILES, PermissionRegistry.TRAMPLE, PermissionRegistry.RAID,
+                PermissionRegistry.BUCKET, PermissionRegistry.ANIMALINTERACT, PermissionRegistry.HURTANIMAL, PermissionRegistry.TRADING, PermissionRegistry.ARMORSTAND,
+                PermissionRegistry.BREAKNONLIVING);
+        Map<String, Set<ClaimPermission>> perms = Maps.newHashMap();
         perms.put("managers", managers);
         perms.put("builders", builders);
         perms.put("containers", containers);
@@ -400,8 +402,15 @@ public class ClaimStorage {
         }
     }
 
+    private static Set<ClaimPermission> complementOf(ClaimPermission... perms) {
+        Set<ClaimPermission> set = Sets.newHashSet(PermissionRegistry.getPerms());
+        for (ClaimPermission perm : perms)
+            set.remove(perm);
+        return set;
+    }
+
     private static Pair<ServerWorld, Claim> parseFromYaml(File file, Yaml yml, MinecraftServer server,
-                                                          Map<String, EnumSet<EnumPermission>> perms) throws IOException {
+                                                          Map<String, Set<ClaimPermission>> perms) throws IOException {
         FileReader reader = new FileReader(file);
         Map<String, Object> values = yml.load(reader);
         reader.close();
@@ -421,7 +430,7 @@ public class ClaimStorage {
         if (!builders.isEmpty() && !builders.contains(ownerString)) {
             if (builders.contains("public")) {
                 perms.get("builders").forEach(perm -> {
-                    if (!perm.isAlwaysGlobalPerm())
+                    if (!PermissionRegistry.globalPerms().contains(perm))
                         claim.editGlobalPerms(null, perm, 1);
                 });
             } else {
@@ -432,7 +441,7 @@ public class ClaimStorage {
         if (!managers.isEmpty() && !managers.contains(ownerString)) {
             if (managers.contains("public")) {
                 perms.get("managers").forEach(perm -> {
-                    if (!perm.isAlwaysGlobalPerm())
+                    if (!PermissionRegistry.globalPerms().contains(perm))
                         claim.editGlobalPerms(null, perm, 1);
                 });
             } else {
@@ -443,7 +452,7 @@ public class ClaimStorage {
         if (!containers.isEmpty() && !containers.contains(ownerString)) {
             if (containers.contains("public")) {
                 perms.get("containers").forEach(perm -> {
-                    if (!perm.isAlwaysGlobalPerm())
+                    if (!PermissionRegistry.globalPerms().contains(perm))
                         claim.editGlobalPerms(null, perm, 1);
                 });
             } else {
@@ -454,7 +463,7 @@ public class ClaimStorage {
         if (!accessors.isEmpty() && !accessors.contains(ownerString)) {
             if (accessors.contains("public")) {
                 perms.get("accessors").forEach(perm -> {
-                    if (!perm.isAlwaysGlobalPerm())
+                    if (!PermissionRegistry.globalPerms().contains(perm))
                         claim.editGlobalPerms(null, perm, 1);
                 });
             } else {

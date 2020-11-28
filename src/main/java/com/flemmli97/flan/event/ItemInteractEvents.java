@@ -1,8 +1,8 @@
 package com.flemmli97.flan.event;
 
+import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
-import com.flemmli97.flan.claim.EnumPermission;
 import com.flemmli97.flan.claim.IPermissionContainer;
 import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
@@ -64,9 +64,9 @@ public class ItemInteractEvents {
         if (claim == null)
             return TypedActionResult.pass(stack);
         if (stack.getItem() == Items.ENDER_PEARL)
-            return claim.canInteract(player, EnumPermission.ENDERPEARL, pos, true) ? TypedActionResult.pass(stack) : TypedActionResult.fail(stack);
+            return claim.canInteract(player, PermissionRegistry.ENDERPEARL, pos, true) ? TypedActionResult.pass(stack) : TypedActionResult.fail(stack);
         if (stack.getItem() instanceof BucketItem)
-            return claim.canInteract(player, EnumPermission.BUCKET, pos, true) ? TypedActionResult.pass(stack) : TypedActionResult.fail(stack);
+            return claim.canInteract(player, PermissionRegistry.BUCKET, pos, true) ? TypedActionResult.pass(stack) : TypedActionResult.fail(stack);
         return TypedActionResult.pass(stack);
     }
 
@@ -86,14 +86,14 @@ public class ItemInteractEvents {
         boolean actualInClaim = !(claim instanceof Claim) || placePos.getY() >= ((Claim) claim).getDimensions()[4];
         ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
         if (context.getStack().getItem() == Items.END_CRYSTAL) {
-            if (claim.canInteract(player, EnumPermission.ENDCRYSTALPLACE, placePos, false))
+            if (claim.canInteract(player, PermissionRegistry.ENDCRYSTALPLACE, placePos, false))
                 return ActionResult.PASS;
             else if (actualInClaim) {
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
                 return ActionResult.FAIL;
             }
         }
-        if (claim.canInteract(player, EnumPermission.PLACE, placePos, false)) {
+        if (claim.canInteract(player, PermissionRegistry.PLACE, placePos, false)) {
             if (!actualInClaim && context.getStack().getItem() instanceof BlockItem) {
                 ((Claim) claim).extendDownwards(placePos);
             }
@@ -134,7 +134,7 @@ public class ItemInteractEvents {
             return;
         data.setClaimActionCooldown();
         if (claim != null) {
-            if (claim.canInteract(player, EnumPermission.EDITCLAIM, target)) {
+            if (claim.canInteract(player, PermissionRegistry.EDITCLAIM, target)) {
                 if (data.getEditMode() == EnumEditMode.SUBCLAIM) {
                     Claim subClaim = claim.getSubClaim(target);
                     if (subClaim != null && data.currentEdit() == null) {

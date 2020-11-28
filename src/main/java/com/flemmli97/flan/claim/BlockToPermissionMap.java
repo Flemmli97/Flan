@@ -1,5 +1,7 @@
 package com.flemmli97.flan.claim;
 
+import com.flemmli97.flan.api.ClaimPermission;
+import com.flemmli97.flan.api.PermissionRegistry;
 import com.google.common.collect.Maps;
 import net.minecraft.block.AbstractButtonBlock;
 import net.minecraft.block.AbstractPressurePlateBlock;
@@ -31,46 +33,46 @@ import java.util.Map;
 
 public class BlockToPermissionMap {
 
-    private static final Map<Block, EnumPermission> blockToPermission = Maps.newHashMap();
+    private static final Map<Block, ClaimPermission> blockToPermission = Maps.newHashMap();
 
     public static void reload(MinecraftServer server) {
         blockToPermission.clear();
         for (Block block : Registry.BLOCK) {
             if (block instanceof AnvilBlock)
-                blockToPermission.put(block, EnumPermission.ANVIL);
+                blockToPermission.put(block, PermissionRegistry.ANVIL);
             if (block instanceof BedBlock)
-                blockToPermission.put(block, EnumPermission.BED);
+                blockToPermission.put(block, PermissionRegistry.BED);
             if (block instanceof BeaconBlock)
-                blockToPermission.put(block, EnumPermission.BEACON);
+                blockToPermission.put(block, PermissionRegistry.BEACON);
             if (block instanceof DoorBlock)
-                blockToPermission.put(block, EnumPermission.DOOR);
+                blockToPermission.put(block, PermissionRegistry.DOOR);
             if (block instanceof FenceGateBlock)
-                blockToPermission.put(block, EnumPermission.FENCEGATE);
+                blockToPermission.put(block, PermissionRegistry.FENCEGATE);
             if (block instanceof TrapdoorBlock)
-                blockToPermission.put(block, EnumPermission.TRAPDOOR);
+                blockToPermission.put(block, PermissionRegistry.TRAPDOOR);
             if (block instanceof LeverBlock || block instanceof AbstractButtonBlock)
-                blockToPermission.put(block, EnumPermission.BUTTONLEVER);
+                blockToPermission.put(block, PermissionRegistry.BUTTONLEVER);
             if (block instanceof NoteBlock)
-                blockToPermission.put(block, EnumPermission.NOTEBLOCK);
+                blockToPermission.put(block, PermissionRegistry.NOTEBLOCK);
             if (block instanceof AbstractRedstoneGateBlock || block instanceof RedstoneWireBlock || block instanceof DaylightDetectorBlock)
-                blockToPermission.put(block, EnumPermission.REDSTONE);
+                blockToPermission.put(block, PermissionRegistry.REDSTONE);
             if (block instanceof JukeboxBlock)
-                blockToPermission.put(block, EnumPermission.JUKEBOX);
+                blockToPermission.put(block, PermissionRegistry.JUKEBOX);
             if (block instanceof AbstractPressurePlateBlock)
-                blockToPermission.put(block, EnumPermission.PRESSUREPLATE);
+                blockToPermission.put(block, PermissionRegistry.PRESSUREPLATE);
             if (block instanceof NetherPortalBlock)
-                blockToPermission.put(block, EnumPermission.PORTAL);
+                blockToPermission.put(block, PermissionRegistry.PORTAL);
             if (block instanceof TurtleEggBlock || block instanceof FarmlandBlock)
-                blockToPermission.put(block, EnumPermission.TRAMPLE);
+                blockToPermission.put(block, PermissionRegistry.TRAMPLE);
             if (block instanceof TargetBlock)
-                blockToPermission.put(block, EnumPermission.TARGETBLOCK);
+                blockToPermission.put(block, PermissionRegistry.TARGETBLOCK);
             if (block instanceof BellBlock || block instanceof CampfireBlock
                     || block instanceof TntBlock || block instanceof ChorusFlowerBlock)
-                blockToPermission.put(block, EnumPermission.PROJECTILES);
+                blockToPermission.put(block, PermissionRegistry.PROJECTILES);
         }
     }
 
-    public static EnumPermission getFromBlock(Block block) {
+    public static ClaimPermission getFromBlock(Block block) {
         return blockToPermission.get(block);
     }
 }

@@ -1,7 +1,7 @@
 package com.flemmli97.flan.gui;
 
+import com.flemmli97.flan.api.ClaimPermission;
 import com.flemmli97.flan.claim.Claim;
-import com.flemmli97.flan.claim.EnumPermission;
 import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.item.ItemStack;
@@ -17,7 +17,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import java.util.EnumMap;
+import java.util.Map;
 
 public class ServerScreenHelper {
 
@@ -27,21 +27,20 @@ public class ServerScreenHelper {
         return stack;
     }
 
-    public static ItemStack fromPermission(Claim claim, EnumPermission perm, String group) {
+    public static ItemStack fromPermission(Claim claim, ClaimPermission perm, String group) {
         ItemStack stack = perm.getItem();
-        stack.setCustomName(new LiteralText(perm.toString()).setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
+        stack.setCustomName(new LiteralText(perm.id).setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
         ListTag lore = new ListTag();
-        Text trans = new LiteralText(perm.translation).setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
+        Text trans = new LiteralText(perm.desc).setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
         lore.add(StringTag.of(Text.Serializer.toJson(trans)));
-        EnumMap<EnumPermission,Boolean> global = ConfigHandler.config.globalDefaultPerms.get(claim.getWorld().getRegistryKey().getValue().toString());
-        if(!claim.isAdminClaim() && global!=null && global.containsKey(perm)){
+        Map<ClaimPermission, Boolean> global = ConfigHandler.config.globalDefaultPerms.get(claim.getWorld().getRegistryKey().getValue().toString());
+        if (!claim.isAdminClaim() && global != null && global.containsKey(perm)) {
             Text text = new LiteralText("Non Editable.").setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED));
             lore.add(StringTag.of(Text.Serializer.toJson(text)));
             String permFlag = global.get(perm).toString();
             Text text2 = new LiteralText("Enabled: " + permFlag).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
             lore.add(StringTag.of(Text.Serializer.toJson(text2)));
-        }
-        else {
+        } else {
             String permFlag;
             if (group == null) {
                 if (claim.parentClaim() == null)

@@ -1,7 +1,8 @@
 package com.flemmli97.flan.config;
 
 import com.flemmli97.flan.Flan;
-import com.flemmli97.flan.claim.EnumPermission;
+import com.flemmli97.flan.api.ClaimPermission;
+import com.flemmli97.flan.api.PermissionRegistry;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -17,7 +18,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.EnumMap;
 import java.util.Map;
 
 public class Config {
@@ -42,7 +42,7 @@ public class Config {
 
     public boolean log;
 
-    public final Map<String,EnumMap<EnumPermission,Boolean>> globalDefaultPerms = Maps.newHashMap();
+    public final Map<String, Map<ClaimPermission, Boolean>> globalDefaultPerms = Maps.newHashMap();
 
     public Config(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
@@ -77,22 +77,21 @@ public class Config {
             for (int i = 0; i < arr.size(); i++)
                 this.blacklistedWorlds[i] = arr.get(i).getAsString();
             this.worldWhitelist = ConfigHandler.fromJson(obj, "worldWhitelist", this.worldWhitelist);
-            if(obj.has("claimingItem"))
+            if (obj.has("claimingItem"))
                 this.claimingItem = Registry.ITEM.get(new Identifier((obj.get("claimingItem").getAsString())));
-            if(obj.has("inspectionItem"))
+            if (obj.has("inspectionItem"))
                 this.inspectionItem = Registry.ITEM.get(new Identifier((obj.get("inspectionItem").getAsString())));
             this.claimDisplayTime = ConfigHandler.fromJson(obj, "claimDisplayTime", this.claimDisplayTime);
             this.globalDefaultPerms.clear();
             JsonObject glob = ConfigHandler.fromJson(obj, "globalDefaultPerms");
-            glob.entrySet().forEach(e->{
-                EnumMap<EnumPermission, Boolean> perms = new EnumMap<>(EnumPermission.class);
-                if(e.getValue().isJsonObject()){
-                    e.getValue().getAsJsonObject().entrySet().forEach(jperm->{
-                        try{
-                            perms.put(EnumPermission.valueOf(jperm.getKey()), jperm.getValue().getAsBoolean());
-                        }
-                        catch (IllegalArgumentException ex){
-                            Flan.log("No permmission with name {}", jperm.getKey());
+            glob.entrySet().forEach(e -> {
+                Map<ClaimPermission, Boolean> perms = Maps.newHashMap();
+                if (e.getValue().isJsonObject()) {
+                    e.getValue().getAsJsonObject().entrySet().forEach(jperm -> {
+                        try {
+                            perms.put(PermissionRegistry.get(jperm.getKey()), jperm.getValue().getAsBoolean());
+                        } catch (NullPointerException ex) {
+                            Flan.log("No permission with name {}", jperm.getKey());
                         }
                     });
                 }
@@ -125,7 +124,7 @@ public class Config {
         JsonObject global = new JsonObject();
         this.globalDefaultPerms.forEach((key, value) -> {
             JsonObject perm = new JsonObject();
-            value.forEach((key1, value1) -> perm.addProperty(key1.toString(), value1));
+            value.forEach((key1, value1) -> perm.addProperty(key1.id, value1));
             global.add(key, perm);
         });
         obj.add("globalDefaultPerms", global);
@@ -139,7 +138,8 @@ public class Config {
         }
     }
 
-    public boolean globallyDefined(ServerWorld world, EnumPermission perm){
-        EnumMap<EnumPermission,Boolean> global = ConfigHandler.config.globalDefaultPerms.get(world.getRegistryKey().getValue().toString());
+    public boolean globallyDefined(ServerWorld world, ClaimPermission perm) {
+        Map<ClaimPermission, Boolean> global = ConfigHandler.config.globalDefaultPerms.get(world.getRegistryKey().getValue().toString());
         return global != null && global.containsKey(perm);
-    }}
+    }
+}

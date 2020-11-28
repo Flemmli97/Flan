@@ -1,18 +1,21 @@
-package com.flemmli97.flan.permission;
+package com.flemmli97.flan.api;
 
 import com.flemmli97.flan.config.ConfigHandler;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
+import net.minecraft.village.raid.Raid;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Unused. might expand on this idea later
+ * Register more permissions before ServerLifecycleEvents.SERVER_STARTING
  */
-public class ClaimPermRegistry {
+public class PermissionRegistry {
 
     private static final Map<String, ClaimPermission> permissions = Maps.newLinkedHashMap();
     private static final Map<String, ClaimPermission> globalPermissions = Maps.newLinkedHashMap();
@@ -46,7 +49,7 @@ public class ClaimPermRegistry {
     public static ClaimPermission PROJECTILES = register(new ClaimPermission("PROJECTILES", () -> new ItemStack(Items.ARROW), "Permission to let shot projectiles interact with blocks (e.g. arrow on button)"));
     public static ClaimPermission TRAMPLE = register(new ClaimPermission("TRAMPLE", () -> new ItemStack(Items.FARMLAND), "Permission to enable block trampling (farmland, turtle eggs)"));
     public static ClaimPermission PORTAL = register(new ClaimPermission("PORTAL", () -> new ItemStack(Items.OBSIDIAN), "Permission to use nether portals"));
-    public static ClaimPermission RAID = register(new ClaimPermission("RAID", () -> new ItemStack(null), "Permission to trigger raids in claim. Wont prevent raids (just) outside"));
+    public static ClaimPermission RAID = register(new ClaimPermission("RAID", () -> Raid.getOminousBanner(), "Permission to trigger raids in claim. Wont prevent raids (just) outside"));
     public static ClaimPermission BOAT = register(new ClaimPermission("BOAT", () -> new ItemStack(Items.OAK_BOAT), "Permission to sit in boats"));
     public static ClaimPermission MINECART = register(new ClaimPermission("MINECART", () -> new ItemStack(Items.MINECART), "Permission to sit in minecarts"));
     public static ClaimPermission BUCKET = register(new ClaimPermission("BUCKET", () -> new ItemStack(Items.BUCKET), "Permission to take liquids with buckets"));
@@ -63,53 +66,56 @@ public class ClaimPermRegistry {
     public static ClaimPermission FIRESPREAD = global(new ClaimPermission("FIRESPREAD", () -> new ItemStack(Items.BLAZE_POWDER), "Toggle firespread in claim"));
 
     private static ClaimPermission register(ClaimPermission perm) {
-        if (locked || permissions.containsKey(perm.id)) {
-
-            return null;
+        if (locked) {
+            throw new IllegalStateException("Registering permissions is locked");
         }
-        return permissions.put(perm.id, perm);
+        permissions.put(perm.id, perm);
+        return perm;
     }
 
-    private static ClaimPermission global(ClaimPermission perm) {
-        if (locked || globalPermissions.containsKey(perm.id)) {
-
-            return null;
+    public static ClaimPermission global(ClaimPermission perm) {
+        if (locked) {
+            throw new IllegalStateException("Registering permissions is locked");
         }
-        return globalPermissions.put(perm.id, perm);
+        globalPermissions.put(perm.id, perm);
+        return register(perm);
     }
-    public static void lock(){
+
+    public static void lock() {
         locked = true;
     }
 
     public static ClaimPermission get(String id) {
+        if (!permissions.containsKey(id))
+            throw new NullPointerException("No such permission registered");
         return permissions.get(id);
     }
 
-    public static Collection<ClaimPermission> getPerms(){
-        return permissions.values();
+    public static List<ClaimPermission> getPerms() {
+        return Lists.newArrayList(permissions.values());
     }
 
-    public static Collection<ClaimPermission> globalPerms(){
+    public static Collection<ClaimPermission> globalPerms() {
         return globalPermissions.values();
     }
 
-    public static ClaimPermission registerBreakPerm(ClaimPermission perm, Identifier... affectedBlocks){
+    public static ClaimPermission registerBreakPerm(ClaimPermission perm, Identifier... affectedBlocks) {
         ClaimPermission reg = register(perm);
-        for(Identifier blocks : affectedBlocks)
+        for (Identifier blocks : affectedBlocks)
             breakBlocks.put(blocks, perm);
         return reg;
     }
 
-    public static ClaimPermission registerBlockInteract(ClaimPermission perm, Identifier... affectedBlocks){
+    public static ClaimPermission registerBlockInteract(ClaimPermission perm, Identifier... affectedBlocks) {
         ClaimPermission reg = register(perm);
-        for(Identifier blocks : affectedBlocks)
+        for (Identifier blocks : affectedBlocks)
             interactBlocks.put(blocks, perm);
         return reg;
     }
 
-    public static ClaimPermission registerItemUse(ClaimPermission perm, Identifier... affectedBlocks){
+    public static ClaimPermission registerItemUse(ClaimPermission perm, Identifier... affectedBlocks) {
         ClaimPermission reg = register(perm);
-        for(Identifier blocks : affectedBlocks)
+        for (Identifier blocks : affectedBlocks)
             items.put(blocks, perm);
         return reg;
     }

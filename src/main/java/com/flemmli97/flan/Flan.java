@@ -1,5 +1,6 @@
 package com.flemmli97.flan;
 
+import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.claim.BlockToPermissionMap;
 import com.flemmli97.flan.commands.CommandClaim;
 import com.flemmli97.flan.config.ConfigHandler;
@@ -14,6 +15,7 @@ import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,17 +32,22 @@ public class Flan implements ModInitializer {
         UseItemCallback.EVENT.register(ItemInteractEvents::useItem);
         ServerLifecycleEvents.SERVER_STARTING.register(ConfigHandler::serverLoad);
         ServerLifecycleEvents.SERVER_STARTING.register(BlockToPermissionMap::reload);
+        ServerLifecycleEvents.SERVER_STARTING.register(this::lockRegistry);
 
         CommandRegistrationCallback.EVENT.register(CommandClaim::register);
     }
 
-    public static void log(String msg, Object... o){
-        if(ConfigHandler.config.log)
+    public void lockRegistry(MinecraftServer server) {
+        PermissionRegistry.lock();
+    }
+
+    public static void log(String msg, Object... o) {
+        if (ConfigHandler.config.log)
             logger.info(msg, o);
     }
 
-    public static void debug(String msg, Object... o){
-        if(ConfigHandler.config.log)
+    public static void debug(String msg, Object... o) {
+        if (ConfigHandler.config.log)
             logger.debug(msg, o);
     }
 }

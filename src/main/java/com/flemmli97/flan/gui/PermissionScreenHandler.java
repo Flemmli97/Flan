@@ -1,8 +1,10 @@
 package com.flemmli97.flan.gui;
 
+import com.flemmli97.flan.api.ClaimPermission;
+import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.claim.Claim;
-import com.flemmli97.flan.claim.EnumPermission;
 import com.flemmli97.flan.claim.PermHelper;
+import com.google.common.collect.Lists;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -17,6 +19,8 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+
+import java.util.List;
 
 public class PermissionScreenHandler extends ServerOnlyScreenHandler {
 
@@ -63,6 +67,9 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
 
     @Override
     protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object... additionalData) {
+        List<ClaimPermission> perms = Lists.newArrayList(PermissionRegistry.getPerms());
+        if (this.group != null)
+            perms.removeAll(PermissionRegistry.globalPerms());
         for (int i = 0; i < 54; i++) {
             int page = (int) additionalData[2];
             if (i == 0) {
@@ -82,31 +89,32 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
             else {
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + page * 28;
-                int length = EnumPermission.values().length;
-                if (this.group != null)
-                    length -= EnumPermission.alwaysGlobalLength();
-                if (id < length)
-                    inv.setStack(i, ServerScreenHelper.fromPermission((Claim) additionalData[0], EnumPermission.values()[id], additionalData[1] == null ? null : additionalData[1].toString()));
+                if (id < perms.size())
+                    inv.setStack(i, ServerScreenHelper.fromPermission((Claim) additionalData[0], perms.get(id), additionalData[1] == null ? null : additionalData[1].toString()));
             }
         }
     }
 
     private void flipPage() {
+        List<ClaimPermission> perms = Lists.newArrayList(PermissionRegistry.getPerms());
+        if (this.group != null)
+            perms.removeAll(PermissionRegistry.globalPerms());
+        int maxPages = perms.size() / 28;
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
                 close.setCustomName(new LiteralText("Back").setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)));
                 this.slots.get(i).setStack(close);
             } else if (i == 47) {
-                ItemStack stack = ItemStack.EMPTY;
-                if (this.page == 1) {
+                ItemStack stack = ServerScreenHelper.emptyFiller();
+                if (this.page >= 1) {
                     stack = new ItemStack(Items.ARROW);
                     stack.setCustomName(new LiteralText("Prev").setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
                 }
                 this.slots.get(i).setStack(stack);
             } else if (i == 51) {
-                ItemStack stack = ItemStack.EMPTY;
-                if (this.page == 0) {
+                ItemStack stack = ServerScreenHelper.emptyFiller();
+                if (this.page < maxPages) {
                     stack = new ItemStack(Items.ARROW);
                     stack.setCustomName(new LiteralText("Next").setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
                 }
@@ -116,11 +124,8 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
             else {
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + this.page * 28;
-                int length = EnumPermission.values().length;
-                if (this.group != null)
-                    length -= EnumPermission.alwaysGlobalLength();
-                if (id < length) {
-                    this.slots.get(i).setStack(ServerScreenHelper.fromPermission(this.claim, EnumPermission.values()[id], this.group));
+                if (id < perms.size()) {
+                    this.slots.get(i).setStack(ServerScreenHelper.fromPermission(this.claim, perms.get(id), this.group));
                 } else
                     this.slots.get(i).setStack(ItemStack.EMPTY);
             }
@@ -153,10 +158,10 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
         }
         ItemStack stack = slot.getStack();
         String name = stack.getName().asString();
-        EnumPermission perm;
+        ClaimPermission perm;
         try {
-            perm = EnumPermission.valueOf(name);
-        } catch (IllegalArgumentException e) {
+            perm = PermissionRegistry.get(name);
+        } catch (NullPointerException e) {
             return false;
         }
         boolean success;
@@ -170,7 +175,7 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
         } else
             success = this.claim.editPerms(player, this.group, perm, this.claim.groupHasPerm(this.group, perm) + 1);
         slot.setStack(ServerScreenHelper.fromPermission(this.claim, perm, this.group));
-        if(success)
+        if (success)
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_NOTE_BLOCK_PLING, 1, 1.2f);
         else
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_VILLAGER_NO, 1, 1f);

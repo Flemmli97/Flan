@@ -1,6 +1,7 @@
 package com.flemmli97.flan.config;
 
-import com.flemmli97.flan.claim.EnumPermission;
+import com.flemmli97.flan.api.ClaimPermission;
+import com.flemmli97.flan.api.PermissionRegistry;
 import com.google.gson.JsonObject;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
@@ -102,9 +103,9 @@ public class LangConfig {
                     field.set(this, obj.get(field.getName()).getAsString());
                 }
             }
-            for(EnumPermission perm : EnumPermission.values()){
-                if(obj.has(perm.toString()+".desc"))
-                    perm.translation = obj.get(perm.toString()+".desc").getAsString();
+            for (ClaimPermission perm : PermissionRegistry.getPerms()) {
+                if (obj.has(perm.id + ".desc"))
+                    perm.desc = obj.get(perm.id + ".desc").getAsString();
             }
         } catch (IOException | IllegalAccessException e) {
             e.printStackTrace();
@@ -120,8 +121,8 @@ public class LangConfig {
                     obj.addProperty(field.getName(), (String) field.get(this));
                 }
             }
-            for(EnumPermission perm : EnumPermission.values())
-                obj.addProperty(perm.toString()+".desc", perm.translation);
+            for (ClaimPermission perm : PermissionRegistry.getPerms())
+                obj.addProperty(perm.id + ".desc", perm.desc);
             FileWriter writer = new FileWriter(this.config);
             ConfigHandler.GSON.toJson(obj, writer);
             writer.close();

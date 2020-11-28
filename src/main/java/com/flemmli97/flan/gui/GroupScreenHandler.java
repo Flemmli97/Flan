@@ -1,7 +1,7 @@
 package com.flemmli97.flan.gui;
 
+import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.claim.Claim;
-import com.flemmli97.flan.claim.EnumPermission;
 import com.flemmli97.flan.claim.PermHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -95,7 +95,7 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler {
         if (index == 3) {
             player.closeHandledScreen();
             player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, this.claim, (s) -> {
-                this.claim.editPerms(player, s, EnumPermission.EDITPERMS, -1);
+                this.claim.editPerms(player, s, PermissionRegistry.EDITPERMS, -1);
                 player.closeHandledScreen();
                 player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.claim));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_USE, 1, 1f);

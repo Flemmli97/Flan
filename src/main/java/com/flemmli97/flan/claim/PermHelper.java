@@ -1,5 +1,6 @@
 package com.flemmli97.flan.claim;
 
+import com.flemmli97.flan.api.ClaimPermission;
 import com.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -13,7 +14,7 @@ import java.util.function.Consumer;
 
 public class PermHelper {
 
-    public static boolean check(ServerPlayerEntity player, BlockPos pos, Claim claim, EnumPermission perm, Consumer<Optional<Boolean>> cons) {
+    public static boolean check(ServerPlayerEntity player, BlockPos pos, Claim claim, ClaimPermission perm, Consumer<Optional<Boolean>> cons) {
         if (claim == null) {
             cons.accept(Optional.empty());
             return false;
@@ -23,7 +24,7 @@ public class PermHelper {
         return hasPerm;
     }
 
-    public static Claim checkReturn(ServerPlayerEntity player, EnumPermission perm, Consumer<Optional<Boolean>> cons) {
+    public static Claim checkReturn(ServerPlayerEntity player, ClaimPermission perm, Consumer<Optional<Boolean>> cons) {
         BlockPos pos = player.getBlockPos();
         Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(pos);
         return check(player, pos, claim, perm, cons) ? claim : null;

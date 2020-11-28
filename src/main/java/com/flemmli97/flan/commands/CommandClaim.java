@@ -1,8 +1,9 @@
 package com.flemmli97.flan.commands;
 
+import com.flemmli97.flan.api.ClaimPermission;
+import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
-import com.flemmli97.flan.claim.EnumPermission;
 import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.gui.ClaimMenuScreenHandler;
@@ -36,7 +37,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Collection;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -82,7 +82,7 @@ public class CommandClaim {
                                             ServerCommandSource src = context.getSource();
                                             ClaimStorage storage = ClaimStorage.get(src.getWorld());
                                             Claim claim = storage.getClaimAt(src.getPlayer().getBlockPos());
-                                            if (claim != null && claim.canInteract(src.getPlayer(), EnumPermission.EDITPERMS, src.getPlayer().getBlockPos())) {
+                                            if (claim != null && claim.canInteract(src.getPlayer(), PermissionRegistry.EDITPERMS, src.getPlayer().getBlockPos())) {
                                                 list = claim.playersFromGroup(player.getServer(), "");
                                             }
                                             return CommandSource.suggestMatching(list, build);
@@ -138,7 +138,7 @@ public class CommandClaim {
         ServerPlayerEntity player = context.getSource().getPlayer();
         PlayerClaimData data = PlayerClaimData.get(player);
         if (data.getEditMode() == EnumEditMode.DEFAULT) {
-            Claim claim = PermHelper.checkReturn(player, EnumPermission.EDITPERMS, PermHelper.genericNoPermMessage(player));
+            Claim claim = PermHelper.checkReturn(player, PermissionRegistry.EDITPERMS, PermHelper.genericNoPermMessage(player));
             if (claim == null)
                 return 0;
             ClaimMenuScreenHandler.openClaimMenu(player, claim);
@@ -146,9 +146,9 @@ public class CommandClaim {
         } else {
             Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(player.getBlockPos());
             Claim sub = claim.getSubClaim(player.getBlockPos());
-            if (sub != null && (claim.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos()) || sub.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos())))
+            if (sub != null && (claim.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos()) || sub.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos())))
                 ClaimMenuScreenHandler.openClaimMenu(player, sub);
-            else if (claim.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos()))
+            else if (claim.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos()))
                 ClaimMenuScreenHandler.openClaimMenu(player, claim);
             else
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermission, Formatting.DARK_RED), false);
@@ -184,7 +184,7 @@ public class CommandClaim {
         ServerPlayerEntity player = context.getSource().getPlayer();
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
         Claim claim = storage.getClaimAt(player.getBlockPos());
-        boolean check = PermHelper.check(player, player.getBlockPos(), claim, EnumPermission.EDITCLAIM, b -> {
+        boolean check = PermHelper.check(player, player.getBlockPos(), claim, PermissionRegistry.EDITCLAIM, b -> {
             if (!b.isPresent())
                 PermHelper.noClaimMessage(player);
             else if (!b.get())
@@ -228,7 +228,7 @@ public class CommandClaim {
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noClaim, Formatting.RED), false);
             return 0;
         }
-        boolean check = PermHelper.check(player, player.getBlockPos(), claim, EnumPermission.EDITCLAIM, b -> {
+        boolean check = PermHelper.check(player, player.getBlockPos(), claim, PermissionRegistry.EDITCLAIM, b -> {
             if (!b.isPresent())
                 PermHelper.noClaimMessage(player);
             else if (!b.get())
@@ -244,7 +244,7 @@ public class CommandClaim {
 
     private static int deleteAllSubClaim(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
-        Claim claim = PermHelper.checkReturn(player, EnumPermission.EDITCLAIM, PermHelper.genericNoPermMessage(player));
+        Claim claim = PermHelper.checkReturn(player, PermissionRegistry.EDITCLAIM, PermHelper.genericNoPermMessage(player));
         if (claim == null)
             return 0;
         List<Claim> subs = claim.getAllSubclaims();
@@ -276,7 +276,7 @@ public class CommandClaim {
             ClaimStorage storage = ClaimStorage.get(world);
             claims.put(world, storage.allClaimsFromPlayer(player != null ? player.getUuid() : of));
         }
-        if(ConfigHandler.config.maxClaimBlocks != -1) {
+        if (ConfigHandler.config.maxClaimBlocks != -1) {
             if (player != null) {
                 PlayerClaimData data = PlayerClaimData.get(player);
                 context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
@@ -400,7 +400,7 @@ public class CommandClaim {
         List<String> list = Lists.newArrayList();
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
         Claim claim = storage.getClaimAt(player.getBlockPos());
-        if (claim != null && claim.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos())) {
+        if (claim != null && claim.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos())) {
             list = claim.groups();
         }
         return CommandSource.suggestMatching(list, build);
@@ -435,7 +435,7 @@ public class CommandClaim {
             if (claim.groups().contains(group)) {
                 player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.groupExist, group), Formatting.RED), false);
                 return 0;
-            } else if (claim.editPerms(player, group, EnumPermission.EDITPERMS, -1))
+            } else if (claim.editPerms(player, group, PermissionRegistry.EDITPERMS, -1))
                 player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.groupAdd, group), Formatting.GOLD), false);
             else {
                 PermHelper.genericNoPermMessage(player);
@@ -467,7 +467,7 @@ public class CommandClaim {
             PermHelper.noClaimMessage(player);
             return 0;
         }
-        if (!claim.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos())) {
+        if (!claim.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos())) {
             PermHelper.genericNoPermMessage(player);
             return 0;
         }
@@ -488,13 +488,13 @@ public class CommandClaim {
         Claim claim = ClaimStorage.get(world).getClaimAt(new BlockPos(context.getSource().getPosition()));
         boolean admin = claim != null && claim.isAdminClaim();
         String serverWorld = world.getRegistryKey().getValue().toString();
-        EnumMap<EnumPermission,Boolean> global = ConfigHandler.config.globalDefaultPerms.get(serverWorld);
-        for (EnumPermission perm : EnumPermission.values()) {
-            if(!admin && global!=null && global.containsKey(perm)) {
+        Map<ClaimPermission, Boolean> global = ConfigHandler.config.globalDefaultPerms.get(serverWorld);
+        for (ClaimPermission perm : PermissionRegistry.getPerms()) {
+            if (!admin && global != null && global.containsKey(perm)) {
                 continue;
             }
-            if (!group || !perm.isAlwaysGlobalPerm())
-                build.suggest(perm.toString());
+            if (!group || !PermissionRegistry.globalPerms().contains(perm))
+                build.suggest(perm.id);
         }
         return build.buildFuture();
     }
@@ -544,17 +544,17 @@ public class CommandClaim {
             PermHelper.noClaimMessage(player);
             return 0;
         }
-        if (!claim.canInteract(player, EnumPermission.EDITPERMS, player.getBlockPos())) {
+        if (!claim.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos())) {
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermission, Formatting.DARK_RED), false);
             return 0;
         }
-        EnumPermission perm;
+        ClaimPermission perm;
         String p = StringArgumentType.getString(context, "permission");
         try {
-            perm = EnumPermission.valueOf(p);
-            if (group != null && perm.isAlwaysGlobalPerm())
+            perm = PermissionRegistry.get(p);
+            if (group != null && PermissionRegistry.globalPerms().contains(perm))
                 throw new IllegalArgumentException();
-        } catch (IllegalArgumentException e) {
+        } catch (NullPointerException e) {
             player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.noSuchPerm, p), Formatting.DARK_RED), false);
             return 0;
         }
