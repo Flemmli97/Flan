@@ -176,14 +176,18 @@ public class PlayerClaimData {
     }
 
     public void tick() {
-        this.displayToAdd.forEach(add -> {
+        boolean tool = this.player.getMainHandStack().getItem() == ConfigHandler.config.claimingItem
+                || this.player.getOffHandStack().getItem() == ConfigHandler.config.claimingItem;
+        boolean stick = this.player.getMainHandStack().getItem() == ConfigHandler.config.inspectionItem
+                || this.player.getOffHandStack().getItem() == ConfigHandler.config.inspectionItem;
+            this.displayToAdd.forEach(add -> {
             if (!this.claimDisplayList.add(add)) {
                 this.claimDisplayList.removeIf(c -> c.equals(add) && c.type != add.type);
                 this.claimDisplayList.add(add);
             }
         });
         this.displayToAdd.clear();
-        this.claimDisplayList.removeIf(d -> d.display(this.player));
+        this.claimDisplayList.removeIf(d -> d.display(this.player, !tool && !stick));
         if (++this.lastBlockTick > ConfigHandler.config.ticksForNextBlock) {
             this.addClaimBlocks(1);
             this.lastBlockTick = 0;
@@ -196,8 +200,8 @@ public class PlayerClaimData {
         if (--this.confirmTick < 0)
             this.confirmDeleteAll = false;
         if (this.displayEditing != null)
-            this.displayEditing.display(this.player);
-        if (this.player.getMainHandStack().getItem() != ConfigHandler.config.claimingItem && this.player.getOffHandStack().getItem() != ConfigHandler.config.claimingItem) {
+            this.displayEditing.display(this.player, !tool && !stick);
+        if (!tool) {
             this.setEditingCorner(null);
             this.setEditClaim(null, 0);
             this.claimBlockMessage = false;

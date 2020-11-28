@@ -55,8 +55,10 @@ public class ClaimDisplay {
         }
     }
 
-    public boolean display(ServerPlayerEntity player) {
-        if (--this.displayTime % 2 == 0)
+    public boolean display(ServerPlayerEntity player, boolean tick) {
+        if(tick)
+            --this.displayTime;
+        if (this.displayTime % 2 == 0)
             return this.toDisplay.isRemoved();
         int[] dims = this.toDisplay.getDimensions();
         if (this.poss == null || this.changed(dims)) {
