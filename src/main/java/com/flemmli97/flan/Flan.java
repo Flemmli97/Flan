@@ -35,10 +35,12 @@ public class Flan implements ModInitializer {
     }
 
     public static void log(String msg, Object... o){
-        logger.info(msg, o);
+        if(ConfigHandler.config.log)
+            logger.info(msg, o);
     }
 
     public static void debug(String msg, Object... o){
-        logger.debug(msg, o);
+        if(ConfigHandler.config.log)
+            logger.debug(msg, o);
     }
 }
