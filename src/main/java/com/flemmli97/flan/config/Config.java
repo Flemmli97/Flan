@@ -26,7 +26,7 @@ public class Config {
 
     public int startingBlocks = 500;
     public int maxClaimBlocks = 5000;
-    public int ticksForNextBlock = 1200;
+    public int ticksForNextBlock = 600;
     public int minClaimsize = 100;
     public int defaultClaimDepth = 10;
     public boolean lenientBlockEntityCheck;
