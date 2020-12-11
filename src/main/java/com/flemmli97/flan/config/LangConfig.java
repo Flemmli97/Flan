@@ -77,6 +77,9 @@ public class LangConfig {
     public String claimGroupPerms = "    Permissions: %s";
     public String claimGroupPlayers = "    Players: %s";
 
+    public String screenEnableText = "Enabled: %s";
+    public String screenUneditable = "Non Editable!";
+
     public LangConfig(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
         //server.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();

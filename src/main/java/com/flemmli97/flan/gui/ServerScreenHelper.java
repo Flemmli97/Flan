@@ -33,10 +33,10 @@ public class ServerScreenHelper {
         lore.add(StringTag.of(Text.Serializer.toJson(trans)));
         Boolean global = ConfigHandler.config.getGlobal(claim.getWorld(), perm);
         if (!claim.isAdminClaim() && global != null) {
-            Text text = new LiteralText("Non Editable.").setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED));
+            Text text = new LiteralText(ConfigHandler.lang.screenUneditable).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED));
             lore.add(StringTag.of(Text.Serializer.toJson(text)));
             String permFlag = global.toString();
-            Text text2 = new LiteralText("Enabled: " + permFlag).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
+            Text text2 = new LiteralText(String.format(ConfigHandler.lang.screenEnableText, permFlag)).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
             lore.add(StringTag.of(Text.Serializer.toJson(text2)));
         } else {
             String permFlag;
@@ -69,7 +69,7 @@ public class ServerScreenHelper {
                         break;
                 }
             }
-            Text text = new LiteralText("Enabled: " + permFlag).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
+            Text text = new LiteralText(String.format(ConfigHandler.lang.screenEnableText, permFlag)).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
             lore.add(StringTag.of(Text.Serializer.toJson(text)));
         }
         stack.getOrCreateSubTag("display").put("Lore", lore);
