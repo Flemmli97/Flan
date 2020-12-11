@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Pattern;
 
 public class CommandClaim {
 
@@ -68,8 +69,8 @@ public class CommandClaim {
                 .then(CommandManager.literal("giveClaimBlocks").requires(src -> src.hasPermissionLevel(ConfigHandler.config.permissionLevel)).then(CommandManager.argument("players", GameProfileArgumentType.gameProfile())
                         .then(CommandManager.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::giveClaimBlocks))))
                 .then(CommandManager.literal("group")
-                        .then(CommandManager.literal("add").then(CommandManager.argument("group", StringArgumentType.word()).executes(CommandClaim::addGroup)))
-                        .then(CommandManager.literal("remove").then(CommandManager.argument("group", StringArgumentType.word())
+                        .then(CommandManager.literal("add").then(CommandManager.argument("group", StringArgumentType.string()).executes(CommandClaim::addGroup)))
+                        .then(CommandManager.literal("remove").then(CommandManager.argument("group", StringArgumentType.string())
                                 .suggests(CommandClaim::groupSuggestion).executes(CommandClaim::removeGroup)))
                         .then(CommandManager.literal("players")
                                 .then(CommandManager.literal("add").then(CommandManager.argument("group", StringArgumentType.word()).suggests(CommandClaim::groupSuggestion)
@@ -90,7 +91,7 @@ public class CommandClaim {
                 .then(CommandManager.literal("permission")
                         .then(CommandManager.literal("global").then(CommandManager.argument("permission", StringArgumentType.word()).suggests((ctx, b) -> permSuggestions(ctx, b, false))
                                 .then(CommandManager.argument("toggle", StringArgumentType.word()).suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"default", "true", "false"}, b)).executes(CommandClaim::editGlobalPerm))))
-                        .then(CommandManager.literal("group").then(CommandManager.argument("group", StringArgumentType.word()).suggests(CommandClaim::groupSuggestion)
+                        .then(CommandManager.literal("group").then(CommandManager.argument("group", StringArgumentType.string()).suggests(CommandClaim::groupSuggestion)
                                 .then(CommandManager.argument("permission", StringArgumentType.word()).suggests((ctx, b) -> permSuggestions(ctx, b, true))
                                         .then(CommandManager.argument("toggle", StringArgumentType.word())
                                                 .suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"default", "true", "false"}, b)).executes(CommandClaim::editGroupPerm))))))
@@ -395,6 +396,8 @@ public class CommandClaim {
         return Command.SINGLE_SUCCESS;
     }
 
+    private static final Pattern allowed = Pattern.compile("[a-zA-Z0-9_+.-]+");
+
     private static CompletableFuture<Suggestions> groupSuggestion(CommandContext<ServerCommandSource> context, SuggestionsBuilder build) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
         List<String> list = Lists.newArrayList();
@@ -402,6 +405,11 @@ public class CommandClaim {
         Claim claim = storage.getClaimAt(player.getBlockPos());
         if (claim != null && claim.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos())) {
             list = claim.groups();
+        }
+        for(int i = 0; i < list.size(); i++){
+            if(allowed.matcher(list.get(i)).matches())
+                continue;
+            list.set(i, '\"'+list.get(i)+'\"');
         }
         return CommandSource.suggestMatching(list, build);
     }
