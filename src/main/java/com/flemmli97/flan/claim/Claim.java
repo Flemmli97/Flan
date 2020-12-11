@@ -149,7 +149,7 @@ public class Claim implements IPermissionContainer {
     }
 
     public int getPlane() {
-        return (this.maxX - this.minX) * (this.maxZ - this.minZ);
+        return (this.maxX - this.minX + 1) * (this.maxZ - this.minZ + 1);
     }
 
     /**
