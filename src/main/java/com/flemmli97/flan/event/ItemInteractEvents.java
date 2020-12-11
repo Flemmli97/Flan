@@ -207,6 +207,10 @@ public class ItemInteractEvents {
 
     public static void inspect(ServerPlayerEntity player, BlockPos target) {
         Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(target);
+        PlayerClaimData data = PlayerClaimData.get(player);
+        if (data.claimCooldown())
+            return;
+        data.setClaimActionCooldown();
         if (claim != null) {
             String owner = claim.isAdminClaim() ? "<Admin>" : "<UNKOWN>";
             if (!claim.isAdminClaim()) {
@@ -218,7 +222,7 @@ public class ItemInteractEvents {
                     owner,
                     target.getX(), target.getY(), target.getZ()), Formatting.GREEN);
             player.sendMessage(text, false);
-            PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+            data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
         } else
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.inspectNoClaim, Formatting.RED), false);
     }
