@@ -70,9 +70,8 @@ public class Config {
             this.ticksForNextBlock = ConfigHandler.fromJson(obj, "ticksForNextBlock", this.ticksForNextBlock);
             this.minClaimsize = ConfigHandler.fromJson(obj, "minClaimsize", this.minClaimsize);
             this.defaultClaimDepth = ConfigHandler.fromJson(obj, "defaultClaimDepth", this.defaultClaimDepth);
-            JsonArray arr = ConfigHandler.arryFromJson(obj, "blacklistedWorlds");
             this.lenientBlockEntityCheck = ConfigHandler.fromJson(obj, "lenientBlockEntityCheck", this.lenientBlockEntityCheck);
-
+            JsonArray arr = ConfigHandler.arryFromJson(obj, "blacklistedWorlds");
             this.blacklistedWorlds = new String[arr.size()];
             for (int i = 0; i < arr.size(); i++)
                 this.blacklistedWorlds[i] = arr.get(i).getAsString();
@@ -115,6 +114,8 @@ public class Config {
         obj.addProperty("defaultClaimDepth", this.defaultClaimDepth);
         obj.addProperty("lenientBlockEntityCheck", this.lenientBlockEntityCheck);
         JsonArray arr = new JsonArray();
+        for (int i = 0; i < this.blacklistedWorlds.length; i++)
+            arr.add(this.blacklistedWorlds[i]);
         obj.add("blacklistedWorlds", arr);
         obj.addProperty("worldWhitelist", this.worldWhitelist);
         obj.addProperty("claimingItem", Registry.ITEM.getId(this.claimingItem).toString());
