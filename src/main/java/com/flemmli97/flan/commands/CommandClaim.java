@@ -495,10 +495,8 @@ public class CommandClaim {
         ServerWorld world = context.getSource().getWorld();
         Claim claim = ClaimStorage.get(world).getClaimAt(new BlockPos(context.getSource().getPosition()));
         boolean admin = claim != null && claim.isAdminClaim();
-        String serverWorld = world.getRegistryKey().getValue().toString();
-        Map<ClaimPermission, Boolean> global = ConfigHandler.config.globalDefaultPerms.get(serverWorld);
         for (ClaimPermission perm : PermissionRegistry.getPerms()) {
-            if (!admin && global != null && global.containsKey(perm)) {
+            if (!admin && ConfigHandler.config.globallyDefined(world, perm)) {
                 continue;
             }
             if (!group || !PermissionRegistry.globalPerms().contains(perm))

@@ -33,11 +33,11 @@ public class ServerScreenHelper {
         ListTag lore = new ListTag();
         Text trans = new LiteralText(perm.desc).setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
         lore.add(StringTag.of(Text.Serializer.toJson(trans)));
-        Map<ClaimPermission, Boolean> global = ConfigHandler.config.globalDefaultPerms.get(claim.getWorld().getRegistryKey().getValue().toString());
-        if (!claim.isAdminClaim() && global != null && global.containsKey(perm)) {
+        Boolean global = ConfigHandler.config.getGlobal(claim.getWorld(), perm);
+        if (!claim.isAdminClaim() && global != null) {
             Text text = new LiteralText("Non Editable.").setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED));
             lore.add(StringTag.of(Text.Serializer.toJson(text)));
-            String permFlag = global.get(perm).toString();
+            String permFlag = global.toString();
             Text text2 = new LiteralText("Enabled: " + permFlag).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
             lore.add(StringTag.of(Text.Serializer.toJson(text2)));
         } else {

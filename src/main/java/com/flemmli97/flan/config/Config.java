@@ -33,6 +33,7 @@ public class Config {
 
     public String[] blacklistedWorlds = new String[0];
     public boolean worldWhitelist;
+    public boolean allowMobSpawnToggle;
 
     public Item claimingItem = Items.GOLDEN_HOE;
     public Item inspectionItem = Items.STICK;
@@ -42,7 +43,7 @@ public class Config {
 
     public boolean log;
 
-    public final Map<String, Map<ClaimPermission, Boolean>> globalDefaultPerms = Maps.newHashMap();
+    private final Map<String, Map<ClaimPermission, Boolean>> globalDefaultPerms = Maps.newHashMap();
 
     public Config(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
@@ -76,6 +77,7 @@ public class Config {
             for (int i = 0; i < arr.size(); i++)
                 this.blacklistedWorlds[i] = arr.get(i).getAsString();
             this.worldWhitelist = ConfigHandler.fromJson(obj, "worldWhitelist", this.worldWhitelist);
+            this.allowMobSpawnToggle = ConfigHandler.fromJson(obj, "allowMobSpawnToggle", false);
             if (obj.has("claimingItem"))
                 this.claimingItem = Registry.ITEM.get(new Identifier((obj.get("claimingItem").getAsString())));
             if (obj.has("inspectionItem"))
@@ -118,6 +120,7 @@ public class Config {
             arr.add(this.blacklistedWorlds[i]);
         obj.add("blacklistedWorlds", arr);
         obj.addProperty("worldWhitelist", this.worldWhitelist);
+        obj.addProperty("allowMobSpawnToggle", this.allowMobSpawnToggle);
         obj.addProperty("claimingItem", Registry.ITEM.getId(this.claimingItem).toString());
         obj.addProperty("inspectionItem", Registry.ITEM.getId(this.inspectionItem).toString());
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
@@ -140,7 +143,13 @@ public class Config {
     }
 
     public boolean globallyDefined(ServerWorld world, ClaimPermission perm) {
-        Map<ClaimPermission, Boolean> global = ConfigHandler.config.globalDefaultPerms.get(world.getRegistryKey().getValue().toString());
-        return global != null && global.containsKey(perm);
+        return getGlobal(world, perm) != null;
+    }
+
+    public Boolean getGlobal(ServerWorld world, ClaimPermission perm){
+        if(perm == PermissionRegistry.MOBSPAWN && !this.allowMobSpawnToggle)
+            return Boolean.FALSE;
+        Map<ClaimPermission, Boolean> permMap = ConfigHandler.config.globalDefaultPerms.get(world.getRegistryKey().getValue().toString());
+        return permMap == null ? null : permMap.getOrDefault(perm, null);
     }
 }

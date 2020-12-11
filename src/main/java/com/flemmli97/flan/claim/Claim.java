@@ -192,15 +192,13 @@ public class Claim implements IPermissionContainer {
                 return true;
             }
         }
-        if (!this.isAdminClaim() && ConfigHandler.config.globalDefaultPerms.containsKey(this.world.getRegistryKey().getValue().toString())) {
-            Map<ClaimPermission, Boolean> permMap = ConfigHandler.config.globalDefaultPerms.get(this.world.getRegistryKey().getValue().toString());
-            if (permMap.containsKey(perm)) {
-                if (permMap.get(perm) || this.isAdminIgnore(player))
-                    return true;
-                if (message)
-                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
-                return false;
-            }
+        Boolean global = ConfigHandler.config.getGlobal(this.world, perm);
+        if (!this.isAdminClaim() && global != null) {
+            if (global || this.isAdminIgnore(player))
+                return true;
+            if (message)
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
+            return false;
         }
         if (PermissionRegistry.globalPerms().contains(perm)) {
             for (Claim claim : this.subClaims) {

@@ -19,15 +19,13 @@ public class GlobalClaim implements IPermissionContainer {
 
     @Override
     public boolean canInteract(ServerPlayerEntity player, ClaimPermission perm, BlockPos pos, boolean message) {
-        if (ConfigHandler.config.globalDefaultPerms.containsKey(this.world.getRegistryKey().getValue().toString())) {
-            Map<ClaimPermission, Boolean> permMap = ConfigHandler.config.globalDefaultPerms.get(this.world.getRegistryKey().getValue().toString());
-            if (permMap.containsKey(perm)) {
-                if (permMap.get(perm))
-                    return true;
-                if (message)
-                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
-                return false;
-            }
+        Boolean global = ConfigHandler.config.getGlobal(this.world, perm);
+        if (global != null) {
+            if (global)
+                return true;
+            if (message)
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
+            return false;
         }
         return true;
     }
