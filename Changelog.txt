@@ -1,3 +1,10 @@
+Flan 1.2.1
+======================
+- Fix wrong claim size calculation #19
+- Fix blacklisted worlds not saving #21
+- Fix group command not able to edit some groups with illegal characters #20
+- Add toggable mobspawning for claims. Needs allowMobSpawnToggle to be true in the config
+
 Flan 1.2.0
 ======================
 - Claim display stays as long as you are holding either the inspection or the claiming tool
