@@ -17,8 +17,6 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import java.util.Map;
-
 public class ServerScreenHelper {
 
     public static ItemStack emptyFiller() {

@@ -3,8 +3,10 @@ package com.flemmli97.flan.event;
 import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.IPermissionContainer;
+import com.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -64,11 +66,18 @@ public class WorldEvents {
 
     public static boolean canStartRaid(ServerPlayerEntity player) {
         IPermissionContainer claim = ClaimStorage.get(player.getServerWorld()).getForPermissionCheck(player.getBlockPos());
-        return claim == null || claim.canInteract(player, PermissionRegistry.RAID, player.getBlockPos());
+        return claim.canInteract(player, PermissionRegistry.RAID, player.getBlockPos());
     }
 
     public static boolean canFireSpread(ServerWorld world, BlockPos pos) {
         IPermissionContainer claim = ClaimStorage.get(world).getForPermissionCheck(pos);
-        return claim == null || claim.canInteract(null, PermissionRegistry.FIRESPREAD, pos);
+        return claim.canInteract(null, PermissionRegistry.FIRESPREAD, pos);
+    }
+
+    public static boolean preventMobSpawn(ServerWorld world, MobEntity entity) {
+        if (!ConfigHandler.config.allowMobSpawnToggle)
+            return false;
+        IPermissionContainer claim = ClaimStorage.get(world).getForPermissionCheck(entity.getBlockPos());
+        return claim.canInteract(null, PermissionRegistry.MOBSPAWN, entity.getBlockPos());
     }
 }

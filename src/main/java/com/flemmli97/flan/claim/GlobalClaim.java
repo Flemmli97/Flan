@@ -1,13 +1,12 @@
 package com.flemmli97.flan.claim;
 
 import com.flemmli97.flan.api.ClaimPermission;
+import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
-
-import java.util.Map;
 
 public class GlobalClaim implements IPermissionContainer {
 
@@ -27,6 +26,8 @@ public class GlobalClaim implements IPermissionContainer {
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
             return false;
         }
+        if (perm == PermissionRegistry.MOBSPAWN)
+            return false;
         return true;
     }
 }

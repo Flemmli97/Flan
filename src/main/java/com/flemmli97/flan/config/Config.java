@@ -146,8 +146,8 @@ public class Config {
         return getGlobal(world, perm) != null;
     }
 
-    public Boolean getGlobal(ServerWorld world, ClaimPermission perm){
-        if(perm == PermissionRegistry.MOBSPAWN && !this.allowMobSpawnToggle)
+    public Boolean getGlobal(ServerWorld world, ClaimPermission perm) {
+        if (perm == PermissionRegistry.MOBSPAWN && !this.allowMobSpawnToggle)
             return Boolean.FALSE;
         Map<ClaimPermission, Boolean> permMap = ConfigHandler.config.globalDefaultPerms.get(world.getRegistryKey().getValue().toString());
         return permMap == null ? null : permMap.getOrDefault(perm, null);

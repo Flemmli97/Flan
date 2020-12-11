@@ -406,10 +406,10 @@ public class CommandClaim {
         if (claim != null && claim.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos())) {
             list = claim.groups();
         }
-        for(int i = 0; i < list.size(); i++){
-            if(allowed.matcher(list.get(i)).matches())
+        for (int i = 0; i < list.size(); i++) {
+            if (allowed.matcher(list.get(i)).matches())
                 continue;
-            list.set(i, '\"'+list.get(i)+'\"');
+            list.set(i, '\"' + list.get(i) + '\"');
         }
         return CommandSource.suggestMatching(list, build);
     }
