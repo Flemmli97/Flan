@@ -112,15 +112,14 @@ public class LangConfig {
             for (ClaimPermission perm : PermissionRegistry.getPerms()) {
                 if (obj.has(perm.id + ".desc")) {
                     JsonElement pe = obj.get(perm.id + ".desc");
-                    if(pe.isJsonObject())
+                    if (pe.isJsonObject())
                         throw new JsonParseException("Lang cant be json objects");
-                    if(pe.isJsonArray()){
+                    if (pe.isJsonArray()) {
                         String[] l = new String[pe.getAsJsonArray().size()];
-                        for(int i = 0; i < l.length; i++)
+                        for (int i = 0; i < l.length; i++)
                             l[i] = pe.getAsJsonArray().get(i).getAsString();
                         perm.desc = l;
-                    }
-                    else
+                    } else
                         perm.desc = new String[]{pe.getAsString()};
                 }
             }

@@ -29,7 +29,7 @@ public class ServerScreenHelper {
         ItemStack stack = perm.getItem();
         stack.setCustomName(new LiteralText(perm.id).setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
         ListTag lore = new ListTag();
-        for(String pdesc : perm.desc) {
+        for (String pdesc : perm.desc) {
             Text trans = new LiteralText(pdesc).setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
             lore.add(StringTag.of(Text.Serializer.toJson(trans)));
         }
