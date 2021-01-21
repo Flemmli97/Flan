@@ -1,3 +1,9 @@
+Flan 1.2.2
+======================
+- Increase particle size
+- Fix thrown items activating pressure plates
+- Add option to have multiple lines for permission description in lang file
+
 Flan 1.2.1
 ======================
 - Fix wrong claim size calculation #19

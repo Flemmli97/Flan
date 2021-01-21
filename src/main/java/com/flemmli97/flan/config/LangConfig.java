@@ -2,7 +2,10 @@ package com.flemmli97.flan.config;
 
 import com.flemmli97.flan.api.ClaimPermission;
 import com.flemmli97.flan.api.PermissionRegistry;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 
@@ -107,8 +110,19 @@ public class LangConfig {
                 }
             }
             for (ClaimPermission perm : PermissionRegistry.getPerms()) {
-                if (obj.has(perm.id + ".desc"))
-                    perm.desc = obj.get(perm.id + ".desc").getAsString();
+                if (obj.has(perm.id + ".desc")) {
+                    JsonElement pe = obj.get(perm.id + ".desc");
+                    if(pe.isJsonObject())
+                        throw new JsonParseException("Lang cant be json objects");
+                    if(pe.isJsonArray()){
+                        String[] l = new String[pe.getAsJsonArray().size()];
+                        for(int i = 0; i < l.length; i++)
+                            l[i] = pe.getAsJsonArray().get(i).getAsString();
+                        perm.desc = l;
+                    }
+                    else
+                        perm.desc = new String[]{pe.getAsString()};
+                }
             }
         } catch (IOException | IllegalAccessException e) {
             e.printStackTrace();
@@ -124,8 +138,16 @@ public class LangConfig {
                     obj.addProperty(field.getName(), (String) field.get(this));
                 }
             }
-            for (ClaimPermission perm : PermissionRegistry.getPerms())
-                obj.addProperty(perm.id + ".desc", perm.desc);
+            for (ClaimPermission perm : PermissionRegistry.getPerms()) {
+                if (perm.desc.length == 1)
+                    obj.addProperty(perm.id + ".desc", perm.desc[0]);
+                else {
+                    JsonArray arr = new JsonArray();
+                    for (String s : perm.desc)
+                        arr.add(s);
+                    obj.add(perm.id + ".desc", arr);
+                }
+            }
             FileWriter writer = new FileWriter(this.config);
             ConfigHandler.GSON.toJson(obj, writer);
             writer.close();

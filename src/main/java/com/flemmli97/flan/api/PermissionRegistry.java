@@ -30,7 +30,7 @@ public class PermissionRegistry {
     public static ClaimPermission EDITPERMS = register(new ClaimPermission("EDITPERMS", () -> new ItemStack(Items.COMMAND_BLOCK), "Gives permission to change the claims permissions"));
     public static ClaimPermission BREAK = register(new ClaimPermission("BREAK", () -> new ItemStack(Items.DIAMOND_PICKAXE), "Permission to break blocks in the claim"));
     public static ClaimPermission PLACE = register(new ClaimPermission("PLACE", () -> new ItemStack(Items.GRASS_BLOCK), "Permission to place blocks in the claim"));
-    public static ClaimPermission OPENCONTAINER = register(new ClaimPermission("OPENCONTAINER", () -> new ItemStack(Items.CHEST), "Permission to open containers (chest, furnace etc.)"));
+    public static ClaimPermission OPENCONTAINER = register(new ClaimPermission("OPENCONTAINER", () -> new ItemStack(Items.CHEST), "Permission to open containers" ,"(chest, furnace etc.)"));
     public static ClaimPermission ANVIL = register(new ClaimPermission("ANVIL", () -> new ItemStack(Items.ANVIL), "Permission to use anvils"));
     public static ClaimPermission BED = register(new ClaimPermission("BED", () -> new ItemStack(Items.RED_BED), "Permission to use beds"));
     public static ClaimPermission BEACON = register(new ClaimPermission("BEACON", () -> new ItemStack(Items.BEACON), "Permission to use beacons"));
@@ -46,10 +46,10 @@ public class PermissionRegistry {
     public static ClaimPermission LECTERNTAKE = register(new ClaimPermission("LECTERNTAKE", () -> new ItemStack(Items.LECTERN), "Permission to change books in a lectern"));
     public static ClaimPermission ENDCRYSTALPLACE = register(new ClaimPermission("ENDCRYSTALPLACE", () -> new ItemStack(Items.END_CRYSTAL), "Permission to place end crystals"));
     public static ClaimPermission TARGETBLOCK = register(new ClaimPermission("TARGETBLOCK", () -> new ItemStack(Items.TARGET), "Permission to trigger target blocks"));
-    public static ClaimPermission PROJECTILES = register(new ClaimPermission("PROJECTILES", () -> new ItemStack(Items.ARROW), "Permission to let shot projectiles interact with blocks (e.g. arrow on button)"));
-    public static ClaimPermission TRAMPLE = register(new ClaimPermission("TRAMPLE", () -> new ItemStack(Items.FARMLAND), "Permission to enable block trampling (farmland, turtle eggs)"));
+    public static ClaimPermission PROJECTILES = register(new ClaimPermission("PROJECTILES", () -> new ItemStack(Items.ARROW), "Permission to let shot projectiles", "interact with blocks (e.g. arrow on button)"));
+    public static ClaimPermission TRAMPLE = register(new ClaimPermission("TRAMPLE", () -> new ItemStack(Items.FARMLAND), "Permission to enable block trampling", "(farmland, turtle eggs)"));
     public static ClaimPermission PORTAL = register(new ClaimPermission("PORTAL", () -> new ItemStack(Items.OBSIDIAN), "Permission to use nether portals"));
-    public static ClaimPermission RAID = register(new ClaimPermission("RAID", () -> Raid.getOminousBanner(), "Permission to trigger raids in claim. Wont prevent raids (just) outside"));
+    public static ClaimPermission RAID = register(new ClaimPermission("RAID", () -> Raid.getOminousBanner(), "Permission to trigger raids in claim.", "Wont prevent raids (just) outside"));
     public static ClaimPermission BOAT = register(new ClaimPermission("BOAT", () -> new ItemStack(Items.OAK_BOAT), "Permission to sit in boats"));
     public static ClaimPermission MINECART = register(new ClaimPermission("MINECART", () -> new ItemStack(Items.MINECART), "Permission to sit in minecarts"));
     public static ClaimPermission BUCKET = register(new ClaimPermission("BUCKET", () -> new ItemStack(Items.BUCKET), "Permission to take liquids with buckets"));

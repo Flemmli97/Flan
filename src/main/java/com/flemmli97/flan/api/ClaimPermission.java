@@ -10,15 +10,15 @@ import java.util.function.Supplier;
 public class ClaimPermission {
 
     private final Supplier<ItemStack> guiItem;
-    public String desc;
+    public String[] desc;
     public final String id;
     public final ClaimTest test;
 
-    public ClaimPermission(String id, Supplier<ItemStack> guiItem, String defaultDescription) {
-        this(id, guiItem, defaultDescription, pass);
+    public ClaimPermission(String id, Supplier<ItemStack> guiItem, String... defaultDescription) {
+        this(id, guiItem, pass, defaultDescription);
     }
 
-    public ClaimPermission(String id, Supplier<ItemStack> guiItem, String defaultDescription, ClaimTest test) {
+    public ClaimPermission(String id, Supplier<ItemStack> guiItem, ClaimTest test, String... defaultDescription) {
         this.id = id;
         this.guiItem = guiItem;
         this.desc = defaultDescription;

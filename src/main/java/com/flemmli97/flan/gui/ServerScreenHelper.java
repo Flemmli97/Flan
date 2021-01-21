@@ -29,8 +29,10 @@ public class ServerScreenHelper {
         ItemStack stack = perm.getItem();
         stack.setCustomName(new LiteralText(perm.id).setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
         ListTag lore = new ListTag();
-        Text trans = new LiteralText(perm.desc).setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
-        lore.add(StringTag.of(Text.Serializer.toJson(trans)));
+        for(String pdesc : perm.desc) {
+            Text trans = new LiteralText(pdesc).setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
+            lore.add(StringTag.of(Text.Serializer.toJson(trans)));
+        }
         Boolean global = ConfigHandler.config.getGlobal(claim.getWorld(), perm);
         if (!claim.isAdminClaim() && global != null) {
             Text text = new LiteralText(ConfigHandler.lang.screenUneditable).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED));
