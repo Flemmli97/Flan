@@ -1,8 +1,10 @@
 Flan 1.2.2
 ======================
-- Increase particle size
-- Fix thrown items activating pressure plates
-- Add option to have multiple lines for permission description in lang file
+- Increase particle size #25
+- Fix thrown items activating pressure plates #30
+- Add option to have multiple lines for permission description in lang file #24
+- Add enderchest, enchantment table use, piston and water across border permission #29
+- Fix player claim data being reset upon death #26
 
 Flan 1.2.1
 ======================
