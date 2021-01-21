@@ -109,32 +109,32 @@ public class BlockInteractEvents {
     }
 
     public static boolean cancelEntityBlockCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        if (entity.world.isClient)
+        if (world.isClient)
             return false;
-        if (entity instanceof ServerPlayerEntity) {
-            ClaimPermission perm = BlockToPermissionMap.getFromBlock(state.getBlock());
-            if (perm == null)
-                return false;
-            if (perm != PermissionRegistry.PRESSUREPLATE && perm != PermissionRegistry.PORTAL)
-                return false;
-            ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
-            IPermissionContainer claim = storage.getForPermissionCheck(pos);
-            if (claim != null)
-                return !claim.canInteract((ServerPlayerEntity) entity, perm, pos, false);
-        } else if (entity instanceof ProjectileEntity) {
-            ClaimPermission perm = BlockToPermissionMap.getFromBlock(state.getBlock());
-            if (perm == null)
-                return false;
-            if (perm != PermissionRegistry.PRESSUREPLATE && perm != PermissionRegistry.BUTTONLEVER)
-                return false;
+        ServerPlayerEntity player = null;
+        if(entity instanceof ServerPlayerEntity)
+            player = (ServerPlayerEntity) entity;
+        else if(entity instanceof ProjectileEntity) {
             Entity owner = ((ProjectileEntity) entity).getOwner();
-            if (owner instanceof ServerPlayerEntity) {
-                ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
-                IPermissionContainer claim = storage.getForPermissionCheck(pos);
-                if (claim != null)
-                    return !claim.canInteract((ServerPlayerEntity) owner, perm, pos, false);
-            }
+            if(owner instanceof ServerPlayerEntity)
+                player = (ServerPlayerEntity) owner;
         }
+        else if(entity instanceof ItemEntity) {
+            Entity owner = ((ServerWorld)world).getEntity(((ItemEntity) entity).getThrower());
+            if(owner instanceof ServerPlayerEntity)
+                player = (ServerPlayerEntity) owner;
+        }
+        if(player == null)
+            return false;
+        ClaimPermission perm = BlockToPermissionMap.getFromBlock(state.getBlock());
+        if (perm == null)
+            return false;
+        if (perm != PermissionRegistry.PRESSUREPLATE && perm != PermissionRegistry.PORTAL)
+            return false;
+        ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
+        IPermissionContainer claim = storage.getForPermissionCheck(pos);
+        if (claim != null)
+            return !claim.canInteract(player, perm, pos, false);
         return false;
     }
 
