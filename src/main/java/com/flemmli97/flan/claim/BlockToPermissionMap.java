@@ -15,6 +15,8 @@ import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.ChorusFlowerBlock;
 import net.minecraft.block.DaylightDetectorBlock;
 import net.minecraft.block.DoorBlock;
+import net.minecraft.block.EnchantingTableBlock;
+import net.minecraft.block.EnderChestBlock;
 import net.minecraft.block.FarmlandBlock;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.JukeboxBlock;
@@ -69,6 +71,10 @@ public class BlockToPermissionMap {
             if (block instanceof BellBlock || block instanceof CampfireBlock
                     || block instanceof TntBlock || block instanceof ChorusFlowerBlock)
                 blockToPermission.put(block, PermissionRegistry.PROJECTILES);
+            if (block instanceof EnderChestBlock)
+                blockToPermission.put(block, PermissionRegistry.ENDERCHEST);
+            if (block instanceof EnchantingTableBlock)
+                blockToPermission.put(block, PermissionRegistry.ENCHANTMENTTABLE);
         }
     }
 

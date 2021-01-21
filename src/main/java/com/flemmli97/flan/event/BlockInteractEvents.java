@@ -112,19 +112,18 @@ public class BlockInteractEvents {
         if (world.isClient)
             return false;
         ServerPlayerEntity player = null;
-        if(entity instanceof ServerPlayerEntity)
+        if (entity instanceof ServerPlayerEntity)
             player = (ServerPlayerEntity) entity;
-        else if(entity instanceof ProjectileEntity) {
+        else if (entity instanceof ProjectileEntity) {
             Entity owner = ((ProjectileEntity) entity).getOwner();
-            if(owner instanceof ServerPlayerEntity)
+            if (owner instanceof ServerPlayerEntity)
+                player = (ServerPlayerEntity) owner;
+        } else if (entity instanceof ItemEntity) {
+            Entity owner = ((ServerWorld) world).getEntity(((ItemEntity) entity).getThrower());
+            if (owner instanceof ServerPlayerEntity)
                 player = (ServerPlayerEntity) owner;
         }
-        else if(entity instanceof ItemEntity) {
-            Entity owner = ((ServerWorld)world).getEntity(((ItemEntity) entity).getThrower());
-            if(owner instanceof ServerPlayerEntity)
-                player = (ServerPlayerEntity) owner;
-        }
-        if(player == null)
+        if (player == null)
             return false;
         ClaimPermission perm = BlockToPermissionMap.getFromBlock(state.getBlock());
         if (perm == null)

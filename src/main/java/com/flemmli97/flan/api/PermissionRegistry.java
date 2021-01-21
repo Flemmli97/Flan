@@ -30,7 +30,7 @@ public class PermissionRegistry {
     public static ClaimPermission EDITPERMS = register(new ClaimPermission("EDITPERMS", () -> new ItemStack(Items.COMMAND_BLOCK), "Gives permission to change the claims permissions"));
     public static ClaimPermission BREAK = register(new ClaimPermission("BREAK", () -> new ItemStack(Items.DIAMOND_PICKAXE), "Permission to break blocks in the claim"));
     public static ClaimPermission PLACE = register(new ClaimPermission("PLACE", () -> new ItemStack(Items.GRASS_BLOCK), "Permission to place blocks in the claim"));
-    public static ClaimPermission OPENCONTAINER = register(new ClaimPermission("OPENCONTAINER", () -> new ItemStack(Items.CHEST), "Permission to open containers" ,"(chest, furnace etc.)"));
+    public static ClaimPermission OPENCONTAINER = register(new ClaimPermission("OPENCONTAINER", () -> new ItemStack(Items.CHEST), "Permission to open containers", "(chest, furnace etc.)"));
     public static ClaimPermission ANVIL = register(new ClaimPermission("ANVIL", () -> new ItemStack(Items.ANVIL), "Permission to use anvils"));
     public static ClaimPermission BED = register(new ClaimPermission("BED", () -> new ItemStack(Items.RED_BED), "Permission to use beds"));
     public static ClaimPermission BEACON = register(new ClaimPermission("BEACON", () -> new ItemStack(Items.BEACON), "Permission to use beacons"));
@@ -42,6 +42,8 @@ public class PermissionRegistry {
     public static ClaimPermission NOTEBLOCK = register(new ClaimPermission("NOTEBLOCK", () -> new ItemStack(Items.NOTE_BLOCK), "Permission to change noteblocks"));
     public static ClaimPermission REDSTONE = register(new ClaimPermission("REDSTONE", () -> new ItemStack(Items.REDSTONE), "Permission to change redstone components"));
     public static ClaimPermission JUKEBOX = register(new ClaimPermission("JUKEBOX", () -> new ItemStack(Items.JUKEBOX), "Permission to insert/take music discs"));
+    public static ClaimPermission ENDERCHEST = register(new ClaimPermission("ENDERCHEST", () -> new ItemStack(Items.ENDER_CHEST), "Permission to use enderchests"));
+    public static ClaimPermission ENCHANTMENTTABLE = register(new ClaimPermission("ENCHANTMENT", () -> new ItemStack(Items.ENCHANTING_TABLE), "Permission to use enchanting tables"));
     public static ClaimPermission ITEMFRAMEROTATE = register(new ClaimPermission("ITEMFRAMEROTATE", () -> new ItemStack(Items.ITEM_FRAME), "Permission to rotate items in item frames"));
     public static ClaimPermission LECTERNTAKE = register(new ClaimPermission("LECTERNTAKE", () -> new ItemStack(Items.LECTERN), "Permission to change books in a lectern"));
     public static ClaimPermission ENDCRYSTALPLACE = register(new ClaimPermission("ENDCRYSTALPLACE", () -> new ItemStack(Items.END_CRYSTAL), "Permission to place end crystals"));
@@ -64,6 +66,8 @@ public class PermissionRegistry {
     public static ClaimPermission EXPLOSIONS = global(new ClaimPermission("EXPLOSIONS", () -> new ItemStack(Items.TNT), "Toggle explosions in claim"));
     public static ClaimPermission WITHER = global(new ClaimPermission("WITHER", () -> new ItemStack(Items.WITHER_SKELETON_SKULL), "Toggle wither breaking blocks in claim"));
     public static ClaimPermission FIRESPREAD = global(new ClaimPermission("FIRESPREAD", () -> new ItemStack(Items.BLAZE_POWDER), "Toggle firespread in claim"));
+    public static ClaimPermission WATERBORDER = global(new ClaimPermission("WATERBORDER", () -> new ItemStack(Items.WATER_BUCKET), "Toggle water crossing claim borders"));
+    public static ClaimPermission PISTONBORDER = global(new ClaimPermission("PISTONBORDER", () -> new ItemStack(Items.PISTON), "Toggle piston pull/push across claim borders"));
     public static ClaimPermission MOBSPAWN = global(new ClaimPermission("MOBSPAWN", () -> new ItemStack(Items.ZOMBIE_SPAWN_EGG), "Prevent mobspawn in claim"));
 
     private static ClaimPermission register(ClaimPermission perm) {

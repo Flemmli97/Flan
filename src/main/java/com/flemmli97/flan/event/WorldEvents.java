@@ -5,7 +5,6 @@ import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.IPermissionContainer;
 import com.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -28,23 +27,23 @@ public class WorldEvents {
     }
 
     public static boolean pistonCanPush(BlockState state, World world, BlockPos blockPos, Direction direction, Direction pistonDir) {
-        if (world.isClient || direction == Direction.UP || direction == Direction.DOWN)
+        if (world.isClient || state.isAir())
             return true;
-        boolean empty = state.isAir() || state.getPistonBehavior() == PistonBehavior.DESTROY;
         BlockPos dirPos = blockPos.offset(direction);
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
         IPermissionContainer from = storage.getForPermissionCheck(blockPos);
         IPermissionContainer to = storage.getForPermissionCheck(dirPos);
         boolean flag = true;
-        if (!empty) {
-            if ((from != null && !from.equals(to)) || (from == null && to != null))
-                flag = false;
-        }
-        if (from != null && from.equals(to)) {
-            IPermissionContainer opp = storage.getForPermissionCheck(blockPos.offset(direction.getOpposite()));
-            flag = from.equals(opp);
-        }
+        if (from.equals(to)) {
+            BlockPos oppPoos = blockPos.offset(direction.getOpposite());
+            IPermissionContainer opp = storage.getForPermissionCheck(oppPoos);
+            if (!from.equals(opp))
+                flag = from.canInteract(null, PermissionRegistry.PISTONBORDER, oppPoos);
+        } else
+            flag = from.canInteract(null, PermissionRegistry.PISTONBORDER, blockPos) && to.canInteract(null, PermissionRegistry.PISTONBORDER, dirPos);
         if (!flag) {
+            //Idk enough about piston behaviour to update more blocks when slime is involved.
+            //Ghost blocks appear when trying to push slime contraptions across border
             world.updateListeners(blockPos, state, state, 20);
             BlockState toState = world.getBlockState(dirPos);
             world.updateListeners(dirPos, toState, toState, 20);
@@ -58,10 +57,7 @@ public class WorldEvents {
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
         IPermissionContainer from = storage.getForPermissionCheck(blockPos);
         IPermissionContainer to = storage.getForPermissionCheck(blockPos.offset(direction));
-        boolean fl = from == null && to == null;
-        if (from != null)
-            fl = from.equals(to);
-        return fl;
+        return from.equals(to) || to.canInteract(null, PermissionRegistry.WATERBORDER, blockPos);
     }
 
     public static boolean canStartRaid(ServerPlayerEntity player) {
