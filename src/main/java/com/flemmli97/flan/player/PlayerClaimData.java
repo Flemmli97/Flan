@@ -213,6 +213,11 @@ public class PlayerClaimData {
         this.actionCooldown--;
     }
 
+    public void clone(PlayerClaimData data) {
+        this.claimBlocks = data.claimBlocks;
+        this.additionalClaimBlocks = data.additionalClaimBlocks;
+    }
+
     public void save(MinecraftServer server) {
         Flan.log("Saving player data for player {} with uuid {}", this.player.getName(), this.player.getUuid());
         File dir = new File(server.getSavePath(WorldSavePath.PLAYERDATA).toFile(), "/claimData/");
