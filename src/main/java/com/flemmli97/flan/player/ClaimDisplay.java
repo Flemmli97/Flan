@@ -69,12 +69,16 @@ public class ClaimDisplay {
             };
         }
         for (int[] pos : this.poss) {
+        	if (pos[2] == -1)
+        		continue;
             if (pos[1] != pos[2])
                 player.networkHandler.sendPacket(new ParticleS2CPacket(this.corner, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
             player.networkHandler.sendPacket(new ParticleS2CPacket(this.corner, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
         }
         if (this.middlePoss != null)
             for (int[] pos : this.middlePoss) {
+            	if (pos[2] == -1)
+            		continue;
                 if (pos[1] != pos[2])
                     player.networkHandler.sendPacket(new ParticleS2CPacket(this.middle, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
                 player.networkHandler.sendPacket(new ParticleS2CPacket(this.middle, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
@@ -144,6 +148,11 @@ public class ClaimDisplay {
             while (state.getMaterial().isReplaceable()) {
                 pos = pos.down();
                 state = world.getBlockState(pos);
+                // check if void is reached
+                if(pos.getY() == -1 && !world.getBlockState(pos.up()).getMaterial().isLiquid())
+                	return new int[]{-1, -1};
+                else if(pos.getY() == -1)
+                	break;
             }
             pos = pos.up();
             state = world.getBlockState(pos);
