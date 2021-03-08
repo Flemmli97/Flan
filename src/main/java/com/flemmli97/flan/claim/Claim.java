@@ -1,6 +1,7 @@
 package com.flemmli97.flan.claim;
 
 import com.flemmli97.flan.api.ClaimPermission;
+import com.flemmli97.flan.api.ClaimPermissionEvent;
 import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.player.PlayerClaimData;
@@ -17,6 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 
@@ -181,6 +183,9 @@ public class Claim implements IPermissionContainer {
     }
 
     public boolean canInteract(ServerPlayerEntity player, ClaimPermission perm, BlockPos pos, boolean message) {
+        ActionResult res = ClaimPermissionEvent.CHECK.invoker().check(player, perm, pos);
+        if (res != ActionResult.PASS)
+            return res != ActionResult.FAIL;
         if (perm != null) {
             ClaimPermission.PermissionFlag flag = perm.test.test(this, player, pos);
             if (flag != ClaimPermission.PermissionFlag.PASS) {
