@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class Config {
@@ -30,6 +32,7 @@ public class Config {
     public int minClaimsize = 100;
     public int defaultClaimDepth = 10;
     public boolean lenientBlockEntityCheck;
+    public List<String> ignoredBlocks = new ArrayList<>();
 
     public String[] blacklistedWorlds = new String[0];
     public boolean worldWhitelist;
@@ -72,6 +75,9 @@ public class Config {
             this.minClaimsize = ConfigHandler.fromJson(obj, "minClaimsize", this.minClaimsize);
             this.defaultClaimDepth = ConfigHandler.fromJson(obj, "defaultClaimDepth", this.defaultClaimDepth);
             this.lenientBlockEntityCheck = ConfigHandler.fromJson(obj, "lenientBlockEntityCheck", this.lenientBlockEntityCheck);
+            this.ignoredBlocks.clear();
+            JsonArray blockCheck = ConfigHandler.arryFromJson(obj, "ignoredBlocks");
+            blockCheck.forEach(e -> this.ignoredBlocks.add(e.getAsString()));
             JsonArray arr = ConfigHandler.arryFromJson(obj, "blacklistedWorlds");
             this.blacklistedWorlds = new String[arr.size()];
             for (int i = 0; i < arr.size(); i++)
@@ -114,10 +120,13 @@ public class Config {
         obj.addProperty("ticksForNextBlock", this.ticksForNextBlock);
         obj.addProperty("minClaimsize", this.minClaimsize);
         obj.addProperty("defaultClaimDepth", this.defaultClaimDepth);
+        JsonArray blocks = new JsonArray();
+        this.ignoredBlocks.forEach(blocks::add);
+        obj.add("ignoredBlocks", blocks);
         obj.addProperty("lenientBlockEntityCheck", this.lenientBlockEntityCheck);
         JsonArray arr = new JsonArray();
-        for (int i = 0; i < this.blacklistedWorlds.length; i++)
-            arr.add(this.blacklistedWorlds[i]);
+        for (String blacklistedWorld : this.blacklistedWorlds)
+            arr.add(blacklistedWorld);
         obj.add("blacklistedWorlds", arr);
         obj.addProperty("worldWhitelist", this.worldWhitelist);
         obj.addProperty("allowMobSpawnToggle", this.allowMobSpawnToggle);

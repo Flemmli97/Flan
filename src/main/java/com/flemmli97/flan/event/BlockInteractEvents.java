@@ -27,8 +27,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class BlockInteractEvents {
@@ -40,6 +42,9 @@ public class BlockInteractEvents {
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
+            Identifier id = Registry.BLOCK.getId(state.getBlock());
+            if (ConfigHandler.config.ignoredBlocks.contains(id.toString()))
+                return true;
             if (!claim.canInteract(player, PermissionRegistry.BREAK, pos, true)) {
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                 return false;
@@ -69,6 +74,9 @@ public class BlockInteractEvents {
             boolean cancelBlockInteract = player.shouldCancelInteraction() && emptyHand;
             if (!cancelBlockInteract) {
                 BlockState state = world.getBlockState(hitResult.getBlockPos());
+                Identifier id = Registry.BLOCK.getId(state.getBlock());
+                if (ConfigHandler.config.ignoredBlocks.contains(id.toString()))
+                    return ActionResult.PASS;
                 ClaimPermission perm = BlockToPermissionMap.getFromBlock(state.getBlock());
                 //Pressureplate handled elsewhere
                 if (perm != null && perm != PermissionRegistry.PRESSUREPLATE) {
