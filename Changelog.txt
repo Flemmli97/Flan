@@ -1,3 +1,9 @@
+Flan 1.2.3
+======================
+- Fabric Permission API support for commands and claim creation. See wiki for permission nodes
+- Add an ignore list for blocks to be ignored (For mods with gravestones etc.)
+- Add a permission check event for mods
+
 Flan 1.2.2
 ======================
 - Increase particle size #25
