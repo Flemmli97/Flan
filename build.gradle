@@ -12,6 +12,10 @@ group = project.maven_group
 
 repositories {
 	mavenCentral()
+	maven {
+		name = 'Fabric-Permission-API'
+		url 'https://oss.sonatype.org/content/repositories/snapshots'
+	}
 }
 
 dependencies {
@@ -26,6 +30,7 @@ dependencies {
 	compile group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 	include group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
+	modImplementation 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
 }

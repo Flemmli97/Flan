@@ -15,6 +15,7 @@ import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +23,8 @@ import org.apache.logging.log4j.Logger;
 public class Flan implements ModInitializer {
 
     public static final Logger logger = LogManager.getLogger("flan");
+
+    public static boolean permissionAPI;
 
     @Override
     public void onInitialize() {
@@ -35,6 +38,8 @@ public class Flan implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTING.register(this::lockRegistry);
 
         CommandRegistrationCallback.EVENT.register(CommandClaim::register);
+
+        permissionAPI = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
     }
 
     public void lockRegistry(MinecraftServer server) {
