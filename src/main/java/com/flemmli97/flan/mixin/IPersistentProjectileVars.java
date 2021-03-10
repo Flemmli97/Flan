@@ -1,5 +1,6 @@
 package com.flemmli97.flan.mixin;
 
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.sound.SoundEvent;
@@ -21,4 +22,10 @@ public interface IPersistentProjectileVars {
 
     @Invoker("clearPiercingStatus")
     void resetPiercingStatus();
+
+    @Accessor("piercedEntities")
+    IntOpenHashSet getPiercedEntities();
+
+    @Accessor("piercedEntities")
+    void setPiercedEntities(IntOpenHashSet set);
 }

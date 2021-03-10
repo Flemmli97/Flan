@@ -6,6 +6,7 @@ import com.flemmli97.flan.claim.BlockToPermissionMap;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.IPermissionContainer;
 import com.flemmli97.flan.mixin.IPersistentProjectileVars;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -123,7 +124,7 @@ public class EntityInteractEvents {
                         pers.setShotFromCrossbow(false);
                         ((IPersistentProjectileVars) pers).resetPiercingStatus();
                     }
-                    //find a way to properly update chorus fruit break on hit
+                    //TODO: find a way to properly update chorus fruit break on hit
                     //player.getServer().send(new ServerTask(player.getServer().getTicks()+2, ()->player.world.updateListeners(pos, state, state, 2)));
                 }
                 return flag;
@@ -133,7 +134,18 @@ public class EntityInteractEvents {
                     IPermissionContainer claim = storage.getForPermissionCheck(proj.getBlockPos());
                     return claim.canInteract(player, PermissionRegistry.ENDERPEARL, proj.getBlockPos(), true);
                 }
-                return attackSimple(player, ((EntityHitResult) res).getEntity(), true) != ActionResult.PASS;
+                Entity hit = ((EntityHitResult) res).getEntity();
+                boolean fail = attackSimple(player, hit, true) != ActionResult.PASS;
+                if(fail && proj instanceof PersistentProjectileEntity && ((PersistentProjectileEntity) proj).getPierceLevel() > 0) {
+                    PersistentProjectileEntity pers = (PersistentProjectileEntity) proj;
+                    IntOpenHashSet pierced = ((IPersistentProjectileVars) pers).getPiercedEntities();
+                    if(pierced == null)
+                        pierced = new IntOpenHashSet(5);
+                    pierced.add(hit.getEntityId());
+                    ((IPersistentProjectileVars) pers).setPiercedEntities(pierced);
+                    pers.setPierceLevel((byte) (pers.getPierceLevel() +1));
+                }
+                return fail;
             }
         }
         return false;
