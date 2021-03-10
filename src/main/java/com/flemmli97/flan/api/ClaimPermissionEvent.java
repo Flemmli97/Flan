@@ -1,6 +1,5 @@
 package com.flemmli97.flan.api;
 
-import com.sun.istack.internal.Nullable;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -31,5 +30,5 @@ public interface ClaimPermissionEvent {
      * @param pos        The block pos where the action is occuring
      * @return ActionResult#PASS to do nothing. ActionResult#FAIL to prevent the action. Else to allow the action
      */
-    ActionResult check(@Nullable ServerPlayerEntity player, ClaimPermission permission, BlockPos pos);
+    ActionResult check(ServerPlayerEntity player, ClaimPermission permission, BlockPos pos);
 }
