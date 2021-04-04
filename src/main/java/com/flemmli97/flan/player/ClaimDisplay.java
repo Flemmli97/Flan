@@ -11,6 +11,7 @@ import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.Set;
@@ -141,7 +142,7 @@ public class ClaimDisplay {
         if (state.getMaterial().isReplaceable()) {
             pos = pos.down();
             state = world.getBlockState(pos);
-            while (state.getMaterial().isReplaceable()) {
+            while (state.getMaterial().isReplaceable() && !World.isHeightInvalid(pos)) {
                 pos = pos.down();
                 state = world.getBlockState(pos);
             }
