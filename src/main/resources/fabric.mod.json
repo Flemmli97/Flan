@@ -12,7 +12,7 @@
     "sources": "https://github.com/Flemmli97/Flan"
   },
   "license": "ARR",
-  "icon": "assets/modid/icon.png",
+  "icon": "assets/flan/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
