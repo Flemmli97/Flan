@@ -136,14 +136,14 @@ public class EntityInteractEvents {
                 }
                 Entity hit = ((EntityHitResult) res).getEntity();
                 boolean fail = attackSimple(player, hit, true) != ActionResult.PASS;
-                if(fail && proj instanceof PersistentProjectileEntity && ((PersistentProjectileEntity) proj).getPierceLevel() > 0) {
+                if (fail && proj instanceof PersistentProjectileEntity && ((PersistentProjectileEntity) proj).getPierceLevel() > 0) {
                     PersistentProjectileEntity pers = (PersistentProjectileEntity) proj;
                     IntOpenHashSet pierced = ((IPersistentProjectileVars) pers).getPiercedEntities();
-                    if(pierced == null)
+                    if (pierced == null)
                         pierced = new IntOpenHashSet(5);
                     pierced.add(hit.getEntityId());
                     ((IPersistentProjectileVars) pers).setPiercedEntities(pierced);
-                    pers.setPierceLevel((byte) (pers.getPierceLevel() +1));
+                    pers.setPierceLevel((byte) (pers.getPierceLevel() + 1));
                 }
                 return fail;
             }

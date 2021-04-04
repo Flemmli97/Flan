@@ -28,6 +28,8 @@ public class LangConfig {
     public String onlyOnePlayer = "Only one player can be used as argument";
     public String ownerTransferSuccess = "New Claimowner now: %s";
     public String ownerTransferFail = "Only the owner may transfer claims";
+    public String ownerTransferNoBlocks = "The new owner doesnt have enough claimblocks";
+    public String ownerTransferNoBlocksAdmin = "You can ignore this by switching to admin mode";
 
     public String noPermission = "You don't have the required permissions to do that here!";
     public String noPermissionSimple = "Sorry you can't do that here!";

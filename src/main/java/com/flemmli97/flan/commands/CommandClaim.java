@@ -36,8 +36,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -126,6 +126,25 @@ public class CommandClaim {
         Claim claim = storage.getClaimAt(player.getBlockPos());
         if (claim == null) {
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noClaim, Formatting.RED), false);
+            return 0;
+        }
+        PlayerClaimData data = PlayerClaimData.get(player);
+        boolean enoughBlocks = true;
+        if (!data.isAdminIgnoreClaim()) {
+            MinecraftServer server = context.getSource().getMinecraftServer();
+            ServerPlayerEntity newOwner = server.getPlayerManager().getPlayer(prof.getId());
+            if (newOwner != null) {
+                PlayerClaimData newData = PlayerClaimData.get(newOwner);
+                enoughBlocks = newData.canUseClaimBlocks(claim.getPlane());
+            } else {
+                OfflinePlayerData newData = new OfflinePlayerData(server, prof.getId());
+                enoughBlocks = ConfigHandler.config.maxClaimBlocks == -1 || newData.getUsedClaimBlocks(server) + claim.getPlane() < newData.claimBlocks + newData.additionalClaimBlocks;
+            }
+        }
+        if (!enoughBlocks) {
+            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.ownerTransferNoBlocks, Formatting.RED), false);
+            if (CommandPermission.perm(context.getSource(), CommandPermission.cmdAdminMode, true))
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.ownerTransferNoBlocksAdmin, Formatting.RED), false);
             return 0;
         }
         if (!storage.transferOwner(claim, player, prof.getId())) {
