@@ -37,6 +37,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -495,14 +496,15 @@ public class CommandClaim {
         ServerWorld world = context.getSource().getWorld();
         Claim claim = ClaimStorage.get(world).getClaimAt(new BlockPos(context.getSource().getPosition()));
         boolean admin = claim != null && claim.isAdminClaim();
+        List<String> allowedPerms = new ArrayList<>();
         for (ClaimPermission perm : PermissionRegistry.getPerms()) {
             if (!admin && ConfigHandler.config.globallyDefined(world, perm)) {
                 continue;
             }
             if (!group || !PermissionRegistry.globalPerms().contains(perm))
-                build.suggest(perm.id);
+                allowedPerms.add(perm.id);
         }
-        return build.buildFuture();
+        return CommandSource.suggestMatching(allowedPerms, build);
     }
 
     private static int editGlobalPerm(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
