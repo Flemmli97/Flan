@@ -6,9 +6,11 @@ import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.IPermissionContainer;
 import com.flemmli97.flan.claim.ObjectToPermissionMap;
 import com.flemmli97.flan.mixin.IPersistentProjectileVars;
+import com.flemmli97.flan.player.IOwnedItem;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -27,11 +29,14 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.entity.vehicle.StorageMinecartEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -195,6 +200,43 @@ public class EntityInteractEvents {
                 return !claim.canInteract((ServerPlayerEntity) player, PermissionRegistry.XP, pos, false);
         }
         return false;
+    }
+
+    public static boolean canCollideWith(PlayerEntity player, Entity entity) {
+        if (player instanceof ServerPlayerEntity) {
+            if (entity instanceof ItemEntity) {
+                if (player.getUuid().equals(((IOwnedItem) entity).getPlayerOrigin()))
+                    return true;
+                ClaimStorage storage = ClaimStorage.get((ServerWorld) player.world);
+                BlockPos pos = player.getBlockPos();
+                IPermissionContainer claim = storage.getForPermissionCheck(pos);
+                if (claim != null)
+                    return claim.canInteract((ServerPlayerEntity) player, PermissionRegistry.PICKUP, pos, false);
+            }
+        }
+        return true;
+    }
+
+    public static boolean canDropItem(PlayerEntity player, ItemStack stack) {
+        if (!player.isDead() && player instanceof ServerPlayerEntity) {
+            ClaimStorage storage = ClaimStorage.get((ServerWorld) player.world);
+            BlockPos pos = player.getBlockPos();
+            IPermissionContainer claim = storage.getForPermissionCheck(pos);
+            boolean allow = true;
+            if (claim != null)
+                allow = claim.canInteract((ServerPlayerEntity) player, PermissionRegistry.DROP, pos, false);
+            if (!allow) {
+                player.inventory.insertStack(stack);
+                DefaultedList<ItemStack> stacks = DefaultedList.of();
+                for (int j = 0; j < player.currentScreenHandler.slots.size(); ++j) {
+                    ItemStack itemStack2 = player.currentScreenHandler.slots.get(j).getStack();
+                    stacks.add(itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2);
+                }
+                ((ServerPlayerEntity) player).networkHandler.sendPacket(new InventoryS2CPacket(player.currentScreenHandler.syncId, stacks));
+            }
+            return allow;
+        }
+        return true;
     }
 
     public static boolean witherCanDestroy(WitherEntity wither) {

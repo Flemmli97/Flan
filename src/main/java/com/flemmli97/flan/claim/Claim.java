@@ -71,6 +71,8 @@ public class Claim implements IPermissionContainer {
         this.owner = creator;
         this.world = world;
         this.setDirty(true);
+        PermissionRegistry.getPerms().stream().filter(perm -> perm.defaultVal).forEach(perm -> this.globalPerm.put(perm, true));
+        System.out.println(this.globalPerm);
     }
 
     public static Claim fromJson(JsonObject obj, UUID owner, ServerWorld world) {

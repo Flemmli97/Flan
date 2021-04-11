@@ -21,7 +21,9 @@
     "PistonMixin",
     "RaidManagerMixin",
     "FireBlockMixin",
-    "SpawnHelperMixin"
+    "SpawnHelperMixin",
+    "PlayerMixin",
+    "ItemEntityMixin"
   ],
   "server": [
   ],

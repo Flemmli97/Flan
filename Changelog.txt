@@ -3,6 +3,11 @@ Flan 1.2.5
 - Fix inventory desync after closing gui
 - Sync itemstack when failing to place blocks
 - Fix various thrown entitys to not abide by claim protection
+- Add 2 new permissions:
+    - Item drop permission: If set to false prevents items being dropped (players only)
+    - Item pickup permission: If set to false prevents items from being picked up. Player thrown items
+      (Death included) gets a special tag so that the one who threw them can always pick it up.
+- Change some permissions to default true: Enderchest, Enchanting table, Item drop, Item pickup
 
 Flan 1.2.4
 ======================

@@ -13,16 +13,22 @@ public class ClaimPermission {
     public String[] desc;
     public final String id;
     public final ClaimTest test;
+    public final boolean defaultVal;
 
     public ClaimPermission(String id, Supplier<ItemStack> guiItem, String... defaultDescription) {
-        this(id, guiItem, pass, defaultDescription);
+        this(id, guiItem, false, pass, defaultDescription);
     }
 
-    public ClaimPermission(String id, Supplier<ItemStack> guiItem, ClaimTest test, String... defaultDescription) {
+    public ClaimPermission(String id, Supplier<ItemStack> guiItem, boolean defaultVal, String... defaultDescription) {
+        this(id, guiItem, defaultVal, pass, defaultDescription);
+    }
+
+    public ClaimPermission(String id, Supplier<ItemStack> guiItem, boolean defaultVal, ClaimTest test, String... defaultDescription) {
         this.id = id;
         this.guiItem = guiItem;
         this.desc = defaultDescription;
         this.test = test;
+        this.defaultVal = defaultVal;
     }
 
     public ItemStack getItem() {
