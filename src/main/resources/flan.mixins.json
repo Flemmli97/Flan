@@ -13,7 +13,6 @@
     "TurtleEggMixin",
     "XpEntityMixin",
     "WitherMixin",
-    "EnderPearlEntityMixin",
     "IPersistentProjectileVars",
     "LivingEntityMixin",
     "ItemStackMixin",

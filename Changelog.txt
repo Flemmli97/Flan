@@ -1,3 +1,9 @@
+Flan 1.2.5
+======================
+- Fix inventory desync after closing gui
+- Sync itemstack when failing to place blocks
+- Fix various thrown entitys to not abide by claim protection
+
 Flan 1.2.4
 ======================
 - Fix crash in void worlds #39

@@ -2,9 +2,9 @@ package com.flemmli97.flan.event;
 
 import com.flemmli97.flan.api.ClaimPermission;
 import com.flemmli97.flan.api.PermissionRegistry;
-import com.flemmli97.flan.claim.BlockToPermissionMap;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.IPermissionContainer;
+import com.flemmli97.flan.claim.ObjectToPermissionMap;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.gui.LockedLecternScreenHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
@@ -77,7 +77,7 @@ public class BlockInteractEvents {
                 Identifier id = Registry.BLOCK.getId(state.getBlock());
                 if (ConfigHandler.config.ignoredBlocks.contains(id.toString()))
                     return ActionResult.PASS;
-                ClaimPermission perm = BlockToPermissionMap.getFromBlock(state.getBlock());
+                ClaimPermission perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
                 //Pressureplate handled elsewhere
                 if (perm != null && perm != PermissionRegistry.PRESSUREPLATE) {
                     if (claim.canInteract(player, perm, hitResult.getBlockPos(), true))
@@ -133,7 +133,7 @@ public class BlockInteractEvents {
         }
         if (player == null)
             return false;
-        ClaimPermission perm = BlockToPermissionMap.getFromBlock(state.getBlock());
+        ClaimPermission perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
         if (perm == null)
             return false;
         if (perm != PermissionRegistry.PRESSUREPLATE && perm != PermissionRegistry.PORTAL)
@@ -149,7 +149,7 @@ public class BlockInteractEvents {
         if (entity.world.isClient)
             return false;
         if (entity instanceof ServerPlayerEntity) {
-            ClaimPermission perm = BlockToPermissionMap.getFromBlock(landedState.getBlock());
+            ClaimPermission perm = ObjectToPermissionMap.getFromBlock(landedState.getBlock());
             if (perm != PermissionRegistry.TRAMPLE)
                 return false;
             ClaimStorage storage = ClaimStorage.get((ServerWorld) entity.world);
@@ -160,7 +160,7 @@ public class BlockInteractEvents {
         } else if (entity instanceof ProjectileEntity) {
             Entity owner = ((ProjectileEntity) entity).getOwner();
             if (owner instanceof ServerPlayerEntity) {
-                ClaimPermission perm = BlockToPermissionMap.getFromBlock(landedState.getBlock());
+                ClaimPermission perm = ObjectToPermissionMap.getFromBlock(landedState.getBlock());
                 if (perm != PermissionRegistry.TRAMPLE)
                     return false;
                 ClaimStorage storage = ClaimStorage.get((ServerWorld) entity.world);

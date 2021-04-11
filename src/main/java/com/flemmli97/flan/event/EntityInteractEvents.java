@@ -2,9 +2,9 @@ package com.flemmli97.flan.event;
 
 import com.flemmli97.flan.api.ClaimPermission;
 import com.flemmli97.flan.api.PermissionRegistry;
-import com.flemmli97.flan.claim.BlockToPermissionMap;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.IPermissionContainer;
+import com.flemmli97.flan.claim.ObjectToPermissionMap;
 import com.flemmli97.flan.mixin.IPersistentProjectileVars;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.block.BlockState;
@@ -20,7 +20,9 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.thrown.EggEntity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
+import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
@@ -97,9 +99,13 @@ public class EntityInteractEvents {
                 BlockHitResult blockRes = (BlockHitResult) res;
                 BlockPos pos = blockRes.getBlockPos();
                 BlockState state = proj.world.getBlockState(pos);
-                ClaimPermission perm = BlockToPermissionMap.getFromBlock(state.getBlock());
+                ClaimPermission perm;
                 if (proj instanceof EnderPearlEntity)
                     perm = PermissionRegistry.ENDERPEARL;
+                else if (proj instanceof EggEntity || proj instanceof PotionEntity)
+                    perm = PermissionRegistry.PROJECTILES;
+                else
+                    perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
                 if (perm != PermissionRegistry.ENDERPEARL && perm != PermissionRegistry.TARGETBLOCK && perm != PermissionRegistry.PROJECTILES)
                     return false;
                 ClaimStorage storage = ClaimStorage.get((ServerWorld) proj.world);

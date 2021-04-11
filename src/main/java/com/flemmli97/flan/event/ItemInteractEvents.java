@@ -1,9 +1,11 @@
 package com.flemmli97.flan.event;
 
+import com.flemmli97.flan.api.ClaimPermission;
 import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.IPermissionContainer;
+import com.flemmli97.flan.claim.ObjectToPermissionMap;
 import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.commands.CommandPermission;
 import com.flemmli97.flan.config.ConfigHandler;
@@ -15,13 +17,13 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -59,15 +61,15 @@ public class ItemInteractEvents {
             }
             return TypedActionResult.pass(stack);
         }
+
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
         BlockPos pos = player.getBlockPos();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim == null)
             return TypedActionResult.pass(stack);
-        if (stack.getItem() == Items.ENDER_PEARL)
-            return claim.canInteract(player, PermissionRegistry.ENDERPEARL, pos, true) ? TypedActionResult.pass(stack) : TypedActionResult.fail(stack);
-        if (stack.getItem() instanceof BucketItem)
-            return claim.canInteract(player, PermissionRegistry.BUCKET, pos, true) ? TypedActionResult.pass(stack) : TypedActionResult.fail(stack);
+        ClaimPermission perm = ObjectToPermissionMap.getFromItem(stack.getItem());
+        if (perm != null)
+            return claim.canInteract(player, perm, pos, true) ? TypedActionResult.pass(stack) : TypedActionResult.fail(stack);
         return TypedActionResult.pass(stack);
     }
 
@@ -86,8 +88,9 @@ public class ItemInteractEvents {
             return ActionResult.PASS;
         boolean actualInClaim = !(claim instanceof Claim) || placePos.getY() >= ((Claim) claim).getDimensions()[4];
         ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
-        if (context.getStack().getItem() == Items.END_CRYSTAL) {
-            if (claim.canInteract(player, PermissionRegistry.ENDCRYSTALPLACE, placePos, false))
+        ClaimPermission perm = ObjectToPermissionMap.getFromItem(context.getStack().getItem());
+        if (perm != null) {
+            if (claim.canInteract(player, perm, placePos, false))
                 return ActionResult.PASS;
             else if (actualInClaim) {
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
@@ -104,9 +107,18 @@ public class ItemInteractEvents {
             BlockState other = context.getWorld().getBlockState(placePos.up());
             player.networkHandler.sendPacket(new BlockUpdateS2CPacket(placePos.up(), other));
             PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+            updateHeldItem(player);
             return ActionResult.FAIL;
         }
         return ActionResult.PASS;
+    }
+
+    /**
+     * -2 == Main inventory update
+     */
+    private static void updateHeldItem(ServerPlayerEntity player) {
+        player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, player.inventory.selectedSlot, player.inventory.getMainHandStack()));
+        player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 40, player.inventory.getStack(40)));
     }
 
     private static boolean cantClaimInWorld(ServerWorld world) {
