@@ -76,18 +76,19 @@ public abstract class ServerOnlyScreenHandler extends ScreenHandler {
         if (this.isRightSlot(i))
             this.handleSlotClicked((ServerPlayerEntity) playerEntity, i, slot, j);
         this.sendContentUpdates();
-        return ItemStack.EMPTY;
+        ((ServerPlayerEntity) playerEntity).updateCursorStack();
+        return this.inventory.getStack(i);
     }
 
     @Override
     public ItemStack transferSlot(PlayerEntity player, int index) {
-        if (!(player instanceof ServerPlayerEntity))
+        if (index < 0)
             return ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
         if (this.isRightSlot(index))
             this.handleSlotClicked((ServerPlayerEntity) player, index, slot, 0);
         this.sendContentUpdates();
-        return ItemStack.EMPTY;
+        return this.inventory.getStack(index);
     }
 
     @Override
@@ -96,18 +97,6 @@ public abstract class ServerOnlyScreenHandler extends ScreenHandler {
             this.listeners.add(listener);
             listener.onHandlerRegistered(this, this.getStacks());
             this.sendContentUpdates();
-        }
-    }
-
-    @Override
-    public void sendContentUpdates() {
-        int j;
-        for (j = 0; j < this.slots.size(); ++j) {
-            ItemStack itemStack = this.slots.get(j).getStack();
-
-            for (ScreenHandlerListener screenHandlerListener : this.listeners) {
-                screenHandlerListener.onSlotUpdate(this, j, itemStack.copy());
-            }
         }
     }
 
