@@ -70,7 +70,8 @@ public class PermissionRegistry {
     public static ClaimPermission FIRESPREAD = global(new ClaimPermission("FIRESPREAD", () -> new ItemStack(Items.BLAZE_POWDER), "Toggle firespread in claim"));
     public static ClaimPermission WATERBORDER = global(new ClaimPermission("WATERBORDER", () -> new ItemStack(Items.WATER_BUCKET), "Toggle water crossing claim borders"));
     public static ClaimPermission PISTONBORDER = global(new ClaimPermission("PISTONBORDER", () -> new ItemStack(Items.PISTON), "Toggle piston pull/push across claim borders"));
-    public static ClaimPermission MOBSPAWN = global(new ClaimPermission("MOBSPAWN", () -> new ItemStack(Items.ZOMBIE_SPAWN_EGG), "Prevent mobspawn in claim"));
+    public static ClaimPermission MOBSPAWN = global(new ClaimPermission("MOBSPAWN", () -> new ItemStack(Items.ZOMBIE_SPAWN_EGG), "Prevent hostile mobspawn in claim"));
+    public static ClaimPermission ANIMALSPAWN = global(new ClaimPermission("MOBSPAWN", () -> new ItemStack(Items.CHICKEN_SPAWN_EGG), "Prevent other spawn in claim"));
 
     private static ClaimPermission register(ClaimPermission perm) {
         if (locked) {
