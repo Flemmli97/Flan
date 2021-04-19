@@ -276,7 +276,7 @@ public class PlayerClaimData {
             reader.close();
             if (obj == null)
                 obj = new JsonObject();
-            int additionalBlocks = obj.get("AdditionalBlocks").getAsInt();
+            int additionalBlocks = ConfigHandler.fromJson(obj, "AdditionalBlocks", 0);
             obj.addProperty("AdditionalBlocks", additionalBlocks + additionalClaimBlocks);
             Flan.debug("Attempting to write following json data {} to file {}", obj, file.getName());
             FileWriter writer = new FileWriter(file);
@@ -286,6 +286,8 @@ public class PlayerClaimData {
             e.printStackTrace();
         }
     }
+
+
 
     private int calculateUsedClaimBlocks() {
         int usedClaimsBlocks = 0;
