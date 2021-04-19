@@ -1,3 +1,9 @@
+Flan 1.2.6
+======================
+- Fix giveClaimBlocks not working for players that never joined the server
+- Add chorus fruit eating permission
+- Fix wither permission not toggable
+
 Flan 1.2.5
 ======================
 - Fix inventory desync after closing gui

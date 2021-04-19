@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(ServerWorld.class)
-public abstract class ServerWorldMixin implements IClaimData {
+public abstract class ServerWorldMixin implements IClaimData<ClaimStorage> {
     @Unique
     private ClaimStorage claimData;
 

@@ -12,9 +12,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-
 @Mixin(ServerPlayerEntity.class)
-public abstract class PlayerClaimMixin implements IClaimData {
+public abstract class PlayerClaimMixin implements IClaimData<PlayerClaimData> {
 
     @Unique
     private PlayerClaimData claimData;

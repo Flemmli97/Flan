@@ -53,7 +53,7 @@ public class ClaimStorage {
     private final GlobalClaim globalClaim;
 
     public static ClaimStorage get(ServerWorld world) {
-        return (ClaimStorage) ((IClaimData) world).getClaimData();
+        return ((IClaimData<ClaimStorage>) world).getClaimData();
     }
 
     public ClaimStorage(MinecraftServer server, ServerWorld world) {

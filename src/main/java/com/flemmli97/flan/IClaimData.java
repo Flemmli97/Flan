@@ -1,6 +1,6 @@
 package com.flemmli97.flan;
 
-public interface IClaimData {
+public interface IClaimData<T> {
 
-    Object getClaimData();
+    T getClaimData();
 }

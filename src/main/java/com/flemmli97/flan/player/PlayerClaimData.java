@@ -56,7 +56,7 @@ public class PlayerClaimData {
     }
 
     public static PlayerClaimData get(PlayerEntity player) {
-        return (PlayerClaimData) ((IClaimData) player).getClaimData();
+        return ((IClaimData<PlayerClaimData>) player).getClaimData();
     }
 
     public int getClaimBlocks() {
@@ -286,7 +286,6 @@ public class PlayerClaimData {
             e.printStackTrace();
         }
     }
-
 
 
     private int calculateUsedClaimBlocks() {

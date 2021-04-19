@@ -1,6 +1,5 @@
 package com.flemmli97.flan.event;
 
-import com.flemmli97.flan.api.ClaimPermission;
 import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.IPermissionContainer;
@@ -8,8 +7,6 @@ import com.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -78,7 +75,7 @@ public class WorldEvents {
         if (!ConfigHandler.config.allowMobSpawnToggle)
             return false;
         IPermissionContainer claim = ClaimStorage.get(world).getForPermissionCheck(entity.getBlockPos());
-        if(entity.getType().getSpawnGroup() == SpawnGroup.MONSTER)
+        if (entity.getType().getSpawnGroup() == SpawnGroup.MONSTER)
             return claim.canInteract(null, PermissionRegistry.MOBSPAWN, entity.getBlockPos());
         return claim.canInteract(null, PermissionRegistry.ANIMALSPAWN, entity.getBlockPos());
     }
