@@ -9,6 +9,8 @@ import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.EnumEditMode;
 import com.flemmli97.flan.player.PlayerClaimData;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.longs.Long2ObjectArrayMap;
@@ -199,13 +201,13 @@ public class ClaimStorage {
         int[] pos = getChunkPos(claim);
         for (int x = pos[0]; x <= pos[1]; x++)
             for (int z = pos[2]; z <= pos[3]; z++) {
-                this.claims.merge(ChunkPos.toLong(x, z), new ArrayList<>(claim), (old, val) -> {
+                this.claims.merge(ChunkPos.toLong(x, z), Lists.newArrayList(claim), (old, val) -> {
                     old.add(claim);
                     return old;
                 });
             }
         this.claimUUIDMap.put(claim.getClaimID(), claim);
-        this.playerClaimMap.merge(claim.getOwner(), new HashSet<>((claim), (old, val) -> {
+        this.playerClaimMap.merge(claim.getOwner(), Sets.newHashSet(claim), (old, val) -> {
             old.add(claim);
             return old;
         });
@@ -220,7 +222,7 @@ public class ClaimStorage {
         });
         this.dirty.add(claim.getOwner());
         claim.transferOwner(newOwner);
-        this.playerClaimMap.merge(claim.getOwner(), new HashSet<>((claim), (old, val) -> {
+        this.playerClaimMap.merge(claim.getOwner(), Sets.newHashSet(claim), (old, val) -> {
             old.add(claim);
             return old;
         });
@@ -363,7 +365,7 @@ public class ClaimStorage {
                     Map<String, Object> values = yml.load(reader);
                     if (!values.get("Parent Claim ID").equals(-1)) {
                         subClaimMap.merge(intFileMap.get(Integer.valueOf(values.get("Parent Claim ID").toString()))
-                                , new ArrayList<>(f), (key, val) -> {
+                                , Lists.newArrayList(f), (key, val) -> {
                                     key.add(f);
                                     return key;
                                 });
@@ -403,7 +405,7 @@ public class ClaimStorage {
     }
 
     private static Set<ClaimPermission> complementOf(ClaimPermission... perms) {
-        Set<ClaimPermission> set = new HashSet<>((PermissionRegistry.getPerms());
+        Set<ClaimPermission> set = Sets.newHashSet(PermissionRegistry.getPerms());
         for (ClaimPermission perm : perms)
             set.remove(perm);
         return set;
