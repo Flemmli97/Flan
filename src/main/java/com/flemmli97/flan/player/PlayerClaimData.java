@@ -1,7 +1,8 @@
 package com.flemmli97.flan.player;
 
 import com.flemmli97.flan.Flan;
-import com.flemmli97.flan.IClaimData;
+import com.flemmli97.flan.api.ClaimPermission;
+import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.IPermissionContainer;
@@ -26,7 +27,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -50,13 +53,15 @@ public class PlayerClaimData {
     private boolean confirmDeleteAll, adminIgnoreClaim, claimBlockMessage;
     private boolean dirty;
 
+    private Map<String, Map<ClaimPermission, Boolean>> defaultGroups = new HashMap<>();
+
     public PlayerClaimData(ServerPlayerEntity player) {
         this.player = player;
         this.claimBlocks = ConfigHandler.config.startingBlocks;
     }
 
     public static PlayerClaimData get(PlayerEntity player) {
-        return ((IClaimData<PlayerClaimData>) player).getClaimData();
+        return ((IPlayerClaimImpl) player).get();
     }
 
     public int getClaimBlocks() {
@@ -175,6 +180,27 @@ public class PlayerClaimData {
         return this.adminIgnoreClaim;
     }
 
+    public Map<String, Map<ClaimPermission, Boolean>> playerDefaultGroups() {
+        return this.defaultGroups;
+    }
+
+    public boolean editDefaultPerms(String group, ClaimPermission perm, int mode) {
+        if (PermissionRegistry.globalPerms().contains(perm) || ConfigHandler.config.globallyDefined(this.player.getServerWorld(), perm))
+            return false;
+        if (mode > 1)
+            mode = -1;
+        boolean has = this.defaultGroups.containsKey(group);
+        Map<ClaimPermission, Boolean> perms = has ? this.defaultGroups.get(group) : new HashMap<>();
+        if (mode == -1)
+            perms.remove(perm);
+        else
+            perms.put(perm, mode == 1);
+        if (!has)
+            this.defaultGroups.put(group, perms);
+        this.dirty = true;
+        return true;
+    }
+
     public void tick() {
         boolean tool = this.player.getMainHandStack().getItem() == ConfigHandler.config.claimingItem
                 || this.player.getOffHandStack().getItem() == ConfigHandler.config.claimingItem;
@@ -232,6 +258,13 @@ public class PlayerClaimData {
             JsonObject obj = new JsonObject();
             obj.addProperty("ClaimBlocks", this.claimBlocks);
             obj.addProperty("AdditionalBlocks", this.additionalClaimBlocks);
+            JsonObject defPerm = new JsonObject();
+            this.defaultGroups.forEach((key, value) -> {
+                JsonObject perm = new JsonObject();
+                value.forEach((key1, value1) -> perm.addProperty(key1.id, value1));
+                defPerm.add(key, perm);
+            });
+            obj.add("DefaultGroups", defPerm);
             FileWriter writer = new FileWriter(file);
             ConfigHandler.GSON.toJson(obj, writer);
             writer.close();
@@ -256,6 +289,11 @@ public class PlayerClaimData {
             Flan.debug("Read following json data {} from file {}", obj, file.getName());
             this.claimBlocks = obj.get("ClaimBlocks").getAsInt();
             this.additionalClaimBlocks = obj.get("AdditionalBlocks").getAsInt();
+            JsonObject defP = ConfigHandler.fromJson(obj, "defaultGroups");
+            defP.entrySet().forEach(e -> {
+                Map<ClaimPermission, Boolean> perms = new HashMap<>();
+                perms.forEach((p, b) -> this.editDefaultPerms(e.getKey(), p, b ? 1 : 0));
+            });
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();

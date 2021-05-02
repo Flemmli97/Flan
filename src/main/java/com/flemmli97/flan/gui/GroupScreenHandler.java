@@ -94,7 +94,7 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler {
         }
         if (index == 3) {
             player.closeHandledScreen();
-            player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, this.claim, (s) -> {
+            player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
                 this.claim.editPerms(player, s, PermissionRegistry.EDITPERMS, -1);
                 player.closeHandledScreen();
                 player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.claim));

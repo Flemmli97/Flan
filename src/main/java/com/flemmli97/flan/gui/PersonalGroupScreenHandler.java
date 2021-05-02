@@ -1,17 +1,13 @@
 package com.flemmli97.flan.gui;
 
-import com.flemmli97.flan.claim.Claim;
+import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.claim.PermHelper;
-import com.flemmli97.flan.config.ConfigHandler;
-import com.mojang.authlib.GameProfile;
-import net.minecraft.block.entity.SkullBlockEntity;
+import com.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -22,30 +18,27 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
+public class PersonalGroupScreenHandler extends ServerOnlyScreenHandler {
 
-    private final Claim claim;
-    private final String group;
     private boolean removeMode;
 
-    private GroupPlayerScreenHandler(int syncId, PlayerInventory playerInventory, Claim claim, String group) {
-        super(syncId, playerInventory, 6, claim, group);
-        this.claim = claim;
-        this.group = group;
+    private PersonalGroupScreenHandler(int syncId, PlayerInventory playerInventory) {
+        super(syncId, playerInventory, 6);
     }
 
-    public static void openPlayerGroupMenu(PlayerEntity player, Claim claim, String group) {
+    public static void openGroupMenu(PlayerEntity player) {
         NamedScreenHandlerFactory fac = new NamedScreenHandlerFactory() {
             @Override
             public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                return new GroupPlayerScreenHandler(syncId, inv, claim, group);
+                return new PersonalGroupScreenHandler(syncId, inv);
             }
 
             @Override
             public Text getDisplayName() {
-                return PermHelper.simpleColoredText(group + "-Players");
+                return PermHelper.simpleColoredText("Personal-Groups");
             }
         };
         player.openHandledScreen(fac);
@@ -53,10 +46,8 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
 
     @Override
     protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object... additionalData) {
-        if (additionalData == null || additionalData.length < 2)
+        if (!(player instanceof ServerPlayerEntity))
             return;
-        Claim claim = (Claim) additionalData[0];
-        List<String> players = claim.playersFromGroup(player.getServer(), (String) additionalData[1]);
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
@@ -73,13 +64,13 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 inv.setStack(i, ServerScreenHelper.emptyFiller());
             else {
+                List<String> groups = new ArrayList<>(PlayerClaimData.get(player).playerDefaultGroups().keySet());
+                groups.sort(null);
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1;
-                if (id < players.size()) {
-                    ItemStack group = new ItemStack(Items.PLAYER_HEAD);
-                    GameProfile gameProfile = new GameProfile(null, players.get(id));
-                    gameProfile = SkullBlockEntity.loadProperties(gameProfile);
-                    group.getOrCreateTag().put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
+                if (id < groups.size()) {
+                    ItemStack group = new ItemStack(Items.PAPER);
+                    group.setCustomName(new LiteralText(groups.get(id)).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_BLUE)));
                     inv.setStack(i, group);
                 }
             }
@@ -95,26 +86,19 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
     protected boolean handleSlotClicked(ServerPlayerEntity player, int index, Slot slot, int clickType) {
         if (index == 0) {
             player.closeHandledScreen();
-            player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.claim));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;
         }
         if (index == 3) {
             player.closeHandledScreen();
             player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
-                GameProfile prof = player.getServer().getUserCache().findByName(s);
-                boolean fl = prof == null || this.claim.setPlayerGroup(prof.getId(), this.group, false);
+                PlayerClaimData.get(player).editDefaultPerms(s, PermissionRegistry.EDITPERMS, -1);
                 player.closeHandledScreen();
-                player.getServer().execute(() -> GroupPlayerScreenHandler.openPlayerGroupMenu(player, this.claim, this.group));
-                if (fl)
-                    ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_USE, 1, 1f);
-                else {
-                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.playerGroupAddFail, Formatting.RED), false);
-                    ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_VILLAGER_NO, 1, 1f);
-                }
+                player.getServer().execute(() -> PersonalGroupScreenHandler.openGroupMenu(player));
+                ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_USE, 1, 1f);
             }, () -> {
                 player.closeHandledScreen();
-                player.getServer().execute(() -> GroupPlayerScreenHandler.openPlayerGroupMenu(player, this.claim, this.group));
+                player.getServer().execute(() -> PersonalGroupScreenHandler.openGroupMenu(player));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_VILLAGER_NO, 1, 1f);
             }));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
@@ -130,11 +114,15 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
         }
         ItemStack stack = slot.getStack();
         if (!stack.isEmpty()) {
-            CompoundTag tag = stack.getOrCreateSubTag("SkullOwner");
-            if (this.removeMode && tag.contains("Id")) {
-                this.claim.setPlayerGroup(tag.getUuid("Id"), null, false);
+            String name = stack.getName().asString();
+            if (this.removeMode) {
+                PlayerClaimData.get(player).playerDefaultGroups().remove(name);
                 slot.setStack(ItemStack.EMPTY);
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_BAT_DEATH, 1, 1f);
+            } else {
+                player.closeHandledScreen();
+                player.getServer().execute(() -> PersonalPermissionScreenHandler.openClaimMenu(player, name));
+                ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             }
         }
         return false;

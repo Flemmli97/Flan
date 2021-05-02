@@ -7,6 +7,7 @@ import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.gui.ClaimMenuScreenHandler;
+import com.flemmli97.flan.gui.PersonalGroupScreenHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.EnumEditMode;
 import com.flemmli97.flan.player.OfflinePlayerData;
@@ -17,6 +18,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -46,10 +48,11 @@ import java.util.regex.Pattern;
 public class CommandClaim {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
-        dispatcher.register(CommandManager.literal("flan")
+        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("flan")
                 .then(CommandManager.literal("reload").requires(src -> CommandPermission.perm(src, CommandPermission.cmdReload, true)).executes(CommandClaim::reloadConfig))
                 .then(CommandManager.literal("addClaim").requires(src -> CommandPermission.perm(src, CommandPermission.claimCreate)).then(CommandManager.argument("from", BlockPosArgumentType.blockPos()).then(CommandManager.argument("to", BlockPosArgumentType.blockPos()).executes(CommandClaim::addClaim))))
                 .then(CommandManager.literal("menu").requires(src -> CommandPermission.perm(src, CommandPermission.cmdMenu)).executes(CommandClaim::openMenu))
+                .then(CommandManager.literal("personalGroups").requires(src -> CommandPermission.perm(src, CommandPermission.cmdPGroup)).executes(CommandClaim::openPersonalGroups))
                 .then(CommandManager.literal("claimInfo").requires(src -> CommandPermission.perm(src, CommandPermission.cmdInfo)).executes(CommandClaim::claimInfo))
                 .then(CommandManager.literal("transferClaim").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTransfer)).then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).executes(CommandClaim::transferClaim)))
                 .then(CommandManager.literal("delete").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTransfer)).executes(CommandClaim::deleteClaim))
@@ -89,13 +92,18 @@ public class CommandClaim {
                                             return CommandSource.suggestMatching(list, build);
                                         }).executes(CommandClaim::removePlayer))))))
                 .then(CommandManager.literal("permission").requires(src -> CommandPermission.perm(src, CommandPermission.cmdPermission))
+                        .then(CommandManager.literal("personal").then(CommandManager.argument("group", StringArgumentType.string()).suggests(CommandClaim::personalGroupSuggestion)
+                                .then(CommandManager.argument("permission", StringArgumentType.word()).suggests((ctx, b) -> permSuggestions(ctx, b, true))
+                                        .then(CommandManager.argument("toggle", StringArgumentType.word())
+                                                .suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"default", "true", "false"}, b)).executes(CommandClaim::editPersonalPerm)))))
                         .then(CommandManager.literal("global").then(CommandManager.argument("permission", StringArgumentType.word()).suggests((ctx, b) -> permSuggestions(ctx, b, false))
                                 .then(CommandManager.argument("toggle", StringArgumentType.word()).suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"default", "true", "false"}, b)).executes(CommandClaim::editGlobalPerm))))
                         .then(CommandManager.literal("group").then(CommandManager.argument("group", StringArgumentType.string()).suggests(CommandClaim::groupSuggestion)
                                 .then(CommandManager.argument("permission", StringArgumentType.word()).suggests((ctx, b) -> permSuggestions(ctx, b, true))
                                         .then(CommandManager.argument("toggle", StringArgumentType.word())
-                                                .suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"default", "true", "false"}, b)).executes(CommandClaim::editGroupPerm))))))
-        );
+                                                .suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"default", "true", "false"}, b)).executes(CommandClaim::editGroupPerm))))));
+        builder.then(CommandManager.literal("help").executes(ctx -> CommandHelp.helpMessage(ctx, 0, builder.getArguments())).then(CommandManager.argument("page", IntegerArgumentType.integer()).executes(ctx -> CommandHelp.helpMessage(ctx, builder.getArguments()))));
+        dispatcher.register(builder);
     }
 
     private static int reloadConfig(CommandContext<ServerCommandSource> context) {
@@ -176,6 +184,12 @@ public class CommandClaim {
         return Command.SINGLE_SUCCESS;
     }
 
+    private static int openPersonalGroups(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        PersonalGroupScreenHandler.openGroupMenu(player);
+        return Command.SINGLE_SUCCESS;
+    }
+
     private static int claimInfo(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
         Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(player.getBlockPos());
@@ -188,7 +202,7 @@ public class CommandClaim {
             Claim sub = claim.getSubClaim(player.getBlockPos());
             if (sub != null) {
                 List<Text> info = sub.infoString(player);
-                player.sendMessage(PermHelper.simpleColoredText("==SubclaimInfo==", Formatting.AQUA), false);
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.claimSubHeader, Formatting.AQUA), false);
                 for (Text text : info)
                     player.sendMessage(text, false);
                 return Command.SINGLE_SUCCESS;
@@ -433,6 +447,18 @@ public class CommandClaim {
         return CommandSource.suggestMatching(list, build);
     }
 
+    private static CompletableFuture<Suggestions> personalGroupSuggestion(CommandContext<ServerCommandSource> context, SuggestionsBuilder build) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        List<String> list = new ArrayList<>(PlayerClaimData.get(player).playerDefaultGroups().keySet());
+        list.sort(null);
+        for (int i = 0; i < list.size(); i++) {
+            if (allowed.matcher(list.get(i)).matches())
+                continue;
+            list.set(i, '\"' + list.get(i) + '\"');
+        }
+        return CommandSource.suggestMatching(list, build);
+    }
+
     private static int addGroup(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         return modifyGroup(context, false);
 
@@ -592,6 +618,37 @@ public class CommandClaim {
             claim.editPerms(player, group, perm, mode);
             player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.editPermGroup, perm, group, setPerm), Formatting.GOLD), false);
         }
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int editPersonalPerm(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        String group = StringArgumentType.getString(context, "group");
+        int mode = 0;
+        switch (StringArgumentType.getString(context, "toggle")) {
+            case "true":
+                mode = 1;
+                break;
+            case "false":
+                mode = 0;
+                break;
+            case "default":
+                mode = -1;
+                break;
+        }
+        ClaimPermission perm;
+        String p = StringArgumentType.getString(context, "permission");
+        try {
+            perm = PermissionRegistry.get(p);
+            if (PermissionRegistry.globalPerms().contains(perm))
+                throw new IllegalArgumentException();
+        } catch (NullPointerException e) {
+            player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.noSuchPerm, p), Formatting.DARK_RED), false);
+            return 0;
+        }
+        String setPerm = mode == 1 ? "true" : mode == 0 ? "false" : "default";
+        if (PlayerClaimData.get(player).editDefaultPerms(group, perm, mode))
+            player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.editPersonalGroup, group, perm, setPerm), Formatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 }

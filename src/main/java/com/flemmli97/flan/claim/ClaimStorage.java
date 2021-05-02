@@ -1,7 +1,6 @@
 package com.flemmli97.flan.claim;
 
 import com.flemmli97.flan.Flan;
-import com.flemmli97.flan.IClaimData;
 import com.flemmli97.flan.api.ClaimPermission;
 import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.config.ConfigHandler;
@@ -55,7 +54,7 @@ public class ClaimStorage {
     private final GlobalClaim globalClaim;
 
     public static ClaimStorage get(ServerWorld world) {
-        return ((IClaimData<ClaimStorage>) world).getClaimData();
+        return ((IClaimStorage) world).get();
     }
 
     public ClaimStorage(MinecraftServer server, ServerWorld world) {
@@ -71,7 +70,7 @@ public class ClaimStorage {
     }
 
     public boolean createClaim(BlockPos pos1, BlockPos pos2, ServerPlayerEntity player) {
-        Claim claim = new Claim(pos1.down(ConfigHandler.config.defaultClaimDepth), pos2.down(ConfigHandler.config.defaultClaimDepth), player.getUuid(), player.getServerWorld());
+        Claim claim = new Claim(pos1.down(ConfigHandler.config.defaultClaimDepth), pos2.down(ConfigHandler.config.defaultClaimDepth), player);
         Set<Claim> conflicts = this.conflicts(claim, null);
         if (conflicts.isEmpty()) {
             PlayerClaimData data = PlayerClaimData.get(player);

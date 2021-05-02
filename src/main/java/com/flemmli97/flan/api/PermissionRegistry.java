@@ -58,7 +58,7 @@ public class PermissionRegistry {
     public static ClaimPermission BUCKET = register(new ClaimPermission("BUCKET", () -> new ItemStack(Items.BUCKET), "Permission to take liquids with buckets"));
     public static ClaimPermission ENDERPEARL = register(new ClaimPermission("ENDERPEARL", () -> new ItemStack(Items.ENDER_PEARL), "Permission to use enderpearls"));
     public static ClaimPermission CHORUSFRUIT = register(new ClaimPermission("CHORUSFRUIT", () -> new ItemStack(Items.CHORUS_FRUIT), "Permission to eat chorus fruits"));
-    public static ClaimPermission ANIMALINTERACT = register(new ClaimPermission("ANIMALINTERACT", () -> new ItemStack(Items.CHICKEN_SPAWN_EGG), "Permission to interact with animals (e.g. shearing sheeps)"));
+    public static ClaimPermission ANIMALINTERACT = register(new ClaimPermission("ANIMALINTERACT", () -> new ItemStack(Items.CHICKEN_SPAWN_EGG), "Permission to interact with animals", "(e.g. shearing sheeps)"));
     public static ClaimPermission HURTANIMAL = register(new ClaimPermission("HURTANIMAL", () -> new ItemStack(Items.BEEF), "Permission to hurt animals"));
     public static ClaimPermission XP = register(new ClaimPermission("XP", () -> new ItemStack(Items.EXPERIENCE_BOTTLE), "Permission to pick up xp orbs"));
     public static ClaimPermission TRADING = register(new ClaimPermission("TRADING", () -> new ItemStack(Items.EMERALD), "Permission to trade with villagers"));
@@ -73,7 +73,7 @@ public class PermissionRegistry {
     public static ClaimPermission WATERBORDER = global(new ClaimPermission("WATERBORDER", () -> new ItemStack(Items.WATER_BUCKET), "Toggle water crossing claim borders"));
     public static ClaimPermission PISTONBORDER = global(new ClaimPermission("PISTONBORDER", () -> new ItemStack(Items.PISTON), "Toggle piston pull/push across claim borders"));
     public static ClaimPermission MOBSPAWN = global(new ClaimPermission("MOBSPAWN", () -> new ItemStack(Items.ZOMBIE_SPAWN_EGG), "Prevent hostile mobspawn in claim"));
-    public static ClaimPermission ANIMALSPAWN = global(new ClaimPermission("ANIMALSPAWN", () -> new ItemStack(Items.CHICKEN_SPAWN_EGG), "Prevent other spawn in claim"));
+    public static ClaimPermission ANIMALSPAWN = global(new ClaimPermission("ANIMALSPAWN", () -> new ItemStack(Items.PIG_SPAWN_EGG), "Prevent other spawn in claim"));
 
     private static ClaimPermission register(ClaimPermission perm) {
         if (locked) {

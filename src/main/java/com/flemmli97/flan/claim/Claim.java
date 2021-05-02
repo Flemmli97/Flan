@@ -59,11 +59,20 @@ public class Claim implements IPermissionContainer {
         this.world = world;
     }
 
+    public Claim(BlockPos pos1, BlockPos pos2, ServerPlayerEntity creator) {
+        this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator.getUuid(), creator.getServerWorld(), PlayerClaimData.get(creator).playerDefaultGroups().isEmpty());
+        PlayerClaimData.get(creator).playerDefaultGroups().forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0)));
+    }
+
     public Claim(BlockPos pos1, BlockPos pos2, UUID creator, ServerWorld world) {
         this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator, world);
     }
 
     public Claim(int x1, int x2, int z1, int z2, int minY, UUID creator, ServerWorld world) {
+        this(x1, x2, z1, z2, minY, creator, world, true);
+    }
+
+    public Claim(int x1, int x2, int z1, int z2, int minY, UUID creator, ServerWorld world, boolean setDefaultGroups) {
         this.minX = Math.min(x1, x2);
         this.minZ = Math.min(z1, z2);
         this.maxX = Math.max(x1, x2);
@@ -73,6 +82,8 @@ public class Claim implements IPermissionContainer {
         this.world = world;
         this.setDirty(true);
         PermissionRegistry.getPerms().stream().filter(perm -> perm.defaultVal).forEach(perm -> this.globalPerm.put(perm, true));
+        if (setDefaultGroups)
+            ConfigHandler.config.defaultGroups.forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0)));
     }
 
     public static Claim fromJson(JsonObject obj, UUID owner, ServerWorld world) {
@@ -384,10 +395,10 @@ public class Claim implements IPermissionContainer {
      * @param mode -1 = makes it resort to the global perm, 0 = deny perm, 1 = allow perm
      * @return If editing was successful or not
      */
-    public boolean editPerms(ServerPlayerEntity player, String group, ClaimPermission perm, int mode, boolean griefPrevention) {
+    public boolean editPerms(ServerPlayerEntity player, String group, ClaimPermission perm, int mode, boolean alwaysCan) {
         if (PermissionRegistry.globalPerms().contains(perm) || (!this.isAdminClaim() && ConfigHandler.config.globallyDefined(this.world, perm)))
             return false;
-        if (griefPrevention || this.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos())) {
+        if (alwaysCan || this.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos())) {
             if (mode > 1)
                 mode = -1;
             boolean has = this.permissions.containsKey(group);

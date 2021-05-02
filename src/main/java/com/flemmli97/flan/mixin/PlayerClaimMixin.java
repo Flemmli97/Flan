@@ -1,6 +1,6 @@
 package com.flemmli97.flan.mixin;
 
-import com.flemmli97.flan.IClaimData;
+import com.flemmli97.flan.player.IPlayerClaimImpl;
 import com.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
-public abstract class PlayerClaimMixin implements IClaimData<PlayerClaimData> {
+public abstract class PlayerClaimMixin implements IPlayerClaimImpl {
 
     @Unique
     private PlayerClaimData claimData;
@@ -47,7 +47,7 @@ public abstract class PlayerClaimMixin implements IClaimData<PlayerClaimData> {
     }
 
     @Override
-    public PlayerClaimData getClaimData() {
+    public PlayerClaimData get() {
         return this.claimData;
     }
 }

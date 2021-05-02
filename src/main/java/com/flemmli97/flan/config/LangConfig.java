@@ -65,6 +65,7 @@ public class LangConfig {
     public String noSuchPerm = "No such Permission %s";
     public String editPerm = "%1$s now set to %2$s";
     public String editPermGroup = "%1$s for %2$s now set to %3$s";
+    public String editPersonalGroup = "Default permission %1$s for group %2$s now set to %3$s";
 
     public String adminMode = "Adminmode (Ignore Claims) set to: %s";
     public String adminDeleteAll = "Deleted all claims for following players: %s";
@@ -76,11 +77,13 @@ public class LangConfig {
     public String giveClaimBlocks = "Gave following players %2$d claimblocks: %1$s";
 
     public String claimBasicInfo = "Owner: %1$s, from: [x=%2$d,z=%3$d] to [x=%4$d,z=%5$d]; Subclaim-amount: %6$d";
+    public String claimSubHeader = "==SubclaimInfo==";
     public String claimBasicInfoSub = "Owner: %1$s, from: [x=%2$d,z=%3$d] to [x=%4$d,z=%5$d]";
     public String claimInfoPerms = "Permissions: %s";
     public String claimGroupInfoHeader = "Groups: ";
     public String claimGroupPerms = "    Permissions: %s";
     public String claimGroupPlayers = "    Players: %s";
+    public String helpHeader = "Available subcommands are (page %d):";
 
     public String screenEnableText = "Enabled: %s";
     public String screenUneditable = "Non Editable!";

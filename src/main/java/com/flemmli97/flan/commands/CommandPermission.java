@@ -14,6 +14,7 @@ public class CommandPermission {
     public static final String claimCreate = "flan.claim.create";
 
     public static final String cmdMenu = "flan.command.menu";
+    public static final String cmdPGroup = "flan.command.personal";
     public static final String cmdInfo = "flan.command.info";
     public static final String cmdTransfer = "flan.command.transfer";
 

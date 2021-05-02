@@ -1,6 +1,5 @@
 package com.flemmli97.flan.gui;
 
-import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,6 +12,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +44,7 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
 
     }
 
-    public static void createNewStringResult(PlayerEntity player, Claim claim, Consumer<String> cons, Runnable ret) {
+    public static void createNewStringResult(PlayerEntity player, Consumer<String> cons, Runnable ret) {
         NamedScreenHandlerFactory fac = new NamedScreenHandlerFactory() {
             @Override
             public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
@@ -73,16 +73,17 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
     public ItemStack onSlotClick(int i, int j, SlotActionType actionType, PlayerEntity playerEntity) {
         if (i < 0)
             return ItemStack.EMPTY;
+        Slot slot = this.slots.get(i);
         if (i == 0)
             this.ret.run();
         else if (i == 2) {
-            Slot slot = this.slots.get(i);
             String s = slot.getStack().hasCustomName() ? slot.getStack().getName().asString() : "";
             if (!s.isEmpty() && !s.equals(ConfigHandler.lang.stringScreenReturn))
                 this.cons.accept(s);
         }
         this.sendContentUpdates();
-        return ItemStack.EMPTY;
+        ((ServerPlayerEntity) playerEntity).updateCursorStack();
+        return slot.getStack();
     }
 
     @Override

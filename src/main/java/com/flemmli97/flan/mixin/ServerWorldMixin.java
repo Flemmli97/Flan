@@ -1,7 +1,7 @@
 package com.flemmli97.flan.mixin;
 
-import com.flemmli97.flan.IClaimData;
 import com.flemmli97.flan.claim.ClaimStorage;
+import com.flemmli97.flan.claim.IClaimStorage;
 import com.flemmli97.flan.event.WorldEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(ServerWorld.class)
-public abstract class ServerWorldMixin implements IClaimData<ClaimStorage> {
+public abstract class ServerWorldMixin implements IClaimStorage {
     @Unique
     private ClaimStorage claimData;
 
@@ -39,7 +39,7 @@ public abstract class ServerWorldMixin implements IClaimData<ClaimStorage> {
     }
 
     @Override
-    public ClaimStorage getClaimData() {
+    public ClaimStorage get() {
         return this.claimData;
     }
 }

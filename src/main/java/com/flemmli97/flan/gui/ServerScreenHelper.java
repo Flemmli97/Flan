@@ -4,6 +4,7 @@ import com.flemmli97.flan.api.ClaimPermission;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
+import com.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.ListTag;
@@ -16,6 +17,9 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ServerScreenHelper {
 
@@ -71,6 +75,35 @@ public class ServerScreenHelper {
                         break;
                 }
             }
+            Text text = new LiteralText(String.format(ConfigHandler.lang.screenEnableText, permFlag)).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
+            lore.add(StringTag.of(Text.Serializer.toJson(text)));
+        }
+        stack.getOrCreateSubTag("display").put("Lore", lore);
+        return stack;
+    }
+
+    public static ItemStack getFromPersonal(ServerPlayerEntity player, ClaimPermission perm, String group) {
+        ItemStack stack = perm.getItem();
+        stack.setCustomName(new LiteralText(perm.id).setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
+        ListTag lore = new ListTag();
+        for (String pdesc : perm.desc) {
+            Text trans = new LiteralText(pdesc).setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
+            lore.add(StringTag.of(Text.Serializer.toJson(trans)));
+        }
+        Boolean global = ConfigHandler.config.getGlobal(player.getServerWorld(), perm);
+        if (global != null) {
+            Text text = new LiteralText(ConfigHandler.lang.screenUneditable).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED));
+            lore.add(StringTag.of(Text.Serializer.toJson(text)));
+            String permFlag = global.toString();
+            Text text2 = new LiteralText(String.format(ConfigHandler.lang.screenEnableText, permFlag)).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
+            lore.add(StringTag.of(Text.Serializer.toJson(text2)));
+        } else {
+            String permFlag;
+            Map<ClaimPermission, Boolean> map = PlayerClaimData.get(player).playerDefaultGroups().getOrDefault(group, new HashMap<>());
+            if (map.containsKey(perm))
+                permFlag = map.get(perm) ? "true" : "false";
+            else
+                permFlag = "default";
             Text text = new LiteralText(String.format(ConfigHandler.lang.screenEnableText, permFlag)).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
             lore.add(StringTag.of(Text.Serializer.toJson(text)));
         }

@@ -19,8 +19,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class Config {
 
@@ -46,6 +48,22 @@ public class Config {
 
     public boolean log;
 
+    public Map<String, Map<ClaimPermission, Boolean>> defaultGroups = createHashMap(map -> {
+        map.put("Co-Owner", createLinkedHashMap(perms -> PermissionRegistry.getPerms().forEach(p -> perms.put(p, true))));
+        map.put("Visitor", createLinkedHashMap(perms -> {
+            perms.put(PermissionRegistry.BED, true);
+            perms.put(PermissionRegistry.DOOR, true);
+            perms.put(PermissionRegistry.FENCEGATE, true);
+            perms.put(PermissionRegistry.TRAPDOOR, true);
+            perms.put(PermissionRegistry.BUTTONLEVER, true);
+            perms.put(PermissionRegistry.PRESSUREPLATE, true);
+            perms.put(PermissionRegistry.ENDERCHEST, true);
+            perms.put(PermissionRegistry.ENCHANTMENTTABLE, true);
+            perms.put(PermissionRegistry.ITEMFRAMEROTATE, true);
+            perms.put(PermissionRegistry.PORTAL, true);
+            perms.put(PermissionRegistry.TRADING, true);
+        }));
+    });
     private final Map<String, Map<ClaimPermission, Boolean>> globalDefaultPerms = new HashMap<>();
 
     public Config(MinecraftServer server) {
@@ -89,6 +107,21 @@ public class Config {
             if (obj.has("inspectionItem"))
                 this.inspectionItem = Registry.ITEM.get(new Identifier((obj.get("inspectionItem").getAsString())));
             this.claimDisplayTime = ConfigHandler.fromJson(obj, "claimDisplayTime", this.claimDisplayTime);
+            this.defaultGroups.clear();
+            JsonObject defP = ConfigHandler.fromJson(obj, "defaultGroups");
+            defP.entrySet().forEach(e -> {
+                Map<ClaimPermission, Boolean> perms = new HashMap<>();
+                if (e.getValue().isJsonObject()) {
+                    e.getValue().getAsJsonObject().entrySet().forEach(jperm -> {
+                        try {
+                            perms.put(PermissionRegistry.get(jperm.getKey()), jperm.getValue().getAsBoolean());
+                        } catch (NullPointerException ex) {
+                            Flan.log("No permission with name {}", jperm.getKey());
+                        }
+                    });
+                }
+                this.defaultGroups.put(e.getKey(), perms);
+            });
             this.globalDefaultPerms.clear();
             JsonObject glob = ConfigHandler.fromJson(obj, "globalDefaultPerms");
             glob.entrySet().forEach(e -> {
@@ -134,6 +167,13 @@ public class Config {
         obj.addProperty("inspectionItem", Registry.ITEM.getId(this.inspectionItem).toString());
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
         obj.addProperty("permissionLevel", this.permissionLevel);
+        JsonObject defPerm = new JsonObject();
+        this.defaultGroups.forEach((key, value) -> {
+            JsonObject perm = new JsonObject();
+            value.forEach((key1, value1) -> perm.addProperty(key1.id, value1));
+            defPerm.add(key, perm);
+        });
+        obj.add("defaultGroups", defPerm);
         JsonObject global = new JsonObject();
         this.globalDefaultPerms.forEach((key, value) -> {
             JsonObject perm = new JsonObject();
@@ -160,5 +200,17 @@ public class Config {
             return Boolean.FALSE;
         Map<ClaimPermission, Boolean> permMap = ConfigHandler.config.globalDefaultPerms.get(world.getRegistryKey().getValue().toString());
         return permMap == null ? null : permMap.getOrDefault(perm, null);
+    }
+
+    private <V, K> Map<V, K> createHashMap(Consumer<Map<V, K>> cons) {
+        Map<V, K> map = new HashMap<>();
+        cons.accept(map);
+        return map;
+    }
+
+    private <V, K> Map<V, K> createLinkedHashMap(Consumer<Map<V, K>> cons) {
+        Map<V, K> map = new LinkedHashMap<>();
+        cons.accept(map);
+        return map;
     }
 }
