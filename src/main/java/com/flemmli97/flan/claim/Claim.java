@@ -6,7 +6,6 @@ import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.player.PlayerClaimData;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -426,7 +425,7 @@ public class Claim implements IPermissionContainer {
     }
 
     public List<String> groups() {
-        List<String> l = Lists.newArrayList(this.permissions.keySet());
+        List<String> l = new ArrayList<>(this.permissions.keySet());
         l.sort(null);
         return l;
     }
@@ -579,7 +578,7 @@ public class Claim implements IPermissionContainer {
             for (Map.Entry<UUID, String> e : this.playersGroups.entrySet()) {
                 GameProfile pgroup = player.getServer().getUserCache().getByUuid(e.getKey());
                 if (prof != null) {
-                    nameToGroup.merge(e.getValue(), Lists.newArrayList(pgroup.getName()), (old, val) -> {
+                    nameToGroup.merge(e.getValue(), new ArrayList<>(pgroup.getName()), (old, val) -> {
                         old.add(pgroup.getName());
                         return old;
                     });

@@ -4,7 +4,6 @@ import com.flemmli97.flan.api.ClaimPermission;
 import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.PermHelper;
-import com.google.common.collect.Lists;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -20,6 +19,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PermissionScreenHandler extends ServerOnlyScreenHandler {
@@ -67,7 +67,7 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
 
     @Override
     protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object... additionalData) {
-        List<ClaimPermission> perms = Lists.newArrayList(PermissionRegistry.getPerms());
+        List<ClaimPermission> perms = new ArrayList<>(PermissionRegistry.getPerms());
         if (this.group != null)
             perms.removeAll(PermissionRegistry.globalPerms());
         for (int i = 0; i < 54; i++) {
@@ -96,7 +96,7 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
     }
 
     private void flipPage() {
-        List<ClaimPermission> perms = Lists.newArrayList(PermissionRegistry.getPerms());
+        List<ClaimPermission> perms = new ArrayList<>(PermissionRegistry.getPerms());
         if (this.group != null)
             perms.removeAll(PermissionRegistry.globalPerms());
         int maxPages = perms.size() / 28;

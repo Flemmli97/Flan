@@ -1,12 +1,12 @@
 package com.flemmli97.flan.api;
 
 import com.flemmli97.flan.config.ConfigHandler;
-import com.google.common.collect.Lists;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.village.raid.Raid;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -102,7 +102,7 @@ public class PermissionRegistry {
     }
 
     public static List<ClaimPermission> getPerms() {
-        return Lists.newArrayList(permissions.values());
+        return new ArrayList<>(permissions.values());
     }
 
     public static Collection<ClaimPermission> globalPerms() {

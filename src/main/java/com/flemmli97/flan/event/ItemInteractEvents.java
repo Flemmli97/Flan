@@ -12,7 +12,6 @@ import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.EnumEditMode;
 import com.flemmli97.flan.player.PlayerClaimData;
-import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,6 +35,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class ItemInteractEvents {
@@ -73,7 +73,7 @@ public class ItemInteractEvents {
         return TypedActionResult.pass(stack);
     }
 
-    private static final Set<Item> blackListedItems = Sets.newHashSet(Items.COMPASS, Items.FILLED_MAP, Items.FIREWORK_ROCKET);
+    private static final Set<Item> blackListedItems = new HashSet<>((Items.COMPASS, Items.FILLED_MAP, Items.FIREWORK_ROCKET);
 
     public static ActionResult onItemUseBlock(ItemUsageContext context) {
         //Check for Fakeplayer. Since there is no api for that directly check the class
