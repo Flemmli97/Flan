@@ -3,6 +3,7 @@ package com.flemmli97.flan.gui;
 import com.flemmli97.flan.api.ClaimPermission;
 import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.claim.PermHelper;
+import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -46,22 +47,7 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler {
 
             @Override
             public Text getDisplayName() {
-                return PermHelper.simpleColoredText(String.format("Personal Permissions for %s", group));
-            }
-        };
-        player.openHandledScreen(fac);
-    }
-
-    private static void openClaimMenu(PlayerEntity player, String group, int page) {
-        NamedScreenHandlerFactory fac = new NamedScreenHandlerFactory() {
-            @Override
-            public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                return new PersonalPermissionScreenHandler(syncId, inv, group, page);
-            }
-
-            @Override
-            public Text getDisplayName() {
-                return PermHelper.simpleColoredText(String.format("Personal Permissions for %s", group));
+                return PermHelper.simpleColoredText(String.format(ConfigHandler.lang.screenPersonalPermissions, group));
             }
         };
         player.openHandledScreen(fac);
@@ -78,15 +64,15 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler {
             int page = (int) additionalData[1];
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
-                close.setCustomName(new LiteralText("Back").setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)));
+                close.setCustomName(new LiteralText(ConfigHandler.lang.screenBack).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)));
                 inv.setStack(i, close);
             } else if (page == 1 && i == 47) {
                 ItemStack close = new ItemStack(Items.ARROW);
-                close.setCustomName(new LiteralText("Prev").setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
+                close.setCustomName(new LiteralText(ConfigHandler.lang.screenPrevious).setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
                 inv.setStack(i, close);
             } else if (page == 0 && i == 51) {
                 ItemStack close = new ItemStack(Items.ARROW);
-                close.setCustomName(new LiteralText("Next").setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
+                close.setCustomName(new LiteralText(ConfigHandler.lang.screenNext).setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
                 inv.setStack(i, close);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 inv.setStack(i, ServerScreenHelper.emptyFiller());
@@ -109,20 +95,20 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler {
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
-                close.setCustomName(new LiteralText("Back").setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)));
+                close.setCustomName(new LiteralText(ConfigHandler.lang.screenBack).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)));
                 this.slots.get(i).setStack(close);
             } else if (i == 47) {
                 ItemStack stack = ServerScreenHelper.emptyFiller();
                 if (this.page >= 1) {
                     stack = new ItemStack(Items.ARROW);
-                    stack.setCustomName(new LiteralText("Prev").setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
+                    stack.setCustomName(new LiteralText(ConfigHandler.lang.screenPrevious).setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
                 }
                 this.slots.get(i).setStack(stack);
             } else if (i == 51) {
                 ItemStack stack = ServerScreenHelper.emptyFiller();
                 if (this.page < maxPages) {
                     stack = new ItemStack(Items.ARROW);
-                    stack.setCustomName(new LiteralText("Next").setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
+                    stack.setCustomName(new LiteralText(ConfigHandler.lang.screenNext).setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)));
                 }
                 this.slots.get(i).setStack(stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)

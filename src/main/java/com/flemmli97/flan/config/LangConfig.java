@@ -87,6 +87,26 @@ public class LangConfig {
 
     public String screenEnableText = "Enabled: %s";
     public String screenUneditable = "Non Editable!";
+    public String screenClose = "Close";
+    public String screenNext = "Next";
+    public String screenPrevious = "Prev";
+    public String screenAdd = "Add";
+    public String screenBack = "Back";
+
+    public String screenMenu = "Claim-Menu";
+    public String screenMenuSub = "SubClaim-Menu";
+    public String screenMenuGlobal = "Edit Global Permissions";
+    public String screenMenuGroup = "Edit Permissiongroups";
+    public String screenMenuDelete = "Delete Claim";
+    public String screenConfirm = "Confirm";
+    public String screenYes = "Yes";
+    public String screenNo = "No";
+    public String screenGroupPlayers = "%s-Players";
+    public String screenRemoveMode = "Remove Mode: %s";
+    public String screenGlobalPerms = "Global-Permissions";
+    public String screenGroupPerms = "%s-Permissions";
+    public String screenPersonalGroups = "Personal-Groups";
+    public String screenPersonalPermissions = "Personal Permissions for %s";
 
     public LangConfig(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();

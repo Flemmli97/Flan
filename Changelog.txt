@@ -1,3 +1,17 @@
+Flan 1.3.0
+======================
+- Fix inventory desync when using the naming screen
+- Add /flan help command. For now it only displays all available commands
+- Add default groups. Set via the config file in defaultGroups.
+    Every claim created will have those groups by default to make group creation easier
+    and without having to make the same group for multiple claims again and again.
+- Add personal groups. Set either via the command /flan permissions personal ...
+  or via the gui /flan personalGroups.
+    Personal groups are just like default groups except player bound. If a player has any
+    personal groups that will be used instead of the global default group. That way the player
+    can also specify what groups a claim should have upon creation.
+- Localized various gui strings
+
 Flan 1.2.6
 ======================
 - Fix giveClaimBlocks not working for players that never joined the server

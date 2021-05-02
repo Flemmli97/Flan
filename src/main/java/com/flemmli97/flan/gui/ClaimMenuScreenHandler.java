@@ -38,7 +38,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
 
             @Override
             public Text getDisplayName() {
-                return PermHelper.simpleColoredText(claim.parentClaim() != null ? "SubClaim-Menu" : "Claim-Menu");
+                return PermHelper.simpleColoredText(claim.parentClaim() != null ? ConfigHandler.lang.screenMenuSub : ConfigHandler.lang.screenMenu);
             }
         };
         player.openHandledScreen(fac);
@@ -50,22 +50,22 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
             switch (i) {
                 case 0:
                     ItemStack close = new ItemStack(Items.TNT);
-                    close.setCustomName(new LiteralText("Close").setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)));
+                    close.setCustomName(new LiteralText(ConfigHandler.lang.screenClose).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)));
                     inv.setStack(i, close);
                     break;
                 case 2:
                     ItemStack perm = new ItemStack(Items.BEACON);
-                    perm.setCustomName(new LiteralText("Edit Global Permissions").setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
+                    perm.setCustomName(new LiteralText(ConfigHandler.lang.screenMenuGlobal).setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
                     inv.setStack(i, perm);
                     break;
                 case 3:
                     ItemStack group = new ItemStack(Items.WRITABLE_BOOK);
-                    group.setCustomName(new LiteralText("Edit Permissiongroups").setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
+                    group.setCustomName(new LiteralText(ConfigHandler.lang.screenMenuGroup).setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
                     inv.setStack(i, group);
                     break;
                 case 8:
                     ItemStack delete = new ItemStack(Items.BARRIER);
-                    delete.setCustomName(new LiteralText("Delete Claim").setStyle(Style.EMPTY.withFormatting(Formatting.RED)));
+                    delete.setCustomName(new LiteralText(ConfigHandler.lang.screenMenuDelete).setStyle(Style.EMPTY.withFormatting(Formatting.RED)));
                     inv.setStack(i, delete);
                     break;
                 default:

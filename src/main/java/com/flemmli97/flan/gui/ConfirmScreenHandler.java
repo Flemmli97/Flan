@@ -1,6 +1,7 @@
 package com.flemmli97.flan.gui;
 
 import com.flemmli97.flan.claim.PermHelper;
+import com.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -35,7 +36,7 @@ public class ConfirmScreenHandler extends ServerOnlyScreenHandler {
 
             @Override
             public Text getDisplayName() {
-                return PermHelper.simpleColoredText("Confirm");
+                return PermHelper.simpleColoredText(ConfigHandler.lang.screenConfirm);
             }
         };
         player.openHandledScreen(fac);
@@ -48,12 +49,12 @@ public class ConfirmScreenHandler extends ServerOnlyScreenHandler {
             switch (i) {
                 case 3:
                     ItemStack yes = new ItemStack(Items.GREEN_WOOL);
-                    yes.setCustomName(new LiteralText("Yes").setStyle(Style.EMPTY.withFormatting(Formatting.GREEN)));
+                    yes.setCustomName(new LiteralText(ConfigHandler.lang.screenYes).setStyle(Style.EMPTY.withFormatting(Formatting.GREEN)));
                     inv.setStack(i, yes);
                     break;
                 case 5:
                     ItemStack no = new ItemStack(Items.RED_WOOL);
-                    no.setCustomName(new LiteralText("No").setStyle(Style.EMPTY.withFormatting(Formatting.RED)));
+                    no.setCustomName(new LiteralText(ConfigHandler.lang.screenNo).setStyle(Style.EMPTY.withFormatting(Formatting.RED)));
                     inv.setStack(i, no);
                     break;
                 default:
