@@ -2,7 +2,6 @@ package com.flemmli97.flan.claim;
 
 import com.flemmli97.flan.api.ClaimPermission;
 import com.flemmli97.flan.api.PermissionRegistry;
-import com.google.common.collect.Maps;
 import net.minecraft.block.AbstractButtonBlock;
 import net.minecraft.block.AbstractPressurePlateBlock;
 import net.minecraft.block.AbstractRedstoneGateBlock;
@@ -35,17 +34,18 @@ import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.registry.Registry;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class ObjectToPermissionMap {
 
-    private static final Map<Block, ClaimPermission> blockToPermission = Maps.newHashMap();
-    private static final Map<Predicate<Block>, Supplier<ClaimPermission>> blockPermissionBuilder = Maps.newHashMap();
+    private static final Map<Block, ClaimPermission> blockToPermission = new HashMap<>();
+    private static final Map<Predicate<Block>, Supplier<ClaimPermission>> blockPermissionBuilder = new HashMap<>();
 
-    private static final Map<Item, ClaimPermission> itemToPermission = Maps.newHashMap();
-    private static final Map<Predicate<Item>, Supplier<ClaimPermission>> itemPermissionBuilder = Maps.newHashMap();
+    private static final Map<Item, ClaimPermission> itemToPermission = new HashMap<>();
+    private static final Map<Predicate<Item>, Supplier<ClaimPermission>> itemPermissionBuilder = new HashMap<>();
 
     public static void reload(MinecraftServer server) {
         blockToPermission.clear();

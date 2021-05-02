@@ -7,8 +7,6 @@ import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.player.PlayerClaimData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -22,7 +20,10 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,12 +38,12 @@ public class Claim implements IPermissionContainer {
 
     private UUID claimID;
     private LiteralText claimName;
-    private final Map<ClaimPermission, Boolean> globalPerm = Maps.newHashMap();
-    private final Map<String, Map<ClaimPermission, Boolean>> permissions = Maps.newHashMap();
+    private final Map<ClaimPermission, Boolean> globalPerm = new HashMap<>();
+    private final Map<String, Map<ClaimPermission, Boolean>> permissions = new HashMap<>();
 
-    private final Map<UUID, String> playersGroups = Maps.newHashMap();
+    private final Map<UUID, String> playersGroups = new HashMap<>();
 
-    private final List<Claim> subClaims = Lists.newArrayList();
+    private final List<Claim> subClaims = new ArrayList<>();
 
     private UUID parent;
     private Claim parentClaim;
@@ -72,7 +73,6 @@ public class Claim implements IPermissionContainer {
         this.world = world;
         this.setDirty(true);
         PermissionRegistry.getPerms().stream().filter(perm -> perm.defaultVal).forEach(perm -> this.globalPerm.put(perm, true));
-        System.out.println(this.globalPerm);
     }
 
     public static Claim fromJson(JsonObject obj, UUID owner, ServerWorld world) {
@@ -275,7 +275,7 @@ public class Claim implements IPermissionContainer {
     public Set<Claim> tryCreateSubClaim(BlockPos pos1, BlockPos pos2) {
         Claim sub = new Claim(pos1, new BlockPos(pos2.getX(), 0, pos2.getZ()), this.owner, this.world);
         sub.setClaimID(this.generateUUID());
-        Set<Claim> conflicts = Sets.newHashSet();
+        Set<Claim> conflicts = new HashSet<>();
         for (Claim other : this.subClaims)
             if (sub.intersects(other)) {
                 conflicts.add(other);
@@ -318,7 +318,7 @@ public class Claim implements IPermissionContainer {
         int[] dims = claim.getDimensions();
         BlockPos opposite = new BlockPos(dims[0] == from.getX() ? dims[1] : dims[0], dims[4], dims[2] == from.getZ() ? dims[3] : dims[2]);
         Claim newClaim = new Claim(opposite, to, claim.claimID, this.world);
-        Set<Claim> conflicts = Sets.newHashSet();
+        Set<Claim> conflicts = new HashSet<>();
         for (Claim other : this.subClaims)
             if (!claim.equals(other) && newClaim.intersects(other))
                 conflicts.add(other);
@@ -346,12 +346,12 @@ public class Claim implements IPermissionContainer {
     }
 
     public List<String> playersFromGroup(MinecraftServer server, String group) {
-        List<UUID> l = Lists.newArrayList();
+        List<UUID> l = new ArrayList<>();
         this.playersGroups.forEach((uuid, g) -> {
             if (g.equals(group))
                 l.add(uuid);
         });
-        List<String> names = Lists.newArrayList();
+        List<String> names = new ArrayList<>();
         l.forEach(uuid -> {
             GameProfile prof = server.getUserCache().getByUuid(uuid);
             if (prof != null)
@@ -391,7 +391,7 @@ public class Claim implements IPermissionContainer {
             if (mode > 1)
                 mode = -1;
             boolean has = this.permissions.containsKey(group);
-            Map<ClaimPermission, Boolean> perms = has ? this.permissions.get(group) : Maps.newHashMap();
+            Map<ClaimPermission, Boolean> perms = has ? this.permissions.get(group) : new HashMap<>();
             if (mode == -1)
                 perms.remove(perm);
             else
@@ -407,7 +407,7 @@ public class Claim implements IPermissionContainer {
     public boolean removePermGroup(ServerPlayerEntity player, String group) {
         if (this.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos())) {
             this.permissions.remove(group);
-            List<UUID> toRemove = Lists.newArrayList();
+            List<UUID> toRemove = new ArrayList<>();
             this.playersGroups.forEach((uuid, g) -> {
                 if (g.equals(group))
                     toRemove.add(uuid);
@@ -472,7 +472,7 @@ public class Claim implements IPermissionContainer {
         if (obj.has("PermGroup")) {
             JsonObject perms = obj.getAsJsonObject("PermGroup");
             perms.entrySet().forEach(key -> {
-                Map<ClaimPermission, Boolean> map = Maps.newHashMap();
+                Map<ClaimPermission, Boolean> map = new HashMap<>();
                 JsonObject group = key.getValue().getAsJsonObject();
                 group.entrySet().forEach(gkey -> map.put(PermissionRegistry.get(gkey.getKey()), gkey.getValue().getAsBoolean()));
                 this.permissions.put(key.getKey(), map);
@@ -564,7 +564,7 @@ public class Claim implements IPermissionContainer {
 
     public List<Text> infoString(ServerPlayerEntity player) {
         boolean perms = this.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos());
-        List<Text> l = Lists.newArrayList();
+        List<Text> l = new ArrayList<>();
         l.add(PermHelper.simpleColoredText("=============================================", Formatting.GREEN));
         GameProfile prof = this.owner != null ? player.getServer().getUserCache().getByUuid(this.owner) : null;
         String ownerName = this.isAdminClaim() ? "Admin" : prof != null ? prof.getName() : "<UNKNOWN>";
@@ -575,7 +575,7 @@ public class Claim implements IPermissionContainer {
         if (perms) {
             l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimInfoPerms, this.globalPerm), Formatting.RED));
             l.add(PermHelper.simpleColoredText(ConfigHandler.lang.claimGroupInfoHeader, Formatting.RED));
-            Map<String, List<String>> nameToGroup = Maps.newHashMap();
+            Map<String, List<String>> nameToGroup = new HashMap<>();
             for (Map.Entry<UUID, String> e : this.playersGroups.entrySet()) {
                 GameProfile pgroup = player.getServer().getUserCache().getByUuid(e.getKey());
                 if (prof != null) {
@@ -588,7 +588,7 @@ public class Claim implements IPermissionContainer {
             for (Map.Entry<String, Map<ClaimPermission, Boolean>> e : this.permissions.entrySet()) {
                 l.add(PermHelper.simpleColoredText(String.format("  %s:", e.getKey()), Formatting.DARK_RED));
                 l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPerms, e.getValue()), Formatting.RED));
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPlayers, nameToGroup.getOrDefault(e.getKey(), Lists.newArrayList())), Formatting.RED));
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPlayers, nameToGroup.getOrDefault(e.getKey(), new ArrayList<>())), Formatting.RED));
             }
         }
         l.add(PermHelper.simpleColoredText("=============================================", Formatting.GREEN));

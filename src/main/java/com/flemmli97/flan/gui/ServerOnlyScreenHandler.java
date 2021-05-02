@@ -1,6 +1,5 @@
 package com.flemmli97.flan.gui;
 
-import com.google.common.collect.Lists;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -14,12 +13,13 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ServerOnlyScreenHandler extends ScreenHandler {
 
     private final Inventory inventory;
-    private final List<ScreenHandlerListener> listeners = Lists.newArrayList();
+    private final List<ScreenHandlerListener> listeners = new ArrayList<>();
 
     protected ServerOnlyScreenHandler(int syncId, PlayerInventory playerInventory, int rows, Object... additionalData) {
         super(fromRows(rows), syncId);

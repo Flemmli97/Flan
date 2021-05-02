@@ -2,13 +2,14 @@ package com.flemmli97.flan.api;
 
 import com.flemmli97.flan.config.ConfigHandler;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.village.raid.Raid;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,12 +18,12 @@ import java.util.Map;
  */
 public class PermissionRegistry {
 
-    private static final Map<String, ClaimPermission> permissions = Maps.newLinkedHashMap();
-    private static final Map<String, ClaimPermission> globalPermissions = Maps.newLinkedHashMap();
+    private static final Map<String, ClaimPermission> permissions = new LinkedHashMap<>();
+    private static final Map<String, ClaimPermission> globalPermissions = new LinkedHashMap<>();
 
-    private static final Map<Identifier, ClaimPermission> interactBlocks = Maps.newHashMap();
-    private static final Map<Identifier, ClaimPermission> breakBlocks = Maps.newHashMap();
-    private static final Map<Identifier, ClaimPermission> items = Maps.newHashMap();
+    private static final Map<Identifier, ClaimPermission> interactBlocks = new HashMap<>();
+    private static final Map<Identifier, ClaimPermission> breakBlocks = new HashMap<>();
+    private static final Map<Identifier, ClaimPermission> items = new HashMap<>();
 
     private static boolean locked;
 

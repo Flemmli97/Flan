@@ -8,7 +8,6 @@ import com.flemmli97.flan.claim.IPermissionContainer;
 import com.flemmli97.flan.claim.ParticleIndicators;
 import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,6 +26,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -42,8 +42,8 @@ public class PlayerClaimData {
     private BlockPos firstCorner;
     private int[] cornerRenderPos;
 
-    private final Set<ClaimDisplay> claimDisplayList = Sets.newHashSet();
-    private final Set<ClaimDisplay> displayToAdd = Sets.newHashSet();
+    private final Set<ClaimDisplay> claimDisplayList = new HashSet<>();
+    private final Set<ClaimDisplay> displayToAdd = new HashSet<>();
 
     private final ServerPlayerEntity player;
 

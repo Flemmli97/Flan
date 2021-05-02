@@ -3,7 +3,6 @@ package com.flemmli97.flan.gui;
 import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
-import com.google.common.collect.Lists;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -18,12 +17,13 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class StringResultScreenHandler extends AnvilScreenHandler {
 
-    private final List<ScreenHandlerListener> listeners = Lists.newArrayList();
+    private final List<ScreenHandlerListener> listeners = new ArrayList<>();
 
     private final Consumer<String> cons;
     private final Runnable ret;

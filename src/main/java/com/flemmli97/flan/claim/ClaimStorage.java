@@ -10,7 +10,6 @@ import com.flemmli97.flan.player.EnumEditMode;
 import com.flemmli97.flan.player.PlayerClaimData;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -37,7 +36,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,9 +49,9 @@ public class ClaimStorage {
 
     public static final String adminClaimString = "!AdminClaims";
     private final Long2ObjectArrayMap<List<Claim>> claims = new Long2ObjectArrayMap<>();
-    private final Map<UUID, Claim> claimUUIDMap = Maps.newHashMap();
-    private final Map<UUID, Set<Claim>> playerClaimMap = Maps.newHashMap();
-    private final Set<UUID> dirty = Sets.newHashSet();
+    private final Map<UUID, Claim> claimUUIDMap = new HashMap<>();
+    private final Map<UUID, Set<Claim>> playerClaimMap = new HashMap<>();
+    private final Set<UUID> dirty = new HashSet<>();
     private final GlobalClaim globalClaim;
 
     public static ClaimStorage get(ServerWorld world) {
@@ -97,7 +99,7 @@ public class ClaimStorage {
     }
 
     private Set<Claim> conflicts(Claim claim, Claim except) {
-        Set<Claim> conflicted = Sets.newHashSet();
+        Set<Claim> conflicted = new HashSet<>();
         int[] chunks = getChunkPos(claim);
         for (int x = chunks[0]; x <= chunks[1]; x++)
             for (int z = chunks[2]; z <= chunks[3]; z++) {
@@ -131,7 +133,7 @@ public class ClaimStorage {
                     return val.isEmpty() ? null : val;
                 });
             }
-        this.playerClaimMap.getOrDefault(claim.getOwner(), Sets.newHashSet()).remove(claim);
+        this.playerClaimMap.getOrDefault(claim.getOwner(), new HashSet<>()).remove(claim);
         this.dirty.add(claim.getOwner());
         return this.claimUUIDMap.remove(claim.getClaimID()) != null;
     }
@@ -214,7 +216,7 @@ public class ClaimStorage {
     public boolean transferOwner(Claim claim, ServerPlayerEntity player, UUID newOwner) {
         if (!player.getUuid().equals(claim.getOwner()))
             return false;
-        this.playerClaimMap.merge(claim.getOwner(), Sets.newHashSet(), (old, val) -> {
+        this.playerClaimMap.merge(claim.getOwner(), new HashSet<>(), (old, val) -> {
             old.remove(claim);
             return old;
         });
@@ -320,8 +322,8 @@ public class ClaimStorage {
         File griefPrevention = server.getSavePath(WorldSavePath.ROOT).resolve("plugins/GriefPreventionData/ClaimData").toFile();
         if (!griefPrevention.exists())
             return;
-        Map<File, List<File>> subClaimMap = Maps.newHashMap();
-        Map<Integer, File> intFileMap = Maps.newHashMap();
+        Map<File, List<File>> subClaimMap = new HashMap<>();
+        Map<Integer, File> intFileMap = new HashMap<>();
 
         Set<ClaimPermission> managers = complementOf(PermissionRegistry.EDITCLAIM);
         Set<ClaimPermission> builders = complementOf(PermissionRegistry.EDITPERMS, PermissionRegistry.EDITCLAIM);
@@ -335,7 +337,7 @@ public class ClaimStorage {
                 PermissionRegistry.LECTERNTAKE, PermissionRegistry.ENDCRYSTALPLACE, PermissionRegistry.PROJECTILES, PermissionRegistry.TRAMPLE, PermissionRegistry.RAID,
                 PermissionRegistry.BUCKET, PermissionRegistry.ANIMALINTERACT, PermissionRegistry.HURTANIMAL, PermissionRegistry.TRADING, PermissionRegistry.ARMORSTAND,
                 PermissionRegistry.BREAKNONLIVING);
-        Map<String, Set<ClaimPermission>> perms = Maps.newHashMap();
+        Map<String, Set<ClaimPermission>> perms = new HashMap<>();
         perms.put("managers", managers);
         perms.put("builders", builders);
         perms.put("containers", containers);
@@ -479,7 +481,7 @@ public class ClaimStorage {
         Object obj = values.get(key);
         if (obj instanceof List)
             return (List<T>) obj;
-        return Lists.newArrayList();
+        return new ArrayList<>();
     }
 
     public static RegistryKey<World> worldRegFromString(String spigot) {

@@ -11,8 +11,6 @@ import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.EnumEditMode;
 import com.flemmli97.flan.player.OfflinePlayerData;
 import com.flemmli97.flan.player.PlayerClaimData;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -38,6 +36,7 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -80,7 +79,7 @@ public class CommandClaim {
                                 .then(CommandManager.literal("remove").then(CommandManager.argument("group", StringArgumentType.word()).suggests(CommandClaim::groupSuggestion)
                                         .then(CommandManager.argument("players", GameProfileArgumentType.gameProfile()).suggests((context, build) -> {
                                             ServerPlayerEntity player = context.getSource().getPlayer();
-                                            List<String> list = Lists.newArrayList();
+                                            List<String> list = new ArrayList<>();
                                             ServerCommandSource src = context.getSource();
                                             ClaimStorage storage = ClaimStorage.get(src.getWorld());
                                             Claim claim = storage.getClaimAt(src.getPlayer().getBlockPos());
@@ -292,7 +291,7 @@ public class CommandClaim {
     private static int listClaimsFromUUID(CommandContext<ServerCommandSource> context, UUID of) throws CommandSyntaxException {
         MinecraftServer server = context.getSource().getMinecraftServer();
         ServerPlayerEntity player = of == null ? context.getSource().getPlayer() : server.getPlayerManager().getPlayer(of);
-        Map<World, Collection<Claim>> claims = Maps.newHashMap();
+        Map<World, Collection<Claim>> claims = new HashMap<>();
         for (ServerWorld world : server.getWorlds()) {
             ClaimStorage storage = ClaimStorage.get(world);
             claims.put(world, storage.allClaimsFromPlayer(player != null ? player.getUuid() : of));
@@ -356,7 +355,7 @@ public class CommandClaim {
                 return Command.SINGLE_SUCCESS;
             }
         }
-        List<String> players = Lists.newArrayList();
+        List<String> players = new ArrayList<>();
         for (GameProfile prof : GameProfileArgumentType.getProfileArgument(context, "players")) {
             for (ServerWorld world : src.getWorld().getServer().getWorlds()) {
                 ClaimStorage storage = ClaimStorage.get(world);
@@ -401,7 +400,7 @@ public class CommandClaim {
 
     private static int giveClaimBlocks(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource src = context.getSource();
-        List<String> players = Lists.newArrayList();
+        List<String> players = new ArrayList<>();
         int amount = IntegerArgumentType.getInteger(context, "amount");
         for (GameProfile prof : GameProfileArgumentType.getProfileArgument(context, "players")) {
             ServerPlayerEntity player = src.getMinecraftServer().getPlayerManager().getPlayer(prof.getId());
@@ -420,7 +419,7 @@ public class CommandClaim {
 
     private static CompletableFuture<Suggestions> groupSuggestion(CommandContext<ServerCommandSource> context, SuggestionsBuilder build) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
-        List<String> list = Lists.newArrayList();
+        List<String> list = new ArrayList<>();
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
         Claim claim = storage.getClaimAt(player.getBlockPos());
         if (claim != null && claim.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos())) {
@@ -499,7 +498,7 @@ public class CommandClaim {
             PermHelper.genericNoPermMessage(player);
             return 0;
         }
-        List<String> modified = Lists.newArrayList();
+        List<String> modified = new ArrayList<>();
         for (GameProfile prof : GameProfileArgumentType.getProfileArgument(context, "players")) {
             if (claim.setPlayerGroup(prof.getId(), group, force))
                 modified.add(prof.getName());

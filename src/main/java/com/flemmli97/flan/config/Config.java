@@ -3,7 +3,6 @@ package com.flemmli97.flan.config;
 import com.flemmli97.flan.Flan;
 import com.flemmli97.flan.api.ClaimPermission;
 import com.flemmli97.flan.api.PermissionRegistry;
-import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.fabricmc.loader.api.FabricLoader;
@@ -19,6 +18,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +46,7 @@ public class Config {
 
     public boolean log;
 
-    private final Map<String, Map<ClaimPermission, Boolean>> globalDefaultPerms = Maps.newHashMap();
+    private final Map<String, Map<ClaimPermission, Boolean>> globalDefaultPerms = new HashMap<>();
 
     public Config(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
@@ -92,7 +92,7 @@ public class Config {
             this.globalDefaultPerms.clear();
             JsonObject glob = ConfigHandler.fromJson(obj, "globalDefaultPerms");
             glob.entrySet().forEach(e -> {
-                Map<ClaimPermission, Boolean> perms = Maps.newHashMap();
+                Map<ClaimPermission, Boolean> perms = new HashMap<>();
                 if (e.getValue().isJsonObject()) {
                     e.getValue().getAsJsonObject().entrySet().forEach(jperm -> {
                         try {
