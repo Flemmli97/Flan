@@ -289,7 +289,7 @@ public class PlayerClaimData {
             Flan.debug("Read following json data {} from file {}", obj, file.getName());
             this.claimBlocks = obj.get("ClaimBlocks").getAsInt();
             this.additionalClaimBlocks = obj.get("AdditionalBlocks").getAsInt();
-            JsonObject defP = ConfigHandler.fromJson(obj, "defaultGroups");
+            JsonObject defP = ConfigHandler.fromJson(obj, "DefaultGroups");
             defP.entrySet().forEach(e -> {
                 Map<ClaimPermission, Boolean> perms = new HashMap<>();
                 perms.forEach((p, b) -> this.editDefaultPerms(e.getKey(), p, b ? 1 : 0));

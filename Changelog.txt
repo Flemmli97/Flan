@@ -1,6 +1,7 @@
 Flan 1.3.1
 ======================
 - Fix the nullpointer when creating claims
+- Fix personal groups not reading from file
 
 Flan 1.3.0
 ======================
