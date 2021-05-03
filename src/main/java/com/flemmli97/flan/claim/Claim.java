@@ -61,7 +61,7 @@ public class Claim implements IPermissionContainer {
 
     public Claim(BlockPos pos1, BlockPos pos2, ServerPlayerEntity creator) {
         this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator.getUuid(), creator.getServerWorld(), PlayerClaimData.get(creator).playerDefaultGroups().isEmpty());
-        PlayerClaimData.get(creator).playerDefaultGroups().forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0)));
+        PlayerClaimData.get(creator).playerDefaultGroups().forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0, true)));
     }
 
     public Claim(BlockPos pos1, BlockPos pos2, UUID creator, ServerWorld world) {
@@ -83,7 +83,7 @@ public class Claim implements IPermissionContainer {
         this.setDirty(true);
         PermissionRegistry.getPerms().stream().filter(perm -> perm.defaultVal).forEach(perm -> this.globalPerm.put(perm, true));
         if (setDefaultGroups)
-            ConfigHandler.config.defaultGroups.forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0)));
+            ConfigHandler.config.defaultGroups.forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0, true)));
     }
 
     public static Claim fromJson(JsonObject obj, UUID owner, ServerWorld world) {
