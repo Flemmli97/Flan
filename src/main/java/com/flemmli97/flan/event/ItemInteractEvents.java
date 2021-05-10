@@ -46,7 +46,7 @@ public class ItemInteractEvents {
         ServerPlayerEntity player = (ServerPlayerEntity) p;
         ItemStack stack = player.getStackInHand(hand);
         if (stack.getItem() == ConfigHandler.config.claimingItem) {
-            HitResult ray = player.rayTrace(64, 0, false);
+            HitResult ray = player.raycast(64, 0, false);
             if (ray != null && ray.getType() == HitResult.Type.BLOCK) {
                 claimLandHandling(player, ((BlockHitResult) ray).getBlockPos());
                 return TypedActionResult.success(stack);
@@ -54,7 +54,7 @@ public class ItemInteractEvents {
             return TypedActionResult.pass(stack);
         }
         if (stack.getItem() == ConfigHandler.config.inspectionItem) {
-            HitResult ray = player.rayTrace(32, 0, false);
+            HitResult ray = player.raycast(32, 0, false);
             if (ray != null && ray.getType() == HitResult.Type.BLOCK) {
                 inspect(player, ((BlockHitResult) ray).getBlockPos());
                 return TypedActionResult.success(stack);
@@ -117,8 +117,8 @@ public class ItemInteractEvents {
      * -2 == Main inventory update
      */
     private static void updateHeldItem(ServerPlayerEntity player) {
-        player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, player.inventory.selectedSlot, player.inventory.getMainHandStack()));
-        player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 40, player.inventory.getStack(40)));
+        player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, player.getInventory().selectedSlot, player.getInventory().getMainHandStack()));
+        player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 40, player.getInventory().getStack(40)));
     }
 
     private static boolean cantClaimInWorld(ServerWorld world) {

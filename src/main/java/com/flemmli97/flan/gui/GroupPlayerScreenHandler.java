@@ -10,7 +10,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
@@ -79,7 +79,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
                     ItemStack group = new ItemStack(Items.PLAYER_HEAD);
                     GameProfile gameProfile = new GameProfile(null, players.get(id));
                     gameProfile = SkullBlockEntity.loadProperties(gameProfile);
-                    group.getOrCreateTag().put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
+                    group.getOrCreateTag().put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
                     inv.setStack(i, group);
                 }
             }
@@ -130,7 +130,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
         }
         ItemStack stack = slot.getStack();
         if (!stack.isEmpty()) {
-            CompoundTag tag = stack.getOrCreateSubTag("SkullOwner");
+            NbtCompound tag = stack.getOrCreateSubTag("SkullOwner");
             if (this.removeMode && tag.contains("Id")) {
                 this.claim.setPlayerGroup(tag.getUuid("Id"), null, false);
                 slot.setStack(ItemStack.EMPTY);

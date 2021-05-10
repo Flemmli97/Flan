@@ -1,5 +1,6 @@
 package com.flemmli97.flan.gui;
 
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -8,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
+import net.minecraft.screen.ScreenHandlerSyncHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -20,6 +22,8 @@ public abstract class ServerOnlyScreenHandler extends ScreenHandler {
 
     private final Inventory inventory;
     private final List<ScreenHandlerListener> listeners = new ArrayList<>();
+
+    private ScreenHandlerSyncHandler syncHandler;
 
     protected ServerOnlyScreenHandler(int syncId, PlayerInventory playerInventory, int rows, Object... additionalData) {
         super(fromRows(rows), syncId);
@@ -69,17 +73,18 @@ public abstract class ServerOnlyScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public ItemStack onSlotClick(int i, int j, SlotActionType actionType, PlayerEntity playerEntity) {
+    public void onSlotClick(int i, int j, SlotActionType actionType, PlayerEntity playerEntity) {
         if (i < 0)
-            return ItemStack.EMPTY;
+            return;
         Slot slot = this.slots.get(i);
-        if (this.isRightSlot(i))
+        if (this.isRightSlot(i)) {
+            if (this.syncHandler != null)
+                this.syncHandler.updateCursorStack(this, this.getCursorStack().copy());
             this.handleSlotClicked((ServerPlayerEntity) playerEntity, i, slot, j);
+        }
         ItemStack stack = slot.getStack().copy();
         for(ScreenHandlerListener listener : this.listeners)
             listener.onSlotUpdate(this, i, stack);
-        ((ServerPlayerEntity) playerEntity).updateCursorStack();
-        return stack;
     }
 
     @Override
@@ -94,12 +99,9 @@ public abstract class ServerOnlyScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public void addListener(ScreenHandlerListener listener) {
-        if (!this.listeners.contains(listener)) {
-            this.listeners.add(listener);
-            listener.onHandlerRegistered(this, this.getStacks());
-            this.sendContentUpdates();
-        }
+    public void updateSyncHandler(ScreenHandlerSyncHandler handler) {
+        super.updateSyncHandler(handler);
+        this.syncHandler = handler;
     }
 
     protected abstract boolean isRightSlot(int slot);

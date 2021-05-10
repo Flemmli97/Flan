@@ -1,6 +1,7 @@
 package com.flemmli97.flan.mixin;
 
 import com.flemmli97.flan.event.BlockInteractEvents;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.TurtleEggBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
@@ -14,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class TurtleEggMixin {
 
     @Inject(method = "onSteppedOn", at = @At(value = "HEAD"), cancellable = true)
-    public void collision(World world, BlockPos pos, Entity entity, CallbackInfo info) {
+    public void collision(World world, BlockPos pos, BlockState state, Entity entity, CallbackInfo info) {
         if (BlockInteractEvents.canBreakTurtleEgg(world, pos, entity)) {
             info.cancel();
         }

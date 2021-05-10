@@ -10,6 +10,7 @@ import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
+import net.minecraft.screen.ScreenHandlerSyncHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -30,6 +31,7 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
 
     private boolean init;
     private String name;
+    private ScreenHandlerSyncHandler syncHandler;
 
     private StringResultScreenHandler(int syncId, PlayerInventory playerInventory, Consumer<String> cons, Runnable ret) {
         super(syncId, playerInventory);
@@ -70,10 +72,12 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
     }
 
     @Override
-    public ItemStack onSlotClick(int i, int j, SlotActionType actionType, PlayerEntity playerEntity) {
+    public void onSlotClick(int i, int j, SlotActionType actionType, PlayerEntity playerEntity) {
         if (i < 0)
-            return ItemStack.EMPTY;
+            return;
         Slot slot = this.slots.get(i);
+        if (this.syncHandler != null)
+            this.syncHandler.updateCursorStack(this, this.getCursorStack().copy());
         if (i == 0)
             this.ret.run();
         else if (i == 2) {
@@ -82,8 +86,6 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
                 this.cons.accept(s);
         }
         this.sendContentUpdates();
-        ((ServerPlayerEntity) playerEntity).updateCursorStack();
-        return slot.getStack();
     }
 
     @Override
@@ -101,12 +103,9 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
     }
 
     @Override
-    public void addListener(ScreenHandlerListener listener) {
-        if (!this.listeners.contains(listener)) {
-            this.listeners.add(listener);
-            listener.onHandlerRegistered(this, this.getStacks());
-            this.sendContentUpdates();
-        }
+    public void updateSyncHandler(ScreenHandlerSyncHandler handler) {
+        super.updateSyncHandler(handler);
+        this.syncHandler = handler;
     }
 
     @Override

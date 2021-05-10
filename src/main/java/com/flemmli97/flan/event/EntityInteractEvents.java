@@ -152,7 +152,7 @@ public class EntityInteractEvents {
                     IntOpenHashSet pierced = ((IPersistentProjectileVars) pers).getPiercedEntities();
                     if (pierced == null)
                         pierced = new IntOpenHashSet(5);
-                    pierced.add(hit.getEntityId());
+                    pierced.add(hit.getId());
                     ((IPersistentProjectileVars) pers).setPiercedEntities(pierced);
                     pers.setPierceLevel((byte) (pers.getPierceLevel() + 1));
                 }
@@ -226,7 +226,7 @@ public class EntityInteractEvents {
             if (claim != null)
                 allow = claim.canInteract((ServerPlayerEntity) player, PermissionRegistry.DROP, pos, false);
             if (!allow) {
-                player.inventory.insertStack(stack);
+                player.getInventory().insertStack(stack);
                 DefaultedList<ItemStack> stacks = DefaultedList.of();
                 for (int j = 0; j < player.currentScreenHandler.slots.size(); ++j) {
                     ItemStack itemStack2 = player.currentScreenHandler.slots.get(j).getStack();

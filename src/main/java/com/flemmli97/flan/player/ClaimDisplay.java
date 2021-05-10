@@ -142,7 +142,7 @@ public class ClaimDisplay {
         if (state.getMaterial().isReplaceable()) {
             pos = pos.down();
             state = world.getBlockState(pos);
-            while (state.getMaterial().isReplaceable() && !World.isHeightInvalid(pos)) {
+            while (state.getMaterial().isReplaceable() && !world.isOutOfHeightLimit(pos)) {
                 pos = pos.down();
                 state = world.getBlockState(pos);
             }

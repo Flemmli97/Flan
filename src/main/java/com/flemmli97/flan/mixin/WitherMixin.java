@@ -12,11 +12,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class WitherMixin {
 
     @Shadow
-    private int field_7082;
+    private int blockBreakingCooldown;
 
     @Inject(method = "mobTick", at = @At(value = "HEAD"))
     public void preventClaimDmg(CallbackInfo info) {
         if (!EntityInteractEvents.witherCanDestroy((WitherEntity) (Object) this))
-            this.field_7082 = -1;
+            this.blockBreakingCooldown = -1;
     }
 }

@@ -2,7 +2,7 @@ package com.flemmli97.flan.mixin;
 
 import com.flemmli97.flan.player.IPlayerClaimImpl;
 import com.flemmli97.flan.player.PlayerClaimData;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,13 +26,13 @@ public abstract class PlayerClaimMixin implements IPlayerClaimImpl {
         this.claimData = new PlayerClaimData((ServerPlayerEntity) (Object) this);
     }
 
-    @Inject(method = "readCustomDataFromTag", at = @At("RETURN"))
-    private void readData(CompoundTag tag, CallbackInfo info) {
+    @Inject(method = "readCustomDataFromNbt", at = @At("RETURN"))
+    private void readData(NbtCompound tag, CallbackInfo info) {
         this.claimData.read(this.server);
     }
 
-    @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
-    private void writeData(CompoundTag tag, CallbackInfo info) {
+    @Inject(method = "writeCustomDataToNbt", at = @At("RETURN"))
+    private void writeData(NbtCompound tag, CallbackInfo info) {
         this.claimData.save(this.server);
     }
 
