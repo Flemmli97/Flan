@@ -76,7 +76,7 @@ public abstract class ServerOnlyScreenHandler extends ScreenHandler {
         if (this.isRightSlot(i))
             this.handleSlotClicked((ServerPlayerEntity) playerEntity, i, slot, j);
         ItemStack stack = slot.getStack().copy();
-        for(ScreenHandlerListener listener : this.listeners)
+        for (ScreenHandlerListener listener : this.listeners)
             listener.onSlotUpdate(this, i, stack);
         ((ServerPlayerEntity) playerEntity).updateCursorStack();
         return stack;

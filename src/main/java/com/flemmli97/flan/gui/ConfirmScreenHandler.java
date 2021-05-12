@@ -11,8 +11,6 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -49,12 +47,12 @@ public class ConfirmScreenHandler extends ServerOnlyScreenHandler {
             switch (i) {
                 case 3:
                     ItemStack yes = new ItemStack(Items.GREEN_WOOL);
-                    yes.setCustomName(new LiteralText(ConfigHandler.lang.screenYes).setStyle(Style.EMPTY.withFormatting(Formatting.GREEN)));
+                    yes.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenYes, Formatting.GREEN));
                     inv.setStack(i, yes);
                     break;
                 case 5:
                     ItemStack no = new ItemStack(Items.RED_WOOL);
-                    no.setCustomName(new LiteralText(ConfigHandler.lang.screenNo).setStyle(Style.EMPTY.withFormatting(Formatting.RED)));
+                    no.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNo, Formatting.RED));
                     inv.setStack(i, no);
                     break;
                 default:

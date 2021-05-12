@@ -17,8 +17,6 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -60,15 +58,15 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
-                close.setCustomName(new LiteralText(ConfigHandler.lang.screenBack).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)));
+                close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenBack, Formatting.DARK_RED));
                 inv.setStack(i, close);
             } else if (i == 3) {
                 ItemStack stack = new ItemStack(Items.ANVIL);
-                stack.setCustomName(new LiteralText(ConfigHandler.lang.screenAdd).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_GREEN)));
+                stack.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenAdd, Formatting.DARK_GREEN));
                 inv.setStack(i, stack);
             } else if (i == 4) {
                 ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-                stack.setCustomName(new LiteralText(String.format(ConfigHandler.lang.screenRemoveMode, this.removeMode)).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)));
+                stack.setCustomName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenRemoveMode, this.removeMode), Formatting.DARK_RED));
                 inv.setStack(i, stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 inv.setStack(i, ServerScreenHelper.emptyFiller());
@@ -123,7 +121,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
         if (index == 4) {
             this.removeMode = !this.removeMode;
             ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-            stack.setCustomName(new LiteralText(String.format(ConfigHandler.lang.screenRemoveMode, this.removeMode)).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)));
+            stack.setCustomName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenRemoveMode, this.removeMode), Formatting.DARK_RED));
             slot.setStack(stack);
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;

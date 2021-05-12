@@ -15,8 +15,6 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -50,22 +48,22 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
             switch (i) {
                 case 0:
                     ItemStack close = new ItemStack(Items.TNT);
-                    close.setCustomName(new LiteralText(ConfigHandler.lang.screenClose).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)));
+                    close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenClose, Formatting.DARK_RED));
                     inv.setStack(i, close);
                     break;
                 case 2:
                     ItemStack perm = new ItemStack(Items.BEACON);
-                    perm.setCustomName(new LiteralText(ConfigHandler.lang.screenMenuGlobal).setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
+                    perm.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuGlobal, Formatting.GOLD));
                     inv.setStack(i, perm);
                     break;
                 case 3:
                     ItemStack group = new ItemStack(Items.WRITABLE_BOOK);
-                    group.setCustomName(new LiteralText(ConfigHandler.lang.screenMenuGroup).setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
+                    group.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuGroup, Formatting.GOLD));
                     inv.setStack(i, group);
                     break;
                 case 8:
                     ItemStack delete = new ItemStack(Items.BARRIER);
-                    delete.setCustomName(new LiteralText(ConfigHandler.lang.screenMenuDelete).setStyle(Style.EMPTY.withFormatting(Formatting.RED)));
+                    delete.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuDelete, Formatting.RED));
                     inv.setStack(i, delete);
                     break;
                 default:
