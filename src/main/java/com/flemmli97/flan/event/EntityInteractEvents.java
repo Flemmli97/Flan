@@ -16,7 +16,9 @@ import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
+import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.Monster;
+import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -41,6 +43,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -250,6 +253,32 @@ public class EntityInteractEvents {
                 if (!claim.canInteract(null, PermissionRegistry.WITHER, pos.set(pos.getX() + x, pos.getY() + 0, pos.getZ() + z), false))
                     return false;
             }
+        return true;
+    }
+
+    public static boolean canEndermanInteract(EndermanEntity enderman, BlockPos pos) {
+        if (enderman.world.isClient)
+            return true;
+        ClaimStorage storage = ClaimStorage.get((ServerWorld) enderman.world);
+        IPermissionContainer claim = storage.getForPermissionCheck(pos);
+        if (!claim.canInteract(null, PermissionRegistry.ENDERMAN, pos, false))
+            return false;
+        return true;
+    }
+
+    public static boolean canSnowGolemInteract(SnowGolemEntity snowgolem) {
+        if (snowgolem.world.isClient)
+            return true;
+        int x, y, z;
+        for (int l = 0; l < 4; ++l) {
+            x = MathHelper.floor(snowgolem.getX() + (l % 2 * 2 - 1) * 0.25F);
+            y = MathHelper.floor(snowgolem.getY());
+            z = MathHelper.floor(snowgolem.getZ() + (l / 2 % 2 * 2 - 1) * 0.25F);
+            BlockPos pos = new BlockPos(x, y, z);
+            IPermissionContainer claim = ClaimStorage.get((ServerWorld) snowgolem.world).getForPermissionCheck(pos);
+            if (!claim.canInteract(null, PermissionRegistry.SNOWGOLEM, pos, false))
+                return false;
+        }
         return true;
     }
 }

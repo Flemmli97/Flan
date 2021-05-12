@@ -66,9 +66,12 @@ public class PermissionRegistry {
     public static ClaimPermission BREAKNONLIVING = register(new ClaimPermission("BREAKNONLIVING", () -> new ItemStack(Items.COMMAND_BLOCK_MINECART), "Permission to break things like minecarts or armor stands"));
     public static ClaimPermission DROP = register(new ClaimPermission("DROP", () -> new ItemStack(Items.BOWL), true, "Allow the drop of items"));
     public static ClaimPermission PICKUP = register(new ClaimPermission("PICKUP", () -> new ItemStack(Items.BRICK), true, "Allow the pickup of items"));
+
     public static ClaimPermission HURTPLAYER = global(new ClaimPermission("HURTPLAYER", () -> new ItemStack(Items.DIAMOND_SWORD), "Permission to hurt other players"));
     public static ClaimPermission EXPLOSIONS = global(new ClaimPermission("EXPLOSIONS", () -> new ItemStack(Items.TNT), "Toggle explosions in claim"));
     public static ClaimPermission WITHER = global(new ClaimPermission("WITHER", () -> new ItemStack(Items.WITHER_SKELETON_SKULL), "Toggle wither breaking blocks in claim"));
+    public static ClaimPermission ENDERMAN = global(new ClaimPermission("ENDERMAN", () -> new ItemStack(Items.ENDER_EYE), true, "Allow enderman picking and placing blocks"));
+    public static ClaimPermission SNOWGOLEM = global(new ClaimPermission("SNOWGOLEM", () -> new ItemStack(Items.SNOW_BLOCK), true, "Allow snowgolems snowlayer"));
     public static ClaimPermission FIRESPREAD = global(new ClaimPermission("FIRESPREAD", () -> new ItemStack(Items.BLAZE_POWDER), "Toggle firespread in claim"));
     public static ClaimPermission WATERBORDER = global(new ClaimPermission("WATERBORDER", () -> new ItemStack(Items.WATER_BUCKET), "Toggle water crossing claim borders"));
     public static ClaimPermission PISTONBORDER = global(new ClaimPermission("PISTONBORDER", () -> new ItemStack(Items.PISTON), "Toggle piston pull/push across claim borders"));
