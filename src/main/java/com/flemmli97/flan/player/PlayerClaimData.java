@@ -53,7 +53,7 @@ public class PlayerClaimData {
     private boolean confirmDeleteAll, adminIgnoreClaim, claimBlockMessage;
     private boolean dirty;
 
-    private Map<String, Map<ClaimPermission, Boolean>> defaultGroups = new HashMap<>();
+    private final Map<String, Map<ClaimPermission, Boolean>> defaultGroups = new HashMap<>();
 
     public PlayerClaimData(ServerPlayerEntity player) {
         this.player = player;
@@ -291,8 +291,15 @@ public class PlayerClaimData {
             this.additionalClaimBlocks = obj.get("AdditionalBlocks").getAsInt();
             JsonObject defP = ConfigHandler.fromJson(obj, "DefaultGroups");
             defP.entrySet().forEach(e -> {
-                Map<ClaimPermission, Boolean> perms = new HashMap<>();
-                perms.forEach((p, b) -> this.editDefaultPerms(e.getKey(), p, b ? 1 : 0));
+                if (e.getValue().isJsonObject()) {
+                    e.getValue().getAsJsonObject().entrySet().forEach(p -> {
+                        try {
+                            this.editDefaultPerms(e.getKey(), PermissionRegistry.get(p.getKey()), p.getValue().getAsBoolean() ? 1 : 0);
+                        } catch (NullPointerException ex) {
+                            Flan.logger.error("Error reading Permission {} for personal group {} for player {}. Permission doesnt exist", p.getKey(), e.getKey(), this.player.getName().asString());
+                        }
+                    });
+                }
             });
             reader.close();
         } catch (IOException e) {
