@@ -250,7 +250,7 @@ public class EntityInteractEvents {
         for (int x = -1; x <= 1; x++)
             for (int z = -1; z <= 1; z++) {
                 IPermissionContainer claim = storage.getForPermissionCheck(wither.getBlockPos().add(x, 0, z));
-                if (!claim.canInteract(null, PermissionRegistry.WITHER, pos.set(pos.getX() + x, pos.getY() + 0, pos.getZ() + z), false))
+                if (!claim.canInteract(null, PermissionRegistry.WITHER, pos.set(pos.getX() + x, pos.getY() + 3, pos.getZ() + z), false))
                     return false;
             }
         return true;
@@ -261,9 +261,7 @@ public class EntityInteractEvents {
             return true;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) enderman.world);
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
-        if (!claim.canInteract(null, PermissionRegistry.ENDERMAN, pos, false))
-            return false;
-        return true;
+        return claim.canInteract(null, PermissionRegistry.ENDERMAN, pos, false);
     }
 
     public static boolean canSnowGolemInteract(SnowGolemEntity snowgolem) {
