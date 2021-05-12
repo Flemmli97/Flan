@@ -100,7 +100,7 @@ public class PermissionRegistry {
 
     public static ClaimPermission get(String id) {
         if (!permissions.containsKey(id))
-            throw new NullPointerException("No such permission registered");
+            throw new NullPointerException("No such permission "+ id + " registered");
         return permissions.get(id);
     }
 

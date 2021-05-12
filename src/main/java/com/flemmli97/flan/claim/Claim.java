@@ -1,5 +1,6 @@
 package com.flemmli97.flan.claim;
 
+import com.flemmli97.flan.Flan;
 import com.flemmli97.flan.api.ClaimPermission;
 import com.flemmli97.flan.api.ClaimPermissionEvent;
 import com.flemmli97.flan.api.PermissionRegistry;
@@ -475,9 +476,21 @@ public class Claim implements IPermissionContainer {
             this.parent = UUID.fromString(obj.get("Parent").getAsString());
         if (obj.has("GlobalPerms")) {
             if (this.parent == null) {
-                obj.getAsJsonArray("GlobalPerms").forEach(perm -> this.globalPerm.put(PermissionRegistry.get(perm.getAsString()), true));
+                obj.getAsJsonArray("GlobalPerms").forEach(perm -> {
+                    try {
+                        this.globalPerm.put(PermissionRegistry.get(perm.getAsString()), true);
+                    } catch (NullPointerException e) {
+                        Flan.logger.error("Error reading permission {} from json for claim {} belonging to {}. No such permission exist", perm.getAsString(), this.claimID, this.owner);
+                    }
+                });
             } else {
-                obj.getAsJsonObject("GlobalPerms").entrySet().forEach(entry -> this.globalPerm.put(PermissionRegistry.get(entry.getKey()), entry.getValue().getAsBoolean()));
+                obj.getAsJsonObject("GlobalPerms").entrySet().forEach(entry -> {
+                    try {
+                        this.globalPerm.put(PermissionRegistry.get(entry.getKey()), entry.getValue().getAsBoolean());
+                    } catch (NullPointerException e) {
+                        Flan.logger.error("Error reading permission {} from json for claim {} belonging to {}. No such permission exist", entry.getKey(), this.claimID, this.owner);
+                    }
+                });
             }
         }
         if (obj.has("PermGroup")) {
@@ -485,7 +498,13 @@ public class Claim implements IPermissionContainer {
             perms.entrySet().forEach(key -> {
                 Map<ClaimPermission, Boolean> map = new HashMap<>();
                 JsonObject group = key.getValue().getAsJsonObject();
-                group.entrySet().forEach(gkey -> map.put(PermissionRegistry.get(gkey.getKey()), gkey.getValue().getAsBoolean()));
+                group.entrySet().forEach(gkey -> {
+                    try {
+                        map.put(PermissionRegistry.get(gkey.getKey()), gkey.getValue().getAsBoolean());
+                    } catch (NullPointerException e) {
+                        Flan.logger.error("Error reading permission {} from json for claim {} belonging to {}. No such permission exist", gkey.getKey(), this.claimID, this.owner);
+                    }
+                });
                 this.permissions.put(key.getKey(), map);
             });
         }
