@@ -1,5 +1,7 @@
 package io.github.flemmli97.flan.mixin;
 
+import io.github.flemmli97.flan.claim.Claim;
+import io.github.flemmli97.flan.event.EntityInteractEvents;
 import io.github.flemmli97.flan.player.IPlayerClaimImpl;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.nbt.NbtCompound;
@@ -17,6 +19,9 @@ public abstract class PlayerClaimMixin implements IPlayerClaimImpl {
 
     @Unique
     private PlayerClaimData claimData;
+
+    @Unique
+    private Claim currentClaim;
 
     @Shadow
     private MinecraftServer server;
@@ -46,8 +51,18 @@ public abstract class PlayerClaimMixin implements IPlayerClaimImpl {
         this.claimData.clone(PlayerClaimData.get(oldPlayer));
     }
 
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void claimupdate(CallbackInfo info) {
+        EntityInteractEvents.updateClaim((ServerPlayerEntity) (Object) this, this.currentClaim, claim -> this.currentClaim = claim);
+    }
+
     @Override
     public PlayerClaimData get() {
         return this.claimData;
+    }
+
+    @Override
+    public Claim getCurrentClaim() {
+        return this.currentClaim;
     }
 }

@@ -2,11 +2,13 @@ package io.github.flemmli97.flan.event;
 
 import io.github.flemmli97.flan.api.ClaimPermission;
 import io.github.flemmli97.flan.api.PermissionRegistry;
+import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.IPermissionContainer;
 import io.github.flemmli97.flan.claim.ObjectToPermissionMap;
 import io.github.flemmli97.flan.mixin.IPersistentProjectileVars;
 import io.github.flemmli97.flan.player.IOwnedItem;
+import io.github.flemmli97.flan.player.TeleportUtils;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -32,6 +34,7 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.StorageMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -45,6 +48,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import java.util.function.Consumer;
 
 public class EntityInteractEvents {
 
@@ -293,9 +298,9 @@ public class EntityInteractEvents {
                         Vec3d tp = TeleportUtils.getTeleportPos(player, pos, storage, currentClaim.getDimensions(), bPos, (claim, nPos) -> claim.canInteract(player, PermissionRegistry.CANSTAY, nPos, false));
                         player.teleport(tp.getX(), tp.getY(), tp.getZ());
                     }
-                    if (player.abilities.flying && !player.isCreative() && !currentClaim.canInteract(player, PermissionRegistry.FLIGHT, rounded, true)) {
-                        player.abilities.flying = false;
-                        player.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.abilities));
+                    if (player.getAbilities().flying && !player.isCreative() && !currentClaim.canInteract(player, PermissionRegistry.FLIGHT, rounded, true)) {
+                        player.getAbilities().flying = false;
+                        player.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.getAbilities()));
                     }
                 }
             }

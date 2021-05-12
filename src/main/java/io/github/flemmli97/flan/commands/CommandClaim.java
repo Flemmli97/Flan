@@ -28,6 +28,7 @@ import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.GameProfileArgumentType;
+import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -114,6 +115,7 @@ public class CommandClaim {
 
         dispatcher.register(CommandManager.literal("fly").executes(context -> {
             context.getSource().getPlayer().getAbilities().allowFlying = true;
+            context.getSource().getPlayer().networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(context.getSource().getPlayer().getAbilities()));
             return 0;
         }));
     }

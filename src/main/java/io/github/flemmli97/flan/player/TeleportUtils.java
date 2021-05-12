@@ -1,7 +1,7 @@
-package com.flemmli97.flan.player;
+package io.github.flemmli97.flan.player;
 
-import com.flemmli97.flan.claim.Claim;
-import com.flemmli97.flan.claim.ClaimStorage;
+import io.github.flemmli97.flan.claim.Claim;
+import io.github.flemmli97.flan.claim.ClaimStorage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
