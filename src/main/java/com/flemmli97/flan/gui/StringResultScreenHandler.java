@@ -14,7 +14,6 @@ import net.minecraft.screen.ScreenHandlerSyncHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,7 +38,7 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
         stack.setCustomName(PermHelper.simpleColoredText(""));
         this.input.setStack(0, stack);
         ItemStack out = new ItemStack(Items.BOOK);
-        out.setCustomName(PermHelper.simpleColoredText(ConfigHandler.lang.stringScreenReturn));
+        out.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.stringScreenReturn));
         this.output.setStack(0, out);
         this.cons = cons;
         this.ret = ret;
@@ -129,7 +128,7 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
             if (StringUtils.isBlank(this.name))
                 out.removeCustomName();
             else if (!this.name.equals(out.getName().getString())) {
-                out.setCustomName(new LiteralText(this.name));
+                out.setCustomName(ServerScreenHelper.coloredGuiText(this.name));
             }
         }
         this.sendContentUpdates();

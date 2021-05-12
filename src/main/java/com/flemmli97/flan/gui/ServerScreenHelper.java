@@ -31,18 +31,18 @@ public class ServerScreenHelper {
 
     public static ItemStack fromPermission(Claim claim, ClaimPermission perm, String group) {
         ItemStack stack = perm.getItem();
-        stack.setCustomName(new LiteralText(perm.id).setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
+        stack.setCustomName(ServerScreenHelper.coloredGuiText(perm.id, Formatting.GOLD));
         NbtList lore = new NbtList();
         for (String pdesc : perm.desc) {
-            Text trans = new LiteralText(pdesc).setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
+            Text trans = ServerScreenHelper.coloredGuiText(pdesc, Formatting.YELLOW);
             lore.add(NbtString.of(Text.Serializer.toJson(trans)));
         }
         Boolean global = ConfigHandler.config.getGlobal(claim.getWorld(), perm);
         if (!claim.isAdminClaim() && global != null) {
-            Text text = new LiteralText(ConfigHandler.lang.screenUneditable).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED));
+            Text text = ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenUneditable, Formatting.DARK_RED);
             lore.add(NbtString.of(Text.Serializer.toJson(text)));
             String permFlag = global.toString();
-            Text text2 = new LiteralText(String.format(ConfigHandler.lang.screenEnableText, permFlag)).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
+            Text text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals("true") ? Formatting.GREEN : Formatting.RED);
             lore.add(NbtString.of(Text.Serializer.toJson(text2)));
         } else {
             String permFlag;
@@ -75,7 +75,7 @@ public class ServerScreenHelper {
                         break;
                 }
             }
-            Text text = new LiteralText(String.format(ConfigHandler.lang.screenEnableText, permFlag)).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
+            Text text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals("true") ? Formatting.GREEN : Formatting.RED);
             lore.add(NbtString.of(Text.Serializer.toJson(text)));
         }
         stack.getOrCreateSubTag("display").put("Lore", lore);
@@ -84,18 +84,18 @@ public class ServerScreenHelper {
 
     public static ItemStack getFromPersonal(ServerPlayerEntity player, ClaimPermission perm, String group) {
         ItemStack stack = perm.getItem();
-        stack.setCustomName(new LiteralText(perm.id).setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
+        stack.setCustomName(ServerScreenHelper.coloredGuiText(perm.id, Formatting.GOLD));
         NbtList lore = new NbtList();
         for (String pdesc : perm.desc) {
-            Text trans = new LiteralText(pdesc).setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
+            Text trans = ServerScreenHelper.coloredGuiText(pdesc, Formatting.YELLOW);
             lore.add(NbtString.of(Text.Serializer.toJson(trans)));
         }
         Boolean global = ConfigHandler.config.getGlobal(player.getServerWorld(), perm);
         if (global != null) {
-            Text text = new LiteralText(ConfigHandler.lang.screenUneditable).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED));
+            Text text = ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenUneditable, Formatting.DARK_RED);
             lore.add(NbtString.of(Text.Serializer.toJson(text)));
             String permFlag = global.toString();
-            Text text2 = new LiteralText(String.format(ConfigHandler.lang.screenEnableText, permFlag)).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
+            Text text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals("true") ? Formatting.GREEN : Formatting.RED);
             lore.add(NbtString.of(Text.Serializer.toJson(text2)));
         } else {
             String permFlag;
@@ -104,7 +104,7 @@ public class ServerScreenHelper {
                 permFlag = map.get(perm) ? "true" : "false";
             else
                 permFlag = "default";
-            Text text = new LiteralText(String.format(ConfigHandler.lang.screenEnableText, permFlag)).setStyle(Style.EMPTY.withFormatting(permFlag.equals("true") ? Formatting.GREEN : Formatting.RED));
+            Text text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals("true") ? Formatting.GREEN : Formatting.RED);
             lore.add(NbtString.of(Text.Serializer.toJson(text)));
         }
         stack.getOrCreateSubTag("display").put("Lore", lore);
@@ -114,6 +114,9 @@ public class ServerScreenHelper {
     public static void playSongToPlayer(ServerPlayerEntity player, SoundEvent event, float vol, float pitch) {
         player.networkHandler.sendPacket(
                 new PlaySoundS2CPacket(event, SoundCategory.PLAYERS, player.getPos().x, player.getPos().y, player.getPos().z, vol, pitch));
+    }
 
+    public static Text coloredGuiText(String text, Formatting... formattings) {
+        return new LiteralText(text).setStyle(Style.EMPTY.withItalic(false).withFormatting(formattings));
     }
 }
