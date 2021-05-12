@@ -3,6 +3,7 @@ Flan 1.3.2
 - Change gui item text to non italic (there are some very picky people)
 - Add enderman grief permission
 - Add snowman snowlayers permission
+- Truly fix personal groups saving issues ._. (pls...)
 
 Flan 1.3.1
 ======================
