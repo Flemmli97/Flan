@@ -108,6 +108,14 @@ public class LangConfig {
     public String screenPersonalGroups = "Personal-Groups";
     public String screenPersonalPermissions = "Personal Permissions for %s";
 
+    public String sellDisabled = "Claimblocks selling is disabled";
+    public String buyDisabled = "Claimblocks purchasing is disabled";
+    public String sellFail = "Not enough claimblocks to sell";
+    public String buyFail = "Not enough money";
+    public String sellSuccess = "Sold %1$s claimblocks for %2$s";
+    public String buySuccess = "Bought %1$s claimblocks for %2$s";
+    public String gunpowderMissing = "Missing gunpowder currency mod";
+
     public LangConfig(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
         //server.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();

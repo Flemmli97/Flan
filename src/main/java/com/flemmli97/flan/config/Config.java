@@ -46,6 +46,9 @@ public class Config {
     public int claimDisplayTime = 1000;
     public int permissionLevel = 2;
 
+    public int sellPrice = -1;
+    public int buyPrice = -1;
+
     public boolean log;
 
     public Map<String, Map<ClaimPermission, Boolean>> defaultGroups = createHashMap(map -> {
@@ -139,6 +142,8 @@ public class Config {
             });
             this.log = ConfigHandler.fromJson(obj, "enableLogs", this.log);
             this.permissionLevel = ConfigHandler.fromJson(obj, "permissionLevel", this.permissionLevel);
+            this.sellPrice = ConfigHandler.fromJson(obj, "sellPrice", this.sellPrice);
+            this.buyPrice = ConfigHandler.fromJson(obj, "buyPrice", this.buyPrice);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -182,6 +187,8 @@ public class Config {
         });
         obj.add("globalDefaultPerms", global);
         obj.addProperty("enableLogs", this.log);
+        obj.addProperty("sellPrice", this.sellPrice);
+        obj.addProperty("buyPrice", this.buyPrice);
         try {
             FileWriter writer = new FileWriter(this.config);
             ConfigHandler.GSON.toJson(obj, writer);

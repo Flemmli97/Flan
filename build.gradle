@@ -12,9 +12,14 @@ group = project.maven_group
 
 repositories {
 	mavenCentral()
+	jcenter()
 	maven {
 		name = 'Fabric-Permission-API'
 		url 'https://oss.sonatype.org/content/repositories/snapshots'
+	}
+	maven {
+		name = "Gunpowder"
+		url = "https://maven.martmists.com/releases"
 	}
 }
 
@@ -31,6 +36,7 @@ dependencies {
 	include group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
 	modImplementation 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'
+	modCompileOnly "io.github.gunpowder:gunpowder-api:${gunpowder_version}+1.16.2"
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
 }
