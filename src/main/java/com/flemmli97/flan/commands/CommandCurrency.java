@@ -27,9 +27,9 @@ public class CommandCurrency {
             context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.sellDisabled, Formatting.DARK_RED), false);
             return 0;
         }
-        int amount = IntegerArgumentType.getInteger(context, "amount");
+        int amount = Math.max(0, IntegerArgumentType.getInteger(context, "amount"));
         PlayerClaimData data = PlayerClaimData.get(context.getSource().getPlayer());
-        if (data.getAdditionalClaims() - data.usedClaimBlocks() + data.getClaimBlocks() < amount) {
+        if (data.getAdditionalClaims() - Math.max(0, data.usedClaimBlocks() - data.getClaimBlocks()) < amount) {
             context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.sellFail, Formatting.DARK_RED), false);
             return 0;
         }
@@ -51,7 +51,7 @@ public class CommandCurrency {
             return 0;
         }
         StoredBalance bal = GunpowderMod.getInstance().getRegistry().getModelHandler(BalanceHandler.class).getUser(context.getSource().getPlayer().getUuid());
-        int amount = IntegerArgumentType.getInteger(context, "amount");
+        int amount = Math.max(0, IntegerArgumentType.getInteger(context, "amount"));
         BigDecimal price = BigDecimal.valueOf(amount * ConfigHandler.config.buyPrice);
         if (bal.getBalance().compareTo(price) > 0) {
             PlayerClaimData data = PlayerClaimData.get(context.getSource().getPlayer());
