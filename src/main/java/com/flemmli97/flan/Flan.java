@@ -25,6 +25,7 @@ public class Flan implements ModInitializer {
     public static final Logger logger = LogManager.getLogger("flan");
 
     public static boolean permissionAPI;
+    public static boolean gunpowder;
 
     @Override
     public void onInitialize() {
@@ -40,6 +41,7 @@ public class Flan implements ModInitializer {
         CommandRegistrationCallback.EVENT.register(CommandClaim::register);
 
         permissionAPI = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
+        gunpowder = FabricLoader.getInstance().isModLoaded("gunpowder-currency");
     }
 
     public void lockRegistry(MinecraftServer server) {

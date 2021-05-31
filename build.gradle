@@ -24,6 +24,10 @@ repositories {
 			includeGroupByRegex 'io\\.github\\.onyxstudios.*'
 		}
 	}
+	maven {
+		name = "Gunpowder"
+		url = "https://maven.martmists.com/releases"
+	}
 }
 
 dependencies {
@@ -38,6 +42,8 @@ dependencies {
 	modImplementation group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 	include group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
+	modImplementation 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'
+	modCompileOnly "io.github.gunpowder:gunpowder-api:${gunpowder_version}+1.16.2"
 	modImplementation "me.lucko:fabric-permissions-api:${project.fabric_permissions_api}"
 	modImplementation "io.github.ladysnake:PlayerAbilityLib:${project.player_ability_lib}"
 

@@ -36,6 +36,9 @@ public class CommandPermission {
     public static final String cmdGroup = "flan.command.group";
     public static final String cmdPermission = "flan.command.permission";
 
+    public static final String cmdSell = "flan.command.buy";
+    public static final String cmdBuy = "flan.command.sell";
+
     public static boolean perm(CommandSource src, String perm) {
         return perm(src, perm, false);
     }
