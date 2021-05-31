@@ -29,7 +29,6 @@ import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.entity.vehicle.StorageMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
@@ -165,9 +164,9 @@ public class EntityInteractEvents {
         return false;
     }
 
-    public static boolean preventDamage(LivingEntity entity, DamageSource source) {
+    public static boolean preventDamage(Entity entity, DamageSource source) {
         if (source.getAttacker() instanceof ServerPlayerEntity)
-            return attackSimple((ServerPlayerEntity) source.getAttacker(), entity, false) != ActionResult.PASS;
+            return attackSimple((ServerPlayerEntity) source.getAttacker(), entity, true) != ActionResult.PASS;
         else if (source.isExplosive() && !entity.world.isClient) {
             IPermissionContainer claim = ClaimStorage.get((ServerWorld) entity.world).getForPermissionCheck(entity.getBlockPos());
             return claim != null && !claim.canInteract(null, PermissionRegistry.EXPLOSIONS, entity.getBlockPos());
@@ -185,7 +184,7 @@ public class EntityInteractEvents {
         BlockPos pos = entity.getBlockPos();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
-            if (entity instanceof ArmorStandEntity || entity instanceof MinecartEntity || entity instanceof BoatEntity || entity instanceof ItemFrameEntity)
+            if (!(entity instanceof LivingEntity))
                 return claim.canInteract(player, PermissionRegistry.BREAKNONLIVING, pos, message) ? ActionResult.PASS : ActionResult.FAIL;
             if (entity instanceof PlayerEntity)
                 return claim.canInteract(player, PermissionRegistry.HURTPLAYER, pos, message) ? ActionResult.PASS : ActionResult.FAIL;
