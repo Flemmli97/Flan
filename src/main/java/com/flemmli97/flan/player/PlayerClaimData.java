@@ -86,7 +86,7 @@ public class PlayerClaimData {
     }
 
     public void setAdditionalClaims(int amount) {
-        this.additionalClaimBlocks = amount;
+        this.additionalClaimBlocks = Math.max(0, amount);
         this.dirty = true;
     }
 
