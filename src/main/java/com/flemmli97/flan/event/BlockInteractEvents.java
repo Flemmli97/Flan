@@ -78,6 +78,8 @@ public class BlockInteractEvents {
                 if (ConfigHandler.config.ignoredBlocks.contains(id.toString()))
                     return ActionResult.PASS;
                 ClaimPermission perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
+                if (perm == PermissionRegistry.PROJECTILES)
+                    perm = PermissionRegistry.OPENCONTAINER;
                 //Pressureplate handled elsewhere
                 if (perm != null && perm != PermissionRegistry.PRESSUREPLATE) {
                     if (claim.canInteract(player, perm, hitResult.getBlockPos(), true))
