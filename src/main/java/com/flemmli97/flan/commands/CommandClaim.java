@@ -8,6 +8,8 @@ import com.flemmli97.flan.claim.PermHelper;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.gui.ClaimMenuScreenHandler;
 import com.flemmli97.flan.gui.PersonalGroupScreenHandler;
+import com.flemmli97.flan.integration.gunpowder.CommandCurrency;
+import com.flemmli97.flan.integration.permissionapi.CommandPermission;
 import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.EnumEditMode;
 import com.flemmli97.flan.player.OfflinePlayerData;
