@@ -21,6 +21,14 @@ repositories {
 		name = "Gunpowder"
 		url = "https://maven.martmists.com/releases"
 	}
+	maven {
+		name = 'Ladysnake Mods'
+		url = 'https://ladysnake.jfrog.io/artifactory/mods'
+		content {
+			includeGroup 'io.github.ladysnake'
+			includeGroupByRegex 'io\\.github\\.onyxstudios.*'
+		}
+	}
 }
 
 dependencies {
@@ -35,8 +43,9 @@ dependencies {
 	compile group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 	include group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
-	modImplementation 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'
+	modImplementation "me.lucko:fabric-permissions-api:${project.fabric_permissions_api}"
 	modCompileOnly "io.github.gunpowder:gunpowder-api:${gunpowder_version}+1.16.2"
+	modImplementation "io.github.ladysnake:PlayerAbilityLib:${project.player_ability_lib}"
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
 }
