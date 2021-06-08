@@ -1,17 +1,17 @@
 package io.github.flemmli97.flan.claim;
 
-import io.github.flemmli97.flan.Flan;
-import io.github.flemmli97.flan.api.ClaimPermission;
-import io.github.flemmli97.flan.api.ClaimPermissionEvent;
-import io.github.flemmli97.flan.api.PermissionRegistry;
-import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.player.PlayerClaimData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
+import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.api.ClaimPermission;
+import io.github.flemmli97.flan.api.ClaimPermissionEvent;
+import io.github.flemmli97.flan.api.PermissionRegistry;
+import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;

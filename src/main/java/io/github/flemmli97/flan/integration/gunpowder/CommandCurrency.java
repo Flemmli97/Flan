@@ -1,13 +1,13 @@
 package io.github.flemmli97.flan.integration.gunpowder;
 
-import io.github.flemmli97.flan.Flan;
-import io.github.flemmli97.flan.claim.PermHelper;
-import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.player.PlayerClaimData;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.gunpowder.api.GunpowderMod;
 import io.github.gunpowder.api.module.currency.dataholders.StoredBalance;
 import io.github.gunpowder.api.module.currency.modelhandlers.BalanceHandler;

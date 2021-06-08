@@ -1,11 +1,11 @@
 package io.github.flemmli97.flan.commands;
 
-import io.github.flemmli97.flan.claim.PermHelper;
-import io.github.flemmli97.flan.config.ConfigHandler;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
+import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;

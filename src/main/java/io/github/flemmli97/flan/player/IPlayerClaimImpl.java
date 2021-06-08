@@ -1,6 +1,5 @@
 package io.github.flemmli97.flan.player;
 
-import com.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.Claim;
 
 public interface IPlayerClaimImpl {

@@ -1,9 +1,9 @@
 package io.github.flemmli97.flan.gui;
 
+import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
-import com.mojang.authlib.GameProfile;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
