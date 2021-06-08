@@ -67,8 +67,8 @@ public class PermissionRegistry {
     public static ClaimPermission DROP = register(new ClaimPermission("DROP", () -> new ItemStack(Items.BOWL), true, "Allow the drop of items"));
     public static ClaimPermission PICKUP = register(new ClaimPermission("PICKUP", () -> new ItemStack(Items.BRICK), true, "Allow the pickup of items"));
     public static ClaimPermission FLIGHT = register(new ClaimPermission("FLIGHT", () -> new ItemStack(Items.FEATHER), true, "Allow non creative flight"));
-
     public static ClaimPermission CANSTAY = register(new ClaimPermission("CANSTAY", () -> new ItemStack(Items.PAPER), true, "Allow player to enter your claim"));
+
     public static ClaimPermission HURTPLAYER = global(new ClaimPermission("HURTPLAYER", () -> new ItemStack(Items.DIAMOND_SWORD), "Permission to hurt other players"));
     public static ClaimPermission EXPLOSIONS = global(new ClaimPermission("EXPLOSIONS", () -> new ItemStack(Items.TNT), "Toggle explosions in claim"));
     public static ClaimPermission WITHER = global(new ClaimPermission("WITHER", () -> new ItemStack(Items.WITHER_SKELETON_SKULL), "Toggle wither breaking blocks in claim"));

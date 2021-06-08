@@ -72,8 +72,6 @@ public class WorldEvents {
     }
 
     public static boolean preventMobSpawn(ServerWorld world, MobEntity entity) {
-        if (!ConfigHandler.config.allowMobSpawnToggle)
-            return false;
         IPermissionContainer claim = ClaimStorage.get(world).getForPermissionCheck(entity.getBlockPos());
         if (entity.getType().getSpawnGroup() == SpawnGroup.MONSTER)
             return claim.canInteract(null, PermissionRegistry.MOBSPAWN, entity.getBlockPos());
