@@ -1,11 +1,11 @@
 package io.github.flemmli97.flan.config;
 
-import io.github.flemmli97.flan.api.ClaimPermission;
-import io.github.flemmli97.flan.api.PermissionRegistry;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import io.github.flemmli97.flan.api.ClaimPermission;
+import io.github.flemmli97.flan.api.PermissionRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 

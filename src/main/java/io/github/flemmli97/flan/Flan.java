@@ -43,7 +43,7 @@ public class Flan implements ModInitializer {
         permissionAPI = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
         gunpowder = FabricLoader.getInstance().isModLoaded("gunpowder-currency");
         playerAbilityLib = FabricLoader.getInstance().isModLoaded("playerabilitylib");
-        if(playerAbilityLib)
+        if (playerAbilityLib)
             PlayerAbilityEvents.register();
     }
 

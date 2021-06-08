@@ -1,5 +1,6 @@
 package io.github.flemmli97.flan.player;
 
+import com.google.gson.JsonObject;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.ClaimPermission;
 import io.github.flemmli97.flan.api.PermissionRegistry;
@@ -9,7 +10,6 @@ import io.github.flemmli97.flan.claim.IPermissionContainer;
 import io.github.flemmli97.flan.claim.ParticleIndicators;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
-import com.google.gson.JsonObject;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;

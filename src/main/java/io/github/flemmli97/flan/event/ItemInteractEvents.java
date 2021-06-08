@@ -1,5 +1,7 @@
 package io.github.flemmli97.flan.event;
 
+import com.google.common.collect.Sets;
+import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.api.ClaimPermission;
 import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.claim.Claim;
@@ -7,13 +9,11 @@ import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.IPermissionContainer;
 import io.github.flemmli97.flan.claim.ObjectToPermissionMap;
 import io.github.flemmli97.flan.claim.PermHelper;
-import io.github.flemmli97.flan.integration.permissionapi.CommandPermission;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.integration.permissionapi.CommandPermission;
 import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.EnumEditMode;
 import io.github.flemmli97.flan.player.PlayerClaimData;
-import com.google.common.collect.Sets;
-import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
