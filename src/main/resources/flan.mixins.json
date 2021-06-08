@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.flemmli97.flan.mixin",
+  "package": "io.github.flemmli97.flan.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "PlayerClaimMixin",
