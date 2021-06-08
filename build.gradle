@@ -1,7 +1,23 @@
+buildscript {
+	dependencies {
+		// Some bugs in Loom caused this; Hopefully this can be removed soon
+		constraints {
+			["asm", "asm-util", "asm-tree", "asm-analysis"].forEach {
+				classpath("org.ow2.asm:$it") {
+					version { require("9.0") }
+					because("Fabric's TinyRemapper requires ASM 9")
+				}
+			}
+		}
+	}
+}
+
 plugins {
 	id 'fabric-loom' version '0.8.12'
 	id 'maven-publish'
+	id 'io.github.gunpowder' version '0.2.5.1'
 }
+
 
 sourceCompatibility = JavaVersion.VERSION_16
 targetCompatibility = JavaVersion.VERSION_16
@@ -49,6 +65,14 @@ dependencies {
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
+	constraints {
+		["asm", "asm-util", "asm-tree", "asm-analysis"].forEach {
+			implementation("org.ow2.asm:$it") {
+				version { require("9.0") }
+				because("Fabric's TinyRemapper requires ASM 9")
+			}
+		}
+	}
 }
 
 processResources {
