@@ -3,7 +3,6 @@ package com.flemmli97.flan.event;
 import com.flemmli97.flan.api.PermissionRegistry;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.IPermissionContainer;
-import com.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.mob.MobEntity;
