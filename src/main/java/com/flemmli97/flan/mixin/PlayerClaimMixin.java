@@ -1,7 +1,6 @@
 package com.flemmli97.flan.mixin;
 
 import com.flemmli97.flan.claim.Claim;
-import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.event.EntityInteractEvents;
 import com.flemmli97.flan.player.IPlayerClaimImpl;
 import com.flemmli97.flan.player.PlayerClaimData;
@@ -53,8 +52,8 @@ public abstract class PlayerClaimMixin implements IPlayerClaimImpl {
     }
 
     @Inject(method = "tick", at = @At("HEAD"))
-    private void canStay(CallbackInfo info) {
-        EntityInteractEvents.updateClaim((ServerPlayerEntity)(Object)this, claim->this.currentClaim = claim);
+    private void claimupdate(CallbackInfo info) {
+        EntityInteractEvents.updateClaim((ServerPlayerEntity) (Object) this, this.currentClaim, claim -> this.currentClaim = claim);
     }
 
     @Override
