@@ -38,7 +38,6 @@ public class Config {
 
     public String[] blacklistedWorlds = new String[0];
     public boolean worldWhitelist;
-    public boolean allowMobSpawnToggle;
 
     public Item claimingItem = Items.GOLDEN_HOE;
     public Item inspectionItem = Items.STICK;
@@ -71,6 +70,7 @@ public class Config {
     private final Map<String, Map<ClaimPermission, Boolean>> globalDefaultPerms = createHashMap(map -> {
         map.put("*", createHashMap(perms -> {
             perms.put(PermissionRegistry.FLIGHT, true);
+            perms.put(PermissionRegistry.MOBSPAWN, false);
         }));
     });
 
@@ -109,7 +109,6 @@ public class Config {
             for (int i = 0; i < arr.size(); i++)
                 this.blacklistedWorlds[i] = arr.get(i).getAsString();
             this.worldWhitelist = ConfigHandler.fromJson(obj, "worldWhitelist", this.worldWhitelist);
-            this.allowMobSpawnToggle = ConfigHandler.fromJson(obj, "allowMobSpawnToggle", false);
             if (obj.has("claimingItem"))
                 this.claimingItem = Registry.ITEM.get(new Identifier((obj.get("claimingItem").getAsString())));
             if (obj.has("inspectionItem"))
@@ -172,7 +171,6 @@ public class Config {
             arr.add(blacklistedWorld);
         obj.add("blacklistedWorlds", arr);
         obj.addProperty("worldWhitelist", this.worldWhitelist);
-        obj.addProperty("allowMobSpawnToggle", this.allowMobSpawnToggle);
         obj.addProperty("claimingItem", Registry.ITEM.getId(this.claimingItem).toString());
         obj.addProperty("inspectionItem", Registry.ITEM.getId(this.inspectionItem).toString());
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
@@ -208,8 +206,6 @@ public class Config {
     }
 
     public Boolean getGlobal(ServerWorld world, ClaimPermission perm) {
-        if (perm == PermissionRegistry.MOBSPAWN && !this.allowMobSpawnToggle)
-            return Boolean.FALSE;
         //Update permission map if not done already
         Map<ClaimPermission, Boolean> allMap = ConfigHandler.config.globalDefaultPerms.get("*");
         if (allMap != null) {
