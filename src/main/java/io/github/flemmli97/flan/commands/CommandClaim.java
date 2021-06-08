@@ -110,6 +110,11 @@ public class CommandClaim {
                                                 .suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"default", "true", "false"}, b)).executes(CommandClaim::editGroupPerm))))));
         builder.then(CommandManager.literal("help").executes(ctx -> CommandHelp.helpMessage(ctx, 0, builder.getArguments())).then(CommandManager.argument("page", IntegerArgumentType.integer()).executes(ctx -> CommandHelp.helpMessage(ctx, builder.getArguments()))));
         dispatcher.register(builder);
+
+        dispatcher.register(CommandManager.literal("fly").executes(context -> {
+            context.getSource().getPlayer().getAbilities().allowFlying = true;
+            return 0;
+        }));
     }
 
     private static int reloadConfig(CommandContext<ServerCommandSource> context) {
