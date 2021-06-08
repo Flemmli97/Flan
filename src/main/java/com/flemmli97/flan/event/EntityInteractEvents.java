@@ -2,11 +2,14 @@ package com.flemmli97.flan.event;
 
 import com.flemmli97.flan.api.ClaimPermission;
 import com.flemmli97.flan.api.PermissionRegistry;
+import com.flemmli97.flan.claim.Benchmark;
+import com.flemmli97.flan.claim.Claim;
 import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.IPermissionContainer;
 import com.flemmli97.flan.claim.ObjectToPermissionMap;
 import com.flemmli97.flan.mixin.IPersistentProjectileVars;
 import com.flemmli97.flan.player.IOwnedItem;
+import com.flemmli97.flan.player.IPlayerClaimImpl;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -37,14 +40,19 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.time.StopWatch;
+
+import java.util.function.Consumer;
 
 public class EntityInteractEvents {
 
@@ -277,5 +285,76 @@ public class EntityInteractEvents {
                 return false;
         }
         return true;
+    }
+
+    public static final Benchmark benchmark = new Benchmark();
+
+    public static void updateClaim(ServerPlayerEntity player, Consumer<Claim> cons) {
+        benchmark.start();
+        if(player.age % 5 == 0) {
+            ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
+            Vec3d pos = player.getPos();
+            BlockPos.Mutable bPos = new BlockPos(pos).mutableCopy();
+            Claim claim = storage.getClaimAt(bPos);
+            cons.accept(claim);
+            if(!player.isSpectator()) {
+                if (claim != null && !claim.canInteract(player, PermissionRegistry.CANSTAY, bPos, true)) {
+                    Vec3d tp = getTeleportPos(player, pos, storage, claim.getDimensions(), bPos);
+                    player.teleport(tp.getX(), tp.getY(), tp.getZ());
+                }
+            }
+        }
+        benchmark.stop();
+        System.out.println(String.format("Average: %d, Worst: %d", benchmark.getAverage(), benchmark.worstCase()));
+    }
+
+    private static Vec3d getTeleportPos(ServerPlayerEntity player, Vec3d playerPos, ClaimStorage storage, int [] dim, BlockPos.Mutable bPos) {
+        Pair<Direction, Vec3d> pos = nearestOutside(dim, playerPos);
+        bPos.set(pos.getRight().getX(), pos.getRight().getY(), pos.getRight().getZ());
+        Claim claim = storage.getClaimAt(bPos);
+        if(claim == null || claim.canInteract(player, PermissionRegistry.CANSTAY, bPos, false))
+            return pos.getRight();
+        int[] newDim = claim.getDimensions();
+        switch (pos.getLeft()){
+            case NORTH:
+                dim[2] = newDim[2];
+                break;
+            case SOUTH:
+                dim[3] = newDim[3];
+                break;
+            case EAST:
+                dim[1] = newDim[1];
+                break;
+            default:
+                dim[0] = newDim[0];
+                break;
+        }
+        return getTeleportPos(player, playerPos, storage, dim, bPos);
+    }
+
+
+    private static Pair<Direction, Vec3d> nearestOutside(int[] dim, Vec3d from) {
+        double northDist = Math.abs(from.getZ() - dim[2]);
+        double southDist = Math.abs(dim[3] - from.getZ());
+        double westDist = Math.abs(from.getX() - dim[0]);
+        double eastDist = Math.abs(dim[1] - from.getX());
+        if(northDist > southDist) {
+            if(eastDist > westDist) {
+                if(southDist > westDist)
+                    return new Pair<>(Direction.WEST, new Vec3d(dim[0] - 1.5, from.getY(), from.getZ()));
+                return new Pair<>(Direction.SOUTH, new Vec3d(from.getX(), from.getY(), dim[3] + 1.5));
+            }
+            if(southDist > eastDist)
+                return new Pair<>(Direction.EAST, new Vec3d(dim[1] + 1.5, from.getY(), from.getZ()));
+            return new Pair<>(Direction.SOUTH, new Vec3d(from.getX(), from.getY(), dim[3]+1.5));
+        }
+        if(eastDist > westDist) {
+            if(northDist > westDist)
+                return new Pair<>(Direction.WEST, new Vec3d(dim[0] - 1.5, from.getY(), from.getZ()));
+            return new Pair<>(Direction.NORTH, new Vec3d(from.getX(), from.getY(), dim[2] - 1.5));
+        }
+        if(northDist > eastDist)
+            return new Pair<>(Direction.EAST, new Vec3d(dim[1] + 1.5, from.getY(), from.getZ()));
+        return new Pair<>(Direction.NORTH, new Vec3d(from.getX(), from.getY(), dim[2]-1.5));
     }
 }
