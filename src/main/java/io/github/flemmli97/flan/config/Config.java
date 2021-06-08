@@ -67,7 +67,12 @@ public class Config {
             perms.put(PermissionRegistry.TRADING, true);
         }));
     });
-    private final Map<String, Map<ClaimPermission, Boolean>> globalDefaultPerms = new HashMap<>();
+
+    private final Map<String, Map<ClaimPermission, Boolean>> globalDefaultPerms = createHashMap(map -> {
+        map.put("*", createHashMap(perms -> {
+            perms.put(PermissionRegistry.FLIGHT, true);
+        }));
+    });
 
     public Config(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
@@ -205,6 +210,20 @@ public class Config {
     public Boolean getGlobal(ServerWorld world, ClaimPermission perm) {
         if (perm == PermissionRegistry.MOBSPAWN && !this.allowMobSpawnToggle)
             return Boolean.FALSE;
+        //Update permission map if not done already
+        Map<ClaimPermission, Boolean> allMap = ConfigHandler.config.globalDefaultPerms.get("*");
+        if (allMap != null) {
+            world.getServer().getWorlds().forEach(w -> {
+                Map<ClaimPermission, Boolean> wMap = ConfigHandler.config.globalDefaultPerms.getOrDefault(w.getRegistryKey().getValue().toString(), new HashMap<>());
+                allMap.entrySet().forEach(e -> {
+                    if (!wMap.containsKey(e.getKey()))
+                        wMap.put(e.getKey(), e.getValue());
+                });
+                ConfigHandler.config.globalDefaultPerms.put(w.getRegistryKey().getValue().toString(), wMap);
+            });
+            ConfigHandler.config.globalDefaultPerms.remove("*");
+        }
+
         Map<ClaimPermission, Boolean> permMap = ConfigHandler.config.globalDefaultPerms.get(world.getRegistryKey().getValue().toString());
         return permMap == null ? null : permMap.getOrDefault(perm, null);
     }
