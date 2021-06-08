@@ -16,7 +16,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.flemmli97.flan.Flan"
+      "io.github.flemmli97.flan.Flan"
     ]
   },
   "mixins": [
