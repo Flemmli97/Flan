@@ -1,23 +1,8 @@
-buildscript {
-	dependencies {
-		// Some bugs in Loom caused this; Hopefully this can be removed soon
-		constraints {
-			["asm", "asm-util", "asm-tree", "asm-analysis"].forEach {
-				classpath("org.ow2.asm:$it") {
-					version { require("9.0") }
-					because("Fabric's TinyRemapper requires ASM 9")
-				}
-			}
-		}
-	}
-}
-
 plugins {
 	id 'fabric-loom' version '0.8.12'
 	id 'maven-publish'
-	id 'io.github.gunpowder' version '0.2.5.1'
+	id 'org.jetbrains.kotlin.jvm' version "1.5.20-M1"
 }
-
 
 sourceCompatibility = JavaVersion.VERSION_16
 targetCompatibility = JavaVersion.VERSION_16
@@ -44,6 +29,10 @@ repositories {
 		name = "Gunpowder"
 		url = "https://maven.martmists.com/releases"
 	}
+	maven {
+		name = "HavenKing"
+		url = "https://hephaestus.dev/release"
+	}
 }
 
 dependencies {
@@ -59,20 +48,11 @@ dependencies {
 	include group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
 	modImplementation 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'
-	modCompileOnly "io.github.gunpowder:gunpowder-api:${gunpowder_version}"
 	modImplementation "me.lucko:fabric-permissions-api:${project.fabric_permissions_api}"
 	modImplementation "io.github.ladysnake:PlayerAbilityLib:${project.player_ability_lib}"
 
-	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-	// You may need to force-disable transitiveness on them.
-	constraints {
-		["asm", "asm-util", "asm-tree", "asm-analysis"].forEach {
-			implementation("org.ow2.asm:$it") {
-				version { require("9.0") }
-				because("Fabric's TinyRemapper requires ASM 9")
-			}
-		}
-	}
+	modImplementation "dev.inkwell:hermes:1.0.0"
+	modImplementation "io.github.gunpowder:gunpowder-base:${gunpowder_version}"
 }
 
 processResources {
@@ -120,10 +100,15 @@ publishing {
 			}
 		}
 	}
-
-	// select the repositories you want to publish to
 	repositories {
-		// uncomment to publish to the local maven
-		// mavenLocal()
+		maven {
+			url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
+			//url "https://maven.pkg.github.com/flemmli97/RuneCraftory"
+			credentials {
+				username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER")
+				password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
+				//password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
+			}
+		}
 	}
 }
