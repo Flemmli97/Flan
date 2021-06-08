@@ -20,6 +20,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,7 +38,8 @@ public class PlayerClaimData {
 
     private int claimBlocks, additionalClaimBlocks, confirmTick, actionCooldown;
 
-    private int lastBlockTick;
+    private int lastBlockTick, trappedTick = -1;
+    private Vec3d trappedPos;
     private EnumEditMode mode = EnumEditMode.DEFAULT;
     private Claim editingClaim;
     private ClaimDisplay displayEditing;
@@ -201,6 +203,16 @@ public class PlayerClaimData {
         return true;
     }
 
+    public boolean setTrappedRescue() {
+        Claim claim = ((IPlayerClaimImpl) this.player).getCurrentClaim();
+        if (this.trappedTick < 0 && claim != null && !this.player.getUuid().equals(claim.getOwner())) {
+            this.trappedTick = 101;
+            this.trappedPos = this.player.getPos();
+            return true;
+        }
+        return false;
+    }
+
     public void tick() {
         boolean tool = this.player.getMainHandStack().getItem() == ConfigHandler.config.claimingItem
                 || this.player.getOffHandStack().getItem() == ConfigHandler.config.claimingItem;
@@ -237,6 +249,19 @@ public class PlayerClaimData {
                     this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks()), Formatting.GOLD), false);
         }
         this.actionCooldown--;
+        if (--this.trappedTick >= 0) {
+            if (this.trappedTick == 0) {
+                Vec3d tp = TeleportUtils.getTeleportPos(this.player, this.player.getPos(), ClaimStorage.get(this.player.getServerWorld()),
+                        ((IPlayerClaimImpl) this.player).getCurrentClaim().getDimensions(),
+                        TeleportUtils.roundedBlockPos(this.player.getPos()).mutableCopy(), (claim, nPos) -> false);
+                this.player.teleport(tp.getX(), tp.getY(), tp.getZ());
+            }
+            if (this.player.getPos().squaredDistanceTo(this.trappedPos) > 0.15) {
+                this.trappedTick = -1;
+                this.trappedPos = null;
+                this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.trappedMove), Formatting.RED), false);
+            }
+        }
     }
 
     public void clone(PlayerClaimData data) {

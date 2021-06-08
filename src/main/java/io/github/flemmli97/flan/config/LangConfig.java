@@ -116,6 +116,10 @@ public class LangConfig {
     public String buySuccess = "Bought %1$s claimblocks for %2$s";
     public String gunpowderMissing = "Missing gunpowder currency mod";
 
+    public String trappedRescue = "Rescuing. Don't move for 5 seconds";
+    public String trappedFail = "Rescue not necessary or already rescuing";
+    public String trappedMove = "You moved. Aborting rescue";
+
     public LangConfig(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
         //server.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();

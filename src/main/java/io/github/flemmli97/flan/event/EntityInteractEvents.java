@@ -278,4 +278,30 @@ public class EntityInteractEvents {
         }
         return true;
     }
+
+    public static void updateClaim(ServerPlayerEntity player, Claim currentClaim, Consumer<Claim> cons) {
+        Vec3d pos = player.getPos();
+        BlockPos rounded = TeleportUtils.roundedBlockPos(pos.add(0, player.getEyeHeight(player.getPose()), 0));
+        ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
+        if (currentClaim != null) {
+            if (!currentClaim.insideClaim(rounded)) {
+                cons.accept(null);
+            } else {
+                if (!player.isSpectator()) {
+                    BlockPos.Mutable bPos = rounded.mutableCopy();
+                    if (!currentClaim.canInteract(player, PermissionRegistry.CANSTAY, bPos, true)) {
+                        Vec3d tp = TeleportUtils.getTeleportPos(player, pos, storage, currentClaim.getDimensions(), bPos, (claim, nPos) -> claim.canInteract(player, PermissionRegistry.CANSTAY, nPos, false));
+                        player.teleport(tp.getX(), tp.getY(), tp.getZ());
+                    }
+                    if (player.abilities.flying && !player.isCreative() && !currentClaim.canInteract(player, PermissionRegistry.FLIGHT, rounded, true)) {
+                        player.abilities.flying = false;
+                        player.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.abilities));
+                    }
+                }
+            }
+        } else if (player.age % 3 == 0) {
+            Claim claim = storage.getClaimAt(rounded);
+            cons.accept(claim);
+        }
+    }
 }

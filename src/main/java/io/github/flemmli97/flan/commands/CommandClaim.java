@@ -54,6 +54,7 @@ public class CommandClaim {
                 .then(CommandManager.literal("reload").requires(src -> CommandPermission.perm(src, CommandPermission.cmdReload, true)).executes(CommandClaim::reloadConfig))
                 .then(CommandManager.literal("addClaim").requires(src -> CommandPermission.perm(src, CommandPermission.claimCreate)).then(CommandManager.argument("from", BlockPosArgumentType.blockPos()).then(CommandManager.argument("to", BlockPosArgumentType.blockPos()).executes(CommandClaim::addClaim))))
                 .then(CommandManager.literal("menu").requires(src -> CommandPermission.perm(src, CommandPermission.cmdMenu)).executes(CommandClaim::openMenu))
+                .then(CommandManager.literal("trapped").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTrapped)).executes(CommandClaim::trapped))
                 .then(CommandManager.literal("personalGroups").requires(src -> CommandPermission.perm(src, CommandPermission.cmdPGroup)).executes(CommandClaim::openPersonalGroups))
                 .then(CommandManager.literal("claimInfo").requires(src -> CommandPermission.perm(src, CommandPermission.cmdInfo)).executes(CommandClaim::claimInfo))
                 .then(CommandManager.literal("transferClaim").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTransfer)).then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).executes(CommandClaim::transferClaim)))
@@ -193,6 +194,18 @@ public class CommandClaim {
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermission, Formatting.DARK_RED), false);
         }
         return Command.SINGLE_SUCCESS;
+    }
+
+    private static int trapped(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        PlayerClaimData data = PlayerClaimData.get(player);
+        if (data.setTrappedRescue()) {
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.trappedRescue, Formatting.GOLD), false);
+            return Command.SINGLE_SUCCESS;
+        } else {
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.trappedFail, Formatting.RED), false);
+        }
+        return 0;
     }
 
     private static int openPersonalGroups(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
