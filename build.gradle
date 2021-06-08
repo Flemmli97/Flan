@@ -1,10 +1,10 @@
 plugins {
-	id 'fabric-loom' version '0.4-SNAPSHOT'
+	id 'fabric-loom' version '0.8.12'
 	id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16
 
 archivesBaseName = project.archives_base_name
 version = project.minecraft_version+"-"+project.mod_version
@@ -15,6 +15,14 @@ repositories {
 	maven {
 		name = 'Fabric-Permission-API'
 		url 'https://oss.sonatype.org/content/repositories/snapshots'
+	}
+	maven {
+		name = 'Ladysnake Mods'
+		url = 'https://ladysnake.jfrog.io/artifactory/mods'
+		content {
+			includeGroup 'io.github.ladysnake'
+			includeGroupByRegex 'io\\.github\\.onyxstudios.*'
+		}
 	}
 }
 
@@ -27,10 +35,12 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	compile group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+	modImplementation group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 	include group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
-	modImplementation 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'
+	modImplementation "me.lucko:fabric-permissions-api:${project.fabric_permissions_api}"
+	modImplementation "io.github.ladysnake:PlayerAbilityLib:${project.player_ability_lib}"
+
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
 }
@@ -38,13 +48,8 @@ dependencies {
 processResources {
 	inputs.property "version", project.version
 
-	from(sourceSets.main.resources.srcDirs) {
-		include "fabric.mod.json"
+	filesMatching("fabric.mod.json") {
 		expand "version": project.version
-	}
-
-	from(sourceSets.main.resources.srcDirs) {
-		exclude "fabric.mod.json"
 	}
 }
 
