@@ -66,6 +66,7 @@ public class PermissionRegistry {
     public static ClaimPermission BREAKNONLIVING = register(new ClaimPermission("BREAKNONLIVING", () -> new ItemStack(Items.COMMAND_BLOCK_MINECART), "Permission to break things like minecarts or armor stands"));
     public static ClaimPermission DROP = register(new ClaimPermission("DROP", () -> new ItemStack(Items.BOWL), true, "Allow the drop of items"));
     public static ClaimPermission PICKUP = register(new ClaimPermission("PICKUP", () -> new ItemStack(Items.BRICK), true, "Allow the pickup of items"));
+    public static ClaimPermission FLIGHT = register(new ClaimPermission("FLIGHT", () -> new ItemStack(Items.FEATHER), true, "Allow non creative flight"));
 
     public static ClaimPermission HURTPLAYER = global(new ClaimPermission("HURTPLAYER", () -> new ItemStack(Items.DIAMOND_SWORD), "Permission to hurt other players"));
     public static ClaimPermission EXPLOSIONS = global(new ClaimPermission("EXPLOSIONS", () -> new ItemStack(Items.TNT), "Toggle explosions in claim"));

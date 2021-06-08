@@ -7,6 +7,7 @@ import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.event.BlockInteractEvents;
 import com.flemmli97.flan.event.EntityInteractEvents;
 import com.flemmli97.flan.event.ItemInteractEvents;
+import com.flemmli97.flan.integration.playerability.PlayerAbilityEvents;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -24,8 +25,7 @@ public class Flan implements ModInitializer {
 
     public static final Logger logger = LogManager.getLogger("flan");
 
-    public static boolean permissionAPI;
-    public static boolean gunpowder;
+    public static boolean permissionAPI, gunpowder, playerAbilityLib;
 
     @Override
     public void onInitialize() {
@@ -42,6 +42,9 @@ public class Flan implements ModInitializer {
 
         permissionAPI = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
         gunpowder = FabricLoader.getInstance().isModLoaded("gunpowder-currency");
+        playerAbilityLib = FabricLoader.getInstance().isModLoaded("playerabilitylib");
+        if(playerAbilityLib)
+            PlayerAbilityEvents.register();
     }
 
     public void lockRegistry(MinecraftServer server) {

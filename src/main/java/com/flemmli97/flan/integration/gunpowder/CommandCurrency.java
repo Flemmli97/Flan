@@ -1,4 +1,4 @@
-package com.flemmli97.flan.commands;
+package com.flemmli97.flan.integration.gunpowder;
 
 import com.flemmli97.flan.Flan;
 import com.flemmli97.flan.claim.PermHelper;

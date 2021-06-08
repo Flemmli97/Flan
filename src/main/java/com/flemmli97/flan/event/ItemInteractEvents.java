@@ -7,7 +7,7 @@ import com.flemmli97.flan.claim.ClaimStorage;
 import com.flemmli97.flan.claim.IPermissionContainer;
 import com.flemmli97.flan.claim.ObjectToPermissionMap;
 import com.flemmli97.flan.claim.PermHelper;
-import com.flemmli97.flan.commands.CommandPermission;
+import com.flemmli97.flan.integration.permissionapi.CommandPermission;
 import com.flemmli97.flan.config.ConfigHandler;
 import com.flemmli97.flan.player.EnumDisplayType;
 import com.flemmli97.flan.player.EnumEditMode;
