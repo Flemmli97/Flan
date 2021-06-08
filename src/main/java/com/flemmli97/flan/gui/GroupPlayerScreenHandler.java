@@ -10,6 +10,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.SkullItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -76,9 +77,9 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
                 if (id < players.size()) {
                     ItemStack group = new ItemStack(Items.PLAYER_HEAD);
                     GameProfile gameProfile = new GameProfile(null, players.get(id));
-                    gameProfile = SkullBlockEntity.loadProperties(gameProfile);
-                    group.getOrCreateTag().put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
-                    inv.setStack(i, group);
+                    SkullBlockEntity.loadProperties(gameProfile, (profRes) ->
+                            group.getOrCreateTag().put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), profRes)));
+                   inv.setStack(i, group);
                 }
             }
         }
