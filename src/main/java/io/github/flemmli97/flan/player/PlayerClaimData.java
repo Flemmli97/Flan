@@ -11,7 +11,6 @@ import io.github.flemmli97.flan.claim.ParticleIndicators;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -38,7 +37,7 @@ public class PlayerClaimData {
 
     private int claimBlocks, additionalClaimBlocks, confirmTick, actionCooldown;
 
-    private int lastBlockTick, trappedTick = -1;
+    private int lastBlockTick, trappedTick = -1, deathPickupTick;
     private Vec3d trappedPos;
     private EnumEditMode mode = EnumEditMode.DEFAULT;
     private Claim editingClaim;
@@ -62,7 +61,7 @@ public class PlayerClaimData {
         this.claimBlocks = ConfigHandler.config.startingBlocks;
     }
 
-    public static PlayerClaimData get(PlayerEntity player) {
+    public static PlayerClaimData get(ServerPlayerEntity player) {
         return ((IPlayerClaimImpl) player).get();
     }
 
@@ -260,11 +259,22 @@ public class PlayerClaimData {
                 this.player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.trappedMove, Formatting.RED), false);
             }
         }
+        this.deathPickupTick--;
+    }
+
+    public void unlockDeathItems() {
+        this.deathPickupTick = 1200;
+    }
+
+    public boolean deathItemsUnlocked() {
+        return this.deathPickupTick > 0;
     }
 
     public void clone(PlayerClaimData data) {
         this.claimBlocks = data.claimBlocks;
         this.additionalClaimBlocks = data.additionalClaimBlocks;
+        if (ConfigHandler.config.lockDrops)
+            this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.unlockDropsCmd, "/flan unlockDrops"), Formatting.GOLD), false);
     }
 
     public void save(MinecraftServer server) {
@@ -378,7 +388,7 @@ public class PlayerClaimData {
 
                 } else {
                     BufferedReader reader = new BufferedReader(new FileReader(f));
-                    PlayerEntity player = server.getPlayerManager().getPlayer(UUID.fromString(f.getName()));
+                    ServerPlayerEntity player = server.getPlayerManager().getPlayer(UUID.fromString(f.getName()));
                     if (player != null) {
                         PlayerClaimData data = PlayerClaimData.get(player);
                         reader.readLine();
