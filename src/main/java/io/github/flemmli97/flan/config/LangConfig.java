@@ -14,6 +14,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.List;
 
 public class LangConfig {
 
@@ -84,6 +85,8 @@ public class LangConfig {
     public String claimGroupPerms = "    Permissions: %s";
     public String claimGroupPlayers = "    Players: %s";
     public String helpHeader = "Available subcommands are (page %d):";
+    public String helpCmdHeader = "====================";
+    public String helpCmdSyntax = "Syntax: %s";
 
     public String screenEnableText = "Enabled: %s";
     public String screenUneditable = "Non Editable!";
@@ -122,6 +125,8 @@ public class LangConfig {
 
     public String unlockDropsCmd = "Your deathitems are protected. Use %s to unlock them for other players";
     public String unlockDrops = "Your deathitems are now unlocked for %s ticks";
+
+    public LangCommands cmdLang = new LangCommands();
 
     public LangConfig(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
@@ -163,6 +168,8 @@ public class LangConfig {
                         perm.desc = new String[]{pe.getAsString()};
                 }
             }
+            JsonObject cmd = ConfigHandler.fromJson(obj, "commands");
+            this.cmdLang.load(cmd);
         } catch (IOException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -187,6 +194,9 @@ public class LangConfig {
                     obj.add(perm.id + ".desc", arr);
                 }
             }
+            JsonObject cmd = new JsonObject();
+            this.cmdLang.save(cmd);
+            obj.add("commands", cmd);
             FileWriter writer = new FileWriter(this.config);
             ConfigHandler.GSON.toJson(obj, writer);
             writer.close();

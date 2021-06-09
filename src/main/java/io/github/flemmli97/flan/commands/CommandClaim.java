@@ -110,7 +110,9 @@ public class CommandClaim {
                                 .then(CommandManager.argument("permission", StringArgumentType.word()).suggests((ctx, b) -> permSuggestions(ctx, b, true))
                                         .then(CommandManager.argument("toggle", StringArgumentType.word())
                                                 .suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"default", "true", "false"}, b)).executes(CommandClaim::editGroupPerm))))));
-        builder.then(CommandManager.literal("help").executes(ctx -> CommandHelp.helpMessage(ctx, 0, builder.getArguments())).then(CommandManager.argument("page", IntegerArgumentType.integer()).executes(ctx -> CommandHelp.helpMessage(ctx, builder.getArguments()))));
+        builder.then(CommandManager.literal("help").executes(ctx -> CommandHelp.helpMessage(ctx, 0, builder.getArguments()))
+                .then(CommandManager.argument("page", IntegerArgumentType.integer()).executes(ctx -> CommandHelp.helpMessage(ctx, builder.getArguments())))
+                .then(CommandManager.literal("cmd").then(CommandManager.argument("command", StringArgumentType.word()).suggests((ctx, sb)->CommandSource.suggestMatching(CommandHelp.registeredCommands(ctx, builder.getArguments()), sb)).executes(ctx -> CommandHelp.helpCmd(ctx)))));
         dispatcher.register(builder);
     }
 
