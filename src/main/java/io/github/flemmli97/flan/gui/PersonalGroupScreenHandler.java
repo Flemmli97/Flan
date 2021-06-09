@@ -63,7 +63,7 @@ public class PersonalGroupScreenHandler extends ServerOnlyScreenHandler {
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 inv.setStack(i, ServerScreenHelper.emptyFiller());
             else {
-                List<String> groups = new ArrayList<>(PlayerClaimData.get(player).playerDefaultGroups().keySet());
+                List<String> groups = new ArrayList<>(PlayerClaimData.get((ServerPlayerEntity) player).playerDefaultGroups().keySet());
                 groups.sort(null);
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1;

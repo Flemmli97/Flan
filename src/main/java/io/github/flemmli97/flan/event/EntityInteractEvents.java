@@ -220,7 +220,7 @@ public class EntityInteractEvents {
                     ServerPlayerEntity other = sPlayer.getServer().getPlayerManager().getPlayer(ownedItem.getDeathPlayer());
                     if (other == null)
                         return false;
-                    return PlayerClaimData.get(other).deathItemsUnlocked();
+                    return ownedItem.getDeathPlayer().equals(player.getUuid()) || PlayerClaimData.get(other).deathItemsUnlocked();
                 }
                 if (sPlayer.getUuid().equals(ownedItem.getPlayerOrigin()))
                     return true;
