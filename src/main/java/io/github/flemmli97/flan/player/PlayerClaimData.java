@@ -255,8 +255,7 @@ public class PlayerClaimData {
                         ((IPlayerClaimImpl) this.player).getCurrentClaim().getDimensions(),
                         TeleportUtils.roundedBlockPos(this.player.getPos()).mutableCopy(), (claim, nPos) -> false);
                 this.player.teleport(tp.getX(), tp.getY(), tp.getZ());
-            }
-            if (this.player.getPos().squaredDistanceTo(this.trappedPos) > 0.15) {
+            } else if (this.player.getPos().squaredDistanceTo(this.trappedPos) > 0.15) {
                 this.trappedTick = -1;
                 this.trappedPos = null;
                 this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.trappedMove), Formatting.RED), false);
