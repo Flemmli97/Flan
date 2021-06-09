@@ -17,6 +17,8 @@ public class ItemEntityMixin implements IOwnedItem {
 
     @Unique
     private UUID playerOrigin;
+    @Unique
+    private UUID deathPlayerOrigin;
 
     @Inject(method = "readCustomDataFromTag", at = @At("RETURN"))
     private void readData(CompoundTag tag, CallbackInfo info) {
@@ -30,10 +32,19 @@ public class ItemEntityMixin implements IOwnedItem {
             tag.putUuid("Flan:PlayerOrigin", this.playerOrigin);
     }
 
+    @Override
     public void setOriginPlayer(PlayerEntity player) {
         this.playerOrigin = player.getUuid();
+        if (player.isDead())
+            this.deathPlayerOrigin = this.playerOrigin;
     }
 
+    @Override
+    public UUID getDeathPlayer() {
+        return this.deathPlayerOrigin;
+    }
+
+    @Override
     public UUID getPlayerOrigin() {
         return this.playerOrigin;
     }

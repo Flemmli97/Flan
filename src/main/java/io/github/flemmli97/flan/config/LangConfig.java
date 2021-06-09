@@ -120,6 +120,9 @@ public class LangConfig {
     public String trappedFail = "Rescue not necessary or already rescuing";
     public String trappedMove = "You moved. Aborting rescue";
 
+    public String unlockDropsCmd = "Your deathitems are protected. Use %s to unlock them for other players";
+    public String unlockDrops = "Your deathitems are now unlocked for %s ticks";
+
     public LangConfig(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
         //server.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();

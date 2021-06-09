@@ -6,8 +6,10 @@ import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.IPermissionContainer;
 import io.github.flemmli97.flan.claim.ObjectToPermissionMap;
+import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.mixin.IPersistentProjectileVars;
 import io.github.flemmli97.flan.player.IOwnedItem;
+import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.player.TeleportUtils;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.block.BlockState;
@@ -211,14 +213,22 @@ public class EntityInteractEvents {
 
     public static boolean canCollideWith(PlayerEntity player, Entity entity) {
         if (player instanceof ServerPlayerEntity) {
+            ServerPlayerEntity sPlayer = (ServerPlayerEntity) player;
             if (entity instanceof ItemEntity) {
-                if (player.getUuid().equals(((IOwnedItem) entity).getPlayerOrigin()))
+                IOwnedItem ownedItem = (IOwnedItem) entity;
+                if (ownedItem.getDeathPlayer() != null && ConfigHandler.config.lockDrops) {
+                    ServerPlayerEntity other = sPlayer.getServer().getPlayerManager().getPlayer(ownedItem.getDeathPlayer());
+                    if (other == null)
+                        return false;
+                    return PlayerClaimData.get(other).deathItemsUnlocked();
+                }
+                if (sPlayer.getUuid().equals(ownedItem.getPlayerOrigin()))
                     return true;
-                ClaimStorage storage = ClaimStorage.get((ServerWorld) player.world);
-                BlockPos pos = player.getBlockPos();
+                ClaimStorage storage = ClaimStorage.get(sPlayer.getServerWorld());
+                BlockPos pos = sPlayer.getBlockPos();
                 IPermissionContainer claim = storage.getForPermissionCheck(pos);
                 if (claim != null)
-                    return claim.canInteract((ServerPlayerEntity) player, PermissionRegistry.PICKUP, pos, false);
+                    return claim.canInteract(sPlayer, PermissionRegistry.PICKUP, pos, false);
             }
         }
         return true;
@@ -282,6 +292,10 @@ public class EntityInteractEvents {
                 return false;
         }
         return true;
+    }
+
+    public static void updateDroppedItem(PlayerEntity player, ItemEntity entity) {
+        ((IOwnedItem) entity).setOriginPlayer((player));
     }
 
     public static void updateClaim(ServerPlayerEntity player, Claim currentClaim, Consumer<Claim> cons) {

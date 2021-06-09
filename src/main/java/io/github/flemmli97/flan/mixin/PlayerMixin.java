@@ -1,7 +1,6 @@
 package io.github.flemmli97.flan.mixin;
 
 import io.github.flemmli97.flan.event.EntityInteractEvents;
-import io.github.flemmli97.flan.player.IOwnedItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,7 +25,7 @@ public abstract class PlayerMixin {
 
     @ModifyVariable(method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;setPickupDelay(I)V"))
     private ItemEntity ownerDrop(ItemEntity entity) {
-        ((IOwnedItem) entity).setOriginPlayer(((PlayerEntity) (Object) this));
+        EntityInteractEvents.updateDroppedItem((PlayerEntity) (Object) this, entity);
         return entity;
     }
 

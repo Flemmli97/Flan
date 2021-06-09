@@ -8,6 +8,8 @@ public interface IOwnedItem {
 
     void setOriginPlayer(PlayerEntity player);
 
+    UUID getDeathPlayer();
+
     UUID getPlayerOrigin();
 
 }
