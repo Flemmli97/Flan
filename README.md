@@ -13,6 +13,6 @@ repositories {
 }
 
 dependencies {
-    modApi "io.github.flemmli97:flan:${flan_version}-${minecraft_version}"
+    modImplementation "io.github.flemmli97:flan:${flan_version}-${minecraft_version}"
 }
 ```
