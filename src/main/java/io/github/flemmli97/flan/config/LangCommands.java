@@ -15,9 +15,9 @@ public class LangCommands {
         map.put("deleteAll", new String[]{"deleteAll", "Deletes all your claims (you need to double type to confirm it so no accidents)."});
         map.put("deleteSubClaim", new String[]{"deleteSubClaim", "Deletes the current subclaim."});
         map.put("deleteAllSubClaims", new String[]{"deleteAllSubClaims", "Deletes all subclaim of the current claim."});
-        map.put("list", new String[]{"list", "Lists all claims you have. if op also gives ability to list other players claims."});
+        map.put("list", new String[]{"list", "Lists all claims you have. If op also gives ability to list other players claims."});
         map.put("switchMode", new String[]{"switchMode", "Switch between normal and subclaim mode."});
-        map.put("group", new String[]{"group (add | remove <name>) | (players add | remove <player> [overwrite])", "Adds/removes the group with that name. Also editable via the claim menu.", " adds/remove a player to the group. if overwrite then will overwrite the players current group else does nothing. Also editable via the claim menu."});
+        map.put("group", new String[]{"group (add | remove <name>) | (players add | remove <player> [overwrite])", "- Adds/removes the group with that name. Also editable via the claim menu.", "- Adds/remove a player to the group. If overwrite then will overwrite the players current group else does nothing. Also editable via the claim menu."});
         map.put("transferClaim", new String[]{"transferClaim <player>", "Gives ownership of the claim to the specified player. Only works if you're the claim owner."});
         map.put("addClaim", new String[]{"addClaim <x y z> <x y z>", "Creates a claim with the given positions. Same as using the claim tool."});
         map.put("permission", new String[]{"permission {global | (group <name>) | (personal <name>)} <permission> true | false | default", " Sets global/group/personal permissions. Also editable via the claim menu (for group perm right click on the group in the menu)."});

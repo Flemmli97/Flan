@@ -71,7 +71,9 @@ public class LangConfig {
     public String adminDeleteAll = "Deleted all claims for following players: %s";
     public String setAdminClaim = "Adminclaim of this claim now: %s";
     public String readGriefpreventionData = "Reading data from GriefPrevention";
-    public String readGriefpreventionDataSuccess = "Successfully read data";
+    public String readGriefpreventionClaimDataSuccess = "Successfully read claim data";
+    public String readGriefpreventionPlayerDataSuccess = "Successfully read player data";
+    public String cantFindData = "No griefprevention data at %s";
     public String errorFile = "Error reading file %s";
     public String readConflict = "%1$s conflicts with existing claims. Not added to world! Conflicts:";
     public String giveClaimBlocks = "Gave following players %2$d claimblocks: %1$s";

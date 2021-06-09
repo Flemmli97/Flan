@@ -316,11 +316,13 @@ public class ClaimStorage {
         }
     }
 
-    public static void readGriefPreventionData(MinecraftServer server, ServerCommandSource src) {
+    public static boolean readGriefPreventionData(MinecraftServer server, ServerCommandSource src) {
         Yaml yml = new Yaml();
         File griefPrevention = server.getSavePath(WorldSavePath.ROOT).resolve("plugins/GriefPreventionData/ClaimData").toFile();
-        if (!griefPrevention.exists())
-            return;
+        if (!griefPrevention.exists()) {
+            src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.cantFindData, griefPrevention.getAbsolutePath()), Formatting.DARK_RED), false);
+            return false;
+        }
         Map<File, List<File>> subClaimMap = new HashMap<>();
         Map<Integer, File> intFileMap = new HashMap<>();
 
@@ -401,6 +403,7 @@ public class ClaimStorage {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return true;
     }
 
     private static Set<ClaimPermission> complementOf(ClaimPermission... perms) {

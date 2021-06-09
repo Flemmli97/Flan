@@ -435,9 +435,10 @@ public class CommandClaim {
     private static int readGriefPreventionData(CommandContext<ServerCommandSource> context) {
         ServerCommandSource src = context.getSource();
         src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.readGriefpreventionData, Formatting.GOLD), true);
-        ClaimStorage.readGriefPreventionData(src.getMinecraftServer(), src);
-        PlayerClaimData.readGriefPreventionPlayerData(src.getMinecraftServer(), src);
-        src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.readGriefpreventionDataSuccess, Formatting.GOLD), true);
+        if (ClaimStorage.readGriefPreventionData(src.getMinecraftServer(), src))
+            src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.readGriefpreventionClaimDataSuccess, Formatting.GOLD), true);
+        if (PlayerClaimData.readGriefPreventionPlayerData(src.getMinecraftServer(), src))
+            src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.readGriefpreventionPlayerDataSuccess, Formatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 

@@ -375,11 +375,13 @@ public class PlayerClaimData {
         return usedClaimsBlocks;
     }
 
-    public static void readGriefPreventionPlayerData(MinecraftServer server, ServerCommandSource src) {
+    public static boolean readGriefPreventionPlayerData(MinecraftServer server, ServerCommandSource src) {
         Flan.log("Reading grief prevention data");
         File griefPrevention = server.getSavePath(WorldSavePath.ROOT).resolve("plugins/GriefPreventionData/PlayerData").toFile();
-        if (!griefPrevention.exists())
-            return;
+        if (!griefPrevention.exists()) {
+            src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.cantFindData, griefPrevention.getAbsolutePath()), Formatting.DARK_RED), false);
+            return false;
+        }
         for (File f : griefPrevention.listFiles()) {
             try {
                 if (f.getName().contains("."))
@@ -415,5 +417,6 @@ public class PlayerClaimData {
                 src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.errorFile, f.getName(), Formatting.RED)), false);
             }
         }
+        return true;
     }
 }
