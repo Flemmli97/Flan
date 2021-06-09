@@ -54,12 +54,11 @@ public class CommandHelp {
         String command = StringArgumentType.getString(context, "command");
         String[] cmdHelp = ConfigHandler.lang.cmdLang.getCommandHelp(command);
         context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.helpCmdHeader, Formatting.DARK_GREEN), false);
-        for(int i = 0; i < cmdHelp.length; i++) {
-            if(i == 0) {
+        for (int i = 0; i < cmdHelp.length; i++) {
+            if (i == 0) {
                 context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.helpCmdSyntax, cmdHelp[i]), Formatting.GOLD), false);
                 context.getSource().sendFeedback(PermHelper.simpleColoredText(""), false);
-            }
-            else {
+            } else {
                 context.getSource().sendFeedback(PermHelper.simpleColoredText(cmdHelp[i], Formatting.GOLD), false);
             }
         }
