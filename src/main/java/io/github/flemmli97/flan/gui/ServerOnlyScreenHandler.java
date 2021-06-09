@@ -49,19 +49,14 @@ public abstract class ServerOnlyScreenHandler extends ScreenHandler {
     }
 
     private static ScreenHandlerType<GenericContainerScreenHandler> fromRows(int rows) {
-        switch (rows) {
-            case 2:
-                return ScreenHandlerType.GENERIC_9X2;
-            case 3:
-                return ScreenHandlerType.GENERIC_9X3;
-            case 4:
-                return ScreenHandlerType.GENERIC_9X4;
-            case 5:
-                return ScreenHandlerType.GENERIC_9X5;
-            case 6:
-                return ScreenHandlerType.GENERIC_9X6;
-        }
-        return ScreenHandlerType.GENERIC_9X1;
+        return switch (rows) {
+            case 2 -> ScreenHandlerType.GENERIC_9X2;
+            case 3 -> ScreenHandlerType.GENERIC_9X3;
+            case 4 -> ScreenHandlerType.GENERIC_9X4;
+            case 5 -> ScreenHandlerType.GENERIC_9X5;
+            case 6 -> ScreenHandlerType.GENERIC_9X6;
+            default -> ScreenHandlerType.GENERIC_9X1;
+        };
     }
 
     protected abstract void fillInventoryWith(PlayerEntity player, Inventory inv, Object... additionalData);

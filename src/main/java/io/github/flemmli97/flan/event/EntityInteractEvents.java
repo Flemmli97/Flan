@@ -91,8 +91,7 @@ public class EntityInteractEvents {
                 return claim.canInteract(player, PermissionRegistry.TRADING, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
             if (entity instanceof ItemFrameEntity)
                 return claim.canInteract(player, PermissionRegistry.ITEMFRAMEROTATE, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
-            if (entity instanceof TameableEntity) {
-                TameableEntity tame = (TameableEntity) entity;
+            if (entity instanceof TameableEntity tame) {
                 if (tame.isOwner(player))
                     return ActionResult.PASS;
             }
@@ -105,8 +104,7 @@ public class EntityInteractEvents {
         if (proj.world.isClient)
             return false;
         Entity owner = proj.getOwner();
-        if (owner instanceof ServerPlayerEntity) {
-            ServerPlayerEntity player = (ServerPlayerEntity) owner;
+        if (owner instanceof ServerPlayerEntity player) {
             if (res.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult blockRes = (BlockHitResult) res;
                 BlockPos pos = blockRes.getBlockPos();
@@ -126,8 +124,7 @@ public class EntityInteractEvents {
                     return false;
                 boolean flag = !claim.canInteract(player, perm, pos, true);
                 if (flag) {
-                    if (proj instanceof PersistentProjectileEntity) {
-                        PersistentProjectileEntity pers = (PersistentProjectileEntity) proj;
+                    if (proj instanceof PersistentProjectileEntity pers) {
                         ((IPersistentProjectileVars) pers).setInBlockState(pers.world.getBlockState(pos));
                         Vec3d vec3d = blockRes.getPos().subtract(pers.getX(), pers.getY(), pers.getZ());
                         pers.setVelocity(vec3d);
@@ -154,8 +151,7 @@ public class EntityInteractEvents {
                 }
                 Entity hit = ((EntityHitResult) res).getEntity();
                 boolean fail = attackSimple(player, hit, true) != ActionResult.PASS;
-                if (fail && proj instanceof PersistentProjectileEntity && ((PersistentProjectileEntity) proj).getPierceLevel() > 0) {
-                    PersistentProjectileEntity pers = (PersistentProjectileEntity) proj;
+                if (fail && proj instanceof PersistentProjectileEntity pers && ((PersistentProjectileEntity) proj).getPierceLevel() > 0) {
                     IntOpenHashSet pierced = ((IPersistentProjectileVars) pers).getPiercedEntities();
                     if (pierced == null)
                         pierced = new IntOpenHashSet(5);
@@ -285,6 +281,7 @@ public class EntityInteractEvents {
     }
 
     public static void updateClaim(ServerPlayerEntity player, Claim currentClaim, Consumer<Claim> cons) {
+        PlayerEntity p = player.world.getClosestPlayer(player, 1);
         Vec3d pos = player.getPos();
         BlockPos rounded = TeleportUtils.roundedBlockPos(pos.add(0, player.getEyeHeight(player.getPose()), 0));
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());

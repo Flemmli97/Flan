@@ -245,7 +245,7 @@ public class CommandClaim {
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
         Claim claim = storage.getClaimAt(player.getBlockPos());
         boolean check = PermHelper.check(player, player.getBlockPos(), claim, PermissionRegistry.EDITCLAIM, b -> {
-            if (!b.isPresent())
+            if (b.isEmpty())
                 PermHelper.noClaimMessage(player);
             else if (!b.get())
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteClaimError, Formatting.DARK_RED), false);
@@ -289,7 +289,7 @@ public class CommandClaim {
             return 0;
         }
         boolean check = PermHelper.check(player, player.getBlockPos(), claim, PermissionRegistry.EDITCLAIM, b -> {
-            if (!b.isPresent())
+            if (b.isEmpty())
                 PermHelper.noClaimMessage(player);
             else if (!b.get())
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteClaimError, Formatting.DARK_RED), false);
@@ -386,8 +386,7 @@ public class CommandClaim {
 
     private static int adminDeleteAll(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource src = context.getSource();
-        if (src.getEntity() instanceof ServerPlayerEntity) {
-            ServerPlayerEntity player = (ServerPlayerEntity) src.getEntity();
+        if (src.getEntity() instanceof ServerPlayerEntity player) {
             PlayerClaimData data = PlayerClaimData.get(player);
             if (!data.confirmedDeleteAll()) {
                 data.setConfirmDeleteAll(true);
@@ -578,34 +577,22 @@ public class CommandClaim {
     }
 
     private static int editGlobalPerm(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        int mode = 0;
-        switch (StringArgumentType.getString(context, "toggle")) {
-            case "true":
-                mode = 1;
-                break;
-            case "false":
-                mode = 0;
-                break;
-            case "default":
-                mode = -1;
-                break;
-        }
+        int mode = switch (StringArgumentType.getString(context, "toggle")) {
+            case "true" -> 1;
+            case "false" -> 0;
+            case "default" -> -1;
+            default -> 0;
+        };
         return editPerms(context, null, mode);
     }
 
     private static int editGroupPerm(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        int mode = 0;
-        switch (StringArgumentType.getString(context, "toggle")) {
-            case "true":
-                mode = 1;
-                break;
-            case "false":
-                mode = 0;
-                break;
-            case "default":
-                mode = -1;
-                break;
-        }
+        int mode = switch (StringArgumentType.getString(context, "toggle")) {
+            case "true" -> 1;
+            case "false" -> 0;
+            case "default" -> -1;
+            default -> 0;
+        };
         return editPerms(context, StringArgumentType.getString(context, "group"), mode);
     }
 
@@ -650,18 +637,12 @@ public class CommandClaim {
     private static int editPersonalPerm(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
         String group = StringArgumentType.getString(context, "group");
-        int mode = 0;
-        switch (StringArgumentType.getString(context, "toggle")) {
-            case "true":
-                mode = 1;
-                break;
-            case "false":
-                mode = 0;
-                break;
-            case "default":
-                mode = -1;
-                break;
-        }
+        int mode = switch (StringArgumentType.getString(context, "toggle")) {
+            case "true" -> 1;
+            case "false" -> 0;
+            case "default" -> -1;
+            default -> 0;
+        };
         ClaimPermission perm;
         String p = StringArgumentType.getString(context, "permission");
         try {

@@ -50,30 +50,18 @@ public class ServerScreenHelper {
                 if (claim.parentClaim() == null)
                     permFlag = "" + (claim.permEnabled(perm) == 1);
                 else {
-                    switch (claim.permEnabled(perm)) {
-                        case -1:
-                            permFlag = "default";
-                            break;
-                        case 1:
-                            permFlag = "true";
-                            break;
-                        default:
-                            permFlag = "false";
-                            break;
-                    }
+                    permFlag = switch (claim.permEnabled(perm)) {
+                        case -1 -> "default";
+                        case 1 -> "true";
+                        default -> "false";
+                    };
                 }
             } else {
-                switch (claim.groupHasPerm(group, perm)) {
-                    case -1:
-                        permFlag = "default";
-                        break;
-                    case 1:
-                        permFlag = "true";
-                        break;
-                    default:
-                        permFlag = "false";
-                        break;
-                }
+                permFlag = switch (claim.groupHasPerm(group, perm)) {
+                    case -1 -> "default";
+                    case 1 -> "true";
+                    default -> "false";
+                };
             }
             Text text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals("true") ? Formatting.GREEN : Formatting.RED);
             lore.add(NbtString.of(Text.Serializer.toJson(text)));

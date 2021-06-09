@@ -573,8 +573,7 @@ public class Claim implements IPermissionContainer {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj instanceof Claim) {
-            Claim other = (Claim) obj;
+        if (obj instanceof Claim other) {
             if (this.claimID == null && other.claimID == null)
                 return Arrays.equals(this.getDimensions(), ((Claim) obj).getDimensions());
             if (this.claimID != null)

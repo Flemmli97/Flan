@@ -129,8 +129,7 @@ public class PlayerClaimData {
     }
 
     public void addDisplayClaim(IPermissionContainer cont, EnumDisplayType type, int height) {
-        if (cont instanceof Claim) {
-            Claim claim = (Claim) cont;
+        if (cont instanceof Claim claim) {
             this.displayToAdd.add(new ClaimDisplay(claim, type, height));
             if (type == EnumDisplayType.MAIN)
                 for (Claim sub : claim.getAllSubclaims())
@@ -255,11 +254,10 @@ public class PlayerClaimData {
                         ((IPlayerClaimImpl) this.player).getCurrentClaim().getDimensions(),
                         TeleportUtils.roundedBlockPos(this.player.getPos()).mutableCopy(), (claim, nPos) -> false);
                 this.player.teleport(tp.getX(), tp.getY(), tp.getZ());
-            }
-            if (this.player.getPos().squaredDistanceTo(this.trappedPos) > 0.15) {
+            } else if (this.player.getPos().squaredDistanceTo(this.trappedPos) > 0.15) {
                 this.trappedTick = -1;
                 this.trappedPos = null;
-                this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.trappedMove), Formatting.RED), false);
+                this.player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.trappedMove, Formatting.RED), false);
             }
         }
     }
@@ -356,7 +354,6 @@ public class PlayerClaimData {
             e.printStackTrace();
         }
     }
-
 
     private int calculateUsedClaimBlocks() {
         int usedClaimsBlocks = 0;

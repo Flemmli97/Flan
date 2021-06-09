@@ -25,18 +25,10 @@ public class TeleportUtils {
             return pos.getRight();
         int[] newDim = claim.getDimensions();
         switch (pos.getLeft()) {
-            case NORTH:
-                dim[2] = newDim[2];
-                break;
-            case SOUTH:
-                dim[3] = newDim[3];
-                break;
-            case EAST:
-                dim[1] = newDim[1];
-                break;
-            default:
-                dim[0] = newDim[0];
-                break;
+            case NORTH -> dim[2] = newDim[2];
+            case SOUTH -> dim[3] = newDim[3];
+            case EAST -> dim[1] = newDim[1];
+            default -> dim[0] = newDim[0];
         }
         return getTeleportPos(player, playerPos, storage, dim, bPos, check);
     }

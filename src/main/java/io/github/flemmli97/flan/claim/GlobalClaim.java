@@ -26,8 +26,6 @@ public class GlobalClaim implements IPermissionContainer {
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
             return false;
         }
-        if (perm == PermissionRegistry.MOBSPAWN)
-            return false;
-        return true;
+        return perm != PermissionRegistry.MOBSPAWN;
     }
 }

@@ -67,12 +67,10 @@ public class Config {
         }));
     });
 
-    private final Map<String, Map<ClaimPermission, Boolean>> globalDefaultPerms = createHashMap(map -> {
-        map.put("*", createHashMap(perms -> {
-            perms.put(PermissionRegistry.FLIGHT, true);
-            perms.put(PermissionRegistry.MOBSPAWN, false);
-        }));
-    });
+    private final Map<String, Map<ClaimPermission, Boolean>> globalDefaultPerms = createHashMap(map -> map.put("*", createHashMap(perms -> {
+        perms.put(PermissionRegistry.FLIGHT, true);
+        perms.put(PermissionRegistry.MOBSPAWN, false);
+    })));
 
     public Config(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
@@ -211,9 +209,9 @@ public class Config {
         if (allMap != null) {
             world.getServer().getWorlds().forEach(w -> {
                 Map<ClaimPermission, Boolean> wMap = ConfigHandler.config.globalDefaultPerms.getOrDefault(w.getRegistryKey().getValue().toString(), new HashMap<>());
-                allMap.entrySet().forEach(e -> {
-                    if (!wMap.containsKey(e.getKey()))
-                        wMap.put(e.getKey(), e.getValue());
+                allMap.forEach((key, value) -> {
+                    if (!wMap.containsKey(key))
+                        wMap.put(key, value);
                 });
                 ConfigHandler.config.globalDefaultPerms.put(w.getRegistryKey().getValue().toString(), wMap);
             });

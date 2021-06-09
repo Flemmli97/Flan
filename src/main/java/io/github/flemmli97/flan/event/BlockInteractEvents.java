@@ -99,11 +99,11 @@ public class BlockInteractEvents {
                 }
                 BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
                 if (blockEntity != null) {
-                    if (blockEntity instanceof LecternBlockEntity) {
+                    if (blockEntity instanceof LecternBlockEntity lectern) {
                         if (claim.canInteract(player, PermissionRegistry.LECTERNTAKE, hitResult.getBlockPos(), false))
                             return ActionResult.PASS;
                         if (state.get(LecternBlock.HAS_BOOK))
-                            LockedLecternScreenHandler.create(player, (LecternBlockEntity) blockEntity);
+                            LockedLecternScreenHandler.create(player, lectern);
                         return ActionResult.FAIL;
                     }
                     if (!ConfigHandler.config.lenientBlockEntityCheck || blockEntity instanceof Inventory || blockEntity instanceof InventoryProvider) {
@@ -150,7 +150,7 @@ public class BlockInteractEvents {
     public static boolean preventFallOn(Entity entity, double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
         if (entity.world.isClient)
             return false;
-        if (entity instanceof ServerPlayerEntity) {
+        if (entity instanceof ServerPlayerEntity player) {
             ClaimPermission perm = ObjectToPermissionMap.getFromBlock(landedState.getBlock());
             if (perm != PermissionRegistry.TRAMPLE)
                 return false;
@@ -158,16 +158,16 @@ public class BlockInteractEvents {
             IPermissionContainer claim = storage.getForPermissionCheck(landedPosition);
             if (claim == null)
                 return false;
-            return !claim.canInteract((ServerPlayerEntity) entity, perm, landedPosition, true);
-        } else if (entity instanceof ProjectileEntity) {
-            Entity owner = ((ProjectileEntity) entity).getOwner();
-            if (owner instanceof ServerPlayerEntity) {
+            return !claim.canInteract(player, perm, landedPosition, true);
+        } else if (entity instanceof ProjectileEntity projectile) {
+            Entity owner = projectile.getOwner();
+            if (owner instanceof ServerPlayerEntity player) {
                 ClaimPermission perm = ObjectToPermissionMap.getFromBlock(landedState.getBlock());
                 if (perm != PermissionRegistry.TRAMPLE)
                     return false;
                 ClaimStorage storage = ClaimStorage.get((ServerWorld) entity.world);
                 IPermissionContainer claim = storage.getForPermissionCheck(landedPosition);
-                return !claim.canInteract((ServerPlayerEntity) owner, perm, landedPosition, true);
+                return !claim.canInteract(player, perm, landedPosition, true);
             }
         }
         return false;
@@ -177,14 +177,14 @@ public class BlockInteractEvents {
         if (world.isClient)
             return false;
         ServerWorld serverWorld = (ServerWorld) world;
-        if (entity instanceof ServerPlayerEntity) {
+        if (entity instanceof ServerPlayerEntity player) {
             ClaimStorage storage = ClaimStorage.get(serverWorld);
             IPermissionContainer claim = storage.getForPermissionCheck(pos);
             if (claim == null)
                 return false;
-            return !claim.canInteract((ServerPlayerEntity) entity, PermissionRegistry.TRAMPLE, pos, true);
-        } else if (entity instanceof ProjectileEntity) {
-            Entity owner = ((ProjectileEntity) entity).getOwner();
+            return !claim.canInteract(player, PermissionRegistry.TRAMPLE, pos, true);
+        } else if (entity instanceof ProjectileEntity projectile) {
+            Entity owner = projectile.getOwner();
             if (owner instanceof ServerPlayerEntity) {
                 ClaimStorage storage = ClaimStorage.get(serverWorld);
                 IPermissionContainer claim = storage.getForPermissionCheck(pos);

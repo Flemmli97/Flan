@@ -46,28 +46,27 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
     protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object... additionalData) {
         for (int i = 0; i < 9; i++) {
             switch (i) {
-                case 0:
+                case 0 -> {
                     ItemStack close = new ItemStack(Items.TNT);
                     close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenClose, Formatting.DARK_RED));
                     inv.setStack(i, close);
-                    break;
-                case 2:
+                }
+                case 2 -> {
                     ItemStack perm = new ItemStack(Items.BEACON);
                     perm.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuGlobal, Formatting.GOLD));
                     inv.setStack(i, perm);
-                    break;
-                case 3:
+                }
+                case 3 -> {
                     ItemStack group = new ItemStack(Items.WRITABLE_BOOK);
                     group.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuGroup, Formatting.GOLD));
                     inv.setStack(i, group);
-                    break;
-                case 8:
+                }
+                case 8 -> {
                     ItemStack delete = new ItemStack(Items.BARRIER);
                     delete.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuDelete, Formatting.RED));
                     inv.setStack(i, delete);
-                    break;
-                default:
-                    inv.setStack(i, ServerScreenHelper.emptyFiller());
+                }
+                default -> inv.setStack(i, ServerScreenHelper.emptyFiller());
             }
         }
     }
@@ -80,21 +79,21 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
     @Override
     protected boolean handleSlotClicked(ServerPlayerEntity player, int index, Slot slot, int clickType) {
         switch (index) {
-            case 0:
+            case 0 -> {
                 player.closeHandledScreen();
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
-                break;
-            case 2:
+            }
+            case 2 -> {
                 player.closeHandledScreen();
                 player.getServer().execute(() -> PermissionScreenHandler.openClaimMenu(player, this.claim, null));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
-                break;
-            case 3:
+            }
+            case 3 -> {
                 player.closeHandledScreen();
                 player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.claim));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
-                break;
-            case 8:
+            }
+            case 8 -> {
                 player.closeHandledScreen();
                 player.getServer().execute(() -> ConfirmScreenHandler.openConfirmScreen(player, (bool) -> {
                     if (bool) {
@@ -109,7 +108,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
                         ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_VILLAGER_NO, 1, 1f);
                     }
                 }));
-                break;
+            }
         }
         return true;
     }

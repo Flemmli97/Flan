@@ -77,7 +77,7 @@ public class ItemInteractEvents {
 
     public static ActionResult onItemUseBlock(ItemUsageContext context) {
         //Check for Fakeplayer. Since there is no api for that directly check the class
-        if (!(context.getPlayer() instanceof ServerPlayerEntity) || !context.getPlayer().getClass().equals(ServerPlayerEntity.class) || context.getStack().isEmpty())
+        if (!(context.getPlayer() instanceof ServerPlayerEntity player) || !context.getPlayer().getClass().equals(ServerPlayerEntity.class) || context.getStack().isEmpty())
             return ActionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) context.getWorld());
         BlockPos placePos = new ItemPlacementContext(context).getBlockPos();
@@ -87,7 +87,6 @@ public class ItemInteractEvents {
         if (blackListedItems.contains(context.getStack().getItem()))
             return ActionResult.PASS;
         boolean actualInClaim = !(claim instanceof Claim) || placePos.getY() >= ((Claim) claim).getDimensions()[4];
-        ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
         ClaimPermission perm = ObjectToPermissionMap.getFromItem(context.getStack().getItem());
         if (perm != null) {
             if (claim.canInteract(player, perm, placePos, false))
