@@ -95,10 +95,15 @@ publishing {
 			}
 		}
 	}
-
-	// select the repositories you want to publish to
 	repositories {
-		// uncomment to publish to the local maven
-		// mavenLocal()
+		maven {
+			url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
+			//url "https://maven.pkg.github.com/flemmli97/RuneCraftory"
+			credentials {
+				username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER")
+				password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
+				//password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
+			}
+		}
 	}
 }
