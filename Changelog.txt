@@ -10,6 +10,8 @@ Flan 1.4.1
   Basically now a worldguard version
 - Add locking items when the player dies so other players cant pick it up.
   Use /flan unlockItems to allow it.
+- /flan help finished: command are clickable now and give additional info on the commands
+- Log the file path when /flan readGriefPrevention can't find the files
 
 Flan 1.4.0
 ======================
