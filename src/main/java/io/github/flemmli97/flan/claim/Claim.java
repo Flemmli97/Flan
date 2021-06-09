@@ -10,6 +10,7 @@ import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.ClaimPermission;
 import io.github.flemmli97.flan.api.ClaimPermissionEvent;
 import io.github.flemmli97.flan.api.PermissionRegistry;
+import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.server.MinecraftServer;
@@ -211,9 +212,9 @@ public class Claim implements IPermissionContainer {
                 return true;
             }
         }
-        Boolean global = ConfigHandler.config.getGlobal(this.world, perm);
-        if (!this.isAdminClaim() && global != null) {
-            if (global || this.isAdminIgnore(player))
+        Config.GlobalType global = ConfigHandler.config.getGlobal(this.world, perm);
+        if (!this.isAdminClaim() && !global.canModify()) {
+            if (global.getValue() || this.isAdminIgnore(player))
                 return true;
             if (message)
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);

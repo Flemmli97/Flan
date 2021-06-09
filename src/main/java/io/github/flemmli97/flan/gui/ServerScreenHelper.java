@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.gui;
 import io.github.flemmli97.flan.api.ClaimPermission;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.item.ItemStack;
@@ -37,11 +38,11 @@ public class ServerScreenHelper {
             Text trans = ServerScreenHelper.coloredGuiText(pdesc, Formatting.YELLOW);
             lore.add(NbtString.of(Text.Serializer.toJson(trans)));
         }
-        Boolean global = ConfigHandler.config.getGlobal(claim.getWorld(), perm);
-        if (!claim.isAdminClaim() && global != null) {
+        Config.GlobalType global = ConfigHandler.config.getGlobal(claim.getWorld(), perm);
+        if (!claim.isAdminClaim() && !global.canModify()) {
             Text text = ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenUneditable, Formatting.DARK_RED);
             lore.add(NbtString.of(Text.Serializer.toJson(text)));
-            String permFlag = global.toString();
+            String permFlag = String.valueOf(global.getValue());
             Text text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals("true") ? Formatting.GREEN : Formatting.RED);
             lore.add(NbtString.of(Text.Serializer.toJson(text2)));
         } else {
@@ -78,11 +79,11 @@ public class ServerScreenHelper {
             Text trans = ServerScreenHelper.coloredGuiText(pdesc, Formatting.YELLOW);
             lore.add(NbtString.of(Text.Serializer.toJson(trans)));
         }
-        Boolean global = ConfigHandler.config.getGlobal(player.getServerWorld(), perm);
-        if (global != null) {
+        Config.GlobalType global = ConfigHandler.config.getGlobal(player.getServerWorld(), perm);
+        if (!global.canModify()) {
             Text text = ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenUneditable, Formatting.DARK_RED);
             lore.add(NbtString.of(Text.Serializer.toJson(text)));
-            String permFlag = global.toString();
+            String permFlag = String.valueOf(global.getValue());
             Text text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals("true") ? Formatting.GREEN : Formatting.RED);
             lore.add(NbtString.of(Text.Serializer.toJson(text2)));
         } else {
