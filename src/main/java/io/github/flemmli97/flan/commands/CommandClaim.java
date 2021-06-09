@@ -55,7 +55,8 @@ public class CommandClaim {
                 .then(CommandManager.literal("addClaim").requires(src -> CommandPermission.perm(src, CommandPermission.claimCreate)).then(CommandManager.argument("from", BlockPosArgumentType.blockPos()).then(CommandManager.argument("to", BlockPosArgumentType.blockPos()).executes(CommandClaim::addClaim))))
                 .then(CommandManager.literal("menu").requires(src -> CommandPermission.perm(src, CommandPermission.cmdMenu)).executes(CommandClaim::openMenu))
                 .then(CommandManager.literal("trapped").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTrapped)).executes(CommandClaim::trapped))
-                .then(CommandManager.literal("unlockDrops").executes(CommandClaim::unlockDrops))
+                .then(CommandManager.literal("unlockDrops").executes(CommandClaim::unlockDrops)
+                        .then(CommandManager.argument("players", GameProfileArgumentType.gameProfile()).requires(src -> CommandPermission.perm(src, CommandPermission.cmdUnlockAll, true)).executes(CommandClaim::unlockDropsPlayers)))
                 .then(CommandManager.literal("personalGroups").requires(src -> CommandPermission.perm(src, CommandPermission.cmdPGroup)).executes(CommandClaim::openPersonalGroups))
                 .then(CommandManager.literal("claimInfo").requires(src -> CommandPermission.perm(src, CommandPermission.cmdInfo)).executes(CommandClaim::claimInfo))
                 .then(CommandManager.literal("transferClaim").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTransfer)).then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).executes(CommandClaim::transferClaim)))
@@ -211,6 +212,21 @@ public class CommandClaim {
         PlayerClaimData data = PlayerClaimData.get(player);
         data.unlockDeathItems();
         context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.unlockDrops, ConfigHandler.config.dropTicks), Formatting.GOLD), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int unlockDropsPlayers(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        Collection<GameProfile> profs = GameProfileArgumentType.getProfileArgument(context, "players");
+        List<String> success = new ArrayList<>();
+        for (GameProfile prof : profs) {
+            ServerPlayerEntity player = context.getSource().getMinecraftServer().getPlayerManager().getPlayer(prof.getId());
+            if (player != null) {
+                PlayerClaimData data = PlayerClaimData.get(player);
+                data.unlockDeathItems();
+                success.add(prof.getName());
+            }
+        }
+        context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.unlockDropsMulti, success), Formatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 

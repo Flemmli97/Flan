@@ -40,6 +40,8 @@ public class CommandPermission {
     public static final String cmdSell = "flan.command.buy";
     public static final String cmdBuy = "flan.command.sell";
 
+    public static final String cmdUnlockAll = "flan.command.unlock.all";
+
     public static boolean perm(CommandSource src, String perm) {
         return perm(src, perm, false);
     }
