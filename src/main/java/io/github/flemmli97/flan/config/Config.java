@@ -67,16 +67,15 @@ public class Config {
         }));
     });
 
-    private final Map<String, Map<ClaimPermission, Boolean>> globalDefaultPerms = createHashMap(map -> {
+    private final Map<String, Map<ClaimPermission, GlobalType>> globalDefaultPerms = createHashMap(map -> {
         map.put("*", createHashMap(perms -> {
-            perms.put(PermissionRegistry.FLIGHT, true);
-            perms.put(PermissionRegistry.MOBSPAWN, false);
+            perms.put(PermissionRegistry.FLIGHT, GlobalType.ALLTRUE);
+            perms.put(PermissionRegistry.MOBSPAWN, GlobalType.ALLFALSE);
         }));
     });
 
     public Config(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
-        //.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();
         try {
             if (!configDir.exists())
                 configDir.mkdirs();
@@ -132,11 +131,14 @@ public class Config {
             this.globalDefaultPerms.clear();
             JsonObject glob = ConfigHandler.fromJson(obj, "globalDefaultPerms");
             glob.entrySet().forEach(e -> {
-                Map<ClaimPermission, Boolean> perms = new HashMap<>();
+                Map<ClaimPermission, GlobalType> perms = new HashMap<>();
                 if (e.getValue().isJsonObject()) {
                     e.getValue().getAsJsonObject().entrySet().forEach(jperm -> {
                         try {
-                            perms.put(PermissionRegistry.get(jperm.getKey()), jperm.getValue().getAsBoolean());
+                            if (jperm.getValue().isJsonPrimitive() && jperm.getValue().getAsJsonPrimitive().isBoolean())
+                                perms.put(PermissionRegistry.get(jperm.getKey()), jperm.getValue().getAsBoolean() ? GlobalType.ALLTRUE : GlobalType.ALLFALSE);
+                            else
+                                perms.put(PermissionRegistry.get(jperm.getKey()), GlobalType.valueOf(jperm.getValue().getAsString()));
                         } catch (NullPointerException ex) {
                             Flan.log("No permission with name {}", jperm.getKey());
                         }
@@ -185,7 +187,7 @@ public class Config {
         JsonObject global = new JsonObject();
         this.globalDefaultPerms.forEach((key, value) -> {
             JsonObject perm = new JsonObject();
-            value.forEach((key1, value1) -> perm.addProperty(key1.id, value1));
+            value.forEach((key1, value1) -> perm.addProperty(key1.id, value1.toString()));
             global.add(key, perm);
         });
         obj.add("globalDefaultPerms", global);
@@ -202,15 +204,15 @@ public class Config {
     }
 
     public boolean globallyDefined(ServerWorld world, ClaimPermission perm) {
-        return getGlobal(world, perm) != null;
+        return !getGlobal(world, perm).canModify();
     }
 
-    public Boolean getGlobal(ServerWorld world, ClaimPermission perm) {
+    public GlobalType getGlobal(ServerWorld world, ClaimPermission perm) {
         //Update permission map if not done already
-        Map<ClaimPermission, Boolean> allMap = ConfigHandler.config.globalDefaultPerms.get("*");
+        Map<ClaimPermission, GlobalType> allMap = ConfigHandler.config.globalDefaultPerms.get("*");
         if (allMap != null) {
             world.getServer().getWorlds().forEach(w -> {
-                Map<ClaimPermission, Boolean> wMap = ConfigHandler.config.globalDefaultPerms.getOrDefault(w.getRegistryKey().getValue().toString(), new HashMap<>());
+                Map<ClaimPermission, GlobalType> wMap = ConfigHandler.config.globalDefaultPerms.getOrDefault(w.getRegistryKey().getValue().toString(), new HashMap<>());
                 allMap.entrySet().forEach(e -> {
                     if (!wMap.containsKey(e.getKey()))
                         wMap.put(e.getKey(), e.getValue());
@@ -220,8 +222,8 @@ public class Config {
             ConfigHandler.config.globalDefaultPerms.remove("*");
         }
 
-        Map<ClaimPermission, Boolean> permMap = ConfigHandler.config.globalDefaultPerms.get(world.getRegistryKey().getValue().toString());
-        return permMap == null ? null : permMap.getOrDefault(perm, null);
+        Map<ClaimPermission, GlobalType> permMap = ConfigHandler.config.globalDefaultPerms.get(world.getRegistryKey().getValue().toString());
+        return permMap == null ? GlobalType.NONE : permMap.getOrDefault(perm, GlobalType.NONE);
     }
 
     private <V, K> Map<V, K> createHashMap(Consumer<Map<V, K>> cons) {
@@ -234,5 +236,22 @@ public class Config {
         Map<V, K> map = new LinkedHashMap<>();
         cons.accept(map);
         return map;
+    }
+
+    public enum GlobalType {
+
+        ALLTRUE,
+        ALLFALSE,
+        TRUE,
+        FALSE,
+        NONE;
+
+        public boolean getValue() {
+            return this == ALLTRUE || this == TRUE;
+        }
+
+        public boolean canModify() {
+            return this.ordinal() > 1;
+        }
     }
 }
