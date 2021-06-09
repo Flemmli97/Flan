@@ -126,6 +126,7 @@ public class LangConfig {
 
     public String unlockDropsCmd = "Your deathitems are protected. Use %s to unlock them for other players";
     public String unlockDrops = "Your deathitems are now unlocked for %s ticks";
+    public String unlockDropsMulti = "Unlocked drops for %s";
 
     public LangCommands cmdLang = new LangCommands();
 

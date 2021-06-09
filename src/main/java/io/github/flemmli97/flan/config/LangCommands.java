@@ -15,7 +15,7 @@ public class LangCommands {
         map.put("deleteAll", new String[]{"deleteAll", "Deletes all your claims (you need to double type to confirm it so no accidents)."});
         map.put("deleteSubClaim", new String[]{"deleteSubClaim", "Deletes the current subclaim."});
         map.put("deleteAllSubClaims", new String[]{"deleteAllSubClaims", "Deletes all subclaim of the current claim."});
-        map.put("list", new String[]{"list", "Lists all claims you have. If op also gives ability to list other players claims."});
+        map.put("list", new String[]{"list <player>", "Lists all claims you have. If op also gives ability to list other players claims."});
         map.put("switchMode", new String[]{"switchMode", "Switch between normal and subclaim mode."});
         map.put("group", new String[]{"group (add | remove <name>) | (players add | remove <player> [overwrite])", "- Adds/removes the group with that name. Also editable via the claim menu.", "- Adds/remove a player to the group. If overwrite then will overwrite the players current group else does nothing. Also editable via the claim menu."});
         map.put("transferClaim", new String[]{"transferClaim <player>", "Gives ownership of the claim to the specified player. Only works if you're the claim owner."});
@@ -25,7 +25,7 @@ public class LangCommands {
         map.put("sellBlocks", new String[]{"sellBlocks <amount>", "Sells <amount> claimblocks. Needs gunpowder currency installed."});
         map.put("buyBlocks", new String[]{"buyBlocks <amount>", "Buys <amount> claimblocks. Needs gunpowder currency installed."});
         map.put("trapped", new String[]{"trapped", "If in a claim not owned by the player attempts to teleport the player out of it after 5 seconds."});
-        map.put("unlockDrops", new String[]{"unlockDrops", "Unlocks dropped items from death so other players can pick them up too."});
+        map.put("unlockDrops", new String[]{"unlockDrops <players>", "Unlocks dropped items from death so other players can pick them up too. Or all of the given players (needs OP)"});
 
         map.put("reload", new String[]{"reload", "Reloads the config ingame."});
         map.put("adminMode", new String[]{"adminMode", "Switches to admin mode ignoring all claims."});
