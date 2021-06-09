@@ -99,6 +99,8 @@ publishing {
 			artifact(sourcesJar) {
 				builtBy remapSourcesJar
 			}
+			artifactId project.archives_base_name
+			version project.version
 		}
 	}
 	repositories {
