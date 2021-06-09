@@ -49,7 +49,7 @@ public class Config {
     public int buyPrice = -1;
 
     public boolean lockDrops = true;
-    public int dropTicks = 2400;
+    public int dropTicks = 6000;
 
     public boolean log;
 
@@ -233,13 +233,13 @@ public class Config {
         return permMap == null ? GlobalType.NONE : permMap.getOrDefault(perm, GlobalType.NONE);
     }
 
-    private <V, K> Map<V, K> createHashMap(Consumer<Map<V, K>> cons) {
+    public static <V, K> Map<V, K> createHashMap(Consumer<Map<V, K>> cons) {
         Map<V, K> map = new HashMap<>();
         cons.accept(map);
         return map;
     }
 
-    private <V, K> Map<V, K> createLinkedHashMap(Consumer<Map<V, K>> cons) {
+    public static <V, K> Map<V, K> createLinkedHashMap(Consumer<Map<V, K>> cons) {
         Map<V, K> map = new LinkedHashMap<>();
         cons.accept(map);
         return map;
