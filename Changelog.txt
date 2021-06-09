@@ -1,3 +1,16 @@
+Flan 1.4.1
+======================
+- Change globalDefaultPerms to use a version where you can specify if its modifiable or not
+  Valid values are:
+  ALLTRUE: Permission is true everywhere and players are unable to change it in claims
+  ALLFALSE: Permission is false everywhere and players are unable to change it in claims
+  TRUE: Permission is true in non claimed areas
+  FALSE: Permission is false in non claimed areas
+  Old configs will get auto converted: false -> ALLFALSE and true -> ALLTRUE
+  Basically now a worldguard version
+- Add locking items when the player dies so other players cant pick it up.
+  Use /flan unlockItems to allow it.
+
 Flan 1.4.0
 ======================
 - Port to 1.17
