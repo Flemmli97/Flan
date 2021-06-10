@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
 import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
@@ -70,23 +71,28 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
 
     @Override
     public ItemStack onSlotClick(int i, int j, SlotActionType actionType, PlayerEntity playerEntity) {
-        if (i < 0)
+        if (i < 0 || !(playerEntity instanceof ServerPlayerEntity))
             return ItemStack.EMPTY;
+        ServerPlayerEntity player = (ServerPlayerEntity) playerEntity;
         Slot slot = this.slots.get(i);
         if (i == 0)
             this.ret.run();
         else if (i == 2) {
             String s = slot.getStack().hasCustomName() ? slot.getStack().getName().asString() : "";
-            if (!s.isEmpty() && !s.equals(ConfigHandler.lang.stringScreenReturn))
+            if (!s.isEmpty() && !s.equals(ConfigHandler.lang.stringScreenReturn)) {
                 this.cons.accept(s);
+            }
+            player.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(player.experienceProgress, player.totalExperience, player.experienceLevel));
         }
         this.sendContentUpdates();
-        ((ServerPlayerEntity) playerEntity).updateCursorStack();
+        player.updateCursorStack();
         return slot.getStack();
     }
 
     @Override
     public ItemStack transferSlot(PlayerEntity player, int index) {
+        if (!(player instanceof ServerPlayerEntity))
+            return ItemStack.EMPTY;
         if (index == 0)
             this.ret.run();
         else if (index == 2) {
@@ -94,6 +100,7 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
             String s = slot.getStack().hasCustomName() ? slot.getStack().getName().asString() : "";
             if (!s.isEmpty() && !s.equals(ConfigHandler.lang.stringScreenReturn))
                 this.cons.accept(s);
+            ((ServerPlayerEntity) player).networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(player.experienceProgress, player.totalExperience, player.experienceLevel));
         }
         this.sendContentUpdates();
         return ItemStack.EMPTY;
