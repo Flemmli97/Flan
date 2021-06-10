@@ -168,7 +168,7 @@ curseforge {
             addGameVersion "${it}"
         }
         mainArtifact(remapJar) {
-            changelog = changelog(3)
+            changelog = changelog(3).replace("\n-", "\n\n- ")
             changelogType = "markdown"
             releaseType = 'release'
         }
