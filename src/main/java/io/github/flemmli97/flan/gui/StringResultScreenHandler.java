@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
 import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
@@ -13,6 +14,7 @@ import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.ScreenHandlerSyncHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringUtils;
 
@@ -70,8 +72,8 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
     }
 
     @Override
-    public void onSlotClick(int i, int j, SlotActionType actionType, PlayerEntity playerEntity) {
-        if (i < 0)
+    public void onSlotClick(int i, int j, SlotActionType actionType, PlayerEntity player) {
+        if (i < 0 || !(player instanceof ServerPlayerEntity))
             return;
         Slot slot = this.slots.get(i);
         if (this.syncHandler != null)
@@ -82,12 +84,15 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
             String s = slot.getStack().hasCustomName() ? slot.getStack().getName().asString() : "";
             if (!s.isEmpty() && !s.equals(ConfigHandler.lang.stringScreenReturn))
                 this.cons.accept(s);
+            ((ServerPlayerEntity) player).networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(this.player.experienceProgress, this.player.totalExperience, this.player.experienceLevel));
         }
         this.sendContentUpdates();
     }
 
     @Override
     public ItemStack transferSlot(PlayerEntity player, int index) {
+        if (index < 0 || !(player instanceof ServerPlayerEntity))
+            return ItemStack.EMPTY;
         if (index == 0)
             this.ret.run();
         else if (index == 2) {
@@ -95,6 +100,7 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
             String s = slot.getStack().hasCustomName() ? slot.getStack().getName().asString() : "";
             if (!s.isEmpty() && !s.equals(ConfigHandler.lang.stringScreenReturn))
                 this.cons.accept(s);
+            ((ServerPlayerEntity) player).networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(player.experienceProgress, player.totalExperience, player.experienceLevel));
         }
         this.sendContentUpdates();
         return ItemStack.EMPTY;
