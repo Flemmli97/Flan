@@ -55,6 +55,7 @@ public class CommandClaim {
                 .then(CommandManager.literal("addClaim").requires(src -> CommandPermission.perm(src, CommandPermission.claimCreate)).then(CommandManager.argument("from", BlockPosArgumentType.blockPos()).then(CommandManager.argument("to", BlockPosArgumentType.blockPos()).executes(CommandClaim::addClaim))))
                 .then(CommandManager.literal("menu").requires(src -> CommandPermission.perm(src, CommandPermission.cmdMenu)).executes(CommandClaim::openMenu))
                 .then(CommandManager.literal("trapped").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTrapped)).executes(CommandClaim::trapped))
+                .then(CommandManager.literal("name").requires(src -> CommandPermission.perm(src, CommandPermission.cmdName)).then(CommandManager.argument("name", StringArgumentType.string()).executes(CommandClaim::nameClaim)))
                 .then(CommandManager.literal("unlockDrops").executes(CommandClaim::unlockDrops)
                         .then(CommandManager.argument("players", GameProfileArgumentType.gameProfile()).requires(src -> CommandPermission.perm(src, CommandPermission.cmdUnlockAll, true)).executes(CommandClaim::unlockDropsPlayers)))
                 .then(CommandManager.literal("personalGroups").requires(src -> CommandPermission.perm(src, CommandPermission.cmdPGroup)).executes(CommandClaim::openPersonalGroups))
@@ -205,6 +206,51 @@ public class CommandClaim {
             context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.trappedFail, Formatting.RED), false);
         }
         return 0;
+    }
+
+    private static int nameClaim(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        PlayerClaimData data = PlayerClaimData.get(player);
+        if (data.getEditMode() == EnumEditMode.DEFAULT) {
+            Claim claim = PermHelper.checkReturn(player, PermissionRegistry.EDITPERMS, PermHelper.genericNoPermMessage(player));
+            if (claim == null)
+                return 0;
+            boolean nameUsed = ClaimStorage.get(player.getServerWorld()).allClaimsFromPlayer(claim.getOwner())
+                    .stream().map(Claim::getClaimName).anyMatch(name -> name.equals(StringArgumentType.getString(context, "name")));
+            if (!nameUsed) {
+                String name = StringArgumentType.getString(context, "name");
+                claim.setClaimName(name);
+                player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimNameSet, name), Formatting.GOLD), false);
+            } else {
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.claimNameUsed, Formatting.DARK_RED), false);
+            }
+        } else {
+            Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(player.getBlockPos());
+            Claim sub = claim.getSubClaim(player.getBlockPos());
+            if (sub != null && (claim.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos()) || sub.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos()))) {
+                boolean nameUsed = claim.getAllSubclaims()
+                        .stream().map(Claim::getClaimName).anyMatch(name -> name.equals(StringArgumentType.getString(context, "name")));
+                if (!nameUsed) {
+                    String name = StringArgumentType.getString(context, "name");
+                    sub.setClaimName(name);
+                    player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimNameSet, name), Formatting.GOLD), false);
+                } else {
+                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.claimNameUsedSub, Formatting.DARK_RED), false);
+                }
+            } else if (claim.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos())) {
+                boolean nameUsed = ClaimStorage.get(player.getServerWorld()).allClaimsFromPlayer(claim.getOwner())
+                        .stream().map(Claim::getClaimName).anyMatch(name -> name.equals(StringArgumentType.getString(context, "name")));
+                if (!nameUsed) {
+                    String name = StringArgumentType.getString(context, "name");
+                    claim.setClaimName(name);
+                    player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimNameSet, name), Formatting.GOLD), false);
+                } else {
+                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.claimNameUsed, Formatting.DARK_RED), false);
+                }
+            } else
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermission, Formatting.DARK_RED), false);
+        }
+        return Command.SINGLE_SUCCESS;
     }
 
     private static int unlockDrops(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

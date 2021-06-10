@@ -16,7 +16,6 @@ import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -39,7 +38,7 @@ public class Claim implements IPermissionContainer {
     private UUID owner;
 
     private UUID claimID;
-    private LiteralText claimName;
+    private String claimName = "";
     private final Map<ClaimPermission, Boolean> globalPerm = new HashMap<>();
     private final Map<String, Map<ClaimPermission, Boolean>> permissions = new HashMap<>();
 
@@ -108,11 +107,11 @@ public class Claim implements IPermissionContainer {
         return this.claimID;
     }
 
-    public LiteralText getClaimName() {
+    public String getClaimName() {
         return this.claimName;
     }
 
-    public void setClaimName(LiteralText name) {
+    public void setClaimName(String name) {
         this.claimName = name;
         this.setDirty(true);
     }
@@ -460,6 +459,7 @@ public class Claim implements IPermissionContainer {
 
     public void readJson(JsonObject obj, UUID uuid) {
         this.claimID = UUID.fromString(obj.get("ID").getAsString());
+        this.claimName = obj.get("Name").getAsString();
         JsonArray pos = obj.getAsJsonArray("PosxXzZY");
         this.minX = pos.get(0).getAsInt();
         this.maxX = pos.get(1).getAsInt();
@@ -520,6 +520,7 @@ public class Claim implements IPermissionContainer {
 
     public JsonObject toJson(JsonObject obj) {
         obj.addProperty("ID", this.claimID.toString());
+        obj.addProperty("Name", this.claimName);
         JsonArray pos = new JsonArray();
         pos.add(this.minX);
         pos.add(this.maxX);
@@ -589,7 +590,9 @@ public class Claim implements IPermissionContainer {
     }
 
     public String formattedClaim() {
-        return String.format("[x=%d,z=%d] - [x=%d,z=%d]", this.minX, this.minZ, this.maxX, this.maxZ);
+        if (this.claimName.isEmpty())
+            return String.format("[x=%d,z=%d] - [x=%d,z=%d]", this.minX, this.minZ, this.maxX, this.maxZ);
+        return String.format("%s:[x=%d,z=%d] - [x=%d,z=%d]", this.claimName, this.minX, this.minZ, this.maxX, this.maxZ);
     }
 
     public List<Text> infoString(ServerPlayerEntity player) {
