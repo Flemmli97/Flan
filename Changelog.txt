@@ -26,13 +26,13 @@ Flan 1.4.0
 Flan 1.3.3
 ======================
 - Some blocks permission changed from PROJECTILES to OPENCONTAINER on direct interaction
-    Affected blocks: campfire, tnt, (chorus fruit), bells
-    Direct interaction as in right clicking the block. For actual projectile hits this remains unchanged
+  Affected blocks: campfire, tnt, (chorus fruit), bells
+  Direct interaction as in right clicking the block. For actual projectile hits this remains unchanged
 - Fix several entities not protected on indirect non projectile player attacks (e.g. through player ignited tnt)-
-    More noticable with other mods #52
+  More noticable with other mods #52
 - Add gunpowder currency support.
-    Enables the purchase and selling of claim blocks. Price configurable. Disabled by default
-    Only selling and purchase of additional claim blocks possible (not the ones you get with time).
+  Enables the purchase and selling of claim blocks. Price configurable. Disabled by default
+  Only selling and purchase of additional claim blocks possible (not the ones you get with time).
 
 Flan 1.3.2
 ======================
@@ -52,13 +52,13 @@ Flan 1.3.0
 - Fix inventory desync when using the naming screen
 - Add /flan help command. For now it only displays all available commands
 - Add default groups. Set via the config file in defaultGroups.
-    Every claim created will have those groups by default to make group creation easier
-    and without having to make the same group for multiple claims again and again.
+  Every claim created will have those groups by default to make group creation easier
+  and without having to make the same group for multiple claims again and again.
 - Add personal groups. Set either via the command /flan permissions personal ...
   or via the gui /flan personalGroups.
-    Personal groups are just like default groups except player bound. If a player has any
-    personal groups that will be used instead of the global default group. That way the player
-    can also specify what groups a claim should have upon creation.
+  Personal groups are just like default groups except player bound. If a player has any
+  personal groups that will be used instead of the global default group. That way the player
+  can also specify what groups a claim should have upon creation.
 - Localized various gui strings
 
 Flan 1.2.6
@@ -73,9 +73,9 @@ Flan 1.2.5
 - Sync itemstack when failing to place blocks
 - Fix various thrown entitys to not abide by claim protection
 - Add 2 new permissions:
-    - Item drop permission: If set to false prevents items being dropped (players only)
-    - Item pickup permission: If set to false prevents items from being picked up. Player thrown items
-      (Death included) gets a special tag so that the one who threw them can always pick it up.
+  Item drop permission: If set to false prevents items being dropped (players only)
+  Item pickup permission: If set to false prevents items from being picked up. Player thrown items
+  (Death included) gets a special tag so that the one who threw them can always pick it up.
 - Change some permissions to default true: Enderchest, Enchanting table, Item drop, Item pickup
 
 Flan 1.2.4

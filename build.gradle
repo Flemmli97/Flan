@@ -1,111 +1,218 @@
-plugins {
-	id 'fabric-loom' version '0.4-SNAPSHOT'
-	id 'maven-publish'
+buildscript {
+    dependencies {
+        classpath group: 'com.diluv.schoomp', name: 'Schoomp', version: '1.1.0'
+    }
 }
+
+plugins {
+    id 'fabric-loom' version '0.4-SNAPSHOT'
+    id 'maven-publish'
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+}
+
+import com.diluv.schoomp.Webhook
+import com.diluv.schoomp.message.Message
+import com.diluv.schoomp.message.embed.Embed
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 archivesBaseName = project.archives_base_name
-version = project.minecraft_version+"-"+project.mod_version
+version = project.minecraft_version + "-" + project.mod_version
 group = project.maven_group
 
 repositories {
-	mavenCentral()
-	jcenter()
-	maven {
-		name = 'Fabric-Permission-API'
-		url 'https://oss.sonatype.org/content/repositories/snapshots'
-	}
-	maven {
-		name = "Gunpowder"
-		url = "https://maven.martmists.com/releases"
-	}
-	maven {
-		name = 'Ladysnake Mods'
-		url = 'https://ladysnake.jfrog.io/artifactory/mods'
-		content {
-			includeGroup 'io.github.ladysnake'
-			includeGroupByRegex 'io\\.github\\.onyxstudios.*'
-		}
-	}
+    mavenCentral()
+    jcenter()
+    maven {
+        name = 'Fabric-Permission-API'
+        url 'https://oss.sonatype.org/content/repositories/snapshots'
+    }
+    maven {
+        name = "Gunpowder"
+        url = "https://maven.martmists.com/releases"
+    }
+    maven {
+        name = 'Ladysnake Mods'
+        url = 'https://ladysnake.jfrog.io/artifactory/mods'
+        content {
+            includeGroup 'io.github.ladysnake'
+            includeGroupByRegex 'io\\.github\\.onyxstudios.*'
+        }
+    }
 }
 
 dependencies {
-	//to change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    //to change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    // Fabric API. This is technically optional, but you probably want it anyway.
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	compile group: 'org.yaml', name: 'snakeyaml', version: '1.25'
-	include group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+    compile group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+    include group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
-	modImplementation "me.lucko:fabric-permissions-api:${project.fabric_permissions_api}"
-	modCompileOnly "io.github.gunpowder:gunpowder-api:${gunpowder_version}+1.16.2"
-	modImplementation "io.github.ladysnake:PlayerAbilityLib:${project.player_ability_lib}"
-	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-	// You may need to force-disable transitiveness on them.
+    modImplementation "me.lucko:fabric-permissions-api:${project.fabric_permissions_api}"
+    modCompileOnly "io.github.gunpowder:gunpowder-api:${gunpowder_version}+1.16.2"
+    modImplementation "io.github.ladysnake:PlayerAbilityLib:${project.player_ability_lib}"
 }
 
 processResources {
-	inputs.property "version", project.version
+    inputs.property "version", project.version
 
-	from(sourceSets.main.resources.srcDirs) {
-		include "fabric.mod.json"
-		expand "version": project.version
-	}
+    from(sourceSets.main.resources.srcDirs) {
+        include "fabric.mod.json"
+        expand "version": project.version
+    }
 
-	from(sourceSets.main.resources.srcDirs) {
-		exclude "fabric.mod.json"
-	}
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "fabric.mod.json"
+    }
 }
 
 // ensure that the encoding is set to UTF-8, no matter what the system default is
 // this fixes some edge cases with special characters not displaying correctly
 // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
 tasks.withType(JavaCompile) {
-	options.encoding = "UTF-8"
+    options.encoding = "UTF-8"
 }
 
 // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
 // if it is present.
 // If you remove this task, sources will not be generated.
 task sourcesJar(type: Jar, dependsOn: classes) {
-	classifier = "sources"
-	from sourceSets.main.allSource
+    classifier = "sources"
+    from sourceSets.main.allSource
 }
 
 jar {
-	from "LICENSE"
+    from "LICENSE"
 }
 
 // configure the maven publication
 publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
-			artifactId project.archives_base_name
-			version project.version
-		}
-	}
-	repositories {
-		maven {
-			url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
-			//url "https://maven.pkg.github.com/flemmli97/RuneCraftory"
-			credentials {
-				username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER")
-				password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
-				//password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
-			}
-		}
-	}
+    publications {
+        mavenJava(MavenPublication) {
+            // add all the jars that should be included when publishing to maven
+            artifact(remapJar) {
+                builtBy remapJar
+            }
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
+            artifactId project.archives_base_name
+            version project.version
+        }
+    }
+
+    repositories {
+        maven {
+            url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
+            //url "https://maven.pkg.github.com/flemmli97/RuneCraftory"
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER")
+                password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
+                //password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
+            }
+        }
+    }
 }
+
+def changelog(int versions) {
+    try {
+        def changelog = ""
+        def match = 0
+        file("Changelog.txt").eachLine {
+            if (it.matches("${project.project_name} ([0-9].[0-9].[0-9])"))
+                match++
+            if (match <= versions) {
+                changelog += it + "\n"
+            } else
+                return
+        }
+        return changelog + "\n\n"
+    } catch (exception) {
+        return "${project.project_name} ${project.mod_version}\n==========\n"
+    }
+}
+
+//Splits the changelog into multiple parts if they get bigger than discords embed field size (1024)
+def discordChangelog() {
+    def changelog = changelog(1)
+    def res = new ArrayList()
+    if (changelog.size() < 1024) {
+        res.add(changelog)
+        return res;
+    }
+    def temp = ""
+    changelog.split("\n").each {
+        it = it + "\n"
+        if ((temp.size() + it.size()) >= 1024) {
+            res.add(temp)
+            temp = it
+        } else
+            temp += it
+    }
+    res.add(temp)
+    return res
+}
+
+curseforge {
+    apiKey = findProperty('curseApiToken') ?: 0
+
+    project {
+        id = "${curse_id}"
+        changelog = changelog(3)
+        releaseType = 'release'
+        "${project.curse_versions}".split(', ').each {
+            addGameVersion "${it}"
+        }
+        relations {
+            "${project.curse_dep}".split(', ').each {
+                requiredDependency "${it}"
+            }
+        }
+    }
+}
+
+tasks.getByName("curseforge").doLast {
+    try {
+        def newFileId = tasks.getByName("curseforge${project.curse_id}").property('mainArtifact').fileID
+
+        def webhook = new Webhook(findProperty('discordHook'), "${project.project_name} Upload")
+
+        def message = new Message()
+        def version = project.curse_versions.split(', ')[0]
+        message.setUsername("Release")
+        message.setContent("@Flan ${project.project_name} ${project.mod_version} for Minecraft ${version} has been released!")
+
+        def embed = new Embed()
+        embed.addField('Get it here', "${project.findProperty('curse_page')}/files/${newFileId}", false)
+        def changelog = discordChangelog()
+        if (changelog.size() == 1)
+            embed.addField('Change Log', "```md\n${changelog.get(0) ?: 'Unavailable :('}```", false)
+        else
+            changelog.forEach {
+                embed.addField("Change Log", "```md\n${it}```", false)
+            }
+        embed.setColor(0xFF8000)
+        message.addEmbed(embed)
+
+        webhook.sendMessage(message)
+    }
+
+    catch (IOException e) {
+        println 'Failed to push to the Discord webhook.'
+    }
+}
+
+task buildUploadAll(group: "upload") {
+    dependsOn clean, publish, tasks.getByName("curseforge")
+    build.mustRunAfter clean
+    tasks.findByName("curseforge").mustRunAfter publish
+}
+
+tasks.getByName("curseforge").dependsOn build
+publish.dependsOn build
