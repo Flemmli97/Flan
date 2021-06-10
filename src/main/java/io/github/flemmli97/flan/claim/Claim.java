@@ -601,10 +601,17 @@ public class Claim implements IPermissionContainer {
         l.add(PermHelper.simpleColoredText("=============================================", Formatting.GREEN));
         GameProfile prof = this.owner != null ? player.getServer().getUserCache().getByUuid(this.owner) : null;
         String ownerName = this.isAdminClaim() ? "Admin" : prof != null ? prof.getName() : "<UNKNOWN>";
-        if (this.parent == null)
-            l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfo, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), Formatting.GOLD));
-        else
-            l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoSub, ownerName, this.minX, this.minZ, this.maxX, this.maxZ), Formatting.GOLD));
+        if (this.parent == null) {
+            if (this.claimName.isEmpty())
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfo, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), Formatting.GOLD));
+            else
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoNamed, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size(), this.claimName), Formatting.GOLD));
+        } else {
+            if (this.claimName.isEmpty())
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoSub, ownerName, this.minX, this.minZ, this.maxX, this.maxZ), Formatting.GOLD));
+            else
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoSubNamed, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.claimName), Formatting.GOLD));
+        }
         if (perms) {
             l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimInfoPerms, this.globalPerm), Formatting.RED));
             l.add(PermHelper.simpleColoredText(ConfigHandler.lang.claimGroupInfoHeader, Formatting.RED));

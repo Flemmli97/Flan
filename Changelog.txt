@@ -1,3 +1,20 @@
+Flan 1.4.2
+======================
+- Fix a ticking player crash
+- Fix anvil gui not updating client xp use
+- Add ability to name claims.
+  Names have to be unique for each player and claim.
+  No additional feature for that (yet)
+- Add blockEntityTagIgnore config
+  Blockentities are checked against the strings here and if their tag
+  matches one they will be ignored for a permission check.
+  Useful for blockentities that should only be accessible under certain circumstances.
+  Default values: ["IsDeathChest"] for vanilla death chest mod (only for version 2.0.0+)
+- Add entityTagIgnore config same as blockEntityTagIgnore but it will only
+  check against scoreboard tags. Default "graves.marker" is for vanilla tweaks graves.
+  Keep in mind that the items dropped by graves are not player bound so if a claim disables
+  item pickups you will not be able to pick up the items
+
 Flan 1.4.1
 ======================
 - Change globalDefaultPerms to use a version where you can specify if its modifiable or not
