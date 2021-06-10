@@ -22,7 +22,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -122,7 +122,7 @@ public class BlockInteractEvents {
     public static boolean alwaysAllowBlock(Identifier id, BlockEntity blockEntity) {
         return ConfigHandler.config.ignoredBlocks.contains(id.toString())
                 || (blockEntity != null
-                && ConfigHandler.config.blockEntityTagIgnore.stream().anyMatch(blockEntity.toTag(new CompoundTag())::contains));
+                && ConfigHandler.config.blockEntityTagIgnore.stream().anyMatch(blockEntity.writeNbt(new NbtCompound())::contains));
     }
 
     public static boolean cancelEntityBlockCollision(BlockState state, World world, BlockPos pos, Entity entity) {

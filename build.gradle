@@ -198,7 +198,7 @@ tasks.getByName("curseforge").doLast {
         message.setContent("<@&852113509243682817> ${project.project_name} ${project.mod_version} for Minecraft ${version} has been released!")
 
         def embed = new Embed()
-        embed.addField('Get it here', "${project.findProperty('curse_page')}/files/${newFileId}", false)
+        embed.addField('Get it here (When it is accepted)', "${project.findProperty('curse_page')}/files/${newFileId}", false)
         def changelog = discordChangelog()
         if (changelog.size() == 1)
             embed.addField('Change Log', "```md\n${changelog.get(0) ?: 'Unavailable :('}```", false)
