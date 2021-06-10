@@ -1,5 +1,6 @@
 package io.github.flemmli97.flan.config;
 
+import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.flemmli97.flan.Flan;
@@ -35,6 +36,12 @@ public class Config {
     public int defaultClaimDepth = 10;
     public boolean lenientBlockEntityCheck;
     public List<String> ignoredBlocks = new ArrayList<>();
+    public List<String> blockEntityTagIgnore = Lists.newArrayList(
+            "IsDeathChest" //vanilla death chest
+    );
+    public List<String> entityTagIgnore = Lists.newArrayList(
+            "graves.marker" //vanilla tweaks
+    );
 
     public String[] blacklistedWorlds = new String[0];
     public boolean worldWhitelist;
@@ -70,12 +77,10 @@ public class Config {
         }));
     });
 
-    private final Map<String, Map<ClaimPermission, GlobalType>> globalDefaultPerms = createHashMap(map -> {
-        map.put("*", createHashMap(perms -> {
-            perms.put(PermissionRegistry.FLIGHT, GlobalType.ALLTRUE);
-            perms.put(PermissionRegistry.MOBSPAWN, GlobalType.ALLFALSE);
-        }));
-    });
+    private final Map<String, Map<ClaimPermission, GlobalType>> globalDefaultPerms = createHashMap(map -> map.put("*", createHashMap(perms -> {
+        perms.put(PermissionRegistry.FLIGHT, GlobalType.ALLTRUE);
+        perms.put(PermissionRegistry.MOBSPAWN, GlobalType.ALLFALSE);
+    })));
 
     public Config(MinecraftServer server) {
         File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
@@ -104,8 +109,12 @@ public class Config {
             this.defaultClaimDepth = ConfigHandler.fromJson(obj, "defaultClaimDepth", this.defaultClaimDepth);
             this.lenientBlockEntityCheck = ConfigHandler.fromJson(obj, "lenientBlockEntityCheck", this.lenientBlockEntityCheck);
             this.ignoredBlocks.clear();
-            JsonArray blockCheck = ConfigHandler.arryFromJson(obj, "ignoredBlocks");
-            blockCheck.forEach(e -> this.ignoredBlocks.add(e.getAsString()));
+            ConfigHandler.arryFromJson(obj, "ignoredBlocks").forEach(e -> this.ignoredBlocks.add(e.getAsString()));
+            this.blockEntityTagIgnore.clear();
+            ConfigHandler.arryFromJson(obj, "blockEntityTagIgnore").forEach(e -> this.blockEntityTagIgnore.add(e.getAsString()));
+            this.entityTagIgnore.clear();
+            ConfigHandler.arryFromJson(obj, "entityTagIgnore").forEach(e -> this.entityTagIgnore.add(e.getAsString()));
+
             JsonArray arr = ConfigHandler.arryFromJson(obj, "blacklistedWorlds");
             this.blacklistedWorlds = new String[arr.size()];
             for (int i = 0; i < arr.size(); i++)
@@ -173,6 +182,13 @@ public class Config {
         this.ignoredBlocks.forEach(blocks::add);
         obj.add("ignoredBlocks", blocks);
         obj.addProperty("lenientBlockEntityCheck", this.lenientBlockEntityCheck);
+        JsonArray blocksEntities = new JsonArray();
+        this.blockEntityTagIgnore.forEach(blocksEntities::add);
+        obj.add("blockEntityTagIgnore", blocksEntities);
+        JsonArray entities = new JsonArray();
+        this.entityTagIgnore.forEach(entities::add);
+        obj.add("entityTagIgnore", entities);
+
         JsonArray arr = new JsonArray();
         for (String blacklistedWorld : this.blacklistedWorlds)
             arr.add(blacklistedWorld);
@@ -220,9 +236,9 @@ public class Config {
         if (allMap != null) {
             world.getServer().getWorlds().forEach(w -> {
                 Map<ClaimPermission, GlobalType> wMap = ConfigHandler.config.globalDefaultPerms.getOrDefault(w.getRegistryKey().getValue().toString(), new HashMap<>());
-                allMap.entrySet().forEach(e -> {
-                    if (!wMap.containsKey(e.getKey()))
-                        wMap.put(e.getKey(), e.getValue());
+                allMap.forEach((key, value) -> {
+                    if (!wMap.containsKey(key))
+                        wMap.put(key, value);
                 });
                 ConfigHandler.config.globalDefaultPerms.put(w.getRegistryKey().getValue().toString(), wMap);
             });
