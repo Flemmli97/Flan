@@ -164,10 +164,13 @@ curseforge {
 
     project {
         id = "${curse_id}"
-        changelog = changelog(3)
-        releaseType = 'release'
         "${project.curse_versions}".split(', ').each {
             addGameVersion "${it}"
+        }
+        mainArtifact(remapJar) {
+            changelog = changelog(3)
+            changelogType = "markdown"
+            releaseType = 'release'
         }
         relations {
             "${project.curse_dep}".split(', ').each {
@@ -186,7 +189,7 @@ tasks.getByName("curseforge").doLast {
         def message = new Message()
         def version = project.curse_versions.split(', ')[0]
         message.setUsername("Release")
-        message.setContent("@Flan ${project.project_name} ${project.mod_version} for Minecraft ${version} has been released!")
+        message.setContent("<@&852113509243682817> ${project.project_name} ${project.mod_version} for Minecraft ${version} has been released!")
 
         def embed = new Embed()
         embed.addField('Get it here', "${project.findProperty('curse_page')}/files/${newFileId}", false)
@@ -209,7 +212,7 @@ tasks.getByName("curseforge").doLast {
 }
 
 task buildUploadAll(group: "publishing") {
-    dependsOn clean, publish, tasks.getByName("curseforge")
+    dependsOn clean, build, publish, tasks.getByName("curseforge")
     build.mustRunAfter clean
     tasks.findByName("curseforge").mustRunAfter publish
 }
