@@ -22,6 +22,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -43,7 +44,7 @@ public class BlockInteractEvents {
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
             Identifier id = Registry.BLOCK.getId(state.getBlock());
-            if (ConfigHandler.config.ignoredBlocks.contains(id.toString()))
+            if (alwaysAllowBlock(id, world.getBlockEntity(pos)))
                 return true;
             if (!claim.canInteract(player, PermissionRegistry.BREAK, pos, true)) {
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
@@ -75,7 +76,8 @@ public class BlockInteractEvents {
             if (!cancelBlockInteract) {
                 BlockState state = world.getBlockState(hitResult.getBlockPos());
                 Identifier id = Registry.BLOCK.getId(state.getBlock());
-                if (ConfigHandler.config.ignoredBlocks.contains(id.toString()))
+                BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
+                if (alwaysAllowBlock(id, blockEntity))
                     return ActionResult.PASS;
                 ClaimPermission perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
                 if (perm == PermissionRegistry.PROJECTILES)
@@ -97,7 +99,6 @@ public class BlockInteractEvents {
                     PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                     return ActionResult.FAIL;
                 }
-                BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
                 if (blockEntity != null) {
                     if (blockEntity instanceof LecternBlockEntity) {
                         if (claim.canInteract(player, PermissionRegistry.LECTERNTAKE, hitResult.getBlockPos(), false))
@@ -116,6 +117,12 @@ public class BlockInteractEvents {
             }
         }
         return ActionResult.PASS;
+    }
+
+    public static boolean alwaysAllowBlock(Identifier id, BlockEntity blockEntity) {
+        return ConfigHandler.config.ignoredBlocks.contains(id.toString())
+                || (blockEntity != null
+                && ConfigHandler.config.blockEntityTagIgnore.stream().anyMatch(blockEntity.toTag(new CompoundTag())::contains));
     }
 
     public static boolean cancelEntityBlockCollision(BlockState state, World world, BlockPos pos, Entity entity) {

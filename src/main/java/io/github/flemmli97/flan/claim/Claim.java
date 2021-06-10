@@ -196,6 +196,7 @@ public class Claim implements IPermissionContainer {
         return this.removed;
     }
 
+    @Override
     public boolean canInteract(ServerPlayerEntity player, ClaimPermission perm, BlockPos pos, boolean message) {
         ActionResult res = ClaimPermissionEvent.CHECK.invoker().check(player, perm, pos);
         if (res != ActionResult.PASS)

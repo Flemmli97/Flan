@@ -60,7 +60,7 @@ public class EntityInteractEvents {
     }
 
     public static ActionResult useAtEntity(PlayerEntity player, World world, Hand hand, Entity entity, /* Nullable */ EntityHitResult hitResult) {
-        if (player.world.isClient || player.isSpectator())
+        if (player.world.isClient || player.isSpectator() || canInteract(entity))
             return ActionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
         BlockPos pos = entity.getBlockPos();
@@ -75,7 +75,7 @@ public class EntityInteractEvents {
     }
 
     public static ActionResult useEntity(PlayerEntity p, World world, Hand hand, Entity entity) {
-        if (p.world.isClient || p.isSpectator())
+        if (p.world.isClient || p.isSpectator() || canInteract(entity))
             return ActionResult.PASS;
         ServerPlayerEntity player = (ServerPlayerEntity) p;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
@@ -101,6 +101,10 @@ public class EntityInteractEvents {
             return claim.canInteract(player, PermissionRegistry.ANIMALINTERACT, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
         }
         return ActionResult.PASS;
+    }
+
+    public static boolean canInteract(Entity entity) {
+        return entity.getScoreboardTags().stream().anyMatch(ConfigHandler.config.entityTagIgnore::contains);
     }
 
     public static boolean projectileHit(ProjectileEntity proj, HitResult res) {
@@ -182,7 +186,7 @@ public class EntityInteractEvents {
     }
 
     public static ActionResult attackSimple(PlayerEntity p, Entity entity, boolean message) {
-        if (p.world.isClient || p.isSpectator())
+        if (p.world.isClient || p.isSpectator() || canInteract(entity))
             return ActionResult.PASS;
         if (entity instanceof Monster)
             return ActionResult.PASS;

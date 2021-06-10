@@ -257,7 +257,7 @@ public class PlayerClaimData {
             } else if (this.player.getPos().squaredDistanceTo(this.trappedPos) > 0.15) {
                 this.trappedTick = -1;
                 this.trappedPos = null;
-                this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.trappedMove), Formatting.RED), false);
+                this.player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.trappedMove, Formatting.RED), false);
             }
         }
         this.deathPickupTick--;
