@@ -212,8 +212,7 @@ public class EntityInteractEvents {
     }
 
     public static boolean canCollideWith(PlayerEntity player, Entity entity) {
-        if (player instanceof ServerPlayerEntity) {
-            ServerPlayerEntity sPlayer = (ServerPlayerEntity) player;
+        if (player instanceof ServerPlayerEntity sPlayer) {
             if (entity instanceof ItemEntity) {
                 IOwnedItem ownedItem = (IOwnedItem) entity;
                 if (ownedItem.getDeathPlayer() != null && ConfigHandler.config.lockDrops) {
