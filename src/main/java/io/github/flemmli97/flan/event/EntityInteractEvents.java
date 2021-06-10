@@ -300,7 +300,7 @@ public class EntityInteractEvents {
 
     public static void updateClaim(ServerPlayerEntity player, Claim currentClaim, Consumer<Claim> cons) {
         Vec3d pos = player.getPos();
-        BlockPos rounded = TeleportUtils.roundedBlockPos(pos.add(0, player.getEyeHeight(player.getPose()), 0));
+        BlockPos rounded = TeleportUtils.roundedBlockPos(pos.add(0, player.getActiveEyeHeight(player.getPose(), player.getDimensions(player.getPose())), 0));
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
         if (currentClaim != null) {
             if (!currentClaim.insideClaim(rounded)) {

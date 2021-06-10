@@ -208,7 +208,7 @@ tasks.getByName("curseforge").doLast {
     }
 }
 
-task buildUploadAll(group: "upload") {
+task buildUploadAll(group: "publishing") {
     dependsOn clean, publish, tasks.getByName("curseforge")
     build.mustRunAfter clean
     tasks.findByName("curseforge").mustRunAfter publish
