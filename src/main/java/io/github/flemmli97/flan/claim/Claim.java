@@ -458,45 +458,44 @@ public class Claim implements IPermissionContainer {
     }
 
     public void readJson(JsonObject obj, UUID uuid) {
-        this.claimID = UUID.fromString(obj.get("ID").getAsString());
-        this.claimName = obj.get("Name").getAsString();
-        JsonArray pos = obj.getAsJsonArray("PosxXzZY");
-        this.minX = pos.get(0).getAsInt();
-        this.maxX = pos.get(1).getAsInt();
-        this.minZ = pos.get(2).getAsInt();
-        this.maxZ = pos.get(3).getAsInt();
-        this.minY = pos.get(4).getAsInt();
-        if (obj.has("AdminClaim") && obj.get("AdminClaim").getAsBoolean())
-            this.owner = null;
-        else
-            this.owner = uuid;
-        this.globalPerm.clear();
-        this.permissions.clear();
-        this.subClaims.clear();
-        if (obj.has("Parent"))
-            this.parent = UUID.fromString(obj.get("Parent").getAsString());
-        if (obj.has("GlobalPerms")) {
-            if (this.parent == null) {
-                obj.getAsJsonArray("GlobalPerms").forEach(perm -> {
-                    try {
-                        this.globalPerm.put(PermissionRegistry.get(perm.getAsString()), true);
-                    } catch (NullPointerException e) {
-                        Flan.logger.error("Error reading permission {} from json for claim {} belonging to {}. No such permission exist", perm.getAsString(), this.claimID, this.owner);
-                    }
-                });
-            } else {
-                obj.getAsJsonObject("GlobalPerms").entrySet().forEach(entry -> {
-                    try {
-                        this.globalPerm.put(PermissionRegistry.get(entry.getKey()), entry.getValue().getAsBoolean());
-                    } catch (NullPointerException e) {
-                        Flan.logger.error("Error reading permission {} from json for claim {} belonging to {}. No such permission exist", entry.getKey(), this.claimID, this.owner);
-                    }
-                });
+        try {
+            this.claimID = UUID.fromString(obj.get("ID").getAsString());
+            this.claimName = ConfigHandler.fromJson(obj, "Name", "");
+            JsonArray pos = obj.getAsJsonArray("PosxXzZY");
+            this.minX = pos.get(0).getAsInt();
+            this.maxX = pos.get(1).getAsInt();
+            this.minZ = pos.get(2).getAsInt();
+            this.maxZ = pos.get(3).getAsInt();
+            this.minY = pos.get(4).getAsInt();
+            if (ConfigHandler.fromJson(obj, "AdminClaim", false))
+                this.owner = null;
+            else
+                this.owner = uuid;
+            this.globalPerm.clear();
+            this.permissions.clear();
+            this.subClaims.clear();
+            if (obj.has("Parent"))
+                this.parent = UUID.fromString(obj.get("Parent").getAsString());
+            if (obj.has("GlobalPerms")) {
+                if (this.parent == null) {
+                    obj.getAsJsonArray("GlobalPerms").forEach(perm -> {
+                        try {
+                            this.globalPerm.put(PermissionRegistry.get(perm.getAsString()), true);
+                        } catch (NullPointerException e) {
+                            Flan.logger.error("Error reading permission {} from json for claim {} belonging to {}. No such permission exist", perm.getAsString(), this.claimID, this.owner);
+                        }
+                    });
+                } else {
+                    obj.getAsJsonObject("GlobalPerms").entrySet().forEach(entry -> {
+                        try {
+                            this.globalPerm.put(PermissionRegistry.get(entry.getKey()), entry.getValue().getAsBoolean());
+                        } catch (NullPointerException e) {
+                            Flan.logger.error("Error reading permission {} from json for claim {} belonging to {}. No such permission exist", entry.getKey(), this.claimID, this.owner);
+                        }
+                    });
+                }
             }
-        }
-        if (obj.has("PermGroup")) {
-            JsonObject perms = obj.getAsJsonObject("PermGroup");
-            perms.entrySet().forEach(key -> {
+            ConfigHandler.fromJson(obj, "PermGroup").entrySet().forEach(key -> {
                 Map<ClaimPermission, Boolean> map = new HashMap<>();
                 JsonObject group = key.getValue().getAsJsonObject();
                 group.entrySet().forEach(gkey -> {
@@ -508,13 +507,12 @@ public class Claim implements IPermissionContainer {
                 });
                 this.permissions.put(key.getKey(), map);
             });
-        }
-        if (obj.has("PlayerPerms")) {
-            JsonObject pl = obj.getAsJsonObject("PlayerPerms");
-            pl.entrySet().forEach(key -> this.playersGroups.put(UUID.fromString(key.getKey()), key.getValue().getAsString()));
-        }
-        if (obj.has("SubClaims")) {
-            obj.getAsJsonArray("SubClaims").forEach(sub -> this.subClaims.add(Claim.fromJson(sub.getAsJsonObject(), this.owner, this.world)));
+            ConfigHandler.fromJson(obj, "PlayerPerms").entrySet()
+                    .forEach(key -> this.playersGroups.put(UUID.fromString(key.getKey()), key.getValue().getAsString()));
+            ConfigHandler.arryFromJson(obj, "SubClaims")
+                    .forEach(sub -> this.subClaims.add(Claim.fromJson(sub.getAsJsonObject(), this.owner, this.world)));
+        } catch (Exception e) {
+            throw new IllegalStateException("Error reading claim data for claim " + uuid);
         }
     }
 
