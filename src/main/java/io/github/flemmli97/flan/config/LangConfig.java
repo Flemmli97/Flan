@@ -128,6 +128,10 @@ public class LangConfig {
     public String unlockDrops = "Your deathitems are now unlocked for %s ticks";
     public String unlockDropsMulti = "Unlocked drops for %s";
 
+    public String claimNameSet = "Claims name set to %s";
+    public String claimNameUsed = "The owner of the claim already has another claim with the same name";
+    public String claimNameUsedSub = "One of the subclaim of this claim already has this name";
+
     public LangCommands cmdLang = new LangCommands();
 
     public LangConfig(MinecraftServer server) {
