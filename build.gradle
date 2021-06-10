@@ -1,8 +1,19 @@
+buildscript {
+    dependencies {
+        classpath group: 'com.diluv.schoomp', name: 'Schoomp', version: '1.1.0'
+    }
+}
+
 plugins {
 	id 'fabric-loom' version '0.8.12'
 	id 'maven-publish'
 	id 'org.jetbrains.kotlin.jvm' version "1.5.20-M1"
+	id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
+
+import com.diluv.schoomp.Webhook
+import com.diluv.schoomp.message.Message
+import com.diluv.schoomp.message.embed.Embed
 
 sourceCompatibility = JavaVersion.VERSION_16
 targetCompatibility = JavaVersion.VERSION_16
@@ -47,7 +58,6 @@ dependencies {
 	modImplementation group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 	include group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
-	modImplementation 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'
 	modImplementation "me.lucko:fabric-permissions-api:${project.fabric_permissions_api}"
 	modImplementation "io.github.ladysnake:PlayerAbilityLib:${project.player_ability_lib}"
 
@@ -115,3 +125,100 @@ publishing {
 		}
 	}
 }
+
+def changelog(int versions) {
+    try {
+        def changelog = ""
+        def match = 0
+        file("Changelog.txt").eachLine {
+            if (it.matches("${project.project_name} ([0-9].[0-9].[0-9])"))
+                match++
+            if (match <= versions) {
+                changelog += it + "\n"
+            } else
+                return
+        }
+        return changelog + "\n\n"
+    } catch (exception) {
+        return "${project.project_name} ${project.mod_version}\n==========\n"
+    }
+}
+
+//Splits the changelog into multiple parts if they get bigger than discords embed field size (1024)
+def discordChangelog() {
+    def changelog = changelog(1)
+    def res = new ArrayList()
+    if (changelog.size() < 1024) {
+        res.add(changelog)
+        return res;
+    }
+    def temp = ""
+    changelog.split("\n").each {
+        it = it + "\n"
+        if ((temp.size() + it.size()) >= 1024) {
+            res.add(temp)
+            temp = it
+        } else
+            temp += it
+    }
+    res.add(temp)
+    return res
+}
+
+curseforge {
+    apiKey = findProperty('curseApiToken') ?: 0
+
+    project {
+        id = "${curse_id}"
+        changelog = changelog(3)
+        releaseType = 'release'
+        "${project.curse_versions}".split(', ').each {
+            addGameVersion "${it}"
+        }
+        relations {
+            "${project.curse_dep}".split(', ').each {
+                requiredDependency "${it}"
+            }
+        }
+    }
+}
+
+tasks.getByName("curseforge").doLast {
+    try {
+        def newFileId = tasks.getByName("curseforge${project.curse_id}").property('mainArtifact').fileID
+
+        def webhook = new Webhook(findProperty('discordHook'), "${project.project_name} Upload")
+
+        def message = new Message()
+        def version = project.curse_versions.split(', ')[0]
+        message.setUsername("Release")
+        message.setContent("@Flan ${project.project_name} ${project.mod_version} for Minecraft ${version} has been released!")
+
+        def embed = new Embed()
+        embed.addField('Get it here', "${project.findProperty('curse_page')}/files/${newFileId}", false)
+        def changelog = discordChangelog()
+        if (changelog.size() == 1)
+            embed.addField('Change Log', "```md\n${changelog.get(0) ?: 'Unavailable :('}```", false)
+        else
+            changelog.forEach {
+                embed.addField("Change Log", "```md\n${it}```", false)
+            }
+        embed.setColor(0xFF8000)
+        message.addEmbed(embed)
+
+        webhook.sendMessage(message)
+    }
+
+    catch (IOException e) {
+        println 'Failed to push to the Discord webhook.'
+    }
+}
+
+task buildUploadAll(group: "upload") {
+    dependsOn clean, publish, tasks.getByName("curseforge")
+    build.mustRunAfter clean
+    tasks.findByName("curseforge").mustRunAfter publish
+}
+
+tasks.getByName("curseforge").dependsOn build
+publish.dependsOn build
