@@ -2,7 +2,7 @@
 
 Server side land claiming mod for fabric
 
-To use flan in your dependencys add the following snippet to your build.gradle
+To use flan in your dependencies add the following snippet to your build.gradle
 
 ```gradle
 repositories {
