@@ -20,7 +20,8 @@
     ]
   },
   "mixins": [
-    "flan.mixins.json"
+    "flan.mixins.json",
+    "flan.fabric.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.7.4",

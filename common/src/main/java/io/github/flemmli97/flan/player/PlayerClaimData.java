@@ -10,6 +10,7 @@ import io.github.flemmli97.flan.claim.IPermissionContainer;
 import io.github.flemmli97.flan.claim.ParticleIndicators;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.event.EntityInteractEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -32,6 +33,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class PlayerClaimData {
 
@@ -212,7 +214,8 @@ public class PlayerClaimData {
         return false;
     }
 
-    public void tick() {
+    public void tick(Claim currentClaim, Consumer<Claim> cons) {
+        EntityInteractEvents.updateClaim(this.player, currentClaim, cons);
         boolean tool = this.player.getMainHandStack().getItem() == ConfigHandler.config.claimingItem
                 || this.player.getOffHandStack().getItem() == ConfigHandler.config.claimingItem;
         boolean stick = this.player.getMainHandStack().getItem() == ConfigHandler.config.inspectionItem

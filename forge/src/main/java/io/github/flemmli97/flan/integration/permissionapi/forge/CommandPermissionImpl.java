@@ -1,7 +1,7 @@
 package io.github.flemmli97.flan.integration.permissionapi.forge;
 
 import io.github.flemmli97.flan.config.ConfigHandler;
-import net.minecraft.server.command.CommandSource;
+import net.minecraft.command.CommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class CommandPermissionImpl {

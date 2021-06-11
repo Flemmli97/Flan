@@ -6,27 +6,19 @@
   "mixins": [
     "PlayerClaimMixin",
     "ServerWorldMixin",
-    "ServerPlayNetworkHandlerMixin",
     "AbstractBlockStateMixin",
     "EntityMixin",
-    "ProjectileMixin",
     "TurtleEggMixin",
-    "XpEntityMixin",
-    "WitherMixin",
     "IPersistentProjectileVars",
-    "EntityDamageMixin",
     "ItemStackMixin",
     "ILecternBlockValues",
     "FluidMixin",
-    "PistonMixin",
     "RaidManagerMixin",
     "FireBlockMixin",
-    "SpawnHelperMixin",
     "PlayerMixin",
     "ItemEntityMixin",
     "EndermanPickupMixin",
-    "EndermanPlaceMixin",
-    "SnowGolemMixin"
+    "EndermanPlaceMixin"
   ],
   "server": [
   ],

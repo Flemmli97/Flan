@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.mixin;
+package io.github.flemmli97.flan.fabric.mixin;
 
 import io.github.flemmli97.flan.event.EntityInteractEvents;
 import net.minecraft.entity.Entity;
@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ServerPlayNetworkHandlerMixin {
 
     @Shadow
-    public ServerPlayerEntity player;
+    private ServerPlayerEntity player;
 
     @Inject(method = "onPlayerInteractEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;interact(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/ActionResult;"), cancellable = true)
     public void onPlayerInteractEntity(PlayerInteractEntityC2SPacket packet, CallbackInfo info) {

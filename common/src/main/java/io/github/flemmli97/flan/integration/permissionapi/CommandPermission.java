@@ -1,7 +1,7 @@
 package io.github.flemmli97.flan.integration.permissionapi;
 
 import me.shedaniel.architectury.annotations.ExpectPlatform;
-import net.minecraft.server.command.CommandSource;
+import net.minecraft.command.CommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class CommandPermission {

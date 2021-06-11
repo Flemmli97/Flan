@@ -3,13 +3,13 @@ loaderVersion="[35,)"
 license="All rights reserved"
 issueTrackerURL="https://github.com/Flemmli97/Flan/issues"
 displayURL="https://github.com/Flemmli97/Flan"
-# logoFile="flan/icon.png"
+# logoFile="assets/flan/icon.png"
 credits=""
 authors="Flemmli97"
 [[mods]] 
   modId="flan"
-  version="${file.jarVersion}"
+  version="${version}"
   displayName="Flan"
   # updateJSONURL=""
   authors="Flemmli97"
-  description='''Land claiming mod'''
+  description='''Flan (Forge version): A serverside claiming mod'''

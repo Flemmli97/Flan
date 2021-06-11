@@ -23,7 +23,7 @@ architectury {
 }
 
 loom {
-    //mixinConfigs = ["flan.mixins.json"]
+    mixinConfigs = ["flan.mixins.json", "flan.forge.mixins.json"]
     useFabricMixin = true
 }
 

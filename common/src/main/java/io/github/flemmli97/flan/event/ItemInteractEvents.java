@@ -34,6 +34,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 import java.util.Set;
@@ -46,7 +47,7 @@ public class ItemInteractEvents {
         ServerPlayerEntity player = (ServerPlayerEntity) p;
         ItemStack stack = player.getStackInHand(hand);
         if (stack.getItem() == ConfigHandler.config.claimingItem) {
-            HitResult ray = player.rayTrace(64, 0, false);
+            HitResult ray = player.raycast(64, 0, false);
             if (ray != null && ray.getType() == HitResult.Type.BLOCK) {
                 claimLandHandling(player, ((BlockHitResult) ray).getBlockPos());
                 return TypedActionResult.success(stack);
@@ -54,7 +55,7 @@ public class ItemInteractEvents {
             return TypedActionResult.pass(stack);
         }
         if (stack.getItem() == ConfigHandler.config.inspectionItem) {
-            HitResult ray = player.rayTrace(32, 0, false);
+            HitResult ray = player.raycast(32, 0, false);
             if (ray != null && ray.getType() == HitResult.Type.BLOCK) {
                 inspect(player, ((BlockHitResult) ray).getBlockPos());
                 return TypedActionResult.success(stack);

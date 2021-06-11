@@ -12,7 +12,6 @@ subprojects {
 
     loom {
         silentMojangMappingsLicense()
-        useFabricMixin = true
     }
 
     dependencies {
@@ -27,18 +26,8 @@ allprojects {
     apply plugin: "maven-publish"
 
     archivesBaseName = rootProject.archives_base_name
-    version = project.minecraft_version + "-"+ rootProject.mod_version
+    version = project.minecraft_version + "-" + rootProject.mod_version
     group = rootProject.maven_group
-
-    configurations {
-        modOptional
-        modCompileOnly.extendsFrom(modOptional)
-        modRuntime.extendsFrom(modOptional)
-
-        optional
-        compileOnly.extendsFrom(optional)
-        runtime.extendsFrom(optional)
-    }
 
     tasks.withType(JavaCompile) {
         options.encoding = "UTF-8"

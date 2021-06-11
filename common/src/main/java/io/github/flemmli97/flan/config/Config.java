@@ -3,10 +3,10 @@ package io.github.flemmli97.flan.config;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.flemmli97.flan.ConfigPath;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.ClaimPermission;
 import io.github.flemmli97.flan.api.PermissionRegistry;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
@@ -83,7 +83,7 @@ public class Config {
     })));
 
     public Config(MinecraftServer server) {
-        File configDir = FabricLoader.getInstance().getConfigDir().resolve("flan").toFile();
+        File configDir = ConfigPath.configPath().resolve("flan").toFile();
         try {
             if (!configDir.exists())
                 configDir.mkdirs();

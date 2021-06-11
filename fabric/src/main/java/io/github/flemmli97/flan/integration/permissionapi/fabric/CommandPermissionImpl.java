@@ -3,7 +3,7 @@ package io.github.flemmli97.flan.integration.permissionapi.fabric;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.minecraft.server.command.CommandSource;
+import net.minecraft.command.CommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class CommandPermissionImpl {

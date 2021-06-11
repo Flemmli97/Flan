@@ -1,0 +1,24 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.flemmli97.flan.fabric.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "ServerWorldMixin",
+    "PistonMixin",
+    "SpawnHelperMixin",
+    "ServerPlayNetworkHandlerMixin",
+    "ProjectileMixin",
+    "EntityDamageMixin",
+    "XpEntityMixin",
+    "PlayerDropMixin",
+    "WitherMixin",
+    "SnowGolemMixin",
+    "FabricFireMixin"
+  ],
+  "server": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

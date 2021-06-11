@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.mixin;
+package io.github.flemmli97.flan.fabric.mixin;
 
 import io.github.flemmli97.flan.event.WorldEvents;
 import net.minecraft.block.BlockState;
