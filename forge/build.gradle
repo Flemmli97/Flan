@@ -1,0 +1,168 @@
+buildscript {
+    dependencies {
+        classpath group: 'com.diluv.schoomp', name: 'Schoomp', version: '1.1.0'
+    }
+}
+
+plugins {
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id "com.github.johnrengelman.shadow" version "5.0.0"
+}
+
+import com.diluv.schoomp.Webhook
+import com.diluv.schoomp.message.Message
+import com.diluv.schoomp.message.embed.Embed
+
+configurations {
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+}
+
+architectury {
+    platformSetupLoomIde()
+    forge()
+}
+
+loom {
+    //mixinConfigs = ["flan.mixins.json"]
+    useFabricMixin = true
+}
+
+dependencies {
+    forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
+
+    implementation(project(path: ":common")) {
+        transitive = false
+    }
+    developmentForge(project(path: ":common")) {
+        transitive = false
+    }
+    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) {
+        transitive = false
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
+    }
+}
+
+shadowJar {
+    exclude "fabric.mod.json"
+
+    configurations = [project.configurations.shadowCommon]
+    classifier "dev-shadow"
+}
+
+remapJar {
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    classifier "forge"
+}
+
+jar {
+    classifier "dev"
+}
+
+java {
+    withSourcesJar()
+}
+
+sourcesJar {
+    def commonSources = project(":common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            // add all the jars that should be included when publishing to maven
+            artifact(remapJar) {
+                builtBy remapJar
+            }
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
+            artifactId project.archives_base_name
+            version project.version
+        }
+    }
+
+    repositories {
+        maven {
+            url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
+            //url "https://maven.pkg.github.com/flemmli97/<>"
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER")
+                password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
+                //password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
+            }
+        }
+    }
+}
+
+curseforge {
+    apiKey = findProperty('curseApiToken') ?: 0
+
+    project {
+        id = "${curse_id_forge}"
+        "${project.curse_versions}".split(', ').each {
+            addGameVersion "${it}"
+        }
+        addGameVersion "Fabric"
+        mainArtifact(remapJar) {
+            changelog = changelog(3).replace("\n-", "\n\n- ")
+            changelogType = "markdown"
+            releaseType = 'release'
+        }
+        /*relations {
+            "${project.curse_dep_forge}".split(', ').each {
+                requiredDependency "${it}"
+            }
+        }*/
+    }
+}
+
+tasks.getByName("curseforge").doLast {
+    try {
+        def fileID = tasks.getByName("curseforge${project.curse_id_forge}").property('mainArtifact').fileID
+
+        def webhook = new Webhook(findProperty('discordHook'), "${project.project_name} Upload")
+
+        def message = new Message()
+        def version = project.curse_versions.split(', ')[0]
+        message.setUsername("Release")
+        message.setContent("<@&852113509243682817> ${project.project_name} (Forge) ${project.mod_version} for Minecraft ${version} has been released!")
+
+        def embed = new Embed()
+        embed.addField('Get it here (When it is accepted)', "${project.findProperty('curse_page_forge')}/files/${fileID}", false)
+        def changelog = discordChangelog()
+        if (changelog.size() == 1)
+            embed.addField('Change Log', "```md\n${changelog.get(0) ?: 'Unavailable :('}```", false)
+        else
+            changelog.forEach {
+                embed.addField("Change Log", "```md\n${it}```", false)
+            }
+        embed.setColor(0xFF8000)
+        message.addEmbed(embed)
+
+        webhook.sendMessage(message)
+    }
+
+    catch (IOException e) {
+        println 'Failed to push to the Discord webhook.'
+    }
+}
+
+task buildUploadAll(group: "publishing") {
+    dependsOn clean, build, publish, tasks.getByName("curseforge")
+    build.mustRunAfter clean
+    tasks.findByName("curseforge").mustRunAfter publish
+}
+
+tasks.getByName("curseforge").dependsOn build
+publish.dependsOn build
+

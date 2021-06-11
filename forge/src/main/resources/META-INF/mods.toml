@@ -1,0 +1,15 @@
+modLoader="javafml"
+loaderVersion="[35,)"
+license="All rights reserved"
+issueTrackerURL="https://github.com/Flemmli97/Flan/issues"
+displayURL="https://github.com/Flemmli97/Flan"
+# logoFile="flan/icon.png"
+credits=""
+authors="Flemmli97"
+[[mods]] 
+  modId="flan"
+  version="${file.jarVersion}"
+  displayName="Flan"
+  # updateJSONURL=""
+  authors="Flemmli97"
+  description='''Land claiming mod'''

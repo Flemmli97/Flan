@@ -1,122 +1,55 @@
-buildscript {
-    dependencies {
-        classpath group: 'com.diluv.schoomp', name: 'Schoomp', version: '1.1.0'
-    }
-}
-
 plugins {
-    id 'fabric-loom' version '0.4-SNAPSHOT'
-    id 'maven-publish'
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id "architectury-plugin" version "3.1-SNAPSHOT"
+    id "dev.architectury.loom" version "0.7.2-SNAPSHOT" apply false
 }
 
-import com.diluv.schoomp.Webhook
-import com.diluv.schoomp.message.Message
-import com.diluv.schoomp.message.embed.Embed
+architectury {
+    minecraft = rootProject.minecraft_version
+}
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+subprojects {
+    apply plugin: "dev.architectury.loom"
 
-archivesBaseName = project.archives_base_name
-version = project.minecraft_version + "-" + project.mod_version
-group = project.maven_group
-
-repositories {
-    mavenCentral()
-    jcenter()
-    maven {
-        name = 'Fabric-Permission-API'
-        url 'https://oss.sonatype.org/content/repositories/snapshots'
+    loom {
+        silentMojangMappingsLicense()
+        useFabricMixin = true
     }
-    maven {
-        name = "Gunpowder"
-        url = "https://maven.martmists.com/releases"
-    }
-    maven {
-        name = 'Ladysnake Mods'
-        url = 'https://ladysnake.jfrog.io/artifactory/mods'
-        content {
-            includeGroup 'io.github.ladysnake'
-            includeGroupByRegex 'io\\.github\\.onyxstudios.*'
-        }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+        mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     }
 }
 
-dependencies {
-    //to change the versions see the gradle.properties file
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+allprojects {
+    apply plugin: "java"
+    apply plugin: "architectury-plugin"
+    apply plugin: "maven-publish"
 
-    // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    archivesBaseName = rootProject.archives_base_name
+    version = project.minecraft_version + "-"+ rootProject.mod_version
+    group = rootProject.maven_group
 
-    compile group: 'org.yaml', name: 'snakeyaml', version: '1.25'
-    include group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+    configurations {
+        modOptional
+        modCompileOnly.extendsFrom(modOptional)
+        modRuntime.extendsFrom(modOptional)
 
-    modImplementation "me.lucko:fabric-permissions-api:${project.fabric_permissions_api}"
-    modCompileOnly "io.github.gunpowder:gunpowder-api:${gunpowder_version}+1.16.2"
-    modImplementation "io.github.ladysnake:PlayerAbilityLib:${project.player_ability_lib}"
-}
-
-processResources {
-    inputs.property "version", project.version
-
-    from(sourceSets.main.resources.srcDirs) {
-        include "fabric.mod.json"
-        expand "version": project.version
+        optional
+        compileOnly.extendsFrom(optional)
+        runtime.extendsFrom(optional)
     }
 
-    from(sourceSets.main.resources.srcDirs) {
-        exclude "fabric.mod.json"
-    }
-}
-
-// ensure that the encoding is set to UTF-8, no matter what the system default is
-// this fixes some edge cases with special characters not displaying correctly
-// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
-}
-
-// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-// if it is present.
-// If you remove this task, sources will not be generated.
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
-    from sourceSets.main.allSource
-}
-
-jar {
-    from "LICENSE"
-}
-
-// configure the maven publication
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
-            artifactId project.archives_base_name
-            version project.version
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+        def targetVersion = 8
+        if (JavaVersion.current().isJava9Compatible()) {
+            options.release = targetVersion
         }
     }
 
-    repositories {
-        maven {
-            url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
-            //url "https://maven.pkg.github.com/flemmli97/RuneCraftory"
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER")
-                password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
-                //password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
-            }
-        }
+    java {
+        withSourcesJar()
     }
 }
 
@@ -158,64 +91,3 @@ def discordChangelog() {
     res.add(temp)
     return res
 }
-
-curseforge {
-    apiKey = findProperty('curseApiToken') ?: 0
-
-    project {
-        id = "${curse_id}"
-        "${project.curse_versions}".split(', ').each {
-            addGameVersion "${it}"
-        }
-        mainArtifact(remapJar) {
-            changelog = changelog(3).replace("\n-", "\n\n- ")
-            changelogType = "markdown"
-            releaseType = 'release'
-        }
-        relations {
-            "${project.curse_dep}".split(', ').each {
-                requiredDependency "${it}"
-            }
-        }
-    }
-}
-
-tasks.getByName("curseforge").doLast {
-    try {
-        def newFileId = tasks.getByName("curseforge${project.curse_id}").property('mainArtifact').fileID
-
-        def webhook = new Webhook(findProperty('discordHook'), "${project.project_name} Upload")
-
-        def message = new Message()
-        def version = project.curse_versions.split(', ')[0]
-        message.setUsername("Release")
-        message.setContent("<@&852113509243682817> ${project.project_name} ${project.mod_version} for Minecraft ${version} has been released!")
-
-        def embed = new Embed()
-        embed.addField('Get it here (When it is accepted)', "${project.findProperty('curse_page')}/files/${newFileId}", false)
-        def changelog = discordChangelog()
-        if (changelog.size() == 1)
-            embed.addField('Change Log', "```md\n${changelog.get(0) ?: 'Unavailable :('}```", false)
-        else
-            changelog.forEach {
-                embed.addField("Change Log", "```md\n${it}```", false)
-            }
-        embed.setColor(0xFF8000)
-        message.addEmbed(embed)
-
-        webhook.sendMessage(message)
-    }
-
-    catch (IOException e) {
-        println 'Failed to push to the Discord webhook.'
-    }
-}
-
-task buildUploadAll(group: "publishing") {
-    dependsOn clean, build, publish, tasks.getByName("curseforge")
-    build.mustRunAfter clean
-    tasks.findByName("curseforge").mustRunAfter publish
-}
-
-tasks.getByName("curseforge").dependsOn build
-publish.dependsOn build

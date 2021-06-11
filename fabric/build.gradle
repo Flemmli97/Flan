@@ -1,0 +1,187 @@
+buildscript {
+    dependencies {
+        classpath group: 'com.diluv.schoomp', name: 'Schoomp', version: '1.1.0'
+    }
+}
+
+plugins {
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id "com.github.johnrengelman.shadow" version "5.0.0"
+}
+
+import com.diluv.schoomp.Webhook
+import com.diluv.schoomp.message.Message
+import com.diluv.schoomp.message.embed.Embed
+
+configurations {
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+}
+
+architectury {
+    platformSetupLoomIde()
+    fabric()
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'Fabric-Permission-API'
+        url 'https://oss.sonatype.org/content/repositories/snapshots'
+    }
+    maven {
+        name = "Gunpowder"
+        url = "https://maven.martmists.com/releases"
+    }
+    maven {
+        name = 'Ladysnake Mods'
+        url = 'https://ladysnake.jfrog.io/artifactory/mods'
+        content {
+            includeGroup 'io.github.ladysnake'
+            includeGroupByRegex 'io\\.github\\.onyxstudios.*'
+        }
+    }
+}
+
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+
+    // Fabric API. This is technically optional, but you probably want it anyway.
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
+
+    modImplementation "me.lucko:fabric-permissions-api:${rootProject.fabric_permissions_api}"
+    modCompileOnly "io.github.gunpowder:gunpowder-api:${rootProject.gunpowder_version}+1.16.2"
+    modImplementation "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
+
+    implementation(project(path: ":common")) {
+        transitive = false
+    }
+    developmentFabric(project(path: ":common")) {
+        transitive = false
+    }
+    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) {
+        transitive = false
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowCommon]
+    classifier "dev-shadow"
+}
+
+remapJar {
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    classifier "fabric"
+}
+
+jar {
+    classifier "dev"
+}
+
+java {
+    withSourcesJar()
+}
+
+sourcesJar {
+    def commonSources = project(":common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            // add all the jars that should be included when publishing to maven
+            artifact(remapJar) {
+                builtBy remapJar
+            }
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
+            artifactId project.archives_base_name
+            version project.version
+        }
+    }
+
+    repositories {
+        maven {
+            url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
+            //url "https://maven.pkg.github.com/flemmli97/<>"
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER")
+                password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
+                //password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
+            }
+        }
+    }
+}
+
+curseforge {
+    apiKey = findProperty('curseApiToken') ?: 0
+
+    project {
+        id = "${curse_id_fabric}"
+        "${project.curse_versions}".split(', ').each {
+            addGameVersion "${it}"
+        }
+        addGameVersion "Fabric"
+        mainArtifact(remapJar) {
+            changelog = changelog(3).replace("\n-", "\n\n- ")
+            changelogType = "markdown"
+            releaseType = 'release'
+        }
+        relations {
+            "${project.curse_dep_fabric}".split(', ').each {
+                requiredDependency "${it}"
+            }
+        }
+    }
+}
+
+tasks.getByName("curseforge").doLast {
+    try {
+        def fileID = tasks.getByName("curseforge${project.curse_id_fabric}").property('mainArtifact').fileID
+
+        def webhook = new Webhook(findProperty('discordHook'), "${project.project_name} Upload")
+
+        def message = new Message()
+        def version = project.curse_versions.split(', ')[0]
+        message.setUsername("Release")
+        message.setContent("<@&852113509243682817> ${project.project_name} ${project.mod_version} for Minecraft ${version} has been released!")
+
+        def embed = new Embed()
+        embed.addField('Get it here (When it is accepted)', "${project.findProperty('curse_page_fabric')}/files/${fileID}", false)
+        def changelog = discordChangelog()
+        if (changelog.size() == 1)
+            embed.addField('Change Log', "```md\n${changelog.get(0) ?: 'Unavailable :('}```", false)
+        else
+            changelog.forEach {
+                embed.addField("Change Log", "```md\n${it}```", false)
+            }
+        embed.setColor(0xFF8000)
+        message.addEmbed(embed)
+
+        webhook.sendMessage(message)
+    }
+
+    catch (IOException e) {
+        println 'Failed to push to the Discord webhook.'
+    }
+}
+
+task buildUploadAll(group: "publishing") {
+    dependsOn clean, build, publish, tasks.getByName("curseforge")
+    build.mustRunAfter clean
+    tasks.findByName("curseforge").mustRunAfter publish
+}
+
+tasks.getByName("curseforge").dependsOn build
+publish.dependsOn build
