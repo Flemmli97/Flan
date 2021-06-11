@@ -18,8 +18,11 @@ import net.minecraftforge.eventbus.api.Event;
 
 public class EntityInteractEventsForge {
 
-    public static ActionResult attackEntity(AttackEntityEvent event) {
-        return EntityInteractEvents.attackSimple(event.getPlayer(), event.getTarget(), true);
+    public static void attackEntity(AttackEntityEvent event) {
+        ActionResult result = EntityInteractEvents.attackSimple(event.getPlayer(), event.getTarget(), true);
+        if (result == ActionResult.FAIL) {
+            event.setCanceled(true);
+        }
     }
 
     public static void useAtEntity(PlayerInteractEvent.EntityInteractSpecific event) {
