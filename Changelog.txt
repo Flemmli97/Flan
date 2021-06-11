@@ -1,5 +1,10 @@
 Flan 1.4.2
 ======================
+- Fix some items checking for wrong position and thus are able to interact in claims
+- Fix enderpearl phasing through blocks
+
+Flan 1.4.2
+======================
 - Fix a ticking player crash
 - Fix anvil gui not updating client xp use
 - Add ability to name claims.

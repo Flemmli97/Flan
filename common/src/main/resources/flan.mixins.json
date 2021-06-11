@@ -18,7 +18,8 @@
     "PlayerMixin",
     "ItemEntityMixin",
     "EndermanPickupMixin",
-    "EndermanPlaceMixin"
+    "EndermanPlaceMixin",
+    "IItemAccessor"
   ],
   "server": [
   ],
