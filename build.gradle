@@ -174,8 +174,10 @@ curseforge {
             addGameVersion "${it}"
         }
         mainArtifact(remapJar) {
-            changelog = changelog(3).replace("\n-", "\n\n- ")
-            changelogType = "markdown"
+            def txt = changelog(1).replace("\n-", "\n\n- ")
+            txt = txt + "\n\n" + "For past versions see: https://github.com/Flemmli97/Flan/blob/1.17/Changelog.txt"
+            changelog = txt
+	    changelogType = "markdown"
             releaseType = 'release'
         }
         relations {
