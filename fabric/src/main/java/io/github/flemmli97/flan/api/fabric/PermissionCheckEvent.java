@@ -7,7 +7,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 
-public class ClaimPermissionEventImpl {
+public class PermissionCheckEvent {
 
     public interface PermissionCheck {
 
@@ -36,8 +36,4 @@ public class ClaimPermissionEventImpl {
                 return ActionResult.PASS;
             }
     );
-
-    public static ActionResult check(ServerPlayerEntity player, ClaimPermission permission, BlockPos pos) {
-        return CHECK.invoker().check(player, permission, pos);
-    }
 }

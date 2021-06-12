@@ -8,7 +8,6 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.ClaimPermission;
-import io.github.flemmli97.flan.api.ClaimPermissionEvent;
 import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -198,7 +197,7 @@ public class Claim implements IPermissionContainer {
 
     @Override
     public boolean canInteract(ServerPlayerEntity player, ClaimPermission perm, BlockPos pos, boolean message) {
-        ActionResult res = ClaimPermissionEvent.check(player, perm, pos);
+        ActionResult res = ClaimPermissionCheck.check(player, perm, pos);
         if (res != ActionResult.PASS)
             return res != ActionResult.FAIL;
         if (perm != null) {
