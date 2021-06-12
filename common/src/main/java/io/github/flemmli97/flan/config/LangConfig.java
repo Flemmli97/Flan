@@ -103,6 +103,7 @@ public class LangConfig {
     public String screenMenuSub = "SubClaim-Menu";
     public String screenMenuGlobal = "Edit Global Permissions";
     public String screenMenuGroup = "Edit Permissiongroups";
+    public String screenMenuPotion = "Edit Potioneffects";
     public String screenMenuDelete = "Delete Claim";
     public String screenConfirm = "Confirm";
     public String screenYes = "Yes";

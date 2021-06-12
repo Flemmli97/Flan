@@ -8,6 +8,7 @@ Flan 1.5.0
   Default global value is ALLFALSE so disabled.
 - Add NOHUNGER permission: Disables hunger in claims
   Default global value is ALLFALSE so disabled.
+- Fix resizing claims of other players not using their claim blocks
 
 Flan 1.4.2
 ======================

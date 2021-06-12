@@ -63,7 +63,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
                     break;
                 case 4:
                     ItemStack potions = new ItemStack(Items.POTION);
-                    potions.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuGroup, Formatting.GOLD));
+                    potions.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuPotion, Formatting.GOLD));
                     inv.setStack(i, potions);
                     break;
                 case 8:

@@ -13,6 +13,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.flemmli97.flan.api.ClaimPermission;
+import io.github.flemmli97.flan.api.IPlayerData;
 import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
@@ -160,13 +161,8 @@ public class CommandClaim {
         if (!data.isAdminIgnoreClaim()) {
             MinecraftServer server = context.getSource().getMinecraftServer();
             ServerPlayerEntity newOwner = server.getPlayerManager().getPlayer(prof.getId());
-            if (newOwner != null) {
-                PlayerClaimData newData = PlayerClaimData.get(newOwner);
-                enoughBlocks = newData.canUseClaimBlocks(claim.getPlane());
-            } else {
-                OfflinePlayerData newData = new OfflinePlayerData(server, prof.getId());
-                enoughBlocks = ConfigHandler.config.maxClaimBlocks == -1 || newData.getUsedClaimBlocks() + claim.getPlane() < newData.claimBlocks + newData.additionalClaimBlocks;
-            }
+            IPlayerData newData = newOwner != null ? PlayerClaimData.get(newOwner) : new OfflinePlayerData(server, prof.getId());
+            enoughBlocks = newData.canUseClaimBlocks(claim.getPlane());
         }
         if (!enoughBlocks) {
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.ownerTransferNoBlocks, Formatting.RED), false);

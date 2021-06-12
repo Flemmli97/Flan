@@ -1,6 +1,7 @@
 package io.github.flemmli97.flan.player;
 
 import com.google.gson.JsonObject;
+import io.github.flemmli97.flan.api.IPlayerData;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -14,7 +15,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.UUID;
 
-public class OfflinePlayerData {
+public class OfflinePlayerData implements IPlayerData {
 
     public final int claimBlocks, additionalClaimBlocks;
     public final UUID owner;
@@ -52,5 +53,20 @@ public class OfflinePlayerData {
                 usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
         }
         return usedClaimsBlocks;
+    }
+
+    @Override
+    public int getClaimBlocks() {
+        return this.claimBlocks;
+    }
+
+    @Override
+    public int getAdditionalClaims() {
+        return this.additionalClaimBlocks;
+    }
+
+    @Override
+    public int usedClaimBlocks() {
+        return this.usedClaimBlocks();
     }
 }

@@ -490,7 +490,7 @@ public class Claim implements IPermissionContainer {
     public void applyEffects(PlayerEntity player) {
         this.potions.forEach((effect, amp) -> {
             if (!player.hasStatusEffect(effect))
-                player.applyStatusEffect(new StatusEffectInstance(effect, 200, amp-1, true, false));
+                player.applyStatusEffect(new StatusEffectInstance(effect, 200, amp - 1, true, false));
         });
     }
 

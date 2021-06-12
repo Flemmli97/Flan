@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.player;
 import com.google.gson.JsonObject;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.ClaimPermission;
+import io.github.flemmli97.flan.api.IPlayerData;
 import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
@@ -35,7 +36,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class PlayerClaimData {
+public class PlayerClaimData implements IPlayerData {
 
     private int claimBlocks, additionalClaimBlocks, confirmTick, actionCooldown;
 
@@ -68,6 +69,7 @@ public class PlayerClaimData {
         return ((IPlayerClaimImpl) player).get();
     }
 
+    @Override
     public int getClaimBlocks() {
         return this.claimBlocks;
     }
@@ -85,6 +87,7 @@ public class PlayerClaimData {
         return true;
     }
 
+    @Override
     public int getAdditionalClaims() {
         return this.additionalClaimBlocks;
     }
@@ -94,6 +97,7 @@ public class PlayerClaimData {
         this.dirty = true;
     }
 
+    @Override
     public boolean canUseClaimBlocks(int amount) {
         if (ConfigHandler.config.maxClaimBlocks == -1)
             return true;
@@ -101,6 +105,7 @@ public class PlayerClaimData {
         return usedClaimsBlocks + amount <= this.claimBlocks + this.additionalClaimBlocks;
     }
 
+    @Override
     public int usedClaimBlocks() {
         return this.calculateUsedClaimBlocks();
     }
