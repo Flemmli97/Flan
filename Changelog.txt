@@ -1,4 +1,4 @@
-Flan 1.4.2
+Flan 1.4.3
 ======================
 - Fix some items checking for wrong position and thus are able to interact in claims
 - Fix enderpearl phasing through blocks
