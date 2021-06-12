@@ -124,7 +124,7 @@ public class LangConfig {
 
     public String trappedRescue = "Rescuing. Don't move for 5 seconds";
     public String trappedFail = "Rescue not necessary or already rescuing";
-    public String trappedMove = "You moved. Aborting rescue";
+    public String trappedMove = "You moved. Aborting teleport";
 
     public String unlockDropsCmd = "Your deathitems are protected. Use %s to unlock them for other players";
     public String unlockDrops = "Your deathitems are now unlocked for %s ticks";
@@ -133,6 +133,10 @@ public class LangConfig {
     public String claimNameSet = "Claims name set to %s";
     public String claimNameUsed = "The owner of the claim already has another claim with the same name";
     public String claimNameUsedSub = "One of the subclaim of this claim already has this name";
+
+    public String setHome = "Claim home set to [x=%s,y=%s,z=%s]";
+    public String teleportHome = "Teleporting to claim home. Don't move for 5 seconds";
+    public String teleportHomeFail = "Teleport already happening";
 
     public LangCommands cmdLang = new LangCommands();
 

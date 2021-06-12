@@ -41,6 +41,9 @@ public class CommandPermission {
     public static final String cmdUnlockAll = "flan.command.unlock.all";
     public static final String cmdName = "flan.command.name";
 
+    public static final String cmdHome = "flan.command.home";
+    public static final String cmdTeleport = "flan.command.teleport";
+
     public static boolean perm(CommandSource src, String perm) {
         return perm(src, perm, false);
     }

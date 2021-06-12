@@ -41,6 +41,7 @@ public class PlayerClaimData {
 
     private int lastBlockTick, trappedTick = -1, deathPickupTick;
     private Vec3d trappedPos;
+    private BlockPos tpPos;
     private EnumEditMode mode = EnumEditMode.DEFAULT;
     private Claim editingClaim;
     private ClaimDisplay displayEditing;
@@ -214,6 +215,16 @@ public class PlayerClaimData {
         return false;
     }
 
+    public boolean setTeleportTo(BlockPos tp) {
+        if (this.trappedTick < 0) {
+            this.trappedTick = 101;
+            this.trappedPos = this.player.getPos();
+            this.tpPos = tp;
+            return true;
+        }
+        return false;
+    }
+
     public void tick(Claim currentClaim, Consumer<Claim> cons) {
         EntityInteractEvents.updateClaim(this.player, currentClaim, cons);
         boolean tool = this.player.getMainHandStack().getItem() == ConfigHandler.config.claimingItem
@@ -253,10 +264,15 @@ public class PlayerClaimData {
         this.actionCooldown--;
         if (--this.trappedTick >= 0) {
             if (this.trappedTick == 0) {
-                Vec3d tp = TeleportUtils.getTeleportPos(this.player, this.player.getPos(), ClaimStorage.get(this.player.getServerWorld()),
-                        ((IPlayerClaimImpl) this.player).getCurrentClaim().getDimensions(),
-                        TeleportUtils.roundedBlockPos(this.player.getPos()).mutableCopy(), (claim, nPos) -> false);
-                this.player.teleport(tp.getX(), tp.getY(), tp.getZ());
+                if (this.tpPos != null) {
+                    this.player.teleport(this.tpPos.getX(), this.tpPos.getY(), this.tpPos.getZ());
+                    this.tpPos = null;
+                } else {
+                    Vec3d tp = TeleportUtils.getTeleportPos(this.player, this.player.getPos(), ClaimStorage.get(this.player.getServerWorld()),
+                            ((IPlayerClaimImpl) this.player).getCurrentClaim().getDimensions(),
+                            TeleportUtils.roundedBlockPos(this.player.getPos()).mutableCopy(), (claim, nPos) -> false);
+                    this.player.teleport(tp.getX(), tp.getY(), tp.getZ());
+                }
             } else if (this.player.getPos().squaredDistanceTo(this.trappedPos) > 0.15) {
                 this.trappedTick = -1;
                 this.trappedPos = null;

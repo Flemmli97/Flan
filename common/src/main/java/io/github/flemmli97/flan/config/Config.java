@@ -80,6 +80,7 @@ public class Config {
     private final Map<String, Map<ClaimPermission, GlobalType>> globalDefaultPerms = createHashMap(map -> map.put("*", createHashMap(perms -> {
         perms.put(PermissionRegistry.FLIGHT, GlobalType.ALLTRUE);
         perms.put(PermissionRegistry.MOBSPAWN, GlobalType.ALLFALSE);
+        perms.put(PermissionRegistry.TELEPORT, GlobalType.ALLFALSE);
     })));
 
     public Config(MinecraftServer server) {

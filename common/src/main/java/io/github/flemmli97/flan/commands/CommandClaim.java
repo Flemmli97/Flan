@@ -9,6 +9,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.flemmli97.flan.api.ClaimPermission;
@@ -46,6 +47,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class CommandClaim {
 
@@ -54,6 +56,7 @@ public class CommandClaim {
                 .then(CommandManager.literal("reload").requires(src -> CommandPermission.perm(src, CommandPermission.cmdReload, true)).executes(CommandClaim::reloadConfig))
                 .then(CommandManager.literal("addClaim").requires(src -> CommandPermission.perm(src, CommandPermission.claimCreate)).then(CommandManager.argument("from", BlockPosArgumentType.blockPos()).then(CommandManager.argument("to", BlockPosArgumentType.blockPos()).executes(CommandClaim::addClaim))))
                 .then(CommandManager.literal("menu").requires(src -> CommandPermission.perm(src, CommandPermission.cmdMenu)).executes(CommandClaim::openMenu))
+                .then(CommandManager.literal("setHome").requires(src -> CommandPermission.perm(src, CommandPermission.cmdHome)).executes(CommandClaim::setClaimHome))
                 .then(CommandManager.literal("trapped").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTrapped)).executes(CommandClaim::trapped))
                 .then(CommandManager.literal("name").requires(src -> CommandPermission.perm(src, CommandPermission.cmdName)).then(CommandManager.argument("name", StringArgumentType.string()).executes(CommandClaim::nameClaim)))
                 .then(CommandManager.literal("unlockDrops").executes(CommandClaim::unlockDrops)
@@ -101,6 +104,11 @@ public class CommandClaim {
                                             }
                                             return CommandSource.suggestMatching(list, build);
                                         }).executes(CommandClaim::removePlayer))))))
+                .then(CommandManager.literal("teleport").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTeleport))
+                        .then(CommandManager.literal("self").then(CommandManager.argument("claim", StringArgumentType.word()).suggests((ctx, b) -> CommandClaim.claimSuggestions(ctx, b, ctx.getSource().getPlayer().getUuid()))
+                                .executes(CommandClaim::teleport)))
+                        .then(CommandManager.literal("other").then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).then(CommandManager.argument("claim", StringArgumentType.word()).suggests((ctx, b) -> CommandClaim.claimSuggestions(ctx, b, CommandClaim.singleProfile(ctx, "player").getId()))
+                                .executes(src -> CommandClaim.teleport(src, CommandClaim.singleProfile(src, "player").getId()))))))
                 .then(CommandManager.literal("permission").requires(src -> CommandPermission.perm(src, CommandPermission.cmdPermission))
                         .then(CommandManager.literal("personal").then(CommandManager.argument("group", StringArgumentType.string()).suggests(CommandClaim::personalGroupSuggestion)
                                 .then(CommandManager.argument("permission", StringArgumentType.word()).suggests((ctx, b) -> permSuggestions(ctx, b, true))
@@ -743,5 +751,55 @@ public class CommandClaim {
         if (PlayerClaimData.get(player).editDefaultPerms(group, perm, mode))
             player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.editPersonalGroup, group, perm, setPerm), Formatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
+    }
+
+    public static int setClaimHome(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        Claim claim = PermHelper.checkReturn(player, PermissionRegistry.EDITCLAIM, PermHelper.genericNoPermMessage(player));
+        if (claim == null)
+            return 0;
+        claim.setHomePos(player.getBlockPos());
+        context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.setHome, player.getBlockPos()), Formatting.GOLD), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    public static int teleport(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        return teleport(context, context.getSource().getPlayer().getUuid());
+    }
+
+    public static int teleport(CommandContext<ServerCommandSource> context, UUID owner) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        String name = StringArgumentType.getString(context, "claim");
+        return ClaimStorage.get(player.getServerWorld()).allClaimsFromPlayer(owner)
+                .stream().filter(claim -> {
+                    if (claim.getClaimName().isEmpty())
+                        return claim.getClaimID().toString().equals(name);
+                    return claim.getClaimName().equals(name);
+                }).findFirst().map(claim -> {
+                    BlockPos pos = claim.getHomePos();
+                    if (claim.canInteract(player, PermissionRegistry.TELEPORT, pos, false)) {
+                        PlayerClaimData data = PlayerClaimData.get(player);
+                        if (data.setTeleportTo(pos)) {
+                            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.teleportHome, Formatting.GOLD), false);
+                            return Command.SINGLE_SUCCESS;
+                        }
+                        context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.teleportHomeFail, Formatting.RED), false);
+                    } else
+                        context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), false);
+                    return 0;
+                }).orElse(0);
+    }
+
+    public static CompletableFuture<Suggestions> claimSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder build, UUID owner) {
+        return CommandSource.suggestMatching(ClaimStorage.get(context.getSource().getWorld()).allClaimsFromPlayer(owner)
+                .stream().map(claim -> claim.getClaimName().isEmpty() ? claim.getClaimID().toString() : claim.getClaimName()).collect(Collectors.toList()), build);
+    }
+
+    public static GameProfile singleProfile(CommandContext<ServerCommandSource> context, String arg) throws CommandSyntaxException {
+        Collection<GameProfile> profs = GameProfileArgumentType.getProfileArgument(context, arg);
+        if (profs.size() != 1) {
+            throw new SimpleCommandExceptionType(() -> ConfigHandler.lang.onlyOnePlayer).create();
+        }
+        return profs.stream().findFirst().get();
     }
 }

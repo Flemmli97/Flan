@@ -19,6 +19,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Heightmap;
+import net.minecraft.world.chunk.ChunkStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +40,7 @@ public class Claim implements IPermissionContainer {
 
     private UUID claimID;
     private String claimName = "";
+    private BlockPos homePos;
     private final Map<ClaimPermission, Boolean> globalPerm = new HashMap<>();
     private final Map<String, Map<ClaimPermission, Boolean>> permissions = new HashMap<>();
 
@@ -80,6 +83,7 @@ public class Claim implements IPermissionContainer {
         this.minY = Math.max(0, minY);
         this.owner = creator;
         this.world = world;
+        this.homePos = this.getInitCenterPos();
         this.setDirty(true);
         PermissionRegistry.getPerms().stream().filter(perm -> perm.defaultVal).forEach(perm -> this.globalPerm.put(perm, true));
         if (setDefaultGroups)
@@ -90,6 +94,12 @@ public class Claim implements IPermissionContainer {
         Claim claim = new Claim(world);
         claim.readJson(obj, owner);
         return claim;
+    }
+
+    private BlockPos getInitCenterPos() {
+        BlockPos center = new BlockPos(this.minX + (this.maxX - this.minX) * 0.5, 0, this.minZ + (this.maxZ - this.minZ) * 0.5);
+        int y = this.world.getChunk(center.getX() >> 4, center.getZ() >> 4, ChunkStatus.HEIGHTMAPS).sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, center.getX() & 15, center.getZ() & 15);
+        return new BlockPos(center.getX(), y + 1, center.getZ());
     }
 
     public void setClaimID(UUID uuid) {
@@ -443,6 +453,18 @@ public class Claim implements IPermissionContainer {
         return l;
     }
 
+    public boolean setHomePos(BlockPos homePos) {
+        if (this.insideClaim(homePos)) {
+            this.homePos = homePos;
+            return true;
+        }
+        return false;
+    }
+
+    public BlockPos getHomePos() {
+        return this.homePos;
+    }
+
     /**
      * Only marks non sub claims
      */
@@ -467,6 +489,12 @@ public class Claim implements IPermissionContainer {
             this.minZ = pos.get(2).getAsInt();
             this.maxZ = pos.get(3).getAsInt();
             this.minY = pos.get(4).getAsInt();
+            JsonArray home = ConfigHandler.arryFromJson(obj, "Home");
+            if (home.size() != 3)
+                this.homePos = this.getInitCenterPos();
+            else {
+                this.homePos = new BlockPos(home.get(0).getAsInt(), home.get(1).getAsInt(), home.get(2).getAsInt());
+            }
             if (ConfigHandler.fromJson(obj, "AdminClaim", false))
                 this.owner = null;
             else
@@ -526,6 +554,11 @@ public class Claim implements IPermissionContainer {
         pos.add(this.maxZ);
         pos.add(this.minY);
         obj.add("PosxXzZY", pos);
+        JsonArray home = new JsonArray();
+        home.add(this.homePos.getX());
+        home.add(this.homePos.getY());
+        home.add(this.homePos.getZ());
+        obj.add("Home", home);
         if (this.parent != null)
             obj.addProperty("Parent", this.parent.toString());
         if (!this.globalPerm.isEmpty()) {

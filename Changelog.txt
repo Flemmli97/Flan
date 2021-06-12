@@ -1,7 +1,11 @@
-Flan 1.4.3
+Flan 1.5.0
 ======================
 - Fix some items checking for wrong position and thus are able to interact in claims
 - Fix enderpearl phasing through blocks
+- Add claim homes set via /flan setHome in a claim to the players position.
+  The claim permission to allow others do that too is EDITCLAIM
+- Add /flan teleport to tp to a claims home.
+  Default global value is ALLFALSE so disabled.
 
 Flan 1.4.2
 ======================

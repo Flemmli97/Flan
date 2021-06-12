@@ -1,7 +1,6 @@
 package io.github.flemmli97.flan.forgeevent;
 
 import io.github.flemmli97.flan.event.BlockInteractEvents;
-import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
