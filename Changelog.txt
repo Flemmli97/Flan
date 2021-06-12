@@ -6,6 +6,8 @@ Flan 1.5.0
   The claim permission to allow others do that too is EDITCLAIM
 - Add /flan teleport to tp to a claims home.
   Default global value is ALLFALSE so disabled.
+- Add NOHUNGER permission: Disables hunger in claims
+  Default global value is ALLFALSE so disabled.
 
 Flan 1.4.2
 ======================
