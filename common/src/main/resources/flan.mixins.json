@@ -19,7 +19,8 @@
     "ItemEntityMixin",
     "EndermanPickupMixin",
     "EndermanPlaceMixin",
-    "IItemAccessor"
+    "IItemAccessor",
+    "IHungerAccessor"
   ],
   "server": [
   ],

@@ -12,6 +12,7 @@ import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -19,6 +20,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.chunk.ChunkStatus;
 
@@ -57,6 +59,8 @@ public class Claim implements IPermissionContainer {
     private boolean removed;
 
     private final ServerWorld world;
+
+    private Map<StatusEffect, Integer> potions = new HashMap<>();
 
     private Claim(ServerWorld world) {
         this.world = world;
@@ -190,6 +194,10 @@ public class Claim implements IPermissionContainer {
 
     public boolean intersects(Claim other) {
         return this.minX <= other.maxX && this.maxX >= other.minX && this.minZ <= other.maxZ && this.maxZ >= other.minZ;
+    }
+
+    public boolean intersects(Box box) {
+        return this.minX <= box.maxX && this.maxX >= box.minX && this.minZ <= box.maxZ && this.maxZ >= box.minZ && box.maxY > this.minY;
     }
 
     public boolean isCorner(BlockPos pos) {
@@ -456,6 +464,7 @@ public class Claim implements IPermissionContainer {
     public boolean setHomePos(BlockPos homePos) {
         if (this.insideClaim(homePos)) {
             this.homePos = homePos;
+            this.setDirty(true);
             return true;
         }
         return false;

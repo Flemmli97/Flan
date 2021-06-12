@@ -81,6 +81,7 @@ public class Config {
         perms.put(PermissionRegistry.FLIGHT, GlobalType.ALLTRUE);
         perms.put(PermissionRegistry.MOBSPAWN, GlobalType.ALLFALSE);
         perms.put(PermissionRegistry.TELEPORT, GlobalType.ALLFALSE);
+        perms.put(PermissionRegistry.NOHUNGER, GlobalType.ALLFALSE);
     })));
 
     public Config(MinecraftServer server) {
