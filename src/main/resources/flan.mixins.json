@@ -26,7 +26,8 @@
     "ItemEntityMixin",
     "EndermanPickupMixin",
     "EndermanPlaceMixin",
-    "SnowGolemMixin"
+    "SnowGolemMixin",
+    "IItemAccessor"
   ],
   "server": [
   ],

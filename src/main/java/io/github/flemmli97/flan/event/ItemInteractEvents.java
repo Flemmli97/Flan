@@ -11,6 +11,7 @@ import io.github.flemmli97.flan.claim.ObjectToPermissionMap;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.integration.permissionapi.CommandPermission;
+import io.github.flemmli97.flan.mixin.IItemAccessor;
 import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.EnumEditMode;
 import io.github.flemmli97.flan.player.PlayerClaimData;
@@ -34,6 +35,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 import java.util.Set;
@@ -64,6 +66,10 @@ public class ItemInteractEvents {
 
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
         BlockPos pos = player.getBlockPos();
+        HitResult hitResult = IItemAccessor.getRaycast(world, player, RaycastContext.FluidHandling.SOURCE_ONLY);
+        if (hitResult.getType() == HitResult.Type.BLOCK) {
+            pos = new ItemPlacementContext(player, hand, stack, (BlockHitResult) hitResult).getBlockPos();
+        }
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim == null)
             return TypedActionResult.pass(stack);
