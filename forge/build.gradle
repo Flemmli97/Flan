@@ -112,7 +112,7 @@ curseforge {
         "${project.curse_versions}".split(', ').each {
             addGameVersion "${it}"
         }
-        addGameVersion "Fabric"
+        addGameVersion "Forge"
         mainArtifact(remapJar) {
             changelog = changelog(3).replace("\n-", "\n\n- ")
             changelogType = "markdown"
