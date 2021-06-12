@@ -61,6 +61,11 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
                     group.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuGroup, Formatting.GOLD));
                     inv.setStack(i, group);
                     break;
+                case 4:
+                    ItemStack potions = new ItemStack(Items.POTION);
+                    potions.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuGroup, Formatting.GOLD));
+                    inv.setStack(i, potions);
+                    break;
                 case 8:
                     ItemStack delete = new ItemStack(Items.BARRIER);
                     delete.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuDelete, Formatting.RED));
@@ -74,7 +79,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
 
     @Override
     protected boolean isRightSlot(int slot) {
-        return slot == 0 || slot == 2 || slot == 3 || slot == 8;
+        return slot == 0 || slot == 2 || slot == 3 || slot == 4 || slot == 8;
     }
 
     @Override
@@ -92,6 +97,11 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
             case 3:
                 player.closeHandledScreen();
                 player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.claim));
+                ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
+                break;
+            case 4:
+                player.closeHandledScreen();
+                player.getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.claim));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 break;
             case 8:

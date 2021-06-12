@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
+import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.ClaimPermission;
 import io.github.flemmli97.flan.api.PermissionRegistry;
@@ -13,6 +14,8 @@ import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -470,6 +473,27 @@ public class Claim implements IPermissionContainer {
         return false;
     }
 
+    public void addPotion(StatusEffect effect, int amplifier) {
+        this.potions.put(effect, amplifier);
+        this.setDirty(true);
+    }
+
+    public void removePotion(StatusEffect effect) {
+        this.potions.remove(effect);
+        this.setDirty(true);
+    }
+
+    public Map<StatusEffect, Integer> getPotions() {
+        return this.potions;
+    }
+
+    public void applyEffects(PlayerEntity player) {
+        this.potions.forEach((effect, amp) -> {
+            if (!player.hasStatusEffect(effect))
+                player.applyStatusEffect(new StatusEffectInstance(effect, 200, amp-1, true, false));
+        });
+    }
+
     public BlockPos getHomePos() {
         return this.homePos;
     }
@@ -504,6 +528,8 @@ public class Claim implements IPermissionContainer {
             else {
                 this.homePos = new BlockPos(home.get(0).getAsInt(), home.get(1).getAsInt(), home.get(2).getAsInt());
             }
+            JsonObject potion = ConfigHandler.fromJson(obj, "Potions");
+            potion.entrySet().forEach(e -> this.potions.put(CrossPlatformStuff.effectFromString(e.getKey()), e.getValue().getAsInt()));
             if (ConfigHandler.fromJson(obj, "AdminClaim", false))
                 this.owner = null;
             else
@@ -568,6 +594,9 @@ public class Claim implements IPermissionContainer {
         home.add(this.homePos.getY());
         home.add(this.homePos.getZ());
         obj.add("Home", home);
+        JsonObject potions = new JsonObject();
+        this.potions.forEach((effect, amp) -> potions.addProperty(CrossPlatformStuff.stringFromEffect(effect), amp));
+        obj.add("Potions", potions);
         if (this.parent != null)
             obj.addProperty("Parent", this.parent.toString());
         if (!this.globalPerm.isEmpty()) {

@@ -326,6 +326,7 @@ public class EntityInteractEvents {
                     if (player.getHungerManager().getSaturationLevel() < 2 && currentClaim.canInteract(player, PermissionRegistry.NOHUNGER, bPos, false)) {
                         ((IHungerAccessor) player.getHungerManager()).setSaturation(2);
                     }
+                    currentClaim.applyEffects(player);
                 }
             }
         } else if (player.age % 3 == 0) {

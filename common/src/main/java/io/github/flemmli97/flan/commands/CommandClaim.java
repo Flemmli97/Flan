@@ -165,7 +165,7 @@ public class CommandClaim {
                 enoughBlocks = newData.canUseClaimBlocks(claim.getPlane());
             } else {
                 OfflinePlayerData newData = new OfflinePlayerData(server, prof.getId());
-                enoughBlocks = ConfigHandler.config.maxClaimBlocks == -1 || newData.getUsedClaimBlocks(server) + claim.getPlane() < newData.claimBlocks + newData.additionalClaimBlocks;
+                enoughBlocks = ConfigHandler.config.maxClaimBlocks == -1 || newData.getUsedClaimBlocks() + claim.getPlane() < newData.claimBlocks + newData.additionalClaimBlocks;
             }
         }
         if (!enoughBlocks) {
@@ -418,7 +418,7 @@ public class CommandClaim {
             } else {
                 OfflinePlayerData data = new OfflinePlayerData(server, of);
                 context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
-                        data.claimBlocks, data.additionalClaimBlocks, data.getUsedClaimBlocks(server)), Formatting.GOLD), false);
+                        data.claimBlocks, data.additionalClaimBlocks, data.getUsedClaimBlocks()), Formatting.GOLD), false);
             }
         }
         context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.listClaims, Formatting.GOLD), false);

@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import io.github.flemmli97.flan.ConfigPath;
+import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.api.ClaimPermission;
 import io.github.flemmli97.flan.api.PermissionRegistry;
 import net.minecraft.server.MinecraftServer;
@@ -141,7 +141,7 @@ public class LangConfig {
     public LangCommands cmdLang = new LangCommands();
 
     public LangConfig(MinecraftServer server) {
-        File configDir = ConfigPath.configPath().resolve("flan").toFile();
+        File configDir = CrossPlatformStuff.configPath().resolve("flan").toFile();
         //server.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();
         try {
             if (!configDir.exists())

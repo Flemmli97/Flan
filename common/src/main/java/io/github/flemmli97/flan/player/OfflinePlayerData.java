@@ -18,6 +18,7 @@ public class OfflinePlayerData {
 
     public final int claimBlocks, additionalClaimBlocks;
     public final UUID owner;
+    public final MinecraftServer server;
 
     public OfflinePlayerData(MinecraftServer server, UUID uuid) {
         File dir = new File(server.getSavePath(WorldSavePath.PLAYERDATA).toFile(), "/claimData/");
@@ -40,11 +41,12 @@ public class OfflinePlayerData {
         }
         this.claimBlocks = claim;
         this.additionalClaimBlocks = add;
+        this.server = server;
     }
 
-    public int getUsedClaimBlocks(MinecraftServer server) {
+    public int getUsedClaimBlocks() {
         int usedClaimsBlocks = 0;
-        for (ServerWorld world : server.getWorlds()) {
+        for (ServerWorld world : this.server.getWorlds()) {
             Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.owner);
             if (claims != null)
                 usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
