@@ -1,3 +1,9 @@
+Flan 1.4.3
+======================
+- Fix some items checking for wrong position and thus are able to interact in claims
+- Fix enderpearl phasing through blocks
+- Fix claims not respecting new world heights
+
 Flan 1.4.2
 ======================
 - Fix a ticking player crash
