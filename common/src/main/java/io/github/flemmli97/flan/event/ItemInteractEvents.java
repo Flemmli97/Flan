@@ -66,9 +66,9 @@ public class ItemInteractEvents {
 
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
         BlockPos pos = player.getBlockPos();
-        HitResult hitResult = IItemAccessor.getRaycast(world, player, RaycastContext.FluidHandling.SOURCE_ONLY);
+        BlockHitResult hitResult = IItemAccessor.getRaycast(world, player, RaycastContext.FluidHandling.SOURCE_ONLY);
         if (hitResult.getType() == HitResult.Type.BLOCK) {
-            pos = new ItemPlacementContext(player, hand, stack, (BlockHitResult) hitResult).getBlockPos();
+            pos = new ItemPlacementContext(player, hand, stack, hitResult).getBlockPos();
         }
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim == null)

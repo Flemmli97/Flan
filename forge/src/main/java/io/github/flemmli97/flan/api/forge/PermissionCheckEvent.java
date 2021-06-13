@@ -19,7 +19,6 @@ public class PermissionCheckEvent extends Event {
      * @param player     The corresponding player. Can be null if the check is e.g. caused by tnt explosions
      * @param permission The permission to check
      * @param pos        The block pos where the action is occuring
-     * @return ActionResult#PASS to do nothing. ActionResult#FAIL to prevent the action. Else to allow the action
      */
     public PermissionCheckEvent(ServerPlayerEntity player, ClaimPermission permission, BlockPos pos) {
         this.player = player;
@@ -27,6 +26,9 @@ public class PermissionCheckEvent extends Event {
         this.pos = pos;
     }
 
+    /**
+     * @return ActionResult#PASS to do nothing. ActionResult#FAIL to prevent the action. Else to allow the action
+     */
     public ActionResult getActionResult() {
         return this.result;
     }

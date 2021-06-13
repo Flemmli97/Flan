@@ -30,7 +30,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -61,8 +60,6 @@ public class PlayerClaimData implements IPlayerData {
     private boolean dirty;
 
     private final Map<String, Map<ClaimPermission, Boolean>> defaultGroups = new HashMap<>();
-
-    private Date lastOnline;
 
     public PlayerClaimData(ServerPlayerEntity player) {
         this.player = player;

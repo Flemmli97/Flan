@@ -237,7 +237,7 @@ public class Config {
     }
 
     public boolean globallyDefined(ServerWorld world, ClaimPermission perm) {
-        return !getGlobal(world, perm).canModify();
+        return !this.getGlobal(world, perm).canModify();
     }
 
     public GlobalType getGlobal(ServerWorld world, ClaimPermission perm) {

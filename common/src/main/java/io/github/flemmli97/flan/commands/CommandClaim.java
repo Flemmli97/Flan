@@ -179,26 +179,22 @@ public class CommandClaim {
     }
 
     private static int openMenu(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        try {
-            ServerPlayerEntity player = context.getSource().getPlayer();
-            PlayerClaimData data = PlayerClaimData.get(player);
-            Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(player.getBlockPos());
-            if (claim == null) {
-                PermHelper.noClaimMessage(player);
-                return 0;
-            }
-            if (data.getEditMode() == EnumEditMode.DEFAULT) {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        PlayerClaimData data = PlayerClaimData.get(player);
+        Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(player.getBlockPos());
+        if (claim == null) {
+            PermHelper.noClaimMessage(player);
+            return 0;
+        }
+        if (data.getEditMode() == EnumEditMode.DEFAULT) {
+            ClaimMenuScreenHandler.openClaimMenu(player, claim);
+            data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+        } else {
+            Claim sub = claim.getSubClaim(player.getBlockPos());
+            if (sub != null)
+                ClaimMenuScreenHandler.openClaimMenu(player, sub);
+            else
                 ClaimMenuScreenHandler.openClaimMenu(player, claim);
-                data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
-            } else {
-                Claim sub = claim.getSubClaim(player.getBlockPos());
-                if (sub != null)
-                    ClaimMenuScreenHandler.openClaimMenu(player, sub);
-                else
-                    ClaimMenuScreenHandler.openClaimMenu(player, claim);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -476,7 +472,7 @@ public class CommandClaim {
             }
             players.add(prof.getName());
         }
-        src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.adminDeleteAll, players.toString()), Formatting.GOLD), true);
+        src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.adminDeleteAll, players), Formatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -525,7 +521,7 @@ public class CommandClaim {
                 PlayerClaimData.editForOfflinePlayer(src.getMinecraftServer(), prof.getId(), amount);
             players.add(prof.getName());
         }
-        src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.giveClaimBlocks, players.toString(), amount), Formatting.GOLD), true);
+        src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.giveClaimBlocks, players, amount), Formatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 

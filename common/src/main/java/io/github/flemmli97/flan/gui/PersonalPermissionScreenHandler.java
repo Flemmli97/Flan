@@ -32,7 +32,6 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
     private PersonalPermissionScreenHandler(int syncId, PlayerInventory playerInventory, String group) {
         super(syncId, playerInventory, 6, group);
         this.group = group;
-        this.page = page;
         this.player = playerInventory.player;
     }
 
@@ -78,7 +77,7 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + page * 28;
                 if (id < perms.size())
-                    inv.setStack(i, ServerScreenHelper.getFromPersonal((ServerPlayerEntity) player, perms.get(id), group == null ? null : group));
+                    inv.setStack(i, ServerScreenHelper.getFromPersonal((ServerPlayerEntity) player, perms.get(id), group));
             }
         }
     }
@@ -150,7 +149,7 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
             return false;
         }
         PlayerClaimData data = PlayerClaimData.get(player);
-        Map<ClaimPermission, Boolean> perms = data.playerDefaultGroups().getOrDefault(group, new HashMap<>());
+        Map<ClaimPermission, Boolean> perms = data.playerDefaultGroups().getOrDefault(this.group, new HashMap<>());
         boolean success = data.editDefaultPerms(this.group, perm, (perms.containsKey(perm) ? perms.get(perm) ? 1 : 0 : -1) + 1);
         slot.setStack(ServerScreenHelper.getFromPersonal(player, perm, this.group));
         if (success)
