@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
+import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.ClaimPermission;
 import io.github.flemmli97.flan.api.ClaimPermissionEvent;
@@ -13,6 +14,8 @@ import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -20,6 +23,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.world.Heightmap;
+import net.minecraft.world.chunk.ChunkStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +45,7 @@ public class Claim implements IPermissionContainer {
 
     private UUID claimID;
     private String claimName = "";
+    private BlockPos homePos;
     private final Map<ClaimPermission, Boolean> globalPerm = new HashMap<>();
     private final Map<String, Map<ClaimPermission, Boolean>> permissions = new HashMap<>();
 
@@ -55,6 +62,8 @@ public class Claim implements IPermissionContainer {
     private boolean removed;
 
     private final ServerWorld world;
+
+    private Map<StatusEffect, Integer> potions = new HashMap<>();
 
     private Claim(ServerWorld world) {
         this.world = world;
@@ -81,6 +90,7 @@ public class Claim implements IPermissionContainer {
         this.minY = Math.max(world.getBottomY(), minY);
         this.owner = creator;
         this.world = world;
+        this.homePos = this.getInitCenterPos();
         this.setDirty(true);
         PermissionRegistry.getPerms().stream().filter(perm -> perm.defaultVal).forEach(perm -> this.globalPerm.put(perm, true));
         if (setDefaultGroups)
@@ -91,6 +101,12 @@ public class Claim implements IPermissionContainer {
         Claim claim = new Claim(world);
         claim.readJson(obj, owner);
         return claim;
+    }
+
+    private BlockPos getInitCenterPos() {
+        BlockPos center = new BlockPos(this.minX + (this.maxX - this.minX) * 0.5, 0, this.minZ + (this.maxZ - this.minZ) * 0.5);
+        int y = this.world.getChunk(center.getX() >> 4, center.getZ() >> 4, ChunkStatus.HEIGHTMAPS).sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, center.getX() & 15, center.getZ() & 15);
+        return new BlockPos(center.getX(), y + 1, center.getZ());
     }
 
     public void setClaimID(UUID uuid) {
@@ -181,6 +197,10 @@ public class Claim implements IPermissionContainer {
 
     public boolean intersects(Claim other) {
         return this.minX <= other.maxX && this.maxX >= other.minX && this.minZ <= other.maxZ && this.maxZ >= other.minZ;
+    }
+
+    public boolean intersects(Box box) {
+        return this.minX < box.maxX && this.maxX + 1 > box.minX && this.minZ < box.maxZ && this.maxZ + 1 > box.minZ && box.maxY >= this.minY;
     }
 
     public boolean isCorner(BlockPos pos) {
@@ -444,6 +464,40 @@ public class Claim implements IPermissionContainer {
         return l;
     }
 
+    public boolean setHomePos(BlockPos homePos) {
+        if (this.insideClaim(homePos)) {
+            this.homePos = homePos;
+            this.setDirty(true);
+            return true;
+        }
+        return false;
+    }
+
+    public void addPotion(StatusEffect effect, int amplifier) {
+        this.potions.put(effect, amplifier);
+        this.setDirty(true);
+    }
+
+    public void removePotion(StatusEffect effect) {
+        this.potions.remove(effect);
+        this.setDirty(true);
+    }
+
+    public Map<StatusEffect, Integer> getPotions() {
+        return this.potions;
+    }
+
+    public void applyEffects(ServerPlayerEntity player) {
+        if (player.world.getTime() % 80 == 0)
+            this.potions.forEach((effect, amp) -> {
+                player.addStatusEffect(new StatusEffectInstance(effect, 200, amp - 1, true, false));
+            });
+    }
+
+    public BlockPos getHomePos() {
+        return this.homePos;
+    }
+
     /**
      * Only marks non sub claims
      */
@@ -468,6 +522,14 @@ public class Claim implements IPermissionContainer {
             this.minZ = pos.get(2).getAsInt();
             this.maxZ = pos.get(3).getAsInt();
             this.minY = pos.get(4).getAsInt();
+            JsonArray home = ConfigHandler.arryFromJson(obj, "Home");
+            if (home.size() != 3)
+                this.homePos = this.getInitCenterPos();
+            else {
+                this.homePos = new BlockPos(home.get(0).getAsInt(), home.get(1).getAsInt(), home.get(2).getAsInt());
+            }
+            JsonObject potion = ConfigHandler.fromJson(obj, "Potions");
+            potion.entrySet().forEach(e -> this.potions.put(CrossPlatformStuff.effectFromString(e.getKey()), e.getValue().getAsInt()));
             if (ConfigHandler.fromJson(obj, "AdminClaim", false))
                 this.owner = null;
             else
@@ -527,6 +589,14 @@ public class Claim implements IPermissionContainer {
         pos.add(this.maxZ);
         pos.add(this.minY);
         obj.add("PosxXzZY", pos);
+        JsonArray home = new JsonArray();
+        home.add(this.homePos.getX());
+        home.add(this.homePos.getY());
+        home.add(this.homePos.getZ());
+        obj.add("Home", home);
+        JsonObject potions = new JsonObject();
+        this.potions.forEach((effect, amp) -> potions.addProperty(CrossPlatformStuff.stringFromEffect(effect), amp));
+        obj.add("Potions", potions);
         if (this.parent != null)
             obj.addProperty("Parent", this.parent.toString());
         if (!this.globalPerm.isEmpty()) {

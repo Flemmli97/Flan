@@ -21,14 +21,24 @@ import net.minecraft.util.Formatting;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PermissionScreenHandler extends ServerOnlyScreenHandler {
+public class PermissionScreenHandler extends ServerOnlyScreenHandler<ClaimGroup> {
 
     private final Claim claim;
     private final String group;
     private int page;
 
-    private PermissionScreenHandler(int syncId, PlayerInventory playerInventory, Claim claim, String group, int page) {
-        super(syncId, playerInventory, 6, claim, group, page);
+    private PermissionScreenHandler(int syncId, PlayerInventory playerInventory, Claim claim, String group) {
+        super(syncId, playerInventory, 6, new ClaimGroup() {
+            @Override
+            public Claim getClaim() {
+                return claim;
+            }
+
+            @Override
+            public String getGroup() {
+                return group;
+            }
+        });
         this.claim = claim;
         this.group = group;
         this.page = page;
@@ -38,7 +48,7 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
         NamedScreenHandlerFactory fac = new NamedScreenHandlerFactory() {
             @Override
             public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                return new PermissionScreenHandler(syncId, inv, claim, group, 0);
+                return new PermissionScreenHandler(syncId, inv, claim, group);
             }
 
             @Override
@@ -49,28 +59,13 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
         player.openHandledScreen(fac);
     }
 
-    private static void openClaimMenu(PlayerEntity player, Claim claim, String group, int page) {
-        NamedScreenHandlerFactory fac = new NamedScreenHandlerFactory() {
-            @Override
-            public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                return new PermissionScreenHandler(syncId, inv, claim, group, page);
-            }
-
-            @Override
-            public Text getDisplayName() {
-                return PermHelper.simpleColoredText(group == null ? ConfigHandler.lang.screenGlobalPerms : String.format(ConfigHandler.lang.screenGroupPerms, group));
-            }
-        };
-        player.openHandledScreen(fac);
-    }
-
     @Override
-    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object... additionalData) {
+    protected void fillInventoryWith(PlayerEntity player, Inventory inv, ClaimGroup additionalData) {
         List<ClaimPermission> perms = new ArrayList<>(PermissionRegistry.getPerms());
         if (this.group != null)
             perms.removeAll(PermissionRegistry.globalPerms());
         for (int i = 0; i < 54; i++) {
-            int page = (int) additionalData[2];
+            int page = 0;
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
                 close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenBack, Formatting.DARK_RED));
@@ -89,7 +84,7 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler {
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + page * 28;
                 if (id < perms.size())
-                    inv.setStack(i, ServerScreenHelper.fromPermission((Claim) additionalData[0], perms.get(id), additionalData[1] == null ? null : additionalData[1].toString()));
+                    inv.setStack(i, ServerScreenHelper.fromPermission(additionalData.getClaim(), perms.get(id), additionalData.getGroup() == null ? null : additionalData.getGroup()));
             }
         }
     }

@@ -7,6 +7,7 @@ import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.IPermissionContainer;
 import io.github.flemmli97.flan.claim.ObjectToPermissionMap;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.mixin.IHungerAccessor;
 import io.github.flemmli97.flan.mixin.IPersistentProjectileVars;
 import io.github.flemmli97.flan.player.IOwnedItem;
 import io.github.flemmli97.flan.player.PlayerClaimData;
@@ -93,7 +94,8 @@ public class EntityInteractEvents {
                 return claim.canInteract(player, PermissionRegistry.TRADING, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
             if (entity instanceof ItemFrameEntity)
                 return claim.canInteract(player, PermissionRegistry.ITEMFRAMEROTATE, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
-            if (entity instanceof TameableEntity tame) {
+            if (entity instanceof TameableEntity) {
+                TameableEntity tame = (TameableEntity) entity;
                 if (tame.isOwner(player))
                     return ActionResult.PASS;
             }
@@ -300,12 +302,11 @@ public class EntityInteractEvents {
     }
 
     public static void updateClaim(ServerPlayerEntity player, Claim currentClaim, Consumer<Claim> cons) {
-        PlayerEntity p = player.world.getClosestPlayer(player, 1);
         Vec3d pos = player.getPos();
         BlockPos rounded = TeleportUtils.roundedBlockPos(pos.add(0, player.getActiveEyeHeight(player.getPose(), player.getDimensions(player.getPose())), 0));
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
         if (currentClaim != null) {
-            if (!currentClaim.insideClaim(rounded)) {
+            if (!currentClaim.intersects(player.getBoundingBox())) {
                 cons.accept(null);
             } else {
                 if (!player.isSpectator()) {
@@ -318,6 +319,10 @@ public class EntityInteractEvents {
                         player.getAbilities().flying = false;
                         player.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.getAbilities()));
                     }
+                    if (player.getHungerManager().getSaturationLevel() < 2 && currentClaim.canInteract(player, PermissionRegistry.NOHUNGER, bPos, false)) {
+                        ((IHungerAccessor) player.getHungerManager()).setSaturation(2);
+                    }
+                    currentClaim.applyEffects(player);
                 }
             }
         } else if (player.age % 3 == 0) {

@@ -19,7 +19,9 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ServerScreenHelper {
@@ -33,18 +35,18 @@ public class ServerScreenHelper {
     public static ItemStack fromPermission(Claim claim, ClaimPermission perm, String group) {
         ItemStack stack = perm.getItem();
         stack.setCustomName(ServerScreenHelper.coloredGuiText(perm.id, Formatting.GOLD));
-        NbtList lore = new NbtList();
+        List<Text> lore = new ArrayList<>();
         for (String pdesc : perm.desc) {
             Text trans = ServerScreenHelper.coloredGuiText(pdesc, Formatting.YELLOW);
-            lore.add(NbtString.of(Text.Serializer.toJson(trans)));
+            lore.add(trans);
         }
         Config.GlobalType global = ConfigHandler.config.getGlobal(claim.getWorld(), perm);
         if (!claim.isAdminClaim() && !global.canModify()) {
             Text text = ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenUneditable, Formatting.DARK_RED);
-            lore.add(NbtString.of(Text.Serializer.toJson(text)));
+            lore.add(text);
             String permFlag = String.valueOf(global.getValue());
             Text text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals("true") ? Formatting.GREEN : Formatting.RED);
-            lore.add(NbtString.of(Text.Serializer.toJson(text2)));
+            lore.add(text2);
         } else {
             String permFlag;
             if (group == null) {
@@ -65,9 +67,9 @@ public class ServerScreenHelper {
                 };
             }
             Text text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals("true") ? Formatting.GREEN : Formatting.RED);
-            lore.add(NbtString.of(Text.Serializer.toJson(text)));
+            lore.add(text);
         }
-        stack.getOrCreateSubTag("display").put("Lore", lore);
+        addLore(stack, lore);
         return stack;
     }
 
@@ -107,5 +109,17 @@ public class ServerScreenHelper {
 
     public static Text coloredGuiText(String text, Formatting... formattings) {
         return new LiteralText(text).setStyle(Style.EMPTY.withItalic(false).withFormatting(formattings));
+    }
+
+    public static void addLore(ItemStack stack, Text text) {
+        NbtList lore = new NbtList();
+        lore.add(NbtString.of(Text.Serializer.toJson(text)));
+        stack.getOrCreateSubTag("display").put("Lore", lore);
+    }
+
+    public static void addLore(ItemStack stack, List<Text> texts) {
+        NbtList lore = new NbtList();
+        texts.forEach(text -> lore.add(NbtString.of(Text.Serializer.toJson(text))));
+        stack.getOrCreateSubTag("display").put("Lore", lore);
     }
 }

@@ -17,14 +17,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ServerOnlyScreenHandler extends ScreenHandler {
+public abstract class ServerOnlyScreenHandler<T> extends ScreenHandler {
 
     private final Inventory inventory;
     private final List<ScreenHandlerListener> listeners = new ArrayList<>();
 
     private ScreenHandlerSyncHandler syncHandler;
-
-    protected ServerOnlyScreenHandler(int syncId, PlayerInventory playerInventory, int rows, Object... additionalData) {
+    protected ServerOnlyScreenHandler(int syncId, PlayerInventory playerInventory, int rows, T additionalData) {
         super(fromRows(rows), syncId);
         int i = (rows - 4) * 18;
         this.inventory = new SimpleInventory(rows * 9);
@@ -59,7 +58,7 @@ public abstract class ServerOnlyScreenHandler extends ScreenHandler {
         };
     }
 
-    protected abstract void fillInventoryWith(PlayerEntity player, Inventory inv, Object... additionalData);
+    protected abstract void fillInventoryWith(PlayerEntity player, Inventory inv, T additionalData);
 
     @Override
     public boolean canUse(PlayerEntity player) {

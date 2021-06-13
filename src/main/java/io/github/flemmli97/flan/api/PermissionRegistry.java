@@ -29,6 +29,7 @@ public class PermissionRegistry {
 
     public static ClaimPermission EDITCLAIM = register(new ClaimPermission("EDITCLAIM", () -> new ItemStack(ConfigHandler.config.claimingItem), "Gives permission to edit (resize, delete...) the claim"));
     public static ClaimPermission EDITPERMS = register(new ClaimPermission("EDITPERMS", () -> new ItemStack(Items.COMMAND_BLOCK), "Gives permission to change the claims permissions"));
+    public static ClaimPermission EDITPOTIONS = register(new ClaimPermission("EDITPOTIONS", () -> new ItemStack(Items.POTION), "Gives permission to edit the claims potion effect"));
     public static ClaimPermission BREAK = register(new ClaimPermission("BREAK", () -> new ItemStack(Items.DIAMOND_PICKAXE), "Permission to break blocks in the claim"));
     public static ClaimPermission PLACE = register(new ClaimPermission("PLACE", () -> new ItemStack(Items.GRASS_BLOCK), "Permission to place blocks in the claim"));
     public static ClaimPermission OPENCONTAINER = register(new ClaimPermission("OPENCONTAINER", () -> new ItemStack(Items.CHEST), "Permission to open containers", "(chest, furnace etc.)"));
@@ -67,7 +68,9 @@ public class PermissionRegistry {
     public static ClaimPermission DROP = register(new ClaimPermission("DROP", () -> new ItemStack(Items.BOWL), true, "Allow the drop of items"));
     public static ClaimPermission PICKUP = register(new ClaimPermission("PICKUP", () -> new ItemStack(Items.BRICK), true, "Allow the pickup of items"));
     public static ClaimPermission FLIGHT = register(new ClaimPermission("FLIGHT", () -> new ItemStack(Items.FEATHER), true, "Allow non creative flight"));
-    public static ClaimPermission CANSTAY = register(new ClaimPermission("CANSTAY", () -> new ItemStack(Items.PAPER), true, "Allow player to enter your claim"));
+    public static ClaimPermission CANSTAY = register(new ClaimPermission("CANSTAY", () -> new ItemStack(Items.PAPER), true, "Allow players to enter your claim"));
+    public static ClaimPermission TELEPORT = register(new ClaimPermission("TELEPORT", () -> new ItemStack(Items.END_PORTAL_FRAME), false, "Allow player to teleport to your claim home position"));
+    public static ClaimPermission NOHUNGER = register(new ClaimPermission("NOHUNGER", () -> new ItemStack(Items.COOKED_BEEF), false, "Disable hunger"));
 
     public static ClaimPermission HURTPLAYER = global(new ClaimPermission("HURTPLAYER", () -> new ItemStack(Items.DIAMOND_SWORD), "Permission to hurt other players"));
     public static ClaimPermission EXPLOSIONS = global(new ClaimPermission("EXPLOSIONS", () -> new ItemStack(Items.TNT), "Toggle explosions in claim"));

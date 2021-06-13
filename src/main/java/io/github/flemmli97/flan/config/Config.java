@@ -58,6 +58,9 @@ public class Config {
     public boolean lockDrops = true;
     public int dropTicks = 6000;
 
+    public int inactivityTime = 30;
+    public int inactivityBlocksMax = 2000;
+
     public boolean log;
 
     public Map<String, Map<ClaimPermission, Boolean>> defaultGroups = createHashMap(map -> {
@@ -80,6 +83,9 @@ public class Config {
     private final Map<String, Map<ClaimPermission, GlobalType>> globalDefaultPerms = createHashMap(map -> map.put("*", createHashMap(perms -> {
         perms.put(PermissionRegistry.FLIGHT, GlobalType.ALLTRUE);
         perms.put(PermissionRegistry.MOBSPAWN, GlobalType.ALLFALSE);
+        perms.put(PermissionRegistry.TELEPORT, GlobalType.ALLFALSE);
+        perms.put(PermissionRegistry.NOHUNGER, GlobalType.ALLFALSE);
+        perms.put(PermissionRegistry.EDITPOTIONS, GlobalType.ALLFALSE);
     })));
 
     public Config(MinecraftServer server) {
@@ -164,6 +170,8 @@ public class Config {
             this.buyPrice = ConfigHandler.fromJson(obj, "buyPrice", this.buyPrice);
             this.lockDrops = ConfigHandler.fromJson(obj, "lockDrops", this.lockDrops);
             this.dropTicks = ConfigHandler.fromJson(obj, "dropTicks", this.dropTicks);
+            this.inactivityTime = ConfigHandler.fromJson(obj, "inactivityTimeDays", this.inactivityTime);
+            this.inactivityBlocksMax = ConfigHandler.fromJson(obj, "inactivityBlocksMax", this.inactivityBlocksMax);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -217,6 +225,8 @@ public class Config {
         obj.addProperty("buyPrice", this.buyPrice);
         obj.addProperty("lockDrops", this.lockDrops);
         obj.addProperty("dropTicks", this.dropTicks);
+        obj.addProperty("inactivityTimeDays", this.inactivityTime);
+        obj.addProperty("inactivityBlocksMax", this.inactivityBlocksMax);
         try {
             FileWriter writer = new FileWriter(this.config);
             ConfigHandler.GSON.toJson(obj, writer);

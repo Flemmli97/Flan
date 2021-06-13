@@ -41,19 +41,14 @@ public abstract class PlayerClaimMixin implements IPlayerClaimImpl {
         this.claimData.save(this.server);
     }
 
-    @Inject(method = "tick", at = @At("RETURN"))
+    @Inject(method = "tick", at = @At("HEAD"))
     private void tickData(CallbackInfo info) {
-        this.claimData.tick();
+        this.claimData.tick(this.currentClaim, claim -> this.currentClaim = claim);
     }
 
     @Inject(method = "copyFrom", at = @At("RETURN"))
     private void copyOld(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo info) {
         this.claimData.clone(PlayerClaimData.get(oldPlayer));
-    }
-
-    @Inject(method = "tick", at = @At("HEAD"))
-    private void claimupdate(CallbackInfo info) {
-        EntityInteractEvents.updateClaim((ServerPlayerEntity) (Object) this, this.currentClaim, claim -> this.currentClaim = claim);
     }
 
     @Override

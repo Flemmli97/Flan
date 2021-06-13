@@ -43,7 +43,6 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
         this.output.setStack(0, out);
         this.cons = cons;
         this.ret = ret;
-
     }
 
     public static void createNewStringResult(PlayerEntity player, Consumer<String> cons, Runnable ret) {

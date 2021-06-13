@@ -1,44 +1,54 @@
 package io.github.flemmli97.flan.gui;
 
-import io.github.flemmli97.flan.api.PermissionRegistry;
+import com.google.common.collect.Lists;
+import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.PermHelper;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.potion.PotionUtil;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
-public class GroupScreenHandler extends ServerOnlyScreenHandler<Claim> {
+public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
     private final Claim claim;
 
     private boolean removeMode;
 
-    private GroupScreenHandler(int syncId, PlayerInventory playerInventory, Claim claim) {
+    protected PotionEditScreenHandler(int syncId, PlayerInventory playerInventory, Claim claim) {
         super(syncId, playerInventory, 6, claim);
         this.claim = claim;
     }
 
-    public static void openGroupMenu(PlayerEntity player, Claim claim) {
+    public static void openPotionMenu(PlayerEntity player, Claim claim) {
         NamedScreenHandlerFactory fac = new NamedScreenHandlerFactory() {
             @Override
             public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                return new GroupScreenHandler(syncId, inv, claim);
+                return new PotionEditScreenHandler(syncId, inv, claim);
             }
 
             @Override
             public Text getDisplayName() {
-                return PermHelper.simpleColoredText("Claim-Groups");
+                return PermHelper.simpleColoredText("Claim Potions");
             }
         };
         player.openHandledScreen(fac);
@@ -46,6 +56,9 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
     @Override
     protected void fillInventoryWith(PlayerEntity player, Inventory inv, Claim claim) {
+        Map<StatusEffect, Integer> potions = claim.getPotions();
+        List<StatusEffect> key = Lists.newArrayList(potions.keySet());
+        key.sort(Comparator.comparing(CrossPlatformStuff::stringFromEffect));
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
@@ -62,13 +75,17 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler<Claim> {
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 inv.setStack(i, ServerScreenHelper.emptyFiller());
             else {
-                List<String> groups = claim.groups();
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1;
-                if (id < groups.size()) {
-                    ItemStack group = new ItemStack(Items.PAPER);
-                    group.setCustomName(ServerScreenHelper.coloredGuiText(groups.get(id), Formatting.DARK_BLUE));
-                    inv.setStack(i, group);
+                if (id < potions.size()) {
+                    StatusEffect effect = key.get(id);
+                    ItemStack effectStack = new ItemStack(Items.POTION);
+                    TranslatableText txt = new TranslatableText(effect.getTranslationKey());
+                    Collection<StatusEffectInstance> inst = Collections.singleton(new StatusEffectInstance(effect, 0, potions.get(effect)));
+                    effectStack.getOrCreateTag().putString("FlanEffect", CrossPlatformStuff.stringFromEffect(effect));
+                    effectStack.getTag().putInt("CustomPotionColor", PotionUtil.getColor(inst));
+                    effectStack.setCustomName(txt.setStyle(txt.getStyle().withItalic(false).withFormatting(Formatting.DARK_BLUE)).append(ServerScreenHelper.coloredGuiText("-" + potions.get(effect), Formatting.DARK_BLUE)));
+                    inv.setStack(i, effectStack);
                 }
             }
         }
@@ -90,13 +107,26 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler<Claim> {
         if (index == 3) {
             player.closeHandledScreen();
             player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
-                this.claim.editPerms(player, s, PermissionRegistry.EDITPERMS, -1);
+                String[] potion = s.split(";");
+                int amp = 1;
+                StatusEffect effect = CrossPlatformStuff.effectFromString(potion[0]);
+                if (effect == null || (effect == StatusEffects.LUCK && !potion[0].equals("minecraft:luck"))) {
+                    ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_VILLAGER_NO, 1, 1f);
+                    return;
+                }
+                if (potion.length > 1) {
+                    try {
+                        amp = Integer.parseInt(potion[1]);
+                    } catch (NumberFormatException e) {
+                    }
+                }
+                this.claim.addPotion(effect, amp);
                 player.closeHandledScreen();
-                player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.claim));
+                player.getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.claim));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_USE, 1, 1f);
             }, () -> {
                 player.closeHandledScreen();
-                player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.claim));
+                player.getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.claim));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_VILLAGER_NO, 1, 1f);
             }));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
@@ -111,22 +141,11 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler<Claim> {
             return true;
         }
         ItemStack stack = slot.getStack();
-        if (!stack.isEmpty()) {
-            String name = stack.getName().asString();
-            if (this.removeMode) {
-                this.claim.removePermGroup(player, name);
-                slot.setStack(ItemStack.EMPTY);
-                ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_BAT_DEATH, 1, 1f);
-            } else {
-                if (clickType == 1) {
-                    player.closeHandledScreen();
-                    player.getServer().execute(() -> PermissionScreenHandler.openClaimMenu(player, this.claim, name));
-                } else {
-                    player.closeHandledScreen();
-                    player.getServer().execute(() -> GroupPlayerScreenHandler.openPlayerGroupMenu(player, this.claim, name));
-                }
-                ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
-            }
+        if (!stack.isEmpty() && this.removeMode) {
+            String effect = stack.getOrCreateTag().getString("FlanEffect");
+            this.claim.removePotion(CrossPlatformStuff.effectFromString(effect));
+            slot.setStack(ItemStack.EMPTY);
+            ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_BAT_DEATH, 1, 1f);
         }
         return false;
     }

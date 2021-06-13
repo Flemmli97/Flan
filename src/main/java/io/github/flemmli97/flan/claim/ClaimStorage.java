@@ -7,10 +7,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.ClaimPermission;
+import io.github.flemmli97.flan.api.IPlayerData;
 import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.EnumEditMode;
+import io.github.flemmli97.flan.player.OfflinePlayerData;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import it.unimi.dsi.fastutil.longs.Long2ObjectArrayMap;
 import net.minecraft.server.MinecraftServer;
@@ -60,6 +62,7 @@ public class ClaimStorage {
     public ClaimStorage(MinecraftServer server, ServerWorld world) {
         this.globalClaim = new GlobalClaim(world);
         this.read(server, world);
+        OfflinePlayerData.deleteUnusedClaims(server, this, world);
     }
 
     public UUID generateUUID() {
@@ -158,9 +161,19 @@ public class ClaimStorage {
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
             return false;
         }
-        PlayerClaimData data = PlayerClaimData.get(player);
         int diff = newClaim.getPlane() - claim.getPlane();
-        if (data.canUseClaimBlocks(diff)) {
+        PlayerClaimData data = PlayerClaimData.get(player);
+        IPlayerData newData;
+        boolean enoughBlocks;
+        if (player.getUuid().equals(claim.getOwner()) || claim.isAdminClaim()) {
+            enoughBlocks = claim.isAdminClaim() || data.canUseClaimBlocks(diff);
+            newData = data;
+        } else {
+            ServerPlayerEntity other = player.getServer().getPlayerManager().getPlayer(claim.getOwner());
+            newData = other != null ? PlayerClaimData.get(other) : new OfflinePlayerData(player.getServer(), claim.getOwner());
+            enoughBlocks = newData.canUseClaimBlocks(diff);
+        }
+        if (enoughBlocks) {
             Flan.log("Resizing claim {}", claim);
             this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.getServerWorld());
             claim.copySizes(newClaim);
@@ -168,7 +181,7 @@ public class ClaimStorage {
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.resizeSuccess, Formatting.GOLD), false);
             player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
-                    data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks()), Formatting.GOLD), false);
+                    newData.getClaimBlocks(), newData.getAdditionalClaims(), newData.usedClaimBlocks()), Formatting.GOLD), false);
             return true;
         }
         player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.notEnoughBlocks, Formatting.RED), false);
@@ -292,6 +305,10 @@ public class ClaimStorage {
                     file.createNewFile();
                     dirty = true;
                 } else {
+                    if (e.getValue().isEmpty()) {
+                        file.delete();
+                        continue;
+                    }
                     if (this.dirty.remove(owner.equals(adminClaimString) ? null : e.getKey())) {
                         dirty = true;
                     } else {

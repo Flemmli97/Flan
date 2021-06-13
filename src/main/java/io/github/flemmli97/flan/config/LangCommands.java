@@ -29,7 +29,7 @@ public class LangCommands {
 
         map.put("reload", new String[]{"reload", "Reloads the config ingame."});
         map.put("adminMode", new String[]{"adminMode", "Switches to admin mode ignoring all claims."});
-        map.put("readGriefPrevention", new String[]{"readGriefPreventionData", "Parses data from the GriefPrevention plugin to Flan."});
+        map.put("readGriefPrevention", new String[]{"readGriefPreventionData", "Parses data from the GriefPrevention plugin to Flan"});
         map.put("setAdminClaim", new String[]{"setAdminClaim", "Sets a claim to an admin claim."});
         map.put("listAdminClaims", new String[]{"listAdminClaim", "Lists all admin claims in the current world."});
         map.put("adminDelete", new String[]{"adminDelete [all <player>]", "Force deletes the current claim or deletes all claims from the specified player."});

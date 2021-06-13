@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.player;
 import com.google.gson.JsonObject;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.ClaimPermission;
+import io.github.flemmli97.flan.api.IPlayerData;
 import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
@@ -10,6 +11,7 @@ import io.github.flemmli97.flan.claim.IPermissionContainer;
 import io.github.flemmli97.flan.claim.ParticleIndicators;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.event.EntityInteractEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -26,19 +28,23 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 
-public class PlayerClaimData {
+public class PlayerClaimData implements IPlayerData {
 
     private int claimBlocks, additionalClaimBlocks, confirmTick, actionCooldown;
 
     private int lastBlockTick, trappedTick = -1, deathPickupTick;
     private Vec3d trappedPos;
+    private BlockPos tpPos;
     private EnumEditMode mode = EnumEditMode.DEFAULT;
     private Claim editingClaim;
     private ClaimDisplay displayEditing;
@@ -65,6 +71,7 @@ public class PlayerClaimData {
         return ((IPlayerClaimImpl) player).get();
     }
 
+    @Override
     public int getClaimBlocks() {
         return this.claimBlocks;
     }
@@ -82,6 +89,7 @@ public class PlayerClaimData {
         return true;
     }
 
+    @Override
     public int getAdditionalClaims() {
         return this.additionalClaimBlocks;
     }
@@ -91,6 +99,7 @@ public class PlayerClaimData {
         this.dirty = true;
     }
 
+    @Override
     public boolean canUseClaimBlocks(int amount) {
         if (ConfigHandler.config.maxClaimBlocks == -1)
             return true;
@@ -98,6 +107,7 @@ public class PlayerClaimData {
         return usedClaimsBlocks + amount <= this.claimBlocks + this.additionalClaimBlocks;
     }
 
+    @Override
     public int usedClaimBlocks() {
         return this.calculateUsedClaimBlocks();
     }
@@ -211,7 +221,18 @@ public class PlayerClaimData {
         return false;
     }
 
-    public void tick() {
+    public boolean setTeleportTo(BlockPos tp) {
+        if (this.trappedTick < 0) {
+            this.trappedTick = 101;
+            this.trappedPos = this.player.getPos();
+            this.tpPos = tp;
+            return true;
+        }
+        return false;
+    }
+
+    public void tick(Claim currentClaim, Consumer<Claim> cons) {
+        EntityInteractEvents.updateClaim(this.player, currentClaim, cons);
         boolean tool = this.player.getMainHandStack().getItem() == ConfigHandler.config.claimingItem
                 || this.player.getOffHandStack().getItem() == ConfigHandler.config.claimingItem;
         boolean stick = this.player.getMainHandStack().getItem() == ConfigHandler.config.inspectionItem
@@ -249,10 +270,15 @@ public class PlayerClaimData {
         this.actionCooldown--;
         if (--this.trappedTick >= 0) {
             if (this.trappedTick == 0) {
-                Vec3d tp = TeleportUtils.getTeleportPos(this.player, this.player.getPos(), ClaimStorage.get(this.player.getServerWorld()),
-                        ((IPlayerClaimImpl) this.player).getCurrentClaim().getDimensions(),
-                        TeleportUtils.roundedBlockPos(this.player.getPos()).mutableCopy(), (claim, nPos) -> false);
-                this.player.teleport(tp.getX(), tp.getY(), tp.getZ());
+                if (this.tpPos != null) {
+                    this.player.teleport(this.tpPos.getX(), this.tpPos.getY(), this.tpPos.getZ());
+                    this.tpPos = null;
+                } else {
+                    Vec3d tp = TeleportUtils.getTeleportPos(this.player, this.player.getPos(), ClaimStorage.get(this.player.getServerWorld()),
+                            ((IPlayerClaimImpl) this.player).getCurrentClaim().getDimensions(),
+                            TeleportUtils.roundedBlockPos(this.player.getPos()).mutableCopy(), (claim, nPos) -> false);
+                    this.player.teleport(tp.getX(), tp.getY(), tp.getZ());
+                }
             } else if (this.player.getPos().squaredDistanceTo(this.trappedPos) > 0.15) {
                 this.trappedTick = -1;
                 this.trappedPos = null;
@@ -291,6 +317,7 @@ public class PlayerClaimData {
             JsonObject obj = new JsonObject();
             obj.addProperty("ClaimBlocks", this.claimBlocks);
             obj.addProperty("AdditionalBlocks", this.additionalClaimBlocks);
+            obj.addProperty("LastSeen", LocalDateTime.now().format(Flan.onlineTimeFormatter));
             JsonObject defPerm = new JsonObject();
             this.defaultGroups.forEach((key, value) -> {
                 JsonObject perm = new JsonObject();

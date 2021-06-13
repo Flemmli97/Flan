@@ -6,23 +6,29 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Heightmap;
+import net.minecraft.world.chunk.ChunkStatus;
 
 import java.util.function.BiFunction;
 
 public class TeleportUtils {
 
     public static BlockPos roundedBlockPos(Vec3d pos) {
-        return new BlockPos(Math.round(pos.getX()), MathHelper.floor(pos.getY()), Math.round(pos.getZ()));
+        return new BlockPos(pos);
     }
 
     public static Vec3d getTeleportPos(ServerPlayerEntity player, Vec3d playerPos, ClaimStorage storage, int[] dim, BlockPos.Mutable bPos, BiFunction<Claim, BlockPos, Boolean> check) {
         Pair<Direction, Vec3d> pos = nearestOutside(dim, playerPos);
         bPos.set(pos.getRight().getX(), pos.getRight().getY(), pos.getRight().getZ());
         Claim claim = storage.getClaimAt(bPos);
-        if (claim == null || check.apply(claim, bPos))
-            return pos.getRight();
+        if (claim == null || check.apply(claim, bPos)) {
+            Vec3d ret = pos.getRight();
+            BlockPos rounded = roundedBlockPos(ret);
+            int y = player.getServerWorld().getChunk(rounded.getX() >> 4, rounded.getZ() >> 4, ChunkStatus.HEIGHTMAPS)
+                    .sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, rounded.getX() & 15, rounded.getZ() & 15);
+            return new Vec3d(ret.x, y + 1, ret.z);
+        }
         int[] newDim = claim.getDimensions();
         switch (pos.getLeft()) {
             case NORTH -> dim[2] = newDim[2];

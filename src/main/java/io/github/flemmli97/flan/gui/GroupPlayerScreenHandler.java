@@ -22,14 +22,25 @@ import net.minecraft.util.Formatting;
 
 import java.util.List;
 
-public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
+public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup> {
 
     private final Claim claim;
     private final String group;
     private boolean removeMode;
 
     private GroupPlayerScreenHandler(int syncId, PlayerInventory playerInventory, Claim claim, String group) {
-        super(syncId, playerInventory, 6, claim, group);
+        super(syncId, playerInventory, 6, new ClaimGroup() {
+
+            @Override
+            public Claim getClaim() {
+                return claim;
+            }
+
+            @Override
+            public String getGroup() {
+                return group;
+            }
+        });
         this.claim = claim;
         this.group = group;
     }
@@ -50,11 +61,9 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler {
     }
 
     @Override
-    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object... additionalData) {
-        if (additionalData == null || additionalData.length < 2)
-            return;
-        Claim claim = (Claim) additionalData[0];
-        List<String> players = claim.playersFromGroup(player.getServer(), (String) additionalData[1]);
+    protected void fillInventoryWith(PlayerEntity player, Inventory inv, ClaimGroup additionalData) {
+        Claim claim = additionalData.getClaim();
+        List<String> players = claim.playersFromGroup(player.getServer(), additionalData.getGroup());
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
