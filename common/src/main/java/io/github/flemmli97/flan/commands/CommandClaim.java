@@ -179,23 +179,26 @@ public class CommandClaim {
     }
 
     private static int openMenu(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerPlayerEntity player = context.getSource().getPlayer();
-        PlayerClaimData data = PlayerClaimData.get(player);
-        if (data.getEditMode() == EnumEditMode.DEFAULT) {
-            Claim claim = PermHelper.checkReturn(player, PermissionRegistry.EDITPERMS, PermHelper.genericNoPermMessage(player));
-            if (claim == null)
-                return 0;
-            ClaimMenuScreenHandler.openClaimMenu(player, claim);
-            data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
-        } else {
+        try {
+            ServerPlayerEntity player = context.getSource().getPlayer();
+            PlayerClaimData data = PlayerClaimData.get(player);
             Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(player.getBlockPos());
-            Claim sub = claim.getSubClaim(player.getBlockPos());
-            if (sub != null && (claim.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos()) || sub.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos())))
-                ClaimMenuScreenHandler.openClaimMenu(player, sub);
-            else if (claim.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos()))
+            if (claim == null) {
+                PermHelper.noClaimMessage(player);
+                return 0;
+            }
+            if (data.getEditMode() == EnumEditMode.DEFAULT) {
                 ClaimMenuScreenHandler.openClaimMenu(player, claim);
-            else
-                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermission, Formatting.DARK_RED), false);
+                data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+            } else {
+                Claim sub = claim.getSubClaim(player.getBlockPos());
+                if (sub != null)
+                    ClaimMenuScreenHandler.openClaimMenu(player, sub);
+                else
+                    ClaimMenuScreenHandler.openClaimMenu(player, claim);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return Command.SINGLE_SUCCESS;
     }

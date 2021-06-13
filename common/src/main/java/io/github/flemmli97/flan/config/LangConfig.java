@@ -98,6 +98,7 @@ public class LangConfig {
     public String screenPrevious = "Prev";
     public String screenAdd = "Add";
     public String screenBack = "Back";
+    public String screenNoPerm = "No Permission";
 
     public String screenMenu = "Claim-Menu";
     public String screenMenuSub = "SubClaim-Menu";

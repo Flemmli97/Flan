@@ -29,6 +29,7 @@ public class PermissionRegistry {
 
     public static ClaimPermission EDITCLAIM = register(new ClaimPermission("EDITCLAIM", () -> new ItemStack(ConfigHandler.config.claimingItem), "Gives permission to edit (resize, delete...) the claim"));
     public static ClaimPermission EDITPERMS = register(new ClaimPermission("EDITPERMS", () -> new ItemStack(Items.COMMAND_BLOCK), "Gives permission to change the claims permissions"));
+    public static ClaimPermission EDITPOTIONS = register(new ClaimPermission("EDITPOTIONS", () -> new ItemStack(Items.POTION), "Gives permission to edit the claims potion effect"));
     public static ClaimPermission BREAK = register(new ClaimPermission("BREAK", () -> new ItemStack(Items.DIAMOND_PICKAXE), "Permission to break blocks in the claim"));
     public static ClaimPermission PLACE = register(new ClaimPermission("PLACE", () -> new ItemStack(Items.GRASS_BLOCK), "Permission to place blocks in the claim"));
     public static ClaimPermission OPENCONTAINER = register(new ClaimPermission("OPENCONTAINER", () -> new ItemStack(Items.CHEST), "Permission to open containers", "(chest, furnace etc.)"));
