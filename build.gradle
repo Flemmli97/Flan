@@ -117,7 +117,7 @@ curseforge {
             addGameVersion "${it}"
         }
         addGameVersion "Fabric"
-        mainArtifact("${project.getProjectDir()}fabric/build/libs/${project.archives_base_name}-${project.minecraft_version}-${project.mod_version}-fabric.jar") {
+        mainArtifact(project(":fabric").tasks.getByName('remapJar')) {
             def txt = changelog(1).replace("\n-", "\n\n- ")
             txt = txt + "\n\n" + "For past versions see: https://github.com/Flemmli97/Flan/blob/1.16/Changelog.txt"
             changelog = txt
@@ -136,7 +136,7 @@ curseforge {
             addGameVersion "${it}"
         }
         addGameVersion "Forge"
-        mainArtifact("${project.getProjectDir()}fabric/build/libs/${project.archives_base_name}-${project.minecraft_version}-${project.mod_version}-forge.jar") {
+        mainArtifact(project(":forge").tasks.getByName('remapJar')) {
             def txt = changelog(1).replace("\n-", "\n\n- ")
             txt = txt + "\n\n" + "For past versions see: https://github.com/Flemmli97/Flan/blob/1.16/Changelog.txt"
             changelog = txt
@@ -187,6 +187,7 @@ tasks.getByName("curseforge").doLast {
 
 task buildUploadAll(group: "publishing") {
     dependsOn cleanAll, buildAll, publishAll, tasks.getByName("curseforge")
+    print project(":fabric").tasks.getByName('remapJar').archiveFile.get().asFile
     buildAll.mustRunAfter cleanAll
     tasks.findByName("curseforge").mustRunAfter publishAll
 }
