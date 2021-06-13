@@ -9,6 +9,9 @@ Flan 1.5.0
 - Add NOHUNGER permission: Disables hunger in claims
   Default global value is ALLFALSE so disabled.
 - Fix resizing claims of other players not using their claim blocks
+- Add ability to add potion effects to claims.
+  That claim will then apply that effect to any player inside the claim
+  Specify potions with <id;amplifier>
 
 Flan 1.4.2
 ======================

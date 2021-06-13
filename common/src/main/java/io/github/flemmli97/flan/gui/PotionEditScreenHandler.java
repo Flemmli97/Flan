@@ -80,7 +80,7 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler {
                     ItemStack group = new ItemStack(Items.POTION);
                     TranslatableText txt = new TranslatableText(effect.getTranslationKey());
                     group.getOrCreateTag().putString("FlanEffect", CrossPlatformStuff.stringFromEffect(effect));
-                    group.setCustomName(txt.setStyle(txt.getStyle().withFormatting(Formatting.DARK_BLUE)).append(ServerScreenHelper.coloredGuiText("-" + potions.get(effect), Formatting.DARK_BLUE)));
+                    group.setCustomName(txt.setStyle(txt.getStyle().withItalic(false).withFormatting(Formatting.DARK_BLUE)).append(ServerScreenHelper.coloredGuiText("-" + potions.get(effect), Formatting.DARK_BLUE)));
                     inv.setStack(i, group);
                 }
             }
