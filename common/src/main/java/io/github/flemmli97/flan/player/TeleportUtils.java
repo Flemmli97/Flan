@@ -6,7 +6,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -16,7 +15,7 @@ import java.util.function.BiFunction;
 public class TeleportUtils {
 
     public static BlockPos roundedBlockPos(Vec3d pos) {
-        return new BlockPos(Math.round(pos.getX()), MathHelper.floor(pos.getY()), Math.round(pos.getZ()));
+        return new BlockPos(pos);
     }
 
     public static Vec3d getTeleportPos(ServerPlayerEntity player, Vec3d playerPos, ClaimStorage storage, int[] dim, BlockPos.Mutable bPos, BiFunction<Claim, BlockPos, Boolean> check) {

@@ -15,7 +15,6 @@ import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -200,7 +199,7 @@ public class Claim implements IPermissionContainer {
     }
 
     public boolean intersects(Box box) {
-        return this.minX <= box.maxX && this.maxX >= box.minX && this.minZ <= box.maxZ && this.maxZ >= box.minZ && box.maxY > this.minY;
+        return this.minX < box.maxX && this.maxX + 1 > box.minX && this.minZ < box.maxZ && this.maxZ + 1 > box.minZ && box.maxY >= this.minY;
     }
 
     public boolean isCorner(BlockPos pos) {
@@ -487,11 +486,11 @@ public class Claim implements IPermissionContainer {
         return this.potions;
     }
 
-    public void applyEffects(PlayerEntity player) {
-        this.potions.forEach((effect, amp) -> {
-            if (!player.hasStatusEffect(effect))
+    public void applyEffects(ServerPlayerEntity player) {
+        if (player.world.getTime() % 160 == 0)
+            this.potions.forEach((effect, amp) -> {
                 player.applyStatusEffect(new StatusEffectInstance(effect, 200, amp - 1, true, false));
-        });
+            });
     }
 
     public BlockPos getHomePos() {

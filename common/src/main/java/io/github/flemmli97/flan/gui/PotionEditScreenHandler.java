@@ -5,11 +5,14 @@ import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.PermHelper;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.potion.PotionUtil;
+import net.minecraft.potion.Potions;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -19,6 +22,8 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -77,11 +82,13 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler {
                 int id = (i % 9) + row * 7 - 1;
                 if (id < potions.size()) {
                     StatusEffect effect = key.get(id);
-                    ItemStack group = new ItemStack(Items.POTION);
+                    ItemStack effectStack = new ItemStack(Items.POTION);
                     TranslatableText txt = new TranslatableText(effect.getTranslationKey());
-                    group.getOrCreateTag().putString("FlanEffect", CrossPlatformStuff.stringFromEffect(effect));
-                    group.setCustomName(txt.setStyle(txt.getStyle().withItalic(false).withFormatting(Formatting.DARK_BLUE)).append(ServerScreenHelper.coloredGuiText("-" + potions.get(effect), Formatting.DARK_BLUE)));
-                    inv.setStack(i, group);
+                    Collection<StatusEffectInstance> inst = Collections.singleton(new StatusEffectInstance(effect, 0, potions.get(effect)));
+                    effectStack.getOrCreateTag().putString("FlanEffect", CrossPlatformStuff.stringFromEffect(effect));
+                    effectStack.getTag().putInt("CustomPotionColor", PotionUtil.getColor(inst));
+                    effectStack.setCustomName(txt.setStyle(txt.getStyle().withItalic(false).withFormatting(Formatting.DARK_BLUE)).append(ServerScreenHelper.coloredGuiText("-" + potions.get(effect), Formatting.DARK_BLUE)));
+                    inv.setStack(i, effectStack);
                 }
             }
         }
