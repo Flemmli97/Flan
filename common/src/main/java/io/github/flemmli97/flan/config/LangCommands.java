@@ -28,10 +28,11 @@ public class LangCommands {
         map.put("unlockDrops", new String[]{"unlockDrops <players>", "Unlocks dropped items from death so other players can pick them up too. Or all of the given players (needs OP)"});
         map.put("setHome", new String[]{"setHome", "Standing in a claim with sufficient permission sets that claims home to the players position"});
         map.put("teleport", new String[]{"teleport self | (other <player>) (<claim name> | <claim uuid>)", "Teleport to the given claims home position"});
+        map.put("name", new String[]{"name self <name>", "Sets the current claims name"});
 
         map.put("reload", new String[]{"reload", "Reloads the config ingame."});
         map.put("adminMode", new String[]{"adminMode", "Switches to admin mode ignoring all claims."});
-        map.put("readGriefPrevention", new String[]{"readGriefPreventionData", "Parses data from the GriefPrevention plugin to io.github.flemmli97.flan.Flan."});
+        map.put("readGriefPrevention", new String[]{"readGriefPreventionData", "Parses data from the GriefPrevention plugin to Flan"});
         map.put("setAdminClaim", new String[]{"setAdminClaim", "Sets a claim to an admin claim."});
         map.put("listAdminClaims", new String[]{"listAdminClaim", "Lists all admin claims in the current world."});
         map.put("adminDelete", new String[]{"adminDelete [all <player>]", "Force deletes the current claim or deletes all claims from the specified player."});

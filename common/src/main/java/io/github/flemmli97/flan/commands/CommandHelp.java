@@ -13,6 +13,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ public class CommandHelp {
 
     public static int helpMessage(CommandContext<ServerCommandSource> context, int page, Collection<CommandNode<ServerCommandSource>> nodes) {
         List<String> subCommands = registeredCommands(context, nodes);
+        subCommands.forEach(s -> System.out.println(Arrays.toString(ConfigHandler.lang.cmdLang.getCommandHelp(s))));
         int max = subCommands.size() / 8;
         if (page > max)
             page = max;

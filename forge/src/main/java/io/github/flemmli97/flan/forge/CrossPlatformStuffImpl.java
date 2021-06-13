@@ -2,7 +2,6 @@ package io.github.flemmli97.flan.forge;
 
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
 
