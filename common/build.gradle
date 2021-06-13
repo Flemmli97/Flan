@@ -1,13 +1,37 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "5.0.0"
+}
+
+configurations {
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+}
+
 dependencies {
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader
     modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
     implementation group: 'org.yaml', name: 'snakeyaml', version: '1.25'
-    include group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+    shadowCommon group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 }
 
 architectury {
     common()
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowCommon]
+}
+
+// Use the shadow jar instead of normal jar to shadow yaml lib properly into fabric builds
+transformProductionFabric {
+    dependsOn shadowJar
+    input.set shadowJar.archiveFile
+}
+
+// Use the shadow jar instead of normal jar to shadow yaml lib properly into forge builds
+transformProductionForge {
+    dependsOn shadowJar
+    input.set shadowJar.archiveFile
 }
 
 java {

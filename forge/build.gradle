@@ -63,6 +63,7 @@ sourcesJar {
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
     from commonSources.archiveFile.map { zipTree(it) }
+    classifier "forge-sources"
 }
 
 publishing {
@@ -76,13 +77,12 @@ publishing {
                 builtBy remapSourcesJar
             }
             artifactId project.archives_base_name
-            version project.version + "-forge"
+            version project.version
         }
     }
 
     repositories {
-        mavenLocal()
-        /*maven {
+        maven {
             url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
             //url "https://maven.pkg.github.com/flemmli97/<>"
             credentials {
@@ -90,6 +90,6 @@ publishing {
                 password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
                 //password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
             }
-        }*/
+        }
     }
 }
