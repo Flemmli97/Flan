@@ -6,6 +6,7 @@ import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.PermHelper;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -20,6 +21,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.registry.Registry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -107,7 +109,18 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
             player.closeHandledScreen();
             player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
                 String[] potion = s.split(";");
-                this.claim.addPotion(CrossPlatformStuff.effectFromString(potion[0]), Integer.parseInt(potion[1]));
+                int amp = 1;
+                StatusEffect effect = CrossPlatformStuff.effectFromString(potion[0]);
+                if(effect == StatusEffects.LUCK && !potion[0].equals("minecraft:luck")) {
+                    ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_VILLAGER_NO, 1, 1f);
+                    return;
+                }
+                if(potion.length > 1) {
+                    try {
+                        amp = Integer.parseInt(potion[1]);
+                    } catch (NumberFormatException e) {}
+                }
+                this.claim.addPotion(effect, amp);
                 player.closeHandledScreen();
                 player.getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.claim));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_USE, 1, 1f);
