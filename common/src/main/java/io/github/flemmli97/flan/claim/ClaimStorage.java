@@ -62,6 +62,7 @@ public class ClaimStorage {
     public ClaimStorage(MinecraftServer server, ServerWorld world) {
         this.globalClaim = new GlobalClaim(world);
         this.read(server, world);
+        OfflinePlayerData.deleteUnusedClaims(server, this, world);
     }
 
     public UUID generateUUID() {
@@ -304,6 +305,10 @@ public class ClaimStorage {
                     file.createNewFile();
                     dirty = true;
                 } else {
+                    if (e.getValue().isEmpty()) {
+                        file.delete();
+                        continue;
+                    }
                     if (this.dirty.remove(owner.equals(adminClaimString) ? null : e.getKey())) {
                         dirty = true;
                     } else {

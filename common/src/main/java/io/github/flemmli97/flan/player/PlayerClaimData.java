@@ -28,7 +28,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -59,6 +61,8 @@ public class PlayerClaimData implements IPlayerData {
     private boolean dirty;
 
     private final Map<String, Map<ClaimPermission, Boolean>> defaultGroups = new HashMap<>();
+
+    private Date lastOnline;
 
     public PlayerClaimData(ServerPlayerEntity player) {
         this.player = player;
@@ -316,6 +320,7 @@ public class PlayerClaimData implements IPlayerData {
             JsonObject obj = new JsonObject();
             obj.addProperty("ClaimBlocks", this.claimBlocks);
             obj.addProperty("AdditionalBlocks", this.additionalClaimBlocks);
+            obj.addProperty("LastSeen", LocalDateTime.now().format(Flan.onlineTimeFormatter));
             JsonObject defPerm = new JsonObject();
             this.defaultGroups.forEach((key, value) -> {
                 JsonObject perm = new JsonObject();

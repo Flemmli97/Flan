@@ -6,11 +6,15 @@ import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.format.DateTimeFormatter;
+
 public class Flan {
 
     public static final Logger logger = LogManager.getLogger("flan");
 
     public static boolean permissionAPI, gunpowder, playerAbilityLib;
+
+    public static final DateTimeFormatter onlineTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public static void lockRegistry(MinecraftServer server) {
         PermissionRegistry.lock();

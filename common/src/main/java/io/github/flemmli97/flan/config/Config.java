@@ -58,6 +58,9 @@ public class Config {
     public boolean lockDrops = true;
     public int dropTicks = 6000;
 
+    public int inactivityTime = 30;
+    public int inactivityBlocksMax = 2000;
+
     public boolean log;
 
     public Map<String, Map<ClaimPermission, Boolean>> defaultGroups = createHashMap(map -> {
