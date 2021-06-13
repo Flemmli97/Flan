@@ -21,7 +21,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.registry.Registry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -111,14 +110,15 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 String[] potion = s.split(";");
                 int amp = 1;
                 StatusEffect effect = CrossPlatformStuff.effectFromString(potion[0]);
-                if(effect == StatusEffects.LUCK && !potion[0].equals("minecraft:luck")) {
+                if (effect == null || (effect == StatusEffects.LUCK && !potion[0].equals("minecraft:luck"))) {
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_VILLAGER_NO, 1, 1f);
                     return;
                 }
-                if(potion.length > 1) {
+                if (potion.length > 1) {
                     try {
                         amp = Integer.parseInt(potion[1]);
-                    } catch (NumberFormatException e) {}
+                    } catch (NumberFormatException e) {
+                    }
                 }
                 this.claim.addPotion(effect, amp);
                 player.closeHandledScreen();
