@@ -414,7 +414,7 @@ public class CommandClaim {
             } else {
                 OfflinePlayerData data = new OfflinePlayerData(server, of);
                 context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
-                        data.claimBlocks, data.additionalClaimBlocks, data.getUsedClaimBlocks()), Formatting.GOLD), false);
+                        data.claimBlocks, data.additionalClaimBlocks, data.usedClaimBlocks()), Formatting.GOLD), false);
             }
         }
         context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.listClaims, Formatting.GOLD), false);

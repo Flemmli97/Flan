@@ -45,16 +45,6 @@ public class OfflinePlayerData implements IPlayerData {
         this.server = server;
     }
 
-    public int getUsedClaimBlocks() {
-        int usedClaimsBlocks = 0;
-        for (ServerWorld world : this.server.getWorlds()) {
-            Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.owner);
-            if (claims != null)
-                usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
-        }
-        return usedClaimsBlocks;
-    }
-
     @Override
     public int getClaimBlocks() {
         return this.claimBlocks;
@@ -67,6 +57,12 @@ public class OfflinePlayerData implements IPlayerData {
 
     @Override
     public int usedClaimBlocks() {
-        return this.usedClaimBlocks();
+        int usedClaimsBlocks = 0;
+        for (ServerWorld world : this.server.getWorlds()) {
+            Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.owner);
+            if (claims != null)
+                usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
+        }
+        return usedClaimsBlocks;
     }
 }
