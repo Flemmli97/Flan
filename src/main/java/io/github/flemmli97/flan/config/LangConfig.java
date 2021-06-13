@@ -144,7 +144,6 @@ public class LangConfig {
 
     public LangConfig(MinecraftServer server) {
         File configDir = CrossPlatformStuff.configPath().resolve("flan").toFile();
-        //server.getSavePath(WorldSavePath.ROOT).resolve("config/claimConfigs").toFile();
         try {
             if (!configDir.exists())
                 configDir.mkdirs();

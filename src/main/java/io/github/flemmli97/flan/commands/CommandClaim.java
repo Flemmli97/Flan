@@ -107,9 +107,11 @@ public class CommandClaim {
                                             return CommandSource.suggestMatching(list, build);
                                         }).executes(CommandClaim::removePlayer))))))
                 .then(CommandManager.literal("teleport").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTeleport))
-                        .then(CommandManager.literal("self").then(CommandManager.argument("claim", StringArgumentType.word()).suggests((ctx, b) -> CommandClaim.claimSuggestions(ctx, b, ctx.getSource().getPlayer().getUuid()))
+                        .then(CommandManager.literal("self").then(CommandManager.argument("claim", StringArgumentType.string()).suggests((ctx, b) -> CommandClaim.claimSuggestions(ctx, b, ctx.getSource().getPlayer().getUuid()))
                                 .executes(CommandClaim::teleport)))
-                        .then(CommandManager.literal("other").then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).then(CommandManager.argument("claim", StringArgumentType.word()).suggests((ctx, b) -> CommandClaim.claimSuggestions(ctx, b, CommandClaim.singleProfile(ctx, "player").getId()))
+                        .then(CommandManager.literal("admin").then(CommandManager.argument("claim", StringArgumentType.string()).suggests((ctx, b) -> CommandClaim.claimSuggestions(ctx, b, null))
+                                .executes(CommandClaim::teleportAdminClaims)))
+                        .then(CommandManager.literal("other").then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).then(CommandManager.argument("claim", StringArgumentType.string()).suggests((ctx, b) -> CommandClaim.claimSuggestions(ctx, b, CommandClaim.singleProfile(ctx, "player").getId()))
                                 .executes(src -> CommandClaim.teleport(src, CommandClaim.singleProfile(src, "player").getId()))))))
                 .then(CommandManager.literal("permission").requires(src -> CommandPermission.perm(src, CommandPermission.cmdPermission))
                         .then(CommandManager.literal("personal").then(CommandManager.argument("group", StringArgumentType.string()).suggests(CommandClaim::personalGroupSuggestion)
@@ -736,6 +738,10 @@ public class CommandClaim {
 
     public static int teleport(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         return teleport(context, context.getSource().getPlayer().getUuid());
+    }
+
+    public static int teleportAdminClaims(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        return teleport(context, null);
     }
 
     public static int teleport(CommandContext<ServerCommandSource> context, UUID owner) throws CommandSyntaxException {
