@@ -120,6 +120,8 @@ public class StringResultScreenHandler extends AnvilScreenHandler {
             for (ScreenHandlerListener screenHandlerListener : this.listeners) {
                 screenHandlerListener.onSlotUpdate(this, j, itemStack.copy());
             }
+            if (this.syncHandler != null)
+                this.syncHandler.updateSlot(this, j, itemStack);
         }
     }
 
