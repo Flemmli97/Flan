@@ -18,7 +18,7 @@ import net.minecraft.util.Formatting;
 
 import java.util.List;
 
-public class GroupScreenHandler extends ServerOnlyScreenHandler {
+public class GroupScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
     private final Claim claim;
 
@@ -45,10 +45,7 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler {
     }
 
     @Override
-    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object... additionalData) {
-        if (additionalData == null)
-            return;
-        Claim claim = (Claim) additionalData[0];
+    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Claim claim) {
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);

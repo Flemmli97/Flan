@@ -16,12 +16,12 @@ import net.minecraft.util.Formatting;
 
 import java.util.function.Consumer;
 
-public class ConfirmScreenHandler extends ServerOnlyScreenHandler {
+public class ConfirmScreenHandler extends ServerOnlyScreenHandler<Object> {
 
     private final Consumer<Boolean> cons;
 
     private ConfirmScreenHandler(int syncId, PlayerInventory playerInventory, Consumer<Boolean> cons) {
-        super(syncId, playerInventory, 1);
+        super(syncId, playerInventory, 1, null);
         this.cons = cons;
     }
 
@@ -42,7 +42,7 @@ public class ConfirmScreenHandler extends ServerOnlyScreenHandler {
 
 
     @Override
-    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object... additionalData) {
+    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object additionalData) {
         for (int i = 0; i < 9; i++) {
             switch (i) {
                 case 3:

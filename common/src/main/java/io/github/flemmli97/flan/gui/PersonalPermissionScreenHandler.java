@@ -23,14 +23,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler {
+public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<String> {
 
     private final String group;
     private int page;
     private final PlayerEntity player;
 
-    private PersonalPermissionScreenHandler(int syncId, PlayerInventory playerInventory, String group, int page) {
-        super(syncId, playerInventory, 6, group, page);
+    private PersonalPermissionScreenHandler(int syncId, PlayerInventory playerInventory, String group) {
+        super(syncId, playerInventory, 6, group);
         this.group = group;
         this.page = page;
         this.player = playerInventory.player;
@@ -40,7 +40,7 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler {
         NamedScreenHandlerFactory fac = new NamedScreenHandlerFactory() {
             @Override
             public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                return new PersonalPermissionScreenHandler(syncId, inv, group, 0);
+                return new PersonalPermissionScreenHandler(syncId, inv, group);
             }
 
             @Override
@@ -52,14 +52,14 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler {
     }
 
     @Override
-    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object... additionalData) {
+    protected void fillInventoryWith(PlayerEntity player, Inventory inv, String group) {
         if (!(player instanceof ServerPlayerEntity))
             return;
         List<ClaimPermission> perms = new ArrayList<>(PermissionRegistry.getPerms());
         if (this.group != null)
             perms.removeAll(PermissionRegistry.globalPerms());
         for (int i = 0; i < 54; i++) {
-            int page = (int) additionalData[1];
+            int page = 0;
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
                 close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenBack, Formatting.DARK_RED));
@@ -78,7 +78,7 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler {
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + page * 28;
                 if (id < perms.size())
-                    inv.setStack(i, ServerScreenHelper.getFromPersonal((ServerPlayerEntity) player, perms.get(id), additionalData[0] == null ? null : additionalData[0].toString()));
+                    inv.setStack(i, ServerScreenHelper.getFromPersonal((ServerPlayerEntity) player, perms.get(id), group == null ? null : group));
             }
         }
     }

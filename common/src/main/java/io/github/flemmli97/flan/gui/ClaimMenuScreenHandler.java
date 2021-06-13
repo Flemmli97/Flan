@@ -20,7 +20,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
+public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
     private final Claim claim;
 
@@ -45,8 +45,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler {
     }
 
     @Override
-    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object... additionalData) {
-        Claim claim = (Claim) additionalData[0];
+    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Claim claim) {
         for (int i = 0; i < 9; i++) {
             switch (i) {
                 case 0:

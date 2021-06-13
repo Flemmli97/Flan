@@ -20,12 +20,12 @@ import net.minecraft.util.Formatting;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PersonalGroupScreenHandler extends ServerOnlyScreenHandler {
+public class PersonalGroupScreenHandler extends ServerOnlyScreenHandler<Object> {
 
     private boolean removeMode;
 
     private PersonalGroupScreenHandler(int syncId, PlayerInventory playerInventory) {
-        super(syncId, playerInventory, 6);
+        super(syncId, playerInventory, 6, null);
     }
 
     public static void openGroupMenu(PlayerEntity player) {
@@ -44,7 +44,7 @@ public class PersonalGroupScreenHandler extends ServerOnlyScreenHandler {
     }
 
     @Override
-    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object... additionalData) {
+    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object additionalData) {
         if (!(player instanceof ServerPlayerEntity))
             return;
         for (int i = 0; i < 54; i++) {

@@ -27,7 +27,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-public class PotionEditScreenHandler extends ServerOnlyScreenHandler {
+public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
     private final Claim claim;
 
@@ -54,10 +54,7 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler {
     }
 
     @Override
-    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object... additionalData) {
-        if (additionalData == null)
-            return;
-        Claim claim = (Claim) additionalData[0];
+    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Claim claim) {
         Map<StatusEffect, Integer> potions = claim.getPotions();
         List<StatusEffect> key = Lists.newArrayList(potions.keySet());
         key.sort(Comparator.comparing(CrossPlatformStuff::stringFromEffect));
