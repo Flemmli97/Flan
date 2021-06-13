@@ -27,7 +27,7 @@ public class LangCommands {
         map.put("trapped", new String[]{"trapped", "If in a claim not owned by the player attempts to teleport the player out of it after 5 seconds."});
         map.put("unlockDrops", new String[]{"unlockDrops <players>", "Unlocks dropped items from death so other players can pick them up too. Or all of the given players (needs OP)"});
         map.put("setHome", new String[]{"setHome", "Standing in a claim with sufficient permission sets that claims home to the players position"});
-        map.put("teleport", new String[]{"teleport self | (other <player>) (<claim name> | <claim uuid>)", "Teleport to the given claims home position"});
+        map.put("teleport", new String[]{"teleport self | admin | (other <player>) (<claim name> | <claim uuid>)", "Teleport to the given claims home position. Use admin to teleport to admin claims"});
         map.put("name", new String[]{"name self <name>", "Sets the current claims name"});
 
         map.put("reload", new String[]{"reload", "Reloads the config ingame."});
