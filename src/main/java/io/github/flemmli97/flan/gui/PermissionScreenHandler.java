@@ -41,7 +41,6 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler<ClaimGroup>
         });
         this.claim = claim;
         this.group = group;
-        this.page = page;
     }
 
     public static void openClaimMenu(PlayerEntity player, Claim claim, String group) {

@@ -94,8 +94,7 @@ public class EntityInteractEvents {
                 return claim.canInteract(player, PermissionRegistry.TRADING, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
             if (entity instanceof ItemFrameEntity)
                 return claim.canInteract(player, PermissionRegistry.ITEMFRAMEROTATE, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
-            if (entity instanceof TameableEntity) {
-                TameableEntity tame = (TameableEntity) entity;
+            if (entity instanceof TameableEntity tame) {
                 if (tame.isOwner(player))
                     return ActionResult.PASS;
             }

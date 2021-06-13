@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class LangCommands {
 
-    private Map<String, String[]> commands = Config.createHashMap(map -> {
+    private final Map<String, String[]> commands = Config.createHashMap(map -> {
         map.put("help", new String[]{"help <page> | (cmd <command>)", "Shows all available commands or info for the given command."});
         map.put("menu", new String[]{"menu", "When standing in a claim you have permissions for opens the claim menu."});
         map.put("claimInfo", new String[]{"claimInfo", "Prints infos about the claim you're standing in."});

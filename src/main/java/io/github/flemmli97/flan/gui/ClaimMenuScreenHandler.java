@@ -67,6 +67,13 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
                         ServerScreenHelper.addLore(group, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, Formatting.DARK_RED));
                     inv.setStack(i, group);
                 }
+                case 4 -> {
+                    ItemStack potions = new ItemStack(Items.POTION);
+                    potions.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuPotion, Formatting.GOLD));
+                    if (player instanceof ServerPlayerEntity && !this.hasPerm(claim, (ServerPlayerEntity) player, PermissionRegistry.EDITPOTIONS))
+                        ServerScreenHelper.addLore(potions, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, Formatting.DARK_RED));
+                    inv.setStack(i, potions);
+                }
                 case 8 -> {
                     ItemStack delete = new ItemStack(Items.BARRIER);
                     delete.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuDelete, Formatting.RED));

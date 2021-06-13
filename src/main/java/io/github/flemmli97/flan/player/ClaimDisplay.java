@@ -155,7 +155,7 @@ public class ClaimDisplay {
                 state = world.getBlockState(pos);
             }
         }
-        int[] yRet = new int[]{pos.getY(), pos.getY()};
+        int[] yRet = {pos.getY(), pos.getY()};
         if (state.getMaterial().isLiquid()) {
             pos = pos.up();
             state = world.getBlockState(pos);

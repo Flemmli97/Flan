@@ -1,7 +1,6 @@
 package io.github.flemmli97.flan.mixin;
 
 import io.github.flemmli97.flan.claim.Claim;
-import io.github.flemmli97.flan.event.EntityInteractEvents;
 import io.github.flemmli97.flan.player.IPlayerClaimImpl;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.nbt.NbtCompound;

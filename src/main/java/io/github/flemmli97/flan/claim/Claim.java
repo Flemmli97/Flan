@@ -63,7 +63,7 @@ public class Claim implements IPermissionContainer {
 
     private final ServerWorld world;
 
-    private Map<StatusEffect, Integer> potions = new HashMap<>();
+    private final Map<StatusEffect, Integer> potions = new HashMap<>();
 
     private Claim(ServerWorld world) {
         this.world = world;
@@ -489,9 +489,7 @@ public class Claim implements IPermissionContainer {
 
     public void applyEffects(ServerPlayerEntity player) {
         if (player.world.getTime() % 80 == 0)
-            this.potions.forEach((effect, amp) -> {
-                player.addStatusEffect(new StatusEffectInstance(effect, 200, amp - 1, true, false));
-            });
+            this.potions.forEach((effect, amp) -> player.addStatusEffect(new StatusEffectInstance(effect, 200, amp - 1, true, false)));
     }
 
     public BlockPos getHomePos() {

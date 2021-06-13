@@ -36,7 +36,7 @@ public class PermHelper {
 
     public static Consumer<Optional<Boolean>> genericNoPermMessage(ServerPlayerEntity player) {
         return (b -> {
-            if (!b.isPresent())
+            if (b.isEmpty())
                 PermHelper.noClaimMessage(player);
             else if (!b.get())
                 player.sendMessage(simpleColoredText(ConfigHandler.lang.noPermission, Formatting.DARK_RED), false);

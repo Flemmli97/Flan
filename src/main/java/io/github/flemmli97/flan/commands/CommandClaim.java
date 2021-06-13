@@ -45,6 +45,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
@@ -191,10 +192,7 @@ public class CommandClaim {
                 data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
             } else {
                 Claim sub = claim.getSubClaim(player.getBlockPos());
-                if (sub != null)
-                    ClaimMenuScreenHandler.openClaimMenu(player, sub);
-                else
-                    ClaimMenuScreenHandler.openClaimMenu(player, claim);
+                ClaimMenuScreenHandler.openClaimMenu(player, Objects.requireNonNullElse(sub, claim));
             }
         return Command.SINGLE_SUCCESS;
     }
@@ -471,7 +469,7 @@ public class CommandClaim {
             }
             players.add(prof.getName());
         }
-        src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.adminDeleteAll, players.toString()), Formatting.GOLD), true);
+        src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.adminDeleteAll, players), Formatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -520,7 +518,7 @@ public class CommandClaim {
                 PlayerClaimData.editForOfflinePlayer(src.getMinecraftServer(), prof.getId(), amount);
             players.add(prof.getName());
         }
-        src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.giveClaimBlocks, players.toString(), amount), Formatting.GOLD), true);
+        src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.giveClaimBlocks, players, amount), Formatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -649,7 +647,6 @@ public class CommandClaim {
     private static int editGlobalPerm(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         int mode = switch (StringArgumentType.getString(context, "toggle")) {
             case "true" -> 1;
-            case "false" -> 0;
             case "default" -> -1;
             default -> 0;
         };
@@ -659,7 +656,6 @@ public class CommandClaim {
     private static int editGroupPerm(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         int mode = switch (StringArgumentType.getString(context, "toggle")) {
             case "true" -> 1;
-            case "false" -> 0;
             case "default" -> -1;
             default -> 0;
         };

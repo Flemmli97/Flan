@@ -10,13 +10,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 
-public class GlobalClaim implements IPermissionContainer {
-
-    private final ServerWorld world;
-
-    public GlobalClaim(ServerWorld world) {
-        this.world = world;
-    }
+public record GlobalClaim(ServerWorld world) implements IPermissionContainer {
 
     @Override
     public boolean canInteract(ServerPlayerEntity player, ClaimPermission perm, BlockPos pos, boolean message) {
