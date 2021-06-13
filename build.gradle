@@ -9,6 +9,7 @@ plugins {
     id 'maven-publish'
     id 'org.jetbrains.kotlin.jvm' version "1.5.20-M1"
     id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id "com.github.johnrengelman.shadow" version "5.2.0"
 }
 
 import com.diluv.schoomp.Webhook
@@ -21,6 +22,10 @@ targetCompatibility = JavaVersion.VERSION_16
 archivesBaseName = project.archives_base_name
 version = project.minecraft_version + "-" + project.mod_version
 group = project.maven_group
+
+configurations {
+    shadowLibs
+}
 
 repositories {
     mavenCentral()
@@ -55,8 +60,8 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation group: 'org.yaml', name: 'snakeyaml', version: '1.25'
-    include group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+    implementation group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+    shadowLibs group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
     modImplementation "me.lucko:fabric-permissions-api:${project.fabric_permissions_api}"
     modImplementation "io.github.ladysnake:PlayerAbilityLib:${project.player_ability_lib}"
@@ -96,6 +101,16 @@ jar {
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}" }
     }
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowLibs]
+    classifier "dev-shadow"
+}
+
+remapJar {
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
 }
 
 // configure the maven publication
