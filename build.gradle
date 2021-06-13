@@ -1,7 +1,18 @@
+buildscript {
+    dependencies {
+        classpath group: 'com.diluv.schoomp', name: 'Schoomp', version: '1.1.0'
+    }
+}
+
 plugins {
     id "architectury-plugin" version "3.1-SNAPSHOT"
     id "dev.architectury.loom" version "0.7.2-SNAPSHOT" apply false
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
+
+import com.diluv.schoomp.Webhook
+import com.diluv.schoomp.message.Message
+import com.diluv.schoomp.message.embed.Embed
 
 architectury {
     minecraft = rootProject.minecraft_version
@@ -42,6 +53,22 @@ allprojects {
     }
 }
 
+task buildAll {
+    dependsOn(":fabric:build")
+    dependsOn(":forge:build")
+}
+
+task cleanAll {
+    dependsOn(":common:clean")
+    dependsOn(":fabric:clean")
+    dependsOn(":forge:clean")
+}
+
+task publishAll {
+    dependsOn(":fabric:publish")
+    dependsOn(":forge:publish")
+}
+
 def changelog(int versions) {
     try {
         def changelog = ""
@@ -80,3 +107,89 @@ def discordChangelog() {
     res.add(temp)
     return res
 }
+
+curseforge {
+    apiKey = findProperty('curseApiToken') ?: 0
+
+    project {
+        id = "${curse_id_fabric}"
+        "${project.curse_versions}".split(', ').each {
+            addGameVersion "${it}"
+        }
+        addGameVersion "Fabric"
+        mainArtifact("${project.getProjectDir()}fabric/build/libs/${project.archives_base_name}-${project.minecraft_version}-${project.mod_version}-fabric.jar") {
+            def txt = changelog(1).replace("\n-", "\n\n- ")
+            txt = txt + "\n\n" + "For past versions see: https://github.com/Flemmli97/Flan/blob/1.16/Changelog.txt"
+            changelog = txt
+            changelogType = "markdown"
+            releaseType = 'release'
+        }
+        relations {
+            "${project.curse_dep_fabric}".split(', ').each {
+                requiredDependency "${it}"
+            }
+        }
+    }
+    project {
+        id = "${curse_id_forge}"
+        "${project.curse_versions}".split(', ').each {
+            addGameVersion "${it}"
+        }
+        addGameVersion "Forge"
+        mainArtifact("${project.getProjectDir()}fabric/build/libs/${project.archives_base_name}-${project.minecraft_version}-${project.mod_version}-forge.jar") {
+            def txt = changelog(1).replace("\n-", "\n\n- ")
+            txt = txt + "\n\n" + "For past versions see: https://github.com/Flemmli97/Flan/blob/1.16/Changelog.txt"
+            changelog = txt
+            changelogType = "markdown"
+            releaseType = 'release'
+        }
+        /*relations {
+            "${project.curse_dep_forge}".split(', ').each {
+                requiredDependency "${it}"
+            }
+        }*/
+    }
+}
+
+tasks.getByName("curseforge").doLast {
+    try {
+        def fileIDFabric = tasks.getByName("curseforge${project.curse_id_fabric}").property('mainArtifact').fileID
+        def fileIDForge = tasks.getByName("curseforge${project.curse_id_forge}").property('mainArtifact').fileID
+
+        def webhook = new Webhook(findProperty('discordHook'), "${project.project_name} Upload")
+
+        def message = new Message()
+        def version = project.curse_versions.split(', ')[0]
+        message.setUsername("Curseforge Release")
+        message.setContent("<@&852113509243682817>  ${project.project_name} ${project.mod_version} for Minecraft ${version} has been released!")
+        message.setAvatarUrl("https://cdn.discordapp.com/avatars/680540027255652407/e4b7a058b24843ae13389a9a3cc3ae8c.png?size=128")
+
+        def embed = new Embed()
+        embed.addField('Get the fabric version here (When it is accepted)', "${project.findProperty('curse_page_fabric')}/files/${fileIDFabric}", false)
+        embed.addField('Get the forge version here (When it is accepted)', "${project.findProperty('curse_page_forge')}/files/${fileIDForge}", false)
+        def changelog = discordChangelog()
+        if (changelog.size() == 1)
+            embed.addField('Change Log', "```md\n${changelog.get(0) ?: 'Unavailable :('}```", false)
+        else
+            changelog.forEach {
+                embed.addField("Change Log", "```md\n${it}```", false)
+            }
+        embed.setColor(0xFF8000)
+        message.addEmbed(embed)
+
+        webhook.sendMessage(message)
+    }
+
+    catch (IOException e) {
+        println 'Failed to push to the Discord webhook.'
+    }
+}
+
+task buildUploadAll(group: "publishing") {
+    dependsOn cleanAll, buildAll, publishAll//, tasks.getByName("curseforge")
+    buildAll.mustRunAfter cleanAll
+    tasks.findByName("curseforge").mustRunAfter publishAll
+}
+
+tasks.getByName("curseforge").dependsOn buildAll
+publishAll.dependsOn buildAll

@@ -1,17 +1,6 @@
-buildscript {
-    dependencies {
-        classpath group: 'com.diluv.schoomp', name: 'Schoomp', version: '1.1.0'
-    }
-}
-
 plugins {
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
     id "com.github.johnrengelman.shadow" version "5.0.0"
 }
-
-import com.diluv.schoomp.Webhook
-import com.diluv.schoomp.message.Message
-import com.diluv.schoomp.message.embed.Embed
 
 configurations {
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
@@ -87,12 +76,13 @@ publishing {
                 builtBy remapSourcesJar
             }
             artifactId project.archives_base_name
-            version project.version
+            version project.version + "-forge"
         }
     }
 
     repositories {
-        maven {
+        mavenLocal()
+        /*maven {
             url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
             //url "https://maven.pkg.github.com/flemmli97/<>"
             credentials {
@@ -100,72 +90,6 @@ publishing {
                 password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
                 //password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
             }
-        }
-    }
-}
-
-curseforge {
-    apiKey = findProperty('curseApiToken') ?: 0
-
-    project {
-        id = "${curse_id_forge}"
-        "${project.curse_versions}".split(', ').each {
-            addGameVersion "${it}"
-        }
-        addGameVersion "Forge"
-        mainArtifact(remapJar) {
-            def txt = changelog(1).replace("\n-", "\n\n- ")
-            txt = txt + "\n\n" + "For past versions see: https://github.com/Flemmli97/Flan/blob/1.16/Changelog.txt"
-            changelog = txt
-            changelogType = "markdown"
-            releaseType = 'release'
-        }
-        /*relations {
-            "${project.curse_dep_forge}".split(', ').each {
-                requiredDependency "${it}"
-            }
         }*/
     }
 }
-
-tasks.getByName("curseforge").doLast {
-    try {
-        def fileID = tasks.getByName("curseforge${project.curse_id_forge}").property('mainArtifact').fileID
-
-        def webhook = new Webhook(findProperty('discordHook'), "${project.project_name} Upload")
-
-        def message = new Message()
-        def version = project.curse_versions.split(', ')[0]
-        message.setUsername("Curseforge Release")
-        message.setContent("<@&852113509243682817> ${project.project_name} (Forge) ${project.mod_version} for Minecraft ${version} has been released!")
-        message.setAvatarUrl("https://cdn.discordapp.com/avatars/680540027255652407/e4b7a058b24843ae13389a9a3cc3ae8c.png?size=128")
-
-        def embed = new Embed()
-        embed.addField('Get it here (When it is accepted)', "${project.findProperty('curse_page_forge')}/files/${fileID}", false)
-        def changelog = discordChangelog()
-        if (changelog.size() == 1)
-            embed.addField('Change Log', "```md\n${changelog.get(0) ?: 'Unavailable :('}```", false)
-        else
-            changelog.forEach {
-                embed.addField("Change Log", "```md\n${it}```", false)
-            }
-        embed.setColor(0xFF8000)
-        message.addEmbed(embed)
-
-        webhook.sendMessage(message)
-    }
-
-    catch (IOException e) {
-        println 'Failed to push to the Discord webhook.'
-    }
-}
-
-task buildUploadAll(group: "publishing") {
-    dependsOn clean, build, publish, tasks.getByName("curseforge")
-    build.mustRunAfter clean
-    tasks.findByName("curseforge").mustRunAfter publish
-}
-
-tasks.getByName("curseforge").dependsOn build
-publish.dependsOn build
-
