@@ -12,6 +12,9 @@ Flan 1.5.0
 - Add ability to add potion effects to claims.
   That claim will then apply that effect to any player inside the claim
   Specify potions with <id;amplifier>
+- Add EDITPOTIONS permission for that. There are no limits to potion effects so
+  this should be admin reserved only.
+  Default global value is ALLFALSE so disabled for that reason
 
 Flan 1.4.2
 ======================
