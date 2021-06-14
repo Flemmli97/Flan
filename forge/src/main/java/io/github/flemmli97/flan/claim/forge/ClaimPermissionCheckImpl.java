@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.claim.fabric;
+package io.github.flemmli97.flan.claim.forge;
 
 import io.github.flemmli97.flan.api.ClaimPermission;
 import io.github.flemmli97.flan.api.forge.PermissionCheckEvent;
