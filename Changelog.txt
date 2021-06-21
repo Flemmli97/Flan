@@ -1,7 +1,7 @@
 Flan 1.5.1
 ======================
 - Invert ANIMALSPAWN in global perms if its not defined. fix animals not spawning outside claims
-
+- Fix mobs ignoring permission and not spawning in claims
 
 Flan 1.5.0
 ======================
