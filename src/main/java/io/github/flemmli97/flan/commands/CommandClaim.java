@@ -182,20 +182,20 @@ public class CommandClaim {
     }
 
     private static int openMenu(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-            ServerPlayerEntity player = context.getSource().getPlayer();
-            PlayerClaimData data = PlayerClaimData.get(player);
-            Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(player.getBlockPos());
-            if (claim == null) {
-                PermHelper.noClaimMessage(player);
-                return 0;
-            }
-            if (data.getEditMode() == EnumEditMode.DEFAULT) {
-                ClaimMenuScreenHandler.openClaimMenu(player, claim);
-                data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
-            } else {
-                Claim sub = claim.getSubClaim(player.getBlockPos());
-                ClaimMenuScreenHandler.openClaimMenu(player, Objects.requireNonNullElse(sub, claim));
-            }
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        PlayerClaimData data = PlayerClaimData.get(player);
+        Claim claim = ClaimStorage.get(player.getServerWorld()).getClaimAt(player.getBlockPos());
+        if (claim == null) {
+            PermHelper.noClaimMessage(player);
+            return 0;
+        }
+        if (data.getEditMode() == EnumEditMode.DEFAULT) {
+            ClaimMenuScreenHandler.openClaimMenu(player, claim);
+            data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+        } else {
+            Claim sub = claim.getSubClaim(player.getBlockPos());
+            ClaimMenuScreenHandler.openClaimMenu(player, Objects.requireNonNullElse(sub, claim));
+        }
         return Command.SINGLE_SUCCESS;
     }
 

@@ -146,7 +146,7 @@ public class EntityInteractEvents {
                         pers.setShotFromCrossbow(false);
                         ((IPersistentProjectileVars) pers).resetPiercingStatus();
                     }
-                    if(proj instanceof EnderPearlEntity)
+                    if (proj instanceof EnderPearlEntity)
                         proj.discard();
                     //TODO: find a way to properly update chorus fruit break on hit
                     //player.getServer().send(new ServerTask(player.getServer().getTicks()+2, ()->player.world.updateListeners(pos, state, state, 2)));

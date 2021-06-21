@@ -23,6 +23,7 @@ public abstract class ServerOnlyScreenHandler<T> extends ScreenHandler {
     private final List<ScreenHandlerListener> listeners = new ArrayList<>();
 
     private ScreenHandlerSyncHandler syncHandler;
+
     protected ServerOnlyScreenHandler(int syncId, PlayerInventory playerInventory, int rows, T additionalData) {
         super(fromRows(rows), syncId);
         int i = (rows - 4) * 18;
