@@ -1,3 +1,8 @@
+Flan 1.5.1
+======================
+- Invert ANIMALSPAWN in global perms if its not defined. fix animals not spawning outside claims
+
+
 Flan 1.5.0
 ======================
 - Fix some items checking for wrong position and thus are able to interact in claims
