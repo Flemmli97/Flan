@@ -63,6 +63,9 @@ public class Config {
 
     public boolean log;
 
+    public int configVersion = 1;
+    public int preConfigVersion;
+
     public Map<String, Map<ClaimPermission, Boolean>> defaultGroups = createHashMap(map -> {
         map.put("Co-Owner", createLinkedHashMap(perms -> PermissionRegistry.getPerms().forEach(p -> perms.put(p, true))));
         map.put("Visitor", createLinkedHashMap(perms -> {
@@ -108,6 +111,7 @@ public class Config {
             FileReader reader = new FileReader(this.config);
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
             reader.close();
+            this.preConfigVersion = ConfigHandler.fromJson(obj, "configVersion", 0);
             this.startingBlocks = ConfigHandler.fromJson(obj, "startingBlocks", this.startingBlocks);
             this.maxClaimBlocks = ConfigHandler.fromJson(obj, "maxClaimBlocks", this.maxClaimBlocks);
             this.ticksForNextBlock = ConfigHandler.fromJson(obj, "ticksForNextBlock", this.ticksForNextBlock);
@@ -175,12 +179,14 @@ public class Config {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        ConfigUpdater.updateConfig(this.preConfigVersion);
         this.save();
     }
 
     private void save() {
         JsonObject obj = new JsonObject();
         obj.addProperty("__comment", "For help with the config refer to https://github.com/Flemmli97/Flan/wiki/Config");
+        obj.addProperty("configVersion", this.configVersion);
         obj.addProperty("startingBlocks", this.startingBlocks);
         obj.addProperty("maxClaimBlocks", this.maxClaimBlocks);
         obj.addProperty("ticksForNextBlock", this.ticksForNextBlock);
