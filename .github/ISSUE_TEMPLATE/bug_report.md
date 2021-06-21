@@ -18,7 +18,8 @@ assignees: ''
 #### Affected Versions (Latest is NOT a version):
 
 - Minecraft:
-- Fabric(API):
+- Forge: If forge
+- Fabric(API): If fabric
 - Flan:
 
 #### Other Mods (If you think it might be cause of an incompability. Adding a link + the used version will help greatly):
