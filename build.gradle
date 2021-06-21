@@ -187,7 +187,6 @@ tasks.getByName("curseforge").doLast {
 
 task buildUploadAll(group: "publishing") {
     dependsOn cleanAll, buildAll, publishAll, tasks.getByName("curseforge")
-    print project(":fabric").tasks.getByName('remapJar').archiveFile.get().asFile
     buildAll.mustRunAfter cleanAll
     tasks.findByName("curseforge").mustRunAfter publishAll
 }
