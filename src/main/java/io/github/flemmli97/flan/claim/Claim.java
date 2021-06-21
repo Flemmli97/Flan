@@ -13,6 +13,7 @@ import io.github.flemmli97.flan.api.ClaimPermissionEvent;
 import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.config.ConfigUpdater;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -100,6 +101,7 @@ public class Claim implements IPermissionContainer {
     public static Claim fromJson(JsonObject obj, UUID owner, ServerWorld world) {
         Claim claim = new Claim(world);
         claim.readJson(obj, owner);
+        ConfigUpdater.updateClaim(claim);
         return claim;
     }
 
@@ -234,7 +236,7 @@ public class Claim implements IPermissionContainer {
         }
         Config.GlobalType global = ConfigHandler.config.getGlobal(this.world, perm);
         if (!this.isAdminClaim() && !global.canModify()) {
-            if (global.getValue() || this.isAdminIgnore(player))
+            if (global.getValue() || (player != null && this.isAdminIgnore(player)))
                 return true;
             if (message)
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
