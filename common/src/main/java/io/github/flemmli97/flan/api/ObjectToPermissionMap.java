@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.claim;
+package io.github.flemmli97.flan.api;
 
 import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.api.ClaimPermission;

@@ -7,7 +7,7 @@ import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.IPermissionContainer;
-import io.github.flemmli97.flan.claim.ObjectToPermissionMap;
+import io.github.flemmli97.flan.api.ObjectToPermissionMap;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.integration.permissionapi.CommandPermission;

@@ -1,6 +1,6 @@
 package io.github.flemmli97.flan;
 
-import io.github.flemmli97.flan.claim.ObjectToPermissionMap;
+import io.github.flemmli97.flan.api.ObjectToPermissionMap;
 import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.BlockInteractEvents;
