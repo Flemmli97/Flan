@@ -39,6 +39,9 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+/**
+ * Assign items/blocks to a certain permission
+ */
 public class ObjectToPermissionMap {
 
     private static final Map<Block, ClaimPermission> blockToPermission = new HashMap<>();

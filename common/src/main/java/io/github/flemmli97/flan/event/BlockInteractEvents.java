@@ -35,6 +35,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
+import java.util.function.Function;
+
 public class BlockInteractEvents {
 
     public static ActionResult startBreakBlocks(PlayerEntity player, World world, Hand hand, BlockPos pos, Direction direction) {
@@ -59,8 +61,12 @@ public class BlockInteractEvents {
         return true;
     }
 
-    //Right click block
     public static ActionResult useBlocks(PlayerEntity p, World world, Hand hand, BlockHitResult hitResult) {
+        return useBlocks(p, world, hand, hitResult, BlockInteractEvents::isContainer);
+    }
+
+    //Right click block
+    public static ActionResult useBlocks(PlayerEntity p, World world, Hand hand, BlockHitResult hitResult, Function<BlockEntity, Boolean> isInventory) {
         if (world.isClient)
             return ActionResult.PASS;
         ServerPlayerEntity player = (ServerPlayerEntity) p;
@@ -76,52 +82,56 @@ public class BlockInteractEvents {
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
         IPermissionContainer claim = storage.getForPermissionCheck(hitResult.getBlockPos());
         if (claim != null) {
-            boolean emptyHand = !player.getMainHandStack().isEmpty() || !player.getOffHandStack().isEmpty();
-            boolean cancelBlockInteract = player.shouldCancelInteraction() && emptyHand;
-            if (!cancelBlockInteract) {
-                BlockState state = world.getBlockState(hitResult.getBlockPos());
-                Identifier id = CrossPlatformStuff.registryBlocks().getIDFrom(state.getBlock());
-                BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
-                if (alwaysAllowBlock(id, blockEntity))
+            BlockState state = world.getBlockState(hitResult.getBlockPos());
+            Identifier id = CrossPlatformStuff.registryBlocks().getIDFrom(state.getBlock());
+            BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
+            if (alwaysAllowBlock(id, blockEntity))
+                return ActionResult.PASS;
+            ClaimPermission perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
+            if (perm == PermissionRegistry.PROJECTILES)
+                perm = PermissionRegistry.OPENCONTAINER;
+            //Pressureplate handled elsewhere
+            if (perm != null && perm != PermissionRegistry.PRESSUREPLATE) {
+                if (claim.canInteract(player, perm, hitResult.getBlockPos(), true))
                     return ActionResult.PASS;
-                ClaimPermission perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
-                if (perm == PermissionRegistry.PROJECTILES)
-                    perm = PermissionRegistry.OPENCONTAINER;
-                //Pressureplate handled elsewhere
-                if (perm != null && perm != PermissionRegistry.PRESSUREPLATE) {
-                    if (claim.canInteract(player, perm, hitResult.getBlockPos(), true))
-                        return ActionResult.PASS;
-                    if (state.getBlock() instanceof DoorBlock) {
-                        DoubleBlockHalf half = state.get(DoorBlock.HALF);
-                        if (half == DoubleBlockHalf.LOWER) {
-                            BlockState other = world.getBlockState(hitResult.getBlockPos().up());
-                            player.networkHandler.sendPacket(new BlockUpdateS2CPacket(hitResult.getBlockPos().up(), other));
-                        } else {
-                            BlockState other = world.getBlockState(hitResult.getBlockPos().down());
-                            player.networkHandler.sendPacket(new BlockUpdateS2CPacket(hitResult.getBlockPos().down(), other));
-                        }
+                if (state.getBlock() instanceof DoorBlock) {
+                    DoubleBlockHalf half = state.get(DoorBlock.HALF);
+                    if (half == DoubleBlockHalf.LOWER) {
+                        BlockState other = world.getBlockState(hitResult.getBlockPos().up());
+                        player.networkHandler.sendPacket(new BlockUpdateS2CPacket(hitResult.getBlockPos().up(), other));
+                    } else {
+                        BlockState other = world.getBlockState(hitResult.getBlockPos().down());
+                        player.networkHandler.sendPacket(new BlockUpdateS2CPacket(hitResult.getBlockPos().down(), other));
                     }
+                }
+                PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+                return ActionResult.FAIL;
+            }
+            if (blockEntity != null) {
+                if (blockEntity instanceof LecternBlockEntity) {
+                    if (claim.canInteract(player, PermissionRegistry.LECTERNTAKE, hitResult.getBlockPos(), false))
+                        return ActionResult.PASS;
+                    if (state.get(LecternBlock.HAS_BOOK))
+                        LockedLecternScreenHandler.create(player, (LecternBlockEntity) blockEntity);
+                    return ActionResult.FAIL;
+                }
+                if (!ConfigHandler.config.lenientBlockEntityCheck || isInventory.apply(blockEntity)) {
+                    if (claim.canInteract(player, PermissionRegistry.OPENCONTAINER, hitResult.getBlockPos(), true))
+                        return ActionResult.PASS;
                     PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                     return ActionResult.FAIL;
                 }
-                if (blockEntity != null) {
-                    if (blockEntity instanceof LecternBlockEntity) {
-                        if (claim.canInteract(player, PermissionRegistry.LECTERNTAKE, hitResult.getBlockPos(), false))
-                            return ActionResult.PASS;
-                        if (state.get(LecternBlock.HAS_BOOK))
-                            LockedLecternScreenHandler.create(player, (LecternBlockEntity) blockEntity);
-                        return ActionResult.FAIL;
-                    }
-                    if (!ConfigHandler.config.lenientBlockEntityCheck || blockEntity instanceof Inventory || blockEntity instanceof InventoryProvider) {
-                        if (claim.canInteract(player, PermissionRegistry.OPENCONTAINER, hitResult.getBlockPos(), true))
-                            return ActionResult.PASS;
-                        PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
-                        return ActionResult.FAIL;
-                    }
-                }
             }
+            if (claim.canInteract(player, PermissionRegistry.INTERACTBLOCK, hitResult.getBlockPos(), true))
+                return ActionResult.PASS;
+            PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+            return ActionResult.FAIL;
         }
         return ActionResult.PASS;
+    }
+
+    private static boolean isContainer(BlockEntity blockEntity) {
+        return blockEntity instanceof Inventory || blockEntity instanceof InventoryProvider;
     }
 
     public static boolean alwaysAllowBlock(Identifier id, BlockEntity blockEntity) {
