@@ -2,10 +2,10 @@ package io.github.flemmli97.flan.event;
 
 import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.api.ClaimPermission;
+import io.github.flemmli97.flan.api.ObjectToPermissionMap;
 import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.IPermissionContainer;
-import io.github.flemmli97.flan.api.ObjectToPermissionMap;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.LockedLecternScreenHandler;
 import io.github.flemmli97.flan.player.EnumDisplayType;

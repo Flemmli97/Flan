@@ -1,8 +1,6 @@
 package io.github.flemmli97.flan.api;
 
 import io.github.flemmli97.flan.CrossPlatformStuff;
-import io.github.flemmli97.flan.api.ClaimPermission;
-import io.github.flemmli97.flan.api.PermissionRegistry;
 import net.minecraft.block.AbstractButtonBlock;
 import net.minecraft.block.AbstractPressurePlateBlock;
 import net.minecraft.block.AbstractRedstoneGateBlock;
