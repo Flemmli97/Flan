@@ -2,6 +2,7 @@ package io.github.flemmli97.flan;
 
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 
@@ -26,6 +27,11 @@ public class CrossPlatformStuff {
 
     @ExpectPlatform
     public static SimpleRegistryWrapper<Item> registryItems() {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static boolean isInventoryTile(BlockEntity blockEntity) {
         throw new AssertionError();
     }
 

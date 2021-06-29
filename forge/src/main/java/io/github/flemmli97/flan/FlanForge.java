@@ -22,7 +22,6 @@ public class FlanForge {
         forge.addListener(ItemInteractEventsForge::useItem);
         forge.addListener(BlockInteractEventsForge::startBreakBlocks);
         forge.addListener(BlockInteractEventsForge::breakBlocks);
-        forge.addListener(BlockInteractEventsForge::useBlocks);
         forge.addListener(EntityInteractEventsForge::attackEntity);
         forge.addListener(EntityInteractEventsForge::useAtEntity);
         forge.addListener(EntityInteractEventsForge::useEntity);

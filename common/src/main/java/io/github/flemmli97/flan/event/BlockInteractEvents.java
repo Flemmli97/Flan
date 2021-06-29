@@ -12,7 +12,6 @@ import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
-import net.minecraft.block.InventoryProvider;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
@@ -21,7 +20,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -34,8 +32,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-
-import java.util.function.Function;
 
 public class BlockInteractEvents {
 
@@ -61,12 +57,8 @@ public class BlockInteractEvents {
         return true;
     }
 
-    public static ActionResult useBlocks(PlayerEntity p, World world, Hand hand, BlockHitResult hitResult) {
-        return useBlocks(p, world, hand, hitResult, BlockInteractEvents::isContainer);
-    }
-
     //Right click block
-    public static ActionResult useBlocks(PlayerEntity p, World world, Hand hand, BlockHitResult hitResult, Function<BlockEntity, Boolean> isInventory) {
+    public static ActionResult useBlocks(PlayerEntity p, World world, Hand hand, BlockHitResult hitResult) {
         if (world.isClient)
             return ActionResult.PASS;
         ServerPlayerEntity player = (ServerPlayerEntity) p;
@@ -115,23 +107,16 @@ public class BlockInteractEvents {
                         LockedLecternScreenHandler.create(player, (LecternBlockEntity) blockEntity);
                     return ActionResult.FAIL;
                 }
-                if (!ConfigHandler.config.lenientBlockEntityCheck || isInventory.apply(blockEntity)) {
+                if (!ConfigHandler.config.lenientBlockEntityCheck || CrossPlatformStuff.isInventoryTile(blockEntity)) {
                     if (claim.canInteract(player, PermissionRegistry.OPENCONTAINER, hitResult.getBlockPos(), true))
                         return ActionResult.PASS;
                     PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                     return ActionResult.FAIL;
                 }
             }
-            if (claim.canInteract(player, PermissionRegistry.INTERACTBLOCK, hitResult.getBlockPos(), true))
-                return ActionResult.PASS;
-            PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
-            return ActionResult.FAIL;
+            return claim.canInteract(player, PermissionRegistry.INTERACTBLOCK, hitResult.getBlockPos(), false) ? ActionResult.PASS : ActionResult.FAIL;
         }
         return ActionResult.PASS;
-    }
-
-    private static boolean isContainer(BlockEntity blockEntity) {
-        return blockEntity instanceof Inventory || blockEntity instanceof InventoryProvider;
     }
 
     public static boolean alwaysAllowBlock(Identifier id, BlockEntity blockEntity) {

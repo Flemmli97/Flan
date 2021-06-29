@@ -4,7 +4,10 @@ import io.github.flemmli97.flan.FabricRegistryWrapper;
 import io.github.flemmli97.flan.SimpleRegistryWrapper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
+import net.minecraft.block.InventoryProvider;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -35,5 +38,9 @@ public class CrossPlatformStuffImpl {
 
     public static SimpleRegistryWrapper<Item> registryItems() {
         return new FabricRegistryWrapper<>(Registry.ITEM);
+    }
+
+    public static boolean isInventoryTile(BlockEntity blockEntity) {
+        return blockEntity instanceof Inventory || blockEntity instanceof InventoryProvider;
     }
 }
