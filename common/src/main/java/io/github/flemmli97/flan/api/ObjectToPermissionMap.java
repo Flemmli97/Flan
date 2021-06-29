@@ -63,8 +63,8 @@ public class ObjectToPermissionMap {
         return blockToPermission.get(block);
     }
 
-    public static ClaimPermission getFromItem(Item block) {
-        return itemToPermission.get(block);
+    public static ClaimPermission getFromItem(Item item) {
+        return itemToPermission.get(item);
     }
 
     /**
@@ -113,5 +113,6 @@ public class ObjectToPermissionMap {
         registerItemPredicateMap(item -> item instanceof BucketItem, () -> PermissionRegistry.BUCKET);
         registerItemPredicateMap(item -> item == Items.END_CRYSTAL, () -> PermissionRegistry.ENDCRYSTALPLACE);
         registerItemPredicateMap(item -> item == Items.CHORUS_FRUIT, () -> PermissionRegistry.CHORUSFRUIT);
+        registerItemPredicateMap(item -> item == Items.LILY_PAD, () -> PermissionRegistry.PLACE);
     }
 }
