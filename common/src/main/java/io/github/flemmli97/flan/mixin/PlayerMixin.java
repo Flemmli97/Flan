@@ -20,7 +20,7 @@ public abstract class PlayerMixin {
     }
 
     @Inject(method = "collideWithEntity", at = @At(value = "HEAD"), cancellable = true)
-    public void entityCollide(Entity entity, CallbackInfo info) {
+    private void entityCollide(Entity entity, CallbackInfo info) {
         if (!EntityInteractEvents.canCollideWith((PlayerEntity) (Object) this, entity)) {
             info.cancel();
         }

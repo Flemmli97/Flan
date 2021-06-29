@@ -15,7 +15,7 @@ public abstract class WitherMixin {
     private int field_7082;
 
     @Inject(method = "mobTick", at = @At(value = "HEAD"))
-    public void preventClaimDmg(CallbackInfo info) {
+    private void preventClaimDmg(CallbackInfo info) {
         if (!EntityInteractEvents.witherCanDestroy((WitherEntity) (Object) this))
             this.field_7082 = -1;
     }

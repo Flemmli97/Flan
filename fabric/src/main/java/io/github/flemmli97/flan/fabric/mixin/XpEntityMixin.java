@@ -9,10 +9,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ExperienceOrbEntity.class)
-public class XpEntityMixin {
+public abstract class XpEntityMixin {
 
     @Inject(method = "onPlayerCollision", at = @At(value = "HEAD"), cancellable = true)
-    public void collision(PlayerEntity player, CallbackInfo info) {
+    private void collision(PlayerEntity player, CallbackInfo info) {
         if (EntityInteractEvents.xpAbsorb(player)) {
             info.cancel();
         }

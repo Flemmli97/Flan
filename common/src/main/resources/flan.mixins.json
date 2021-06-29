@@ -20,7 +20,8 @@
     "EndermanPickupMixin",
     "EndermanPlaceMixin",
     "IItemAccessor",
-    "IHungerAccessor"
+    "IHungerAccessor",
+    "FrostWalkerMixin"
   ],
   "server": [
   ],

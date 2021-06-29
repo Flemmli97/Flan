@@ -53,6 +53,7 @@ public class PermissionRegistry {
     public static ClaimPermission TARGETBLOCK = register(new ClaimPermission("TARGETBLOCK", () -> new ItemStack(Items.TARGET), "Permission to trigger target blocks"));
     public static ClaimPermission PROJECTILES = register(new ClaimPermission("PROJECTILES", () -> new ItemStack(Items.ARROW), "Permission to let shot projectiles", "interact with blocks (e.g. arrow on button)"));
     public static ClaimPermission TRAMPLE = register(new ClaimPermission("TRAMPLE", () -> new ItemStack(Items.FARMLAND), "Permission to enable block trampling", "(farmland, turtle eggs)"));
+    public static ClaimPermission FROSTWALKER = register(new ClaimPermission("FROSTWALKER", () -> new ItemStack(Items.LEATHER_BOOTS), "Permission for frostwalker to activate"));
     public static ClaimPermission PORTAL = register(new ClaimPermission("PORTAL", () -> new ItemStack(Items.OBSIDIAN), true, "Permission to use nether portals"));
     public static ClaimPermission RAID = register(new ClaimPermission("RAID", Raid::getOminousBanner, "Permission to trigger raids in claim.", "Wont prevent raids (just) outside"));
     public static ClaimPermission BOAT = register(new ClaimPermission("BOAT", () -> new ItemStack(Items.OAK_BOAT), "Permission to sit in boats"));

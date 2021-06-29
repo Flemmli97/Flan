@@ -14,10 +14,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Random;
 
 @Mixin(FireBlock.class)
-public class ForgeFireMixin {
+public abstract class ForgeFireMixin {
 
     @Inject(method = "tryCatchFire", at = @At(value = "HEAD"), cancellable = true)
-    public void spread(World world, BlockPos pos, int spreadFactor, Random rand, int currentAge, Direction dir, CallbackInfo info) {
+    private void spread(World world, BlockPos pos, int spreadFactor, Random rand, int currentAge, Direction dir, CallbackInfo info) {
         if (!world.isClient && !WorldEvents.canFireSpread((ServerWorld) world, pos)) {
             info.cancel();
         }

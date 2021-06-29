@@ -18,14 +18,14 @@ import java.util.Random;
 public abstract class FireBlockMixin {
 
     @Inject(method = "scheduledTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getGameRules()Lnet/minecraft/world/GameRules;"), cancellable = true)
-    public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo info) {
+    private void tick(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo info) {
         if (!WorldEvents.canFireSpread(world, pos)) {
             info.cancel();
         }
     }
 
     @Inject(method = "getBurnChance(Lnet/minecraft/world/WorldView;Lnet/minecraft/util/math/BlockPos;)I", at = @At(value = "HEAD"), cancellable = true)
-    public void burn(WorldView worldView, BlockPos pos, CallbackInfoReturnable<Integer> info) {
+    private void burn(WorldView worldView, BlockPos pos, CallbackInfoReturnable<Integer> info) {
         if (worldView instanceof ServerWorld && !WorldEvents.canFireSpread((ServerWorld) worldView, pos)) {
             info.setReturnValue(0);
             info.cancel();

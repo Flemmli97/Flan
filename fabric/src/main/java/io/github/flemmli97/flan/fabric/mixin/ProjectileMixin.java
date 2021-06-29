@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ProjectileMixin {
 
     @Inject(method = "onCollision", at = @At(value = "HEAD"), cancellable = true)
-    public void collision(HitResult hitResult, CallbackInfo info) {
+    private void collision(HitResult hitResult, CallbackInfo info) {
         if (EntityInteractEvents.projectileHit((ProjectileEntity) (Object) this, hitResult)) {
             info.cancel();
         }

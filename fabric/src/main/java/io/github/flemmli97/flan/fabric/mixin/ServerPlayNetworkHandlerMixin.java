@@ -23,7 +23,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
     private ServerPlayerEntity player;
 
     @Inject(method = "onPlayerInteractEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;interact(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/ActionResult;"), cancellable = true)
-    public void onPlayerInteractEntity(PlayerInteractEntityC2SPacket packet, CallbackInfo info) {
+    private void onPlayerInteractEntity(PlayerInteractEntityC2SPacket packet, CallbackInfo info) {
         World world = this.player.getEntityWorld();
         Entity entity = packet.getEntity(world);
         if (entity != null) {
