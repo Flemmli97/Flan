@@ -111,6 +111,11 @@ public class Claim implements IPermissionContainer {
         return new BlockPos(center.getX(), y + 1, center.getZ());
     }
 
+    private BlockPos getDefaultCenterPos() {
+        BlockPos center = new BlockPos(this.minX + (this.maxX - this.minX) * 0.5, 0, this.minZ + (this.maxZ - this.minZ) * 0.5);
+        return new BlockPos(center.getX(), 255, center.getZ());
+    }
+
     public void setClaimID(UUID uuid) {
         this.claimID = uuid;
         this.setDirty(true);
@@ -524,7 +529,7 @@ public class Claim implements IPermissionContainer {
             this.minY = pos.get(4).getAsInt();
             JsonArray home = ConfigHandler.arryFromJson(obj, "Home");
             if (home.size() != 3)
-                this.homePos = this.getInitCenterPos();
+                this.homePos = this.getDefaultCenterPos();
             else {
                 this.homePos = new BlockPos(home.get(0).getAsInt(), home.get(1).getAsInt(), home.get(2).getAsInt());
             }

@@ -21,7 +21,11 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.Heightmap;
+import net.minecraft.world.chunk.ChunkStatus;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -270,7 +274,21 @@ public class PlayerClaimData implements IPlayerData {
         if (--this.trappedTick >= 0) {
             if (this.trappedTick == 0) {
                 if (this.tpPos != null) {
-                    this.player.teleport(this.tpPos.getX(), this.tpPos.getY(), this.tpPos.getZ());
+                    BlockPos.Mutable tpTo = this.tpPos.mutableCopy();
+                    Vec3d offset = new Vec3d(this.tpPos.getX() + 0.5, this.tpPos.getY() + 0.01, this.tpPos.getZ() + 0.5).subtract(this.player.getPos());
+                    int yHighest = this.player.world.getChunk(this.tpPos.getX() >> 4, this.tpPos.getZ() >> 4, ChunkStatus.HEIGHTMAPS).sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, this.tpPos.getX() & 15, this.tpPos.getZ() & 15);
+                    Box box = this.player.getBoundingBox().offset(offset);
+                    if (tpTo.getY() < yHighest) {
+                        while (tpTo.getY() < yHighest) {
+                            if (this.player.world.getBlockCollisions(this.player, box, (state, pos) -> true).allMatch(VoxelShape::isEmpty))
+                                break;
+                            tpTo.set(tpTo.getX(), tpTo.getY() + 1, tpTo.getZ());
+                            box = box.offset(0, 1, 0);
+                        }
+                        tpTo.set(tpTo.getX(), tpTo.getY() + 1, tpTo.getZ());
+                    } else
+                        tpTo.set(tpTo.getX(), yHighest, tpTo.getZ());
+                    this.player.teleport(tpTo.getX() + 0.5, tpTo.getY(), tpTo.getZ() + 0.5);
                     this.tpPos = null;
                 } else {
                     Vec3d tp = TeleportUtils.getTeleportPos(this.player, this.player.getPos(), ClaimStorage.get(this.player.getServerWorld()),
