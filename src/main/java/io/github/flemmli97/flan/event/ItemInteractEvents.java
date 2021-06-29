@@ -74,8 +74,22 @@ public class ItemInteractEvents {
         if (claim == null)
             return TypedActionResult.pass(stack);
         ClaimPermission perm = ObjectToPermissionMap.getFromItem(stack.getItem());
-        if (perm != null)
-            return claim.canInteract(player, perm, pos, true) ? TypedActionResult.pass(stack) : TypedActionResult.fail(stack);
+        if (perm != null) {
+            boolean success = claim.canInteract(player, perm, pos, true);
+            if (success)
+                return TypedActionResult.pass(stack);
+            if (perm == PermissionRegistry.PLACE) {
+                BlockPos update = pos;
+                if (stack.getItem() == Items.LILY_PAD) {
+                    BlockHitResult upResult = hitResult.withBlockPos(hitResult.getBlockPos().up());
+                    update = new ItemPlacementContext(new ItemUsageContext(player, hand, upResult)).getBlockPos();
+                }
+                player.networkHandler.sendPacket(new BlockUpdateS2CPacket(update, world.getBlockState(update)));
+                PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+                updateHeldItem(player);
+            }
+            return TypedActionResult.fail(stack);
+        }
         return TypedActionResult.pass(stack);
     }
 

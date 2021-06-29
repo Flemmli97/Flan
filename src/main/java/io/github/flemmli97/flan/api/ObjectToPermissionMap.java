@@ -114,5 +114,6 @@ public class ObjectToPermissionMap {
         registerItemPredicateMap(item -> item instanceof BucketItem, () -> PermissionRegistry.BUCKET);
         registerItemPredicateMap(item -> item == Items.END_CRYSTAL, () -> PermissionRegistry.ENDCRYSTALPLACE);
         registerItemPredicateMap(item -> item == Items.CHORUS_FRUIT, () -> PermissionRegistry.CHORUSFRUIT);
+        registerItemPredicateMap(item -> item == Items.LILY_PAD, () -> PermissionRegistry.PLACE);
     }
 }
