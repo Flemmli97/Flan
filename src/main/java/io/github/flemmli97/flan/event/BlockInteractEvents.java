@@ -35,8 +35,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
-import java.util.function.Function;
-
 public class BlockInteractEvents {
 
     public static ActionResult startBreakBlocks(PlayerEntity player, World world, Hand hand, BlockPos pos, Direction direction) {
@@ -61,12 +59,8 @@ public class BlockInteractEvents {
         return true;
     }
 
-    public static ActionResult useBlocks(PlayerEntity p, World world, Hand hand, BlockHitResult hitResult) {
-        return useBlocks(p, world, hand, hitResult, BlockInteractEvents::isContainer);
-    }
-
     //Right click block
-    public static ActionResult useBlocks(PlayerEntity p, World world, Hand hand, BlockHitResult hitResult, Function<BlockEntity, Boolean> isInventory) {
+    public static ActionResult useBlocks(PlayerEntity p, World world, Hand hand, BlockHitResult hitResult) {
         if (world.isClient)
             return ActionResult.PASS;
         ServerPlayerEntity player = (ServerPlayerEntity) p;
@@ -115,7 +109,7 @@ public class BlockInteractEvents {
                         LockedLecternScreenHandler.create(player, lectern);
                     return ActionResult.FAIL;
                 }
-                if (!ConfigHandler.config.lenientBlockEntityCheck || isInventory.apply(blockEntity)) {
+                if (!ConfigHandler.config.lenientBlockEntityCheck || isContainer(blockEntity)) {
                     if (claim.canInteract(player, PermissionRegistry.OPENCONTAINER, hitResult.getBlockPos(), true))
                         return ActionResult.PASS;
                     PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
