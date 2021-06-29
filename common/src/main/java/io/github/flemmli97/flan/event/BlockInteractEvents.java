@@ -1,5 +1,6 @@
 package io.github.flemmli97.flan.event;
 
+import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.api.ClaimPermission;
 import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.claim.ClaimStorage;
@@ -32,7 +33,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class BlockInteractEvents {
@@ -48,7 +48,7 @@ public class BlockInteractEvents {
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
-            Identifier id = Registry.BLOCK.getId(state.getBlock());
+            Identifier id = CrossPlatformStuff.registryBlocks().getIDFrom(state.getBlock());
             if (alwaysAllowBlock(id, world.getBlockEntity(pos)))
                 return true;
             if (!claim.canInteract(player, PermissionRegistry.BREAK, pos, true)) {
@@ -80,7 +80,7 @@ public class BlockInteractEvents {
             boolean cancelBlockInteract = player.shouldCancelInteraction() && emptyHand;
             if (!cancelBlockInteract) {
                 BlockState state = world.getBlockState(hitResult.getBlockPos());
-                Identifier id = Registry.BLOCK.getId(state.getBlock());
+                Identifier id = CrossPlatformStuff.registryBlocks().getIDFrom(state.getBlock());
                 BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
                 if (alwaysAllowBlock(id, blockEntity))
                     return ActionResult.PASS;

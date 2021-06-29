@@ -22,6 +22,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.Heightmap;
@@ -528,7 +529,7 @@ public class Claim implements IPermissionContainer {
                 this.homePos = new BlockPos(home.get(0).getAsInt(), home.get(1).getAsInt(), home.get(2).getAsInt());
             }
             JsonObject potion = ConfigHandler.fromJson(obj, "Potions");
-            potion.entrySet().forEach(e -> this.potions.put(CrossPlatformStuff.effectFromString(e.getKey()), e.getValue().getAsInt()));
+            potion.entrySet().forEach(e -> this.potions.put(CrossPlatformStuff.registryStatusEffects().getFromId(new Identifier(e.getKey())), e.getValue().getAsInt()));
             if (ConfigHandler.fromJson(obj, "AdminClaim", false))
                 this.owner = null;
             else
@@ -594,7 +595,7 @@ public class Claim implements IPermissionContainer {
         home.add(this.homePos.getZ());
         obj.add("Home", home);
         JsonObject potions = new JsonObject();
-        this.potions.forEach((effect, amp) -> potions.addProperty(CrossPlatformStuff.stringFromEffect(effect), amp));
+        this.potions.forEach((effect, amp) -> potions.addProperty(CrossPlatformStuff.registryStatusEffects().getIDFrom(effect).toString(), amp));
         obj.add("Potions", potions);
         if (this.parent != null)
             obj.addProperty("Parent", this.parent.toString());

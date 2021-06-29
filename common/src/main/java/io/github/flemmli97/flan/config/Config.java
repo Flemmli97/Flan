@@ -12,7 +12,6 @@ import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.io.File;
 import java.io.FileReader;
@@ -131,9 +130,9 @@ public class Config {
                 this.blacklistedWorlds[i] = arr.get(i).getAsString();
             this.worldWhitelist = ConfigHandler.fromJson(obj, "worldWhitelist", this.worldWhitelist);
             if (obj.has("claimingItem"))
-                this.claimingItem = Registry.ITEM.get(new Identifier((obj.get("claimingItem").getAsString())));
+                this.claimingItem = CrossPlatformStuff.registryItems().getFromId(new Identifier((obj.get("claimingItem").getAsString())));
             if (obj.has("inspectionItem"))
-                this.inspectionItem = Registry.ITEM.get(new Identifier((obj.get("inspectionItem").getAsString())));
+                this.inspectionItem = CrossPlatformStuff.registryItems().getFromId(new Identifier((obj.get("inspectionItem").getAsString())));
             this.claimDisplayTime = ConfigHandler.fromJson(obj, "claimDisplayTime", this.claimDisplayTime);
             this.defaultGroups.clear();
             JsonObject defP = ConfigHandler.fromJson(obj, "defaultGroups");
@@ -208,8 +207,8 @@ public class Config {
             arr.add(blacklistedWorld);
         obj.add("blacklistedWorlds", arr);
         obj.addProperty("worldWhitelist", this.worldWhitelist);
-        obj.addProperty("claimingItem", Registry.ITEM.getId(this.claimingItem).toString());
-        obj.addProperty("inspectionItem", Registry.ITEM.getId(this.inspectionItem).toString());
+        obj.addProperty("claimingItem", CrossPlatformStuff.registryItems().getIDFrom(this.claimingItem).toString());
+        obj.addProperty("inspectionItem", CrossPlatformStuff.registryItems().getIDFrom(this.inspectionItem).toString());
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
         obj.addProperty("permissionLevel", this.permissionLevel);
         JsonObject defPerm = new JsonObject();

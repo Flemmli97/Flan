@@ -1,5 +1,6 @@
 package io.github.flemmli97.flan.claim;
 
+import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.api.ClaimPermission;
 import io.github.flemmli97.flan.api.PermissionRegistry;
 import net.minecraft.block.AbstractButtonBlock;
@@ -32,7 +33,6 @@ import net.minecraft.item.EnderPearlItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.registry.Registry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,10 +50,10 @@ public class ObjectToPermissionMap {
     public static void reload(MinecraftServer server) {
         blockToPermission.clear();
         itemToPermission.clear();
-        for (Block block : Registry.BLOCK) {
+        for (Block block : CrossPlatformStuff.registryBlocks().getIterator()) {
             blockPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(block)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> blockToPermission.put(block, sub.get()));
         }
-        for (Item item : Registry.ITEM) {
+        for (Item item : CrossPlatformStuff.registryItems().getIterator()) {
             itemPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(item)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> itemToPermission.put(item, sub.get()));
         }
     }
