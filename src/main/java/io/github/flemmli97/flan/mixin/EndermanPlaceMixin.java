@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(targets = "net/minecraft/entity/mob/EndermanEntity$PlaceBlockGoal")
-public class EndermanPlaceMixin {
+public abstract class EndermanPlaceMixin {
 
     @Shadow
     private EndermanEntity enderman;

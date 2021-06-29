@@ -28,7 +28,8 @@
     "EndermanPlaceMixin",
     "SnowGolemMixin",
     "IItemAccessor",
-    "IHungerAccessor"
+    "IHungerAccessor",
+    "FrostWalkerMixin"
   ],
   "server": [
   ],

@@ -329,4 +329,12 @@ public class EntityInteractEvents {
             cons.accept(claim);
         }
     }
+
+    public static boolean canFrostwalkerFreeze(ServerWorld world, BlockPos pos, LivingEntity entity) {
+        if (entity instanceof ServerPlayerEntity) {
+            IPermissionContainer claim = ClaimStorage.get(world).getForPermissionCheck(pos);
+            return claim.canInteract((ServerPlayerEntity) entity, PermissionRegistry.FROSTWALKER, pos, false);
+        }
+        return true;
+    }
 }

@@ -15,7 +15,7 @@ public abstract class WitherMixin {
     private int blockBreakingCooldown;
 
     @Inject(method = "mobTick", at = @At(value = "HEAD"))
-    public void preventClaimDmg(CallbackInfo info) {
+    private void preventClaimDmg(CallbackInfo info) {
         if (!EntityInteractEvents.witherCanDestroy((WitherEntity) (Object) this))
             this.blockBreakingCooldown = -1;
     }

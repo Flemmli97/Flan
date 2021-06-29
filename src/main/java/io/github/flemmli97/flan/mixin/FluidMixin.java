@@ -17,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class FluidMixin {
 
     @Inject(method = "canFlow", at = @At(value = "HEAD"), cancellable = true)
-    public void crossClaimFlow(BlockView world, BlockPos fluidPos, BlockState fluidBlockState, Direction flowDirection, BlockPos flowTo,
-                               BlockState flowToBlockState, FluidState fluidState, Fluid fluid, CallbackInfoReturnable<Boolean> info) {
+    private void crossClaimFlow(BlockView world, BlockPos fluidPos, BlockState fluidBlockState, Direction flowDirection, BlockPos flowTo,
+                                BlockState flowToBlockState, FluidState fluidState, Fluid fluid, CallbackInfoReturnable<Boolean> info) {
         if (!WorldEvents.canFlow(fluidBlockState, world, fluidPos, flowDirection)) {
             info.setReturnValue(false);
             info.cancel();
