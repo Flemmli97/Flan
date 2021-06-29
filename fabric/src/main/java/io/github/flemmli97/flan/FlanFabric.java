@@ -10,6 +10,7 @@ import io.github.flemmli97.flan.integration.playerability.PlayerAbilityEvents;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -22,6 +23,7 @@ public class FlanFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         PlayerBlockBreakEvents.BEFORE.register(BlockInteractEvents::breakBlocks);
+        AttackBlockCallback.EVENT.register(BlockInteractEvents::startBreakBlocks);
         UseBlockCallback.EVENT.register(BlockInteractEvents::useBlocks);
         UseEntityCallback.EVENT.register(EntityInteractEvents::useAtEntity);
         AttackEntityCallback.EVENT.register(EntityInteractEvents::attackEntity);

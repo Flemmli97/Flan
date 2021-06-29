@@ -20,6 +20,7 @@ public class FlanForge {
         forge.addListener(WorldEventsForge::pistonCanPush);
         forge.addListener(WorldEventsForge::preventMobSpawn);
         forge.addListener(ItemInteractEventsForge::useItem);
+        forge.addListener(BlockInteractEventsForge::startBreakBlocks);
         forge.addListener(BlockInteractEventsForge::breakBlocks);
         forge.addListener(BlockInteractEventsForge::useBlocks);
         forge.addListener(EntityInteractEventsForge::attackEntity);
