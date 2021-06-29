@@ -31,10 +31,15 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class BlockInteractEvents {
+
+    public static ActionResult startBreakBlocks(PlayerEntity player, World world, Hand hand, BlockPos pos, Direction direction) {
+        return breakBlocks(world, player, pos, world.getBlockState(pos), world.getBlockEntity(pos)) ? ActionResult.PASS : ActionResult.FAIL;
+    }
 
     public static boolean breakBlocks(World world, PlayerEntity p, BlockPos pos, BlockState state, BlockEntity tile) {
         if (world.isClient || p.isSpectator())
