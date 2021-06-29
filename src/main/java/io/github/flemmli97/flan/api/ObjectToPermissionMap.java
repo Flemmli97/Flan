@@ -1,7 +1,5 @@
-package io.github.flemmli97.flan.claim;
+package io.github.flemmli97.flan.api;
 
-import io.github.flemmli97.flan.api.ClaimPermission;
-import io.github.flemmli97.flan.api.PermissionRegistry;
 import net.minecraft.block.AbstractButtonBlock;
 import net.minecraft.block.AbstractPressurePlateBlock;
 import net.minecraft.block.AbstractRedstoneGateBlock;
@@ -22,6 +20,7 @@ import net.minecraft.block.JukeboxBlock;
 import net.minecraft.block.LeverBlock;
 import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.NoteBlock;
+import net.minecraft.block.PointedDripstoneBlock;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.block.TargetBlock;
 import net.minecraft.block.TntBlock;
@@ -39,6 +38,9 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+/**
+ * Assign items/blocks to a certain permission
+ */
 public class ObjectToPermissionMap {
 
     private static final Map<Block, ClaimPermission> blockToPermission = new HashMap<>();
@@ -104,7 +106,7 @@ public class ObjectToPermissionMap {
         registerBlockPredicateMap((block) -> block instanceof TurtleEggBlock || block instanceof FarmlandBlock, () -> PermissionRegistry.TRAMPLE);
         registerBlockPredicateMap((block) -> block instanceof TargetBlock, () -> PermissionRegistry.TARGETBLOCK);
         registerBlockPredicateMap((block) -> block instanceof BellBlock || block instanceof CampfireBlock
-                || block instanceof TntBlock || block instanceof ChorusFlowerBlock, () -> PermissionRegistry.PROJECTILES);
+                || block instanceof TntBlock || block instanceof ChorusFlowerBlock || block instanceof PointedDripstoneBlock, () -> PermissionRegistry.PROJECTILES);
         registerBlockPredicateMap((block) -> block instanceof EnderChestBlock, () -> PermissionRegistry.ENDERCHEST);
         registerBlockPredicateMap((block) -> block instanceof EnchantingTableBlock, () -> PermissionRegistry.ENCHANTMENTTABLE);
 
