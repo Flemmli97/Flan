@@ -21,7 +21,7 @@ public class LightningMixin {
             info.cancel();
     }
 
-    @ModifyVariable(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"), require = 1, ordinal = 1)
+    @ModifyVariable(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;", ordinal = 1), require = 1)
     private List<Entity> affectedEntities(List<Entity> list) {
         list.removeIf(EntityInteractEvents::preventLightningConvert);
         return list;

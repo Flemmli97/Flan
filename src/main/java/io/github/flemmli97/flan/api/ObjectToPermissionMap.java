@@ -18,6 +18,7 @@ import net.minecraft.block.FarmlandBlock;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.JukeboxBlock;
 import net.minecraft.block.LeverBlock;
+import net.minecraft.block.LightningRodBlock;
 import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.NoteBlock;
 import net.minecraft.block.PointedDripstoneBlock;
@@ -106,7 +107,8 @@ public class ObjectToPermissionMap {
         registerBlockPredicateMap((block) -> block instanceof TurtleEggBlock || block instanceof FarmlandBlock, () -> PermissionRegistry.TRAMPLE);
         registerBlockPredicateMap((block) -> block instanceof TargetBlock, () -> PermissionRegistry.TARGETBLOCK);
         registerBlockPredicateMap((block) -> block instanceof BellBlock || block instanceof CampfireBlock
-                || block instanceof TntBlock || block instanceof ChorusFlowerBlock || block instanceof PointedDripstoneBlock, () -> PermissionRegistry.PROJECTILES);
+                || block instanceof TntBlock || block instanceof ChorusFlowerBlock || block instanceof PointedDripstoneBlock
+                || block instanceof LightningRodBlock, () -> PermissionRegistry.PROJECTILES);
         registerBlockPredicateMap((block) -> block instanceof EnderChestBlock, () -> PermissionRegistry.ENDERCHEST);
         registerBlockPredicateMap((block) -> block instanceof EnchantingTableBlock, () -> PermissionRegistry.ENCHANTMENTTABLE);
 
