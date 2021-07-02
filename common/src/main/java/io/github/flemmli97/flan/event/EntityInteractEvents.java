@@ -23,7 +23,6 @@ import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.Monster;
-import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -345,7 +344,7 @@ public class EntityInteractEvents {
     }
 
     public static boolean preventLightningConvert(Entity entity) {
-        if (entity.world.isClient || !(entity instanceof AnimalEntity))
+        if (entity.world.isClient || entity instanceof Monster)
             return false;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) entity.world);
         IPermissionContainer claim = storage.getForPermissionCheck(entity.getBlockPos());
