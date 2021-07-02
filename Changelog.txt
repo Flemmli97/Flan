@@ -1,3 +1,18 @@
+Flan 1.5.3
+======================
+- Add wiki link to help command
+- Add shortcut /flan ? displaying the help command
+- Make server gui inventory unmodifiable by vanilla methods.
+  This inturn makes sure other mods cant take or put items into it
+- Fix inspection tool and claiming tool bypassing permission
+- Add LIGHTNING permission:
+  Decides wether a lightning can set blocks on fire and affect non hostile mobs it hits
+- Add scoreboard criteria for tracking various things:
+  flan:total_claimblocks: Tracks the total claim blocks of players (normal and additional claimblocks)
+  flan:used_claimblocks: Tracks the used claimblocks of players
+  flan:free_claimblocks: Tracks the amount a player can use to claim
+  flan:claim_number: Tracks the number of claims a player has in total
+
 Flan 1.5.2
 ======================
 - Add left click blocks check cause some blocks react to that (dragon egg)
