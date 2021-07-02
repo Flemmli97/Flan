@@ -52,6 +52,10 @@ public class CommandHelp {
 
     public static int helpCmd(CommandContext<ServerCommandSource> context) {
         String command = StringArgumentType.getString(context, "command");
+        return helpCmd(context, command);
+    }
+
+    public static int helpCmd(CommandContext<ServerCommandSource> context, String command) {
         String[] cmdHelp = ConfigHandler.lang.cmdLang.getCommandHelp(command);
         context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.helpCmdHeader, Formatting.DARK_GREEN), false);
         for (int i = 0; i < cmdHelp.length; i++) {
@@ -61,6 +65,12 @@ public class CommandHelp {
             } else {
                 context.getSource().sendFeedback(PermHelper.simpleColoredText(cmdHelp[i], Formatting.GOLD), false);
             }
+        }
+        if (command.equals("help")) {
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.wiki, Formatting.GOLD), false);
+            MutableText wiki = PermHelper.simpleColoredText("https://github.com/Flemmli97/Flan/wiki", Formatting.GREEN);
+            wiki.setStyle(wiki.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/Flemmli97/Flan/wiki")));
+            context.getSource().sendFeedback(wiki, false);
         }
         return Command.SINGLE_SUCCESS;
     }
