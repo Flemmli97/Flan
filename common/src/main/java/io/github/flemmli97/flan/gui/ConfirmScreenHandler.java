@@ -2,9 +2,9 @@ package io.github.flemmli97.flan.gui;
 
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -42,21 +42,21 @@ public class ConfirmScreenHandler extends ServerOnlyScreenHandler<Object> {
 
 
     @Override
-    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object additionalData) {
+    protected void fillInventoryWith(PlayerEntity player, SeparateInv inv, Object additionalData) {
         for (int i = 0; i < 9; i++) {
             switch (i) {
                 case 3:
                     ItemStack yes = new ItemStack(Items.GREEN_WOOL);
                     yes.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenYes, Formatting.GREEN));
-                    inv.setStack(i, yes);
+                    inv.updateStack(i, yes);
                     break;
                 case 5:
                     ItemStack no = new ItemStack(Items.RED_WOOL);
                     no.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNo, Formatting.RED));
-                    inv.setStack(i, no);
+                    inv.updateStack(i, no);
                     break;
                 default:
-                    inv.setStack(i, ServerScreenHelper.emptyFiller());
+                    inv.updateStack(i, ServerScreenHelper.emptyFiller());
             }
         }
     }

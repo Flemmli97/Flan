@@ -4,12 +4,12 @@ import com.google.common.collect.Lists;
 import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtil;
@@ -56,7 +56,7 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
     }
 
     @Override
-    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Claim claim) {
+    protected void fillInventoryWith(PlayerEntity player, SeparateInv inv, Claim claim) {
         Map<StatusEffect, Integer> potions = claim.getPotions();
         List<StatusEffect> key = Lists.newArrayList(potions.keySet());
         key.sort(Comparator.comparing(eff -> CrossPlatformStuff.registryStatusEffects().getIDFrom(eff).toString()));
@@ -64,17 +64,17 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
                 close.setCustomName(ServerScreenHelper.coloredGuiText("Back", Formatting.DARK_RED));
-                inv.setStack(i, close);
+                inv.updateStack(i, close);
             } else if (i == 3) {
                 ItemStack stack = new ItemStack(Items.ANVIL);
                 stack.setCustomName(ServerScreenHelper.coloredGuiText("Add", Formatting.DARK_GREEN));
-                inv.setStack(i, stack);
+                inv.updateStack(i, stack);
             } else if (i == 4) {
                 ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
                 stack.setCustomName(ServerScreenHelper.coloredGuiText("Remove Mode: " + this.removeMode, Formatting.DARK_RED));
-                inv.setStack(i, stack);
+                inv.updateStack(i, stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
-                inv.setStack(i, ServerScreenHelper.emptyFiller());
+                inv.updateStack(i, ServerScreenHelper.emptyFiller());
             else {
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1;
@@ -86,7 +86,7 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
                     effectStack.getOrCreateTag().putString("FlanEffect", CrossPlatformStuff.registryStatusEffects().getIDFrom(effect).toString());
                     effectStack.getTag().putInt("CustomPotionColor", PotionUtil.getColor(inst));
                     effectStack.setCustomName(txt.setStyle(txt.getStyle().withItalic(false).withFormatting(Formatting.DARK_BLUE)).append(ServerScreenHelper.coloredGuiText("-" + potions.get(effect), Formatting.DARK_BLUE)));
-                    inv.setStack(i, effectStack);
+                    inv.updateStack(i, effectStack);
                 }
             }
         }

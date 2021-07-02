@@ -1,9 +1,10 @@
 package io.github.flemmli97.flan.gui;
 
+import io.github.flemmli97.flan.gui.inv.SeparateInv;
+import io.github.flemmli97.flan.gui.inv.SeparateInvImpl;
+import io.github.flemmli97.flan.gui.inv.SlotDelegate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -18,30 +19,51 @@ import java.util.List;
 
 public abstract class ServerOnlyScreenHandler<T> extends ScreenHandler {
 
-    private final Inventory inventory;
+    private final SeparateInvImpl inventory;
     private final List<ScreenHandlerListener> listeners = new ArrayList<>();
+    private boolean update = true;
 
     protected ServerOnlyScreenHandler(int syncId, PlayerInventory playerInventory, int rows, T additionalData) {
         super(fromRows(rows), syncId);
         int i = (rows - 4) * 18;
-        this.inventory = new SimpleInventory(rows * 9);
+        this.inventory = new SeparateInvImpl(rows * 9);
         this.fillInventoryWith(playerInventory.player, this.inventory, additionalData);
         int n;
         int m;
         for (n = 0; n < rows; ++n) {
             for (m = 0; m < 9; ++m) {
-                this.addSlot(new Slot(this.inventory, m + n * 9, 8 + m * 18, 18 + n * 18));
+                this.addSlot(new SlotDelegate(this.inventory, m + n * 9, 8 + m * 18, 18 + n * 18));
             }
         }
 
         for (n = 0; n < 3; ++n) {
             for (m = 0; m < 9; ++m) {
-                this.addSlot(new Slot(playerInventory, m + n * 9 + 9, 8 + m * 18, 103 + n * 18 + i));
+                this.addSlot(new Slot(playerInventory, m + n * 9 + 9, 8 + m * 18, 103 + n * 18 + i) {
+                    @Override
+                    public boolean canInsert(ItemStack stack) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean canTakeItems(PlayerEntity playerEntity) {
+                        return false;
+                    }
+                });
             }
         }
 
         for (n = 0; n < 9; ++n) {
-            this.addSlot(new Slot(playerInventory, n, 8 + n * 18, 161 + i));
+            this.addSlot(new Slot(playerInventory, n, 8 + n * 18, 161 + i) {
+                @Override
+                public boolean canInsert(ItemStack stack) {
+                    return false;
+                }
+
+                @Override
+                public boolean canTakeItems(PlayerEntity playerEntity) {
+                    return false;
+                }
+            });
         }
     }
 
@@ -61,7 +83,7 @@ public abstract class ServerOnlyScreenHandler<T> extends ScreenHandler {
         return ScreenHandlerType.GENERIC_9X1;
     }
 
-    protected abstract void fillInventoryWith(PlayerEntity player, Inventory inv, T additionalData);
+    protected abstract void fillInventoryWith(PlayerEntity player, SeparateInv inv, T additionalData);
 
     @Override
     public boolean canUse(PlayerEntity player) {
@@ -89,17 +111,25 @@ public abstract class ServerOnlyScreenHandler<T> extends ScreenHandler {
         Slot slot = this.slots.get(index);
         if (this.isRightSlot(index))
             this.handleSlotClicked((ServerPlayerEntity) player, index, slot, 0);
-        this.sendContentUpdates();
         return slot.getStack().copy();
     }
 
     @Override
     public void addListener(ScreenHandlerListener listener) {
+        this.update = false;
+        super.addListener(listener);
         if (!this.listeners.contains(listener)) {
             this.listeners.add(listener);
             listener.onHandlerRegistered(this, this.getStacks());
+            this.update = true;
             this.sendContentUpdates();
         }
+    }
+
+    @Override
+    public void sendContentUpdates() {
+        if (this.update)
+            super.sendContentUpdates();
     }
 
     protected abstract boolean isRightSlot(int slot);

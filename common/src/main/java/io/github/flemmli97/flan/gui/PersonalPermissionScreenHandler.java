@@ -4,10 +4,10 @@ import io.github.flemmli97.flan.api.ClaimPermission;
 import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -51,7 +51,7 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
     }
 
     @Override
-    protected void fillInventoryWith(PlayerEntity player, Inventory inv, String group) {
+    protected void fillInventoryWith(PlayerEntity player, SeparateInv inv, String group) {
         if (!(player instanceof ServerPlayerEntity))
             return;
         List<ClaimPermission> perms = new ArrayList<>(PermissionRegistry.getPerms());
@@ -62,22 +62,22 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
                 close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenBack, Formatting.DARK_RED));
-                inv.setStack(i, close);
+                inv.updateStack(i, close);
             } else if (page == 1 && i == 47) {
                 ItemStack close = new ItemStack(Items.ARROW);
                 close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenPrevious, Formatting.WHITE));
-                inv.setStack(i, close);
+                inv.updateStack(i, close);
             } else if (page == 0 && i == 51) {
                 ItemStack close = new ItemStack(Items.ARROW);
                 close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNext, Formatting.WHITE));
-                inv.setStack(i, close);
+                inv.updateStack(i, close);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
-                inv.setStack(i, ServerScreenHelper.emptyFiller());
+                inv.updateStack(i, ServerScreenHelper.emptyFiller());
             else {
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + page * 28;
                 if (id < perms.size())
-                    inv.setStack(i, ServerScreenHelper.getFromPersonal((ServerPlayerEntity) player, perms.get(id), group));
+                    inv.updateStack(i, ServerScreenHelper.getFromPersonal((ServerPlayerEntity) player, perms.get(id), group));
             }
         }
     }
