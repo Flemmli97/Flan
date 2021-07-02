@@ -33,8 +33,9 @@ public abstract class AbstractBlockStateMixin {
      */
     @Inject(method = "onUse", at = @At(value = "HEAD"), cancellable = true)
     private void useBlock(World world, PlayerEntity player, Hand hand, BlockHitResult result, CallbackInfoReturnable<ActionResult> info) {
-        if (BlockInteractEvents.useBlocks(player, world, hand, result) == ActionResult.FAIL) {
-            info.setReturnValue(ActionResult.FAIL);
+        ActionResult res = BlockInteractEvents.useBlocks(player, world, hand, result);
+        if (res != ActionResult.PASS) {
+            info.setReturnValue(res);
             info.cancel();
         }
     }
