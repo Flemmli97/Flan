@@ -140,6 +140,8 @@ public class LangConfig {
     public String teleportHome = "Teleporting to claim home. Don't move for 5 seconds";
     public String teleportHomeFail = "Teleport already happening";
 
+    public String wiki = "For more info check out the wiki:";
+
     public LangCommands cmdLang = new LangCommands();
 
     public LangConfig(MinecraftServer server) {

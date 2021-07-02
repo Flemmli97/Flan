@@ -36,7 +36,8 @@ public class Config {
     public boolean lenientBlockEntityCheck;
     public List<String> ignoredBlocks = new ArrayList<>();
     public List<String> blockEntityTagIgnore = Lists.newArrayList(
-            "IsDeathChest" //vanilla death chest
+            "IsDeathChest", //vanilla death chest
+            "gunpowder.owner" //gunpowder
     );
     public List<String> entityTagIgnore = Lists.newArrayList(
             "graves.marker" //vanilla tweaks

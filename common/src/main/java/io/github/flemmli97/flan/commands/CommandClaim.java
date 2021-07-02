@@ -126,6 +126,7 @@ public class CommandClaim {
         builder.then(CommandManager.literal("help").executes(ctx -> CommandHelp.helpMessage(ctx, 0, builder.getArguments()))
                 .then(CommandManager.argument("page", IntegerArgumentType.integer()).executes(ctx -> CommandHelp.helpMessage(ctx, builder.getArguments())))
                 .then(CommandManager.literal("cmd").then(CommandManager.argument("command", StringArgumentType.word()).suggests((ctx, sb) -> CommandSource.suggestMatching(CommandHelp.registeredCommands(ctx, builder.getArguments()), sb)).executes(CommandHelp::helpCmd))));
+        builder.then(CommandManager.literal("?").executes(ctx -> CommandHelp.helpCmd(ctx, "help")));
         dispatcher.register(builder);
     }
 
