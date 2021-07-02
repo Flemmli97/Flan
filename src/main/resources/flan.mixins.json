@@ -29,7 +29,8 @@
     "SnowGolemMixin",
     "IItemAccessor",
     "IHungerAccessor",
-    "FrostWalkerMixin"
+    "FrostWalkerMixin",
+    "LightningMixin"
   ],
   "server": [
   ],

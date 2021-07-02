@@ -4,6 +4,7 @@ import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.IPermissionContainer;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -75,5 +76,20 @@ public class WorldEvents {
         if (entity.getType().getSpawnGroup() == SpawnGroup.MONSTER)
             return claim.canInteract(null, PermissionRegistry.MOBSPAWN, entity.getBlockPos());
         return claim.canInteract(null, PermissionRegistry.ANIMALSPAWN, entity.getBlockPos());
+    }
+
+    public static boolean lightningFire(LightningEntity lightning) {
+        if (!(lightning.world instanceof ServerWorld))
+            return true;
+        BlockPos.Mutable mutable = lightning.getBlockPos().mutableCopy();
+        ServerWorld world = (ServerWorld) lightning.world;
+        for (int x = -1; x <= 1; x++)
+            for (int z = -1; z <= 1; z++) {
+                mutable.set(mutable.getX() + x, mutable.getY(), mutable.getZ() + z);
+                IPermissionContainer claim = ClaimStorage.get(world).getForPermissionCheck(mutable);
+                if (!claim.canInteract(null, PermissionRegistry.LIGHTNING, mutable))
+                    return false;
+            }
+        return true;
     }
 }
