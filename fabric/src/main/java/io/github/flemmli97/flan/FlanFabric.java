@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.MinecraftServer;
 
 public class FlanFabric implements ModInitializer {
 
@@ -26,9 +27,7 @@ public class FlanFabric implements ModInitializer {
         UseEntityCallback.EVENT.register(EntityInteractEvents::useAtEntity);
         AttackEntityCallback.EVENT.register(EntityInteractEvents::attackEntity);
         UseItemCallback.EVENT.register(ItemInteractEvents::useItem);
-        ServerLifecycleEvents.SERVER_STARTING.register(ConfigHandler::serverLoad);
-        ServerLifecycleEvents.SERVER_STARTING.register(ObjectToPermissionMap::reload);
-        ServerLifecycleEvents.SERVER_STARTING.register(Flan::lockRegistry);
+        ServerLifecycleEvents.SERVER_STARTING.register(FlanFabric::serverLoad);
 
         CommandRegistrationCallback.EVENT.register(CommandClaim::register);
 
@@ -37,5 +36,11 @@ public class FlanFabric implements ModInitializer {
         Flan.playerAbilityLib = FabricLoader.getInstance().isModLoaded("playerabilitylib");
         if (Flan.playerAbilityLib)
             PlayerAbilityEvents.register();
+    }
+
+    public static void serverLoad(MinecraftServer server) {
+        ConfigHandler.serverLoad(server);
+        ObjectToPermissionMap.reload(server);
+        Flan.lockRegistry(server);
     }
 }

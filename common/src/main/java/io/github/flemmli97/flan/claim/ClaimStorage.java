@@ -89,6 +89,7 @@ public class ClaimStorage {
             Flan.log("Creating new claim {}", claim);
             this.addClaim(claim);
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+            data.updateScoreboard();
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.claimCreateSuccess, Formatting.GOLD), false);
             player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
                     data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks()), Formatting.GOLD), false);
@@ -123,8 +124,6 @@ public class ClaimStorage {
             return false;
         }
         Flan.log("Try deleting claim {}", claim);
-        if (updateClaim)
-            claim.remove();
         int[] pos = getChunkPos(claim);
         for (int x = pos[0]; x <= pos[1]; x++)
             for (int z = pos[2]; z <= pos[3]; z++) {
@@ -137,13 +136,21 @@ public class ClaimStorage {
             }
         this.playerClaimMap.getOrDefault(claim.getOwner(), new HashSet<>()).remove(claim);
         this.dirty.add(claim.getOwner());
+        if (updateClaim) {
+            claim.remove();
+            claim.getOwnerPlayer().ifPresent(o -> PlayerClaimData.get(o).updateScoreboard());
+        }
         return this.claimUUIDMap.remove(claim.getClaimID()) != null;
     }
 
     public void toggleAdminClaim(ServerPlayerEntity player, Claim claim, boolean toggle) {
         Flan.log("Set claim {} to an admin claim", claim);
         this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.getServerWorld());
+        if (toggle)
+            claim.getOwnerPlayer().ifPresent(o -> PlayerClaimData.get(o).updateScoreboard());
         claim.toggleAdminClaim(player, toggle);
+        if (!toggle)
+            PlayerClaimData.get(player).updateScoreboard();
         this.addClaim(claim);
     }
 
@@ -163,22 +170,20 @@ public class ClaimStorage {
         }
         int diff = newClaim.getPlane() - claim.getPlane();
         PlayerClaimData data = PlayerClaimData.get(player);
-        IPlayerData newData = null;
-        boolean enoughBlocks = false;
-        if (player.getUuid().equals(claim.getOwner()) || claim.isAdminClaim()) {
-            enoughBlocks = claim.isAdminClaim() || data.canUseClaimBlocks(diff);
-            newData = data;
-        } else {
-            ServerPlayerEntity other = player.getServer().getPlayerManager().getPlayer(claim.getOwner());
-            newData = other != null ? PlayerClaimData.get(other) : new OfflinePlayerData(player.getServer(), claim.getOwner());
-            enoughBlocks = newData.canUseClaimBlocks(diff);
-        }
+        IPlayerData newData = claim.getOwnerPlayer().map(o -> {
+            if (o == player || claim.isAdminClaim())
+                return data;
+            return (IPlayerData) PlayerClaimData.get(o);
+        }).orElse(new OfflinePlayerData(player.getServer(), claim.getOwner()));
+        boolean enoughBlocks = claim.isAdminClaim() || newData.canUseClaimBlocks(diff);
         if (enoughBlocks) {
             Flan.log("Resizing claim {}", claim);
             this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.getServerWorld());
             claim.copySizes(newClaim);
             this.addClaim(claim);
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+            if (newData instanceof PlayerClaimData)
+                ((PlayerClaimData) newData).updateScoreboard();
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.resizeSuccess, Formatting.GOLD), false);
             player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
                     newData.getClaimBlocks(), newData.getAdditionalClaims(), newData.usedClaimBlocks()), Formatting.GOLD), false);
@@ -233,6 +238,7 @@ public class ClaimStorage {
             return old;
         });
         this.dirty.add(claim.getOwner());
+        claim.getOwnerPlayer().ifPresent(o -> PlayerClaimData.get(o).updateScoreboard());
         claim.transferOwner(newOwner);
         this.playerClaimMap.merge(claim.getOwner(), Sets.newHashSet(claim), (old, val) -> {
             old.add(claim);

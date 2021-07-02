@@ -12,8 +12,10 @@ import io.github.flemmli97.flan.claim.ParticleIndicators;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.EntityInteractEvents;
+import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
+import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -44,6 +46,8 @@ import java.util.function.Consumer;
 public class PlayerClaimData implements IPlayerData {
 
     private int claimBlocks, additionalClaimBlocks, confirmTick, actionCooldown;
+    //Scoreboard tracking
+    private int usedBlocks;
 
     private int lastBlockTick, trappedTick = -1, deathPickupTick;
     private Vec3d trappedPos;
@@ -81,14 +85,15 @@ public class PlayerClaimData implements IPlayerData {
 
     public void setClaimBlocks(int amount) {
         this.claimBlocks = amount;
+        updateScoreFor(this.player, ClaimCriterias.AMOUNT, this.claimBlocks + this.additionalClaimBlocks);
+        updateScoreFor(this.player, ClaimCriterias.FREE, this.claimBlocks + this.additionalClaimBlocks - this.usedBlocks);
         this.dirty = true;
     }
 
     public boolean addClaimBlocks(int amount) {
         if (this.claimBlocks + amount > ConfigHandler.config.maxClaimBlocks)
             return false;
-        this.claimBlocks += amount;
-        this.dirty = true;
+        this.setClaimBlocks(this.claimBlocks + amount);
         return true;
     }
 
@@ -99,6 +104,8 @@ public class PlayerClaimData implements IPlayerData {
 
     public void setAdditionalClaims(int amount) {
         this.additionalClaimBlocks = Math.max(0, amount);
+        updateScoreFor(this.player, ClaimCriterias.AMOUNT, this.claimBlocks + this.additionalClaimBlocks);
+        updateScoreFor(this.player, ClaimCriterias.FREE, this.claimBlocks + this.additionalClaimBlocks - this.usedBlocks);
         this.dirty = true;
     }
 
@@ -321,6 +328,38 @@ public class PlayerClaimData implements IPlayerData {
             this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.unlockDropsCmd, "/flan unlockDrops"), Formatting.GOLD), false);
     }
 
+    public void updateScoreboard() {
+        int claims = this.updateClaimScores();
+        updateScoreFor(this.player, ClaimCriterias.USED, this.usedBlocks);
+        updateScoreFor(this.player, ClaimCriterias.FREE, this.claimBlocks + this.additionalClaimBlocks - this.usedBlocks);
+        updateScoreFor(this.player, ClaimCriterias.CLAIMS, claims);
+    }
+
+    private int updateClaimScores() {
+        int usedClaimsBlocks = 0;
+        int claimsAmount = 0;
+        for (ServerWorld world : this.player.getServer().getWorlds()) {
+            Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.player.getUuid());
+            if (claims != null) {
+                usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
+                claimsAmount += claims.size();
+            }
+        }
+        this.usedBlocks = usedClaimsBlocks;
+        return claimsAmount;
+    }
+
+    private int calculateUsedClaimBlocks() {
+        int usedClaimsBlocks = 0;
+        for (ServerWorld world : this.player.getServer().getWorlds()) {
+            Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.player.getUuid());
+            if (claims != null) {
+                usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
+            }
+        }
+        return usedClaimsBlocks;
+    }
+
     public void save(MinecraftServer server) {
         Flan.log("Saving player data for player {} with uuid {}", this.player.getName(), this.player.getUuid());
         File dir = new File(server.getSavePath(WorldSavePath.PLAYERDATA).toFile(), "/claimData/");
@@ -364,6 +403,7 @@ public class PlayerClaimData implements IPlayerData {
             }
             FileReader reader = new FileReader(file);
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
+            reader.close();
             Flan.debug("Read following json data {} from file {}", obj, file.getName());
             this.claimBlocks = obj.get("ClaimBlocks").getAsInt();
             this.additionalClaimBlocks = obj.get("AdditionalBlocks").getAsInt();
@@ -379,10 +419,17 @@ public class PlayerClaimData implements IPlayerData {
                     });
                 }
             });
-            reader.close();
+            updateScoreFor(this.player, ClaimCriterias.AMOUNT, this.claimBlocks + this.additionalClaimBlocks);
+            this.updateClaimScores();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void updateScoreFor(ServerPlayerEntity player, ScoreboardCriterion criterion, int val) {
+        player.getScoreboard().forEachScore(criterion, player.getEntityName(), (scoreboardPlayerScore) -> {
+            scoreboardPlayerScore.setScore(val);
+        });
     }
 
     public static void editForOfflinePlayer(MinecraftServer server, UUID uuid, int additionalClaimBlocks) {
@@ -408,17 +455,6 @@ public class PlayerClaimData implements IPlayerData {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-
-    private int calculateUsedClaimBlocks() {
-        int usedClaimsBlocks = 0;
-        for (ServerWorld world : this.player.getServer().getWorlds()) {
-            Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.player.getUuid());
-            if (claims != null)
-                usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
-        }
-        return usedClaimsBlocks;
     }
 
     public static boolean readGriefPreventionPlayerData(MinecraftServer server, ServerCommandSource src) {
