@@ -30,7 +30,8 @@
     "IItemAccessor",
     "IHungerAccessor",
     "FrostWalkerMixin",
-    "LightningMixin"
+    "LightningMixin",
+    "ScoreboardCriterionAccessor"
   ],
   "server": [
   ],

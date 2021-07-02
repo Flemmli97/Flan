@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -141,6 +142,12 @@ public class Claim implements IPermissionContainer {
 
     public UUID getOwner() {
         return this.owner;
+    }
+
+    public Optional<ServerPlayerEntity> getOwnerPlayer() {
+        if (this.getOwner() != null)
+            return Optional.ofNullable(this.world.getServer().getPlayerManager().getPlayer(this.getOwner()));
+        return Optional.empty();
     }
 
     public ServerWorld getWorld() {

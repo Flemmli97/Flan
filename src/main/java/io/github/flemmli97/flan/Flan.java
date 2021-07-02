@@ -38,9 +38,7 @@ public class Flan implements ModInitializer {
         UseEntityCallback.EVENT.register(EntityInteractEvents::useAtEntity);
         AttackEntityCallback.EVENT.register(EntityInteractEvents::attackEntity);
         UseItemCallback.EVENT.register(ItemInteractEvents::useItem);
-        ServerLifecycleEvents.SERVER_STARTING.register(ConfigHandler::serverLoad);
-        ServerLifecycleEvents.SERVER_STARTING.register(ObjectToPermissionMap::reload);
-        ServerLifecycleEvents.SERVER_STARTING.register(this::lockRegistry);
+        ServerLifecycleEvents.SERVER_STARTING.register(Flan::serverLoad);
 
         CommandRegistrationCallback.EVENT.register(CommandClaim::register);
 
@@ -51,7 +49,7 @@ public class Flan implements ModInitializer {
             PlayerAbilityEvents.register();
     }
 
-    public void lockRegistry(MinecraftServer server) {
+    public static void lockRegistry(MinecraftServer server) {
         PermissionRegistry.lock();
     }
 
@@ -63,5 +61,11 @@ public class Flan implements ModInitializer {
     public static void debug(String msg, Object... o) {
         if (ConfigHandler.config.log)
             logger.debug(msg, o);
+    }
+
+    public static void serverLoad(MinecraftServer server) {
+        ConfigHandler.serverLoad(server);
+        ObjectToPermissionMap.reload(server);
+        Flan.lockRegistry(server);
     }
 }
