@@ -30,6 +30,7 @@ public class FlanForge {
         forge.addListener(EntityInteractEventsForge::xpAbsorb);
         forge.addListener(EntityInteractEventsForge::canDropItem);
         forge.addListener(EntityInteractEventsForge::mobGriefing);
+        forge.addListener(EntityInteractEventsForge::entityLightningHit);
 
         forge.addListener(ServerEvents::serverStart);
         forge.addListener(ServerEvents::commands);

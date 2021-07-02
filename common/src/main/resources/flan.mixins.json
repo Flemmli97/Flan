@@ -21,7 +21,8 @@
     "EndermanPlaceMixin",
     "IItemAccessor",
     "IHungerAccessor",
-    "FrostWalkerMixin"
+    "FrostWalkerMixin",
+    "LightningFireEntityMixin"
   ],
   "server": [
   ],

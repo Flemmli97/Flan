@@ -8,6 +8,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraftforge.event.entity.EntityMobGriefingEvent;
+import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -82,6 +83,12 @@ public class EntityInteractEventsForge {
         }
         if (event.getEntity() instanceof SnowGolemEntity && !EntityInteractEvents.canSnowGolemInteract((SnowGolemEntity) event.getEntity())) {
             event.setResult(Event.Result.DENY);
+        }
+    }
+
+    public static void entityLightningHit(EntityStruckByLightningEvent event) {
+        if (EntityInteractEvents.preventLightningConvert(event.getEntity())) {
+            event.setCanceled(true);
         }
     }
 }

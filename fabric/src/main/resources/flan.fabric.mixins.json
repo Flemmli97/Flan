@@ -14,7 +14,8 @@
     "PlayerDropMixin",
     "WitherMixin",
     "SnowGolemMixin",
-    "FabricFireMixin"
+    "FabricFireMixin",
+    "LightningHitMixin"
   ],
   "server": [
   ],
