@@ -3,9 +3,9 @@ package io.github.flemmli97.flan.gui;
 import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -45,22 +45,22 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler<Claim> {
     }
 
     @Override
-    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Claim claim) {
+    protected void fillInventoryWith(PlayerEntity player, SeparateInv inv, Claim claim) {
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
                 close.setCustomName(ServerScreenHelper.coloredGuiText("Back", Formatting.DARK_RED));
-                inv.setStack(i, close);
+                inv.updateStack(i, close);
             } else if (i == 3) {
                 ItemStack stack = new ItemStack(Items.ANVIL);
                 stack.setCustomName(ServerScreenHelper.coloredGuiText("Add", Formatting.DARK_GREEN));
-                inv.setStack(i, stack);
+                inv.updateStack(i, stack);
             } else if (i == 4) {
                 ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
                 stack.setCustomName(ServerScreenHelper.coloredGuiText("Remove Mode: " + this.removeMode, Formatting.DARK_RED));
-                inv.setStack(i, stack);
+                inv.updateStack(i, stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
-                inv.setStack(i, ServerScreenHelper.emptyFiller());
+                inv.updateStack(i, ServerScreenHelper.emptyFiller());
             else {
                 List<String> groups = claim.groups();
                 int row = i / 9 - 1;
@@ -68,7 +68,7 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 if (id < groups.size()) {
                     ItemStack group = new ItemStack(Items.PAPER);
                     group.setCustomName(ServerScreenHelper.coloredGuiText(groups.get(id), Formatting.DARK_BLUE));
-                    inv.setStack(i, group);
+                    inv.updateStack(i, group);
                 }
             }
         }

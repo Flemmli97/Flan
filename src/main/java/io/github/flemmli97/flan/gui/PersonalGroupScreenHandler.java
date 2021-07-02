@@ -3,10 +3,10 @@ package io.github.flemmli97.flan.gui;
 import io.github.flemmli97.flan.api.PermissionRegistry;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -44,24 +44,24 @@ public class PersonalGroupScreenHandler extends ServerOnlyScreenHandler<Object> 
     }
 
     @Override
-    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Object additionalData) {
+    protected void fillInventoryWith(PlayerEntity player, SeparateInv inv, Object additionalData) {
         if (!(player instanceof ServerPlayerEntity))
             return;
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
                 close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenBack, Formatting.DARK_RED));
-                inv.setStack(i, close);
+                inv.updateStack(i, close);
             } else if (i == 3) {
                 ItemStack stack = new ItemStack(Items.ANVIL);
                 stack.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenAdd, Formatting.DARK_GREEN));
-                inv.setStack(i, stack);
+                inv.updateStack(i, stack);
             } else if (i == 4) {
                 ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
                 stack.setCustomName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenRemoveMode, this.removeMode), Formatting.DARK_RED));
-                inv.setStack(i, stack);
+                inv.updateStack(i, stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
-                inv.setStack(i, ServerScreenHelper.emptyFiller());
+                inv.updateStack(i, ServerScreenHelper.emptyFiller());
             else {
                 List<String> groups = new ArrayList<>(PlayerClaimData.get((ServerPlayerEntity) player).playerDefaultGroups().keySet());
                 groups.sort(null);
@@ -70,7 +70,7 @@ public class PersonalGroupScreenHandler extends ServerOnlyScreenHandler<Object> 
                 if (id < groups.size()) {
                     ItemStack group = new ItemStack(Items.PAPER);
                     group.setCustomName(ServerScreenHelper.coloredGuiText(groups.get(id), Formatting.DARK_BLUE));
-                    inv.setStack(i, group);
+                    inv.updateStack(i, group);
                 }
             }
         }

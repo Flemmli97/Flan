@@ -6,10 +6,10 @@ import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -45,43 +45,43 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
     }
 
     @Override
-    protected void fillInventoryWith(PlayerEntity player, Inventory inv, Claim claim) {
+    protected void fillInventoryWith(PlayerEntity player, SeparateInv inv, Claim claim) {
         for (int i = 0; i < 9; i++) {
             switch (i) {
                 case 0 -> {
                     ItemStack close = new ItemStack(Items.TNT);
                     close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenClose, Formatting.DARK_RED));
-                    inv.setStack(i, close);
+                    inv.updateStack(i, close);
                 }
                 case 2 -> {
                     ItemStack perm = new ItemStack(Items.BEACON);
                     perm.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuGlobal, Formatting.GOLD));
                     if (player instanceof ServerPlayerEntity && !this.hasEditPerm(claim, (ServerPlayerEntity) player))
                         ServerScreenHelper.addLore(perm, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, Formatting.DARK_RED));
-                    inv.setStack(i, perm);
+                    inv.updateStack(i, perm);
                 }
                 case 3 -> {
                     ItemStack group = new ItemStack(Items.WRITABLE_BOOK);
                     group.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuGroup, Formatting.GOLD));
                     if (player instanceof ServerPlayerEntity && !this.hasEditPerm(claim, (ServerPlayerEntity) player))
                         ServerScreenHelper.addLore(group, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, Formatting.DARK_RED));
-                    inv.setStack(i, group);
+                    inv.updateStack(i, group);
                 }
                 case 4 -> {
                     ItemStack potions = new ItemStack(Items.POTION);
                     potions.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuPotion, Formatting.GOLD));
                     if (player instanceof ServerPlayerEntity && !this.hasPerm(claim, (ServerPlayerEntity) player, PermissionRegistry.EDITPOTIONS))
                         ServerScreenHelper.addLore(potions, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, Formatting.DARK_RED));
-                    inv.setStack(i, potions);
+                    inv.updateStack(i, potions);
                 }
                 case 8 -> {
                     ItemStack delete = new ItemStack(Items.BARRIER);
                     delete.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuDelete, Formatting.RED));
                     if (player instanceof ServerPlayerEntity && !this.hasPerm(claim, (ServerPlayerEntity) player, PermissionRegistry.EDITCLAIM))
                         ServerScreenHelper.addLore(delete, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, Formatting.DARK_RED));
-                    inv.setStack(i, delete);
+                    inv.updateStack(i, delete);
                 }
-                default -> inv.setStack(i, ServerScreenHelper.emptyFiller());
+                default -> inv.updateStack(i, ServerScreenHelper.emptyFiller());
             }
         }
     }

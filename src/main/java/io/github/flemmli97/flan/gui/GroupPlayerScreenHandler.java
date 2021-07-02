@@ -4,10 +4,10 @@ import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -61,24 +61,24 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
     }
 
     @Override
-    protected void fillInventoryWith(PlayerEntity player, Inventory inv, ClaimGroup additionalData) {
+    protected void fillInventoryWith(PlayerEntity player, SeparateInv inv, ClaimGroup additionalData) {
         Claim claim = additionalData.getClaim();
         List<String> players = claim.playersFromGroup(player.getServer(), additionalData.getGroup());
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
                 close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenBack, Formatting.DARK_RED));
-                inv.setStack(i, close);
+                inv.updateStack(i, close);
             } else if (i == 3) {
                 ItemStack stack = new ItemStack(Items.ANVIL);
                 stack.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenAdd, Formatting.DARK_GREEN));
-                inv.setStack(i, stack);
+                inv.updateStack(i, stack);
             } else if (i == 4) {
                 ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
                 stack.setCustomName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenRemoveMode, this.removeMode), Formatting.DARK_RED));
-                inv.setStack(i, stack);
+                inv.updateStack(i, stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
-                inv.setStack(i, ServerScreenHelper.emptyFiller());
+                inv.updateStack(i, ServerScreenHelper.emptyFiller());
             else {
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1;
@@ -87,7 +87,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
                     GameProfile gameProfile = new GameProfile(null, players.get(id));
                     SkullBlockEntity.loadProperties(gameProfile, (profRes) ->
                             group.getOrCreateTag().put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), profRes)));
-                    inv.setStack(i, group);
+                    inv.updateStack(i, group);
                 }
             }
         }
