@@ -1,11 +1,13 @@
 package io.github.flemmli97.flan.mixin;
 
 import net.minecraft.scoreboard.ScoreboardCriterion;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
+@Mixin(ScoreboardCriterion.class)
 public interface ScoreboardCriterionAccessor {
 
-    @Accessor("method_37269")
+    @Invoker("method_37269")
     static ScoreboardCriterion newCriteria(String string, boolean bl, ScoreboardCriterion.RenderType renderType) {
         throw new IllegalStateException();
     }
