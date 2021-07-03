@@ -677,7 +677,7 @@ public class Claim implements IPermissionContainer {
         return String.format("%s:[x=%d,z=%d] - [x=%d,z=%d]", this.claimName, this.minX, this.minZ, this.maxX, this.maxZ);
     }
 
-    public List<Text> infoString(ServerPlayerEntity player) {
+    public List<Text> infoString(ServerPlayerEntity player, InfoType infoType) {
         boolean perms = this.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos());
         List<Text> l = new ArrayList<>();
         l.add(PermHelper.simpleColoredText("=============================================", Formatting.GREEN));
@@ -695,25 +695,35 @@ public class Claim implements IPermissionContainer {
                 l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoSubNamed, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.claimName), Formatting.GOLD));
         }
         if (perms) {
-            l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimInfoPerms, this.globalPerm), Formatting.RED));
-            l.add(PermHelper.simpleColoredText(ConfigHandler.lang.claimGroupInfoHeader, Formatting.RED));
-            Map<String, List<String>> nameToGroup = new HashMap<>();
-            for (Map.Entry<UUID, String> e : this.playersGroups.entrySet()) {
-                GameProfile pgroup = player.getServer().getUserCache().getByUuid(e.getKey());
-                if (prof != null) {
-                    nameToGroup.merge(e.getValue(), Lists.newArrayList(pgroup.getName()), (old, val) -> {
-                        old.add(pgroup.getName());
-                        return old;
-                    });
+            if (infoType == InfoType.ALL || infoType == InfoType.GLOBAL)
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimInfoPerms, this.globalPerm), Formatting.RED));
+            if (infoType == InfoType.ALL || infoType == InfoType.GROUP) {
+                l.add(PermHelper.simpleColoredText(ConfigHandler.lang.claimGroupInfoHeader, Formatting.RED));
+                Map<String, List<String>> nameToGroup = new HashMap<>();
+                for (Map.Entry<UUID, String> e : this.playersGroups.entrySet()) {
+                    GameProfile pgroup = player.getServer().getUserCache().getByUuid(e.getKey());
+                    if (prof != null) {
+                        nameToGroup.merge(e.getValue(), Lists.newArrayList(pgroup.getName()), (old, val) -> {
+                            old.add(pgroup.getName());
+                            return old;
+                        });
+                    }
                 }
-            }
-            for (Map.Entry<String, Map<ClaimPermission, Boolean>> e : this.permissions.entrySet()) {
-                l.add(PermHelper.simpleColoredText(String.format("  %s:", e.getKey()), Formatting.DARK_RED));
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPerms, e.getValue()), Formatting.RED));
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPlayers, nameToGroup.getOrDefault(e.getKey(), new ArrayList<>())), Formatting.RED));
+                for (Map.Entry<String, Map<ClaimPermission, Boolean>> e : this.permissions.entrySet()) {
+                    l.add(PermHelper.simpleColoredText(String.format("  %s:", e.getKey()), Formatting.DARK_RED));
+                    l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPerms, e.getValue()), Formatting.RED));
+                    l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPlayers, nameToGroup.getOrDefault(e.getKey(), new ArrayList<>())), Formatting.RED));
+                }
             }
         }
         l.add(PermHelper.simpleColoredText("=============================================", Formatting.GREEN));
         return l;
+    }
+
+    public enum InfoType {
+        ALL,
+        SIMPLE,
+        GLOBAL,
+        GROUP
     }
 }

@@ -12,6 +12,7 @@ Flan 1.5.3
   flan:used_claimblocks: Tracks the used claimblocks of players
   flan:free_claimblocks: Tracks the amount a player can use to claim
   flan:claim_number: Tracks the number of claims a player has in total
+- Add option to only display part of a claims info with claimInfo
 
 Flan 1.5.2
 ======================
