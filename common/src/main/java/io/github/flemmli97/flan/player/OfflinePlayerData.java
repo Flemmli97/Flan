@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,9 +41,15 @@ public class OfflinePlayerData implements IPlayerData {
                     FileReader reader = new FileReader(file);
                     JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
                     reader.close();
-                    claim = obj.get("ClaimBlocks").getAsInt();
-                    add = obj.get("AdditionalBlocks").getAsInt();
-                    last = LocalDateTime.parse(obj.get("LastSeen").getAsString(), Flan.onlineTimeFormatter);
+                    claim = ConfigHandler.fromJson(obj, "ClaimBlocks", claim);
+                    add = ConfigHandler.fromJson(obj, "AdditionalBlocks", add);
+                    if(obj.has("LastSeen")) {
+                        try {
+                            last = LocalDateTime.parse(obj.get("LastSeen").getAsString(), Flan.onlineTimeFormatter);
+                        } catch (RuntimeException e) {
+                            Flan.log("Error parsing time for {}, ignoring", uuid);
+                        }
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -63,10 +70,14 @@ public class OfflinePlayerData implements IPlayerData {
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
             reader.close();
 
-            claim = obj.get("ClaimBlocks").getAsInt();
-            add = obj.get("AdditionalBlocks").getAsInt();
+            claim = ConfigHandler.fromJson(obj, "ClaimBlocks", claim);
+            add = ConfigHandler.fromJson(obj, "AdditionalBlocks", add);
             if (obj.has("LastSeen")) {
-                last = LocalDateTime.parse(obj.get("LastSeen").getAsString(), Flan.onlineTimeFormatter);
+                try {
+                    last = LocalDateTime.parse(obj.get("LastSeen").getAsString(), Flan.onlineTimeFormatter);
+                } catch (RuntimeException e) {
+                    Flan.log("Error parsing time for {}, ignoring", uuid);
+                }
             } else {
                 obj.addProperty("LastSeen", last.format(Flan.onlineTimeFormatter));
                 FileWriter write = new FileWriter(dataFile);
