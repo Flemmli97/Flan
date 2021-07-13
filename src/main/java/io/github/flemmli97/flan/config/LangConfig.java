@@ -24,7 +24,7 @@ public class LangConfig {
     public String inspectNoClaim = "Nobody owns this block";
     public String claimBlocksFormat = "Claim Blocks: %1$d + (Bonus) %2$d; Used: %3$d";
     public String listClaims = "Listing all claims:";
-    public String listAdminClaims = "Listing all admin-claims in %1:";
+    public String listAdminClaims = "Listing all admin-claims in %1$s:";
     public String onlyOnePlayer = "Only one player can be used as argument";
     public String ownerTransferSuccess = "New Claimowner now: %s";
     public String ownerTransferFail = "Only the owner may transfer claims";
