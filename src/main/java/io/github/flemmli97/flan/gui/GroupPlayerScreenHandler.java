@@ -109,8 +109,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
         if (index == 3) {
             player.closeHandledScreen();
             player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
-                GameProfile prof = player.getServer().getUserCache().findByName(s);
-                boolean fl = prof == null || this.claim.setPlayerGroup(prof.getId(), this.group, false);
+                boolean fl = player.getServer().getUserCache().findByName(s).map(prof -> this.claim.setPlayerGroup(prof.getId(), this.group, false)).orElse(true);
                 player.closeHandledScreen();
                 player.getServer().execute(() -> GroupPlayerScreenHandler.openPlayerGroupMenu(player, this.claim, this.group));
                 if (fl)

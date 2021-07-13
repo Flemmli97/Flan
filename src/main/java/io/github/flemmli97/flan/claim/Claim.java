@@ -399,11 +399,7 @@ public class Claim implements IPermissionContainer {
                 l.add(uuid);
         });
         List<String> names = new ArrayList<>();
-        l.forEach(uuid -> {
-            GameProfile prof = server.getUserCache().getByUuid(uuid);
-            if (prof != null)
-                names.add(prof.getName());
-        });
+        l.forEach(uuid -> server.getUserCache().getByUuid(uuid).ifPresent(prof -> names.add(prof.getName())));
         names.sort(null);
         return names;
     }
@@ -680,8 +676,8 @@ public class Claim implements IPermissionContainer {
         boolean perms = this.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos());
         List<Text> l = new ArrayList<>();
         l.add(PermHelper.simpleColoredText("=============================================", Formatting.GREEN));
-        GameProfile prof = this.owner != null ? player.getServer().getUserCache().getByUuid(this.owner) : null;
-        String ownerName = this.isAdminClaim() ? "Admin" : prof != null ? prof.getName() : "<UNKNOWN>";
+        String ownerName = this.isAdminClaim() ? "Admin" : player.getServer().getUserCache().getByUuid(this.getOwner()).map(GameProfile::getName).orElse("<UNKOWN>");
+
         if (this.parent == null) {
             if (this.claimName.isEmpty())
                 l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfo, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), Formatting.GOLD));
@@ -700,13 +696,11 @@ public class Claim implements IPermissionContainer {
                 l.add(PermHelper.simpleColoredText(ConfigHandler.lang.claimGroupInfoHeader, Formatting.RED));
                 Map<String, List<String>> nameToGroup = new HashMap<>();
                 for (Map.Entry<UUID, String> e : this.playersGroups.entrySet()) {
-                    GameProfile pgroup = player.getServer().getUserCache().getByUuid(e.getKey());
-                    if (prof != null) {
-                        nameToGroup.merge(e.getValue(), Lists.newArrayList(pgroup.getName()), (old, val) -> {
-                            old.add(pgroup.getName());
-                            return old;
-                        });
-                    }
+                    player.getServer().getUserCache().getByUuid(e.getKey()).ifPresent(prof ->
+                            nameToGroup.merge(e.getValue(), Lists.newArrayList(prof.getName()), (old, val) -> {
+                                old.add(prof.getName());
+                                return old;
+                            }));
                 }
                 for (Map.Entry<String, Map<ClaimPermission, Boolean>> e : this.permissions.entrySet()) {
                     l.add(PermHelper.simpleColoredText(String.format("  %s:", e.getKey()), Formatting.DARK_RED));

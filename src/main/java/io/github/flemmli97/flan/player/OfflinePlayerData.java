@@ -42,7 +42,7 @@ public class OfflinePlayerData implements IPlayerData {
                     reader.close();
                     claim = ConfigHandler.fromJson(obj, "ClaimBlocks", claim);
                     add = ConfigHandler.fromJson(obj, "AdditionalBlocks", add);
-                    if(obj.has("LastSeen")) {
+                    if (obj.has("LastSeen")) {
                         try {
                             last = LocalDateTime.parse(obj.get("LastSeen").getAsString(), Flan.onlineTimeFormatter);
                         } catch (RuntimeException e) {

@@ -251,7 +251,7 @@ public class EntityInteractEvents {
                     ItemStack itemStack2 = player.currentScreenHandler.slots.get(j).getStack();
                     stacks.add(itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2);
                 }
-                ((ServerPlayerEntity) player).networkHandler.sendPacket(new InventoryS2CPacket(player.currentScreenHandler.syncId, stacks));
+                ((ServerPlayerEntity) player).networkHandler.sendPacket(new InventoryS2CPacket(player.currentScreenHandler.syncId, 0, stacks, player.playerScreenHandler.getCursorStack()));
             }
             return allow;
         }

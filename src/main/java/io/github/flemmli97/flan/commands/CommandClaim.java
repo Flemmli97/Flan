@@ -158,7 +158,7 @@ public class CommandClaim {
         PlayerClaimData data = PlayerClaimData.get(player);
         boolean enoughBlocks = true;
         if (!data.isAdminIgnoreClaim()) {
-            MinecraftServer server = context.getSource().getMinecraftServer();
+            MinecraftServer server = context.getSource().getServer();
             ServerPlayerEntity newOwner = server.getPlayerManager().getPlayer(prof.getId());
             IPlayerData newData = newOwner != null ? PlayerClaimData.get(newOwner) : new OfflinePlayerData(server, prof.getId());
             enoughBlocks = newData.canUseClaimBlocks(claim.getPlane());
@@ -264,7 +264,7 @@ public class CommandClaim {
         Collection<GameProfile> profs = GameProfileArgumentType.getProfileArgument(context, "players");
         List<String> success = new ArrayList<>();
         for (GameProfile prof : profs) {
-            ServerPlayerEntity player = context.getSource().getMinecraftServer().getPlayerManager().getPlayer(prof.getId());
+            ServerPlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(prof.getId());
             if (player != null) {
                 PlayerClaimData data = PlayerClaimData.get(player);
                 data.unlockDeathItems();
@@ -398,7 +398,7 @@ public class CommandClaim {
     }
 
     private static int listClaimsFromUUID(CommandContext<ServerCommandSource> context, UUID of) throws CommandSyntaxException {
-        MinecraftServer server = context.getSource().getMinecraftServer();
+        MinecraftServer server = context.getSource().getServer();
         ServerPlayerEntity player = of == null ? context.getSource().getPlayer() : server.getPlayerManager().getPlayer(of);
         Map<World, Collection<Claim>> claims = new HashMap<>();
         for (ServerWorld world : server.getWorlds()) {
@@ -500,9 +500,9 @@ public class CommandClaim {
     private static int readGriefPreventionData(CommandContext<ServerCommandSource> context) {
         ServerCommandSource src = context.getSource();
         src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.readGriefpreventionData, Formatting.GOLD), true);
-        if (ClaimStorage.readGriefPreventionData(src.getMinecraftServer(), src))
+        if (ClaimStorage.readGriefPreventionData(src.getServer(), src))
             src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.readGriefpreventionClaimDataSuccess, Formatting.GOLD), true);
-        if (PlayerClaimData.readGriefPreventionPlayerData(src.getMinecraftServer(), src))
+        if (PlayerClaimData.readGriefPreventionPlayerData(src.getServer(), src))
             src.sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.readGriefpreventionPlayerDataSuccess, Formatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
@@ -512,12 +512,12 @@ public class CommandClaim {
         List<String> players = new ArrayList<>();
         int amount = IntegerArgumentType.getInteger(context, "amount");
         for (GameProfile prof : GameProfileArgumentType.getProfileArgument(context, "players")) {
-            ServerPlayerEntity player = src.getMinecraftServer().getPlayerManager().getPlayer(prof.getId());
+            ServerPlayerEntity player = src.getServer().getPlayerManager().getPlayer(prof.getId());
             if (player != null) {
                 PlayerClaimData data = PlayerClaimData.get(player);
                 data.setAdditionalClaims(data.getAdditionalClaims() + amount);
             } else
-                PlayerClaimData.editForOfflinePlayer(src.getMinecraftServer(), prof.getId(), amount);
+                PlayerClaimData.editForOfflinePlayer(src.getServer(), prof.getId(), amount);
             players.add(prof.getName());
         }
         src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.giveClaimBlocks, players, amount), Formatting.GOLD), true);

@@ -136,8 +136,8 @@ public class ItemInteractEvents {
      * -2 == Main inventory update
      */
     private static void updateHeldItem(ServerPlayerEntity player) {
-        player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, player.getInventory().selectedSlot, player.getInventory().getMainHandStack()));
-        player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 40, player.getInventory().getStack(40)));
+        player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(ScreenHandlerSlotUpdateS2CPacket.UPDATE_PLAYER_INVENTORY_SYNC_ID, 0, player.getInventory().selectedSlot, player.getInventory().getMainHandStack()));
+        player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(ScreenHandlerSlotUpdateS2CPacket.UPDATE_PLAYER_INVENTORY_SYNC_ID, 0, 40, player.getInventory().getStack(40)));
     }
 
     private static boolean cantClaimInWorld(ServerWorld world) {
@@ -248,12 +248,7 @@ public class ItemInteractEvents {
             return;
         data.setClaimActionCooldown();
         if (claim != null) {
-            String owner = claim.isAdminClaim() ? "<Admin>" : "<UNKOWN>";
-            if (!claim.isAdminClaim()) {
-                GameProfile prof = player.getServer().getUserCache().getByUuid(claim.getOwner());
-                if (prof != null && prof.getName() != null)
-                    owner = prof.getName();
-            }
+            String owner = claim.isAdminClaim() ? "<Admin>" : player.getServer().getUserCache().getByUuid(claim.getOwner()).map(GameProfile::getName).orElse("<UNKOWN>");
             Text text = PermHelper.simpleColoredText(String.format(ConfigHandler.lang.inspectBlockOwner,
                     owner,
                     target.getX(), target.getY(), target.getZ()), Formatting.GREEN);
