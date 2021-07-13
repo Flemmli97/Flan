@@ -1,3 +1,9 @@
+Flan 1.5.4
+======================
+- Safe read player data so it doesnt crash when the file is wrong
+- Fix typo in lang file making listAdminClaims error.
+  For already existing lang files replace %1 with %1$s for "listAdminClaims"
+
 Flan 1.5.3
 ======================
 - Add wiki link to help command
