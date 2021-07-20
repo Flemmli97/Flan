@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.api;
+package io.github.flemmli97.flan.api.data;
 
 import io.github.flemmli97.flan.config.ConfigHandler;
 
@@ -9,6 +9,8 @@ public interface IPlayerData {
     int getAdditionalClaims();
 
     int usedClaimBlocks();
+
+    void setAdditionalClaims(int amount);
 
     default boolean canUseClaimBlocks(int amount) {
         if (ConfigHandler.config.maxClaimBlocks == -1)

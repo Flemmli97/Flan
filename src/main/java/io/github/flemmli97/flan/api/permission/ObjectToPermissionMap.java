@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.api;
+package io.github.flemmli97.flan.api.permission;
 
 import net.minecraft.block.AbstractButtonBlock;
 import net.minecraft.block.AbstractPressurePlateBlock;

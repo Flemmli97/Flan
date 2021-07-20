@@ -1,6 +1,6 @@
 package io.github.flemmli97.flan.claim;
 
-import io.github.flemmli97.flan.api.ClaimPermission;
+import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;

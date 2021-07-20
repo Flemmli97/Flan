@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.api;
+package io.github.flemmli97.flan.api.permission;
 
 import io.github.flemmli97.flan.claim.Claim;
 import net.minecraft.entity.player.PlayerEntity;

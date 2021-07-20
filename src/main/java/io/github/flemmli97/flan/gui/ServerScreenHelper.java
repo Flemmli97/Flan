@@ -1,6 +1,6 @@
 package io.github.flemmli97.flan.gui;
 
-import io.github.flemmli97.flan.api.ClaimPermission;
+import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.Config;

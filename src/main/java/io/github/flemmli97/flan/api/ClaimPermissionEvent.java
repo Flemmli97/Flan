@@ -1,5 +1,6 @@
 package io.github.flemmli97.flan.api;
 
+import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
