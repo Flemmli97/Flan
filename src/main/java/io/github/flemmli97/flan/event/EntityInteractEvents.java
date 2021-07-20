@@ -43,6 +43,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -50,6 +51,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import java.util.function.Consumer;
@@ -104,7 +106,10 @@ public class EntityInteractEvents {
     }
 
     public static boolean canInteract(Entity entity) {
-        return entity.getScoreboardTags().stream().anyMatch(ConfigHandler.config.entityTagIgnore::contains);
+        Identifier id = Registry.ENTITY_TYPE.getId(entity.getType());
+        return ConfigHandler.config.ignoredEntityTypes.contains(id.getNamespace())
+                || ConfigHandler.config.ignoredEntityTypes.contains(id.toString())
+                || entity.getScoreboardTags().stream().anyMatch(ConfigHandler.config.entityTagIgnore::contains);
     }
 
     public static boolean projectileHit(ProjectileEntity proj, HitResult res) {

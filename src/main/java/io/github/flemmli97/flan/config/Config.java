@@ -36,6 +36,9 @@ public class Config {
     public int defaultClaimDepth = 10;
     public boolean lenientBlockEntityCheck;
     public List<String> ignoredBlocks = new ArrayList<>();
+    public List<String> ignoredEntityTypes = Lists.newArrayList(
+            "corpse:corpse"
+    );
     public List<String> blockEntityTagIgnore = Lists.newArrayList(
             "IsDeathChest", //vanilla death chest
             "gunpowder.owner" //gunpowder
@@ -121,6 +124,8 @@ public class Config {
             this.lenientBlockEntityCheck = ConfigHandler.fromJson(obj, "lenientBlockEntityCheck", this.lenientBlockEntityCheck);
             this.ignoredBlocks.clear();
             ConfigHandler.arryFromJson(obj, "ignoredBlocks").forEach(e -> this.ignoredBlocks.add(e.getAsString()));
+            this.ignoredEntityTypes.clear();
+            ConfigHandler.arryFromJson(obj, "ignoredEntities").forEach(e -> this.ignoredEntityTypes.add(e.getAsString()));
             this.blockEntityTagIgnore.clear();
             ConfigHandler.arryFromJson(obj, "blockEntityTagIgnore").forEach(e -> this.blockEntityTagIgnore.add(e.getAsString()));
             this.entityTagIgnore.clear();
@@ -196,13 +201,16 @@ public class Config {
         JsonArray blocks = new JsonArray();
         this.ignoredBlocks.forEach(blocks::add);
         obj.add("ignoredBlocks", blocks);
+        JsonArray entities = new JsonArray();
+        this.ignoredEntityTypes.forEach(entities::add);
+        obj.add("ignoredEntities", entities);
         obj.addProperty("lenientBlockEntityCheck", this.lenientBlockEntityCheck);
         JsonArray blocksEntities = new JsonArray();
         this.blockEntityTagIgnore.forEach(blocksEntities::add);
         obj.add("blockEntityTagIgnore", blocksEntities);
-        JsonArray entities = new JsonArray();
-        this.entityTagIgnore.forEach(entities::add);
-        obj.add("entityTagIgnore", entities);
+        JsonArray entitiesTags = new JsonArray();
+        this.entityTagIgnore.forEach(entitiesTags::add);
+        obj.add("entityTagIgnore", entitiesTags);
 
         JsonArray arr = new JsonArray();
         for (String blacklistedWorld : this.blacklistedWorlds)

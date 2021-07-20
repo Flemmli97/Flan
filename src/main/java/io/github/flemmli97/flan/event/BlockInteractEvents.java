@@ -130,6 +130,7 @@ public class BlockInteractEvents {
 
     public static boolean alwaysAllowBlock(Identifier id, BlockEntity blockEntity) {
         return ConfigHandler.config.ignoredBlocks.contains(id.toString())
+                || ConfigHandler.config.ignoredBlocks.contains(id.toString())
                 || (blockEntity != null
                 && ConfigHandler.config.blockEntityTagIgnore.stream().anyMatch(blockEntity.writeNbt(new NbtCompound())::contains));
     }
