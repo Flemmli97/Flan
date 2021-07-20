@@ -29,6 +29,10 @@ repositories {
             includeGroupByRegex 'io\\.github\\.onyxstudios.*'
         }
     }
+    maven {
+        name = "HavenKing"
+        url = "https://hephaestus.dev/release"
+    }
 }
 
 dependencies {
@@ -38,7 +42,10 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
 
     modImplementation "me.lucko:fabric-permissions-api:${rootProject.fabric_permissions_api}"
-    modCompileOnly "io.github.gunpowder:gunpowder-api:${rootProject.gunpowder_version}+1.16.2"
+    modCompileOnly "io.github.gunpowder:gunpowder-api:${rootProject.gunpowder_version}"
+    modRuntime "io.github.gunpowder:gunpowder-base:${rootProject.gunpowder_version}"
+    modRuntime "io.github.gunpowder:gunpowder-currency:${rootProject.gunpowder_currency_version}"
+
     modImplementation "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
 
     implementation(project(path: ":common")) {
