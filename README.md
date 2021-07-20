@@ -19,10 +19,10 @@ dependencies {
     modImplementation "io.github.flemmli97:flan:${flan_version}-${minecraft_version}:${mod_loader}" // for version 1.5.0 and up
     
     //Use the following lines for 1.6.0+
-    modCompileOnly('io.github.flemmli97:flan:1.17.1-1.5.4:api') {
+    modCompileOnly('io.github.flemmli97:flan:${flan_version}-${minecraft_version}:${mod_loader}-api') {
 		transitive = false //Remove this if you want to have all those optional dependencies
 	}
-    modRuntime('io.github.flemmli97:flan:1.17.1-1.5.4:api') {
+    modRuntime('io.github.flemmli97:flan:${flan_version}-${minecraft_version}:${mod_loader}') {
 		transitive = false //Remove this if you want to have all those optional dependencies
 	}
     
@@ -30,7 +30,7 @@ dependencies {
     compile fg.deobf("io.github.flemmli97:flan:${flan_version}-${minecraft_version}:${mod_loader}") // for version 1.5.0 and up
     
     //Use the following lines for 1.6.0+
-    compileOnly fg.deobf('io.github.flemmli97:flan:1.17.1-1.5.4:api')
-    runtimeOnly fg.deobf('io.github.flemmli97:flan:1.17.1-1.5.4:api')
+    compileOnly fg.deobf('io.github.flemmli97:flan:${flan_version}-${minecraft_version}:${mod_loader}-api')
+    runtimeOnly fg.deobf('io.github.flemmli97:flan:${flan_version}-${minecraft_version}:${mod_loader}-api')
 }
 ```
