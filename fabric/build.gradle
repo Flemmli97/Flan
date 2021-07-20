@@ -93,6 +93,26 @@ sourcesJar {
     classifier "fabric-source"
 }
 
+task apiJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set "fabric-api-source"
+    from project(":common").sourceSets.main.output + sourceSets.main.output
+    include "io/github/flemmli97/flan/api/**"
+    include "fabric.mod_api.json" //Include this so it gets remapped as a dependency
+    rename("fabric.mod_api.json", "fabric.mod.json")
+}
+
+task remapApiJar(type: net.fabricmc.loom.task.RemapJarTask){
+    archiveClassifier.set "fabric-api"
+    input.set apiJar.archiveFile
+    addNestedDependencies = false
+    dependsOn apiJar
+    from sourceSets.main.output
+    /* Putting it here doesnt seem to work...
+    include "fabric.mod_api.json" //Include this so it gets remapped as a dependency
+    rename("fabric.mod_api.json", "fabric.mod.json")
+    */
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -103,6 +123,7 @@ publishing {
             artifact(sourcesJar) {
                 builtBy remapSourcesJar
             }
+            artifact(remapApiJar)
             artifactId project.archives_base_name
             version project.version
         }

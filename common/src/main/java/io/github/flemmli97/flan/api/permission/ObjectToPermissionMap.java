@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.api;
+package io.github.flemmli97.flan.api.permission;
 
 import io.github.flemmli97.flan.CrossPlatformStuff;
 import net.minecraft.block.AbstractButtonBlock;

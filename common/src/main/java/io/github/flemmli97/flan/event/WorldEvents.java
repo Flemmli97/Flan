@@ -1,8 +1,8 @@
 package io.github.flemmli97.flan.event;
 
-import io.github.flemmli97.flan.api.PermissionRegistry;
+import io.github.flemmli97.flan.api.data.IPermissionContainer;
+import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.claim.ClaimStorage;
-import io.github.flemmli97.flan.claim.IPermissionContainer;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.SpawnGroup;

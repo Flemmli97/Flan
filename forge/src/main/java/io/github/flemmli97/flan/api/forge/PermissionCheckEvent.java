@@ -1,6 +1,6 @@
 package io.github.flemmli97.flan.api.forge;
 
-import io.github.flemmli97.flan.api.ClaimPermission;
+import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;

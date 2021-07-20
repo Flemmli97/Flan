@@ -9,9 +9,9 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.flemmli97.flan.api.ClaimPermission;
-import io.github.flemmli97.flan.api.IPlayerData;
-import io.github.flemmli97.flan.api.PermissionRegistry;
+import io.github.flemmli97.flan.api.data.IPlayerData;
+import io.github.flemmli97.flan.api.permission.ClaimPermission;
+import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.PermHelper;
@@ -415,7 +415,7 @@ public class CommandClaim {
             } else {
                 OfflinePlayerData data = new OfflinePlayerData(server, of);
                 context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
-                        data.claimBlocks, data.additionalClaimBlocks, data.usedClaimBlocks()), Formatting.GOLD), false);
+                        data.claimBlocks, data.getAdditionalClaims(), data.usedClaimBlocks()), Formatting.GOLD), false);
             }
         }
         context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.listClaims, Formatting.GOLD), false);

@@ -2,12 +2,12 @@ package io.github.flemmli97.flan.player;
 
 import com.google.gson.JsonObject;
 import io.github.flemmli97.flan.Flan;
-import io.github.flemmli97.flan.api.ClaimPermission;
-import io.github.flemmli97.flan.api.IPlayerData;
-import io.github.flemmli97.flan.api.PermissionRegistry;
+import io.github.flemmli97.flan.api.data.IPermissionContainer;
+import io.github.flemmli97.flan.api.data.IPlayerData;
+import io.github.flemmli97.flan.api.permission.ClaimPermission;
+import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
-import io.github.flemmli97.flan.claim.IPermissionContainer;
 import io.github.flemmli97.flan.claim.ParticleIndicators;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -102,6 +102,7 @@ public class PlayerClaimData implements IPlayerData {
         return this.additionalClaimBlocks;
     }
 
+    @Override
     public void setAdditionalClaims(int amount) {
         this.additionalClaimBlocks = Math.max(0, amount);
         updateScoreFor(this.player, ClaimCriterias.AMOUNT, this.claimBlocks + this.additionalClaimBlocks);

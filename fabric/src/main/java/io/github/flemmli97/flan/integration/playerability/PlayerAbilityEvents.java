@@ -1,8 +1,8 @@
 package io.github.flemmli97.flan.integration.playerability;
 
-import io.github.flemmli97.flan.api.PermissionRegistry;
+import io.github.flemmli97.flan.api.data.IPermissionContainer;
+import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.claim.ClaimStorage;
-import io.github.flemmli97.flan.claim.IPermissionContainer;
 import io.github.ladysnake.pal.AbilitySource;
 import io.github.ladysnake.pal.PlayerAbility;
 import io.github.ladysnake.pal.PlayerAbilityEnableCallback;

@@ -1,11 +1,11 @@
 package io.github.flemmli97.flan.event;
 
-import io.github.flemmli97.flan.api.ClaimPermission;
-import io.github.flemmli97.flan.api.ObjectToPermissionMap;
-import io.github.flemmli97.flan.api.PermissionRegistry;
+import io.github.flemmli97.flan.api.data.IPermissionContainer;
+import io.github.flemmli97.flan.api.permission.ClaimPermission;
+import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
+import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
-import io.github.flemmli97.flan.claim.IPermissionContainer;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.mixin.IHungerAccessor;
 import io.github.flemmli97.flan.mixin.IPersistentProjectileVars;

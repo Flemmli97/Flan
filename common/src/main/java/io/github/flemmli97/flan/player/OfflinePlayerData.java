@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.player;
 
 import com.google.gson.JsonObject;
 import io.github.flemmli97.flan.Flan;
-import io.github.flemmli97.flan.api.IPlayerData;
+import io.github.flemmli97.flan.api.data.IPlayerData;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,13 +22,16 @@ import java.util.UUID;
 
 public class OfflinePlayerData implements IPlayerData {
 
-    public final int claimBlocks, additionalClaimBlocks;
+    public final int claimBlocks;
+    private int additionalClaimBlocks;
     public final LocalDateTime lastOnline;
     public final UUID owner;
     public final MinecraftServer server;
+    public final File saveFile;
 
     public OfflinePlayerData(MinecraftServer server, UUID uuid) {
         File dir = new File(server.getSavePath(WorldSavePath.PLAYERDATA).toFile(), "/claimData/");
+        this.saveFile = new File(dir, uuid + ".json");
         int claim = ConfigHandler.config.startingBlocks;
         int add = 0;
         this.owner = uuid;
@@ -43,7 +45,7 @@ public class OfflinePlayerData implements IPlayerData {
                     reader.close();
                     claim = ConfigHandler.fromJson(obj, "ClaimBlocks", claim);
                     add = ConfigHandler.fromJson(obj, "AdditionalBlocks", add);
-                    if(obj.has("LastSeen")) {
+                    if (obj.has("LastSeen")) {
                         try {
                             last = LocalDateTime.parse(obj.get("LastSeen").getAsString(), Flan.onlineTimeFormatter);
                         } catch (RuntimeException e) {
@@ -62,6 +64,7 @@ public class OfflinePlayerData implements IPlayerData {
     }
 
     private OfflinePlayerData(MinecraftServer server, File dataFile, UUID uuid) {
+        this.saveFile = dataFile;
         int claim = ConfigHandler.config.startingBlocks;
         int add = 0;
         LocalDateTime last = LocalDateTime.now();
@@ -113,6 +116,36 @@ public class OfflinePlayerData implements IPlayerData {
                 usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
         }
         return usedClaimsBlocks;
+    }
+
+    @Override
+    public void setAdditionalClaims(int amount) {
+        this.additionalClaimBlocks = amount;
+        try {
+            if (!this.saveFile.getParentFile().exists()) {
+                this.saveFile.getParentFile().mkdirs();
+                this.saveFile.createNewFile();
+            } else if (!this.saveFile.exists())
+                this.saveFile.createNewFile();
+            FileReader reader = new FileReader(this.saveFile);
+            JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
+            reader.close();
+            if (obj == null) {
+                obj = new JsonObject();
+                obj.addProperty("ClaimBlocks", this.claimBlocks);
+                obj.addProperty("AdditionalBlocks", this.additionalClaimBlocks);
+                obj.addProperty("LastSeen", this.lastOnline.format(Flan.onlineTimeFormatter));
+                JsonObject defPerm = new JsonObject();
+                obj.add("DefaultGroups", defPerm);
+            } else
+                obj.addProperty("AdditionalBlocks", this.additionalClaimBlocks);
+            Flan.debug("Attempting to write following json data {} to file {}", obj, this.saveFile.getName());
+            FileWriter writer = new FileWriter(this.saveFile);
+            ConfigHandler.GSON.toJson(obj, writer);
+            writer.close();
+        } catch (IOException e) {
+            Flan.log("Error adding additional claimblocks to offline player {}", this.owner);
+        }
     }
 
     public static Map<UUID, OfflinePlayerData> collectAllPlayerData(MinecraftServer server) {

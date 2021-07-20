@@ -6,9 +6,11 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.flemmli97.flan.Flan;
-import io.github.flemmli97.flan.api.ClaimPermission;
-import io.github.flemmli97.flan.api.IPlayerData;
-import io.github.flemmli97.flan.api.PermissionRegistry;
+import io.github.flemmli97.flan.api.data.IPermissionContainer;
+import io.github.flemmli97.flan.api.data.IPermissionStorage;
+import io.github.flemmli97.flan.api.data.IPlayerData;
+import io.github.flemmli97.flan.api.permission.ClaimPermission;
+import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.EnumEditMode;
@@ -46,7 +48,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class ClaimStorage {
+public class ClaimStorage implements IPermissionStorage {
 
     public static final String adminClaimString = "!AdminClaims";
     private final Long2ObjectArrayMap<List<Claim>> claims = new Long2ObjectArrayMap<>();
@@ -203,6 +205,7 @@ public class ClaimStorage {
         return null;
     }
 
+    @Override
     public IPermissionContainer getForPermissionCheck(BlockPos pos) {
         Claim claim = this.getClaimAt(pos);
         if (claim != null)

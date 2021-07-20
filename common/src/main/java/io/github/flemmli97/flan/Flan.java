@@ -1,6 +1,6 @@
 package io.github.flemmli97.flan;
 
-import io.github.flemmli97.flan.api.PermissionRegistry;
+import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
