@@ -35,7 +35,9 @@ public class Config {
     public int defaultClaimDepth = 10;
     public boolean lenientBlockEntityCheck;
     public List<String> ignoredBlocks = new ArrayList<>();
-    public List<String> ignoredEntityTypes = new ArrayList<>();
+    public List<String> ignoredEntityTypes = Lists.newArrayList(
+            "corpse:corpse"
+    );
     public List<String> blockEntityTagIgnore = Lists.newArrayList(
             "IsDeathChest", //vanilla death chest
             "gunpowder.owner" //gunpowder

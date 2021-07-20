@@ -6,6 +6,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.InventoryProvider;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
@@ -38,6 +39,10 @@ public class CrossPlatformStuffImpl {
 
     public static SimpleRegistryWrapper<Item> registryItems() {
         return new FabricRegistryWrapper<>(Registry.ITEM);
+    }
+
+    public static SimpleRegistryWrapper<EntityType<?>> registryEntities() {
+        return new FabricRegistryWrapper<>(Registry.ENTITY_TYPE);
     }
 
     public static boolean isInventoryTile(BlockEntity blockEntity) {

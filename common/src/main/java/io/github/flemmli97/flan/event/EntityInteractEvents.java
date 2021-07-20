@@ -1,5 +1,6 @@
 package io.github.flemmli97.flan.event;
 
+import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
@@ -43,6 +44,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -105,7 +107,10 @@ public class EntityInteractEvents {
     }
 
     public static boolean canInteract(Entity entity) {
-        return entity.getScoreboardTags().stream().anyMatch(ConfigHandler.config.entityTagIgnore::contains);
+        Identifier id = CrossPlatformStuff.registryEntities().getIDFrom(entity.getType());
+        return ConfigHandler.config.ignoredEntityTypes.contains(id.getNamespace())
+                || ConfigHandler.config.ignoredEntityTypes.contains(id.toString())
+                || entity.getScoreboardTags().stream().anyMatch(ConfigHandler.config.entityTagIgnore::contains);
     }
 
     public static boolean projectileHit(ProjectileEntity proj, HitResult res) {
