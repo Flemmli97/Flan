@@ -31,6 +31,6 @@ dependencies {
     
     //Use the following lines for 1.6.0+
     compileOnly fg.deobf('io.github.flemmli97:flan:${flan_version}-${minecraft_version}:${mod_loader}-api')
-    runtimeOnly fg.deobf('io.github.flemmli97:flan:${flan_version}-${minecraft_version}:${mod_loader}-api')
+    runtimeOnly fg.deobf('io.github.flemmli97:flan:${flan_version}-${minecraft_version}:${mod_loader}')
 }
 ```
