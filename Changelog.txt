@@ -1,3 +1,14 @@
+Flan 1.6.0
+======================
+- Separate some stuff to make it more api like and to make it into an api jar.
+  Breaks compat with any potential mods using the previous system.
+- Add ignoredEntityTypes config to always ignore certain entities.
+  Like grave mods that add the graves as an entity (e.g. corpse mod).
+  Add the corpse entity from that mod to default list
+- Add modid support for ignoredBlocks and ignoredEntities.
+  Use a modid to affect all things from that mod
+- Update gunpowder: fixes buying/selling claimblocks not changing the balance
+
 Flan 1.5.4
 ======================
 - Safe read player data so it doesnt crash when the file is wrong
