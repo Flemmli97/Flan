@@ -10,7 +10,7 @@ import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.integration.permissionapi.CommandPermission;
+import io.github.flemmli97.flan.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.mixin.IItemAccessor;
 import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.EnumEditMode;
@@ -150,7 +150,7 @@ public class ItemInteractEvents {
     }
 
     public static void claimLandHandling(ServerPlayerEntity player, BlockPos target) {
-        if (!CommandPermission.perm(player, CommandPermission.claimCreate, false)) {
+        if (!PermissionNodeHandler.perm(player, PermissionNodeHandler.claimCreate, false)) {
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermission, Formatting.DARK_RED), true);
             return;
         }

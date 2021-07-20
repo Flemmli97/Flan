@@ -1,12 +1,12 @@
-package io.github.flemmli97.flan.integration.permissionapi;
+package io.github.flemmli97.flan.integration.permissions;
 
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.minecraft.command.CommandSource;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class CommandPermission {
+public class PermissionNodeHandler {
 
     public static final String cmdReload = "flan.command.reload";
     public static final String cmdGriefPrevention = "flan.command.read.griefprevention";
@@ -46,11 +46,11 @@ public class CommandPermission {
     public static final String cmdHome = "flan.command.home";
     public static final String cmdTeleport = "flan.command.teleport";
 
-    public static boolean perm(CommandSource src, String perm) {
+    public static boolean perm(ServerCommandSource src, String perm) {
         return perm(src, perm, false);
     }
 
-    public static boolean perm(CommandSource src, String perm, boolean adminCmd) {
+    public static boolean perm(ServerCommandSource src, String perm, boolean adminCmd) {
         if (!Flan.permissionAPI)
             return !adminCmd || src.hasPermissionLevel(ConfigHandler.config.permissionLevel);
         if (adminCmd)
