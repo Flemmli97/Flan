@@ -49,6 +49,10 @@ repositories {
         name = "HavenKing"
         url = "https://hephaestus.dev/release"
     }
+    maven {
+        name = "Permissions"
+        url = "https://maven.nucleoid.xyz"
+    }
 }
 
 dependencies {
@@ -63,12 +67,11 @@ dependencies {
     implementation group: 'org.yaml', name: 'snakeyaml', version: '1.25'
     shadowLibs group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
-    modImplementation "me.lucko:fabric-permissions-api:${project.fabric_permissions_api}"
+    modCompileOnly "me.lucko:fabric-permissions-api:${project.fabric_permissions_api}"
     modImplementation "io.github.ladysnake:PlayerAbilityLib:${project.player_ability_lib}"
 
-    modCompileOnly "dev.inkwell:hermes:1.0.0"
-    modCompileOnly "io.github.gunpowder:gunpowder-base:${gunpowder_version}"
-    modCompileOnly "io.github.gunpowder:gunpowder-currency:${gunpowder_currency_version}"
+    modRuntime "io.github.gunpowder:gunpowder-base:${gunpowder_version}"
+    modImplementation "io.github.gunpowder:gunpowder-currency:${gunpowder_currency_version}"
 }
 
 processResources {
@@ -113,6 +116,12 @@ remapJar {
     dependsOn shadowJar
 }
 
+task apiJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set "api"
+    from sourceSets.main.output
+    include "io/github/flemmli97/flan/api/**"
+}
+
 // configure the maven publication
 publishing {
     publications {
@@ -124,6 +133,7 @@ publishing {
             artifact(sourcesJar) {
                 builtBy remapSourcesJar
             }
+            artifact(apiJar)
             artifactId project.archives_base_name
             version project.version
         }
