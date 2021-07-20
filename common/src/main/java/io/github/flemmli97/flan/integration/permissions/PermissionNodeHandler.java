@@ -1,10 +1,10 @@
-package io.github.flemmli97.flan.integration.permissionapi;
+package io.github.flemmli97.flan.integration.permissions;
 
 import me.shedaniel.architectury.annotations.ExpectPlatform;
-import net.minecraft.command.CommandSource;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class CommandPermission {
+public class PermissionNodeHandler {
 
     public static final String cmdReload = "flan.command.reload";
     public static final String cmdGriefPrevention = "flan.command.read.griefprevention";
@@ -44,17 +44,24 @@ public class CommandPermission {
     public static final String cmdHome = "flan.command.home";
     public static final String cmdTeleport = "flan.command.teleport";
 
-    public static boolean perm(CommandSource src, String perm) {
+    public static final String permClaimBlocks = "flan.claim.blocks.max";
+
+    public static boolean perm(ServerCommandSource src, String perm) {
         return perm(src, perm, false);
     }
 
     @ExpectPlatform
-    public static boolean perm(CommandSource src, String perm, boolean adminCmd) {
+    public static boolean perm(ServerCommandSource src, String perm, boolean adminCmd) {
         throw new AssertionError();
     }
 
     @ExpectPlatform
     public static boolean perm(ServerPlayerEntity src, String perm, boolean adminCmd) {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static boolean permBelowEqVal(ServerPlayerEntity src, String perm, int val) {
         throw new AssertionError();
     }
 }

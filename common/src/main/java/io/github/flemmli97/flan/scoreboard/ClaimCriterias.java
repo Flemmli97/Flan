@@ -12,6 +12,10 @@ public class ClaimCriterias {
     public static ScoreboardCriterion FREE = create("flan:free_claimblocks", true, ScoreboardCriterion.RenderType.INTEGER);
     public static ScoreboardCriterion CLAIMS = create("flan:claim_number", true, ScoreboardCriterion.RenderType.INTEGER);
 
+    public static void init() {
+
+    }
+
     /**
      * Just reflection cause its only called once during init
      */

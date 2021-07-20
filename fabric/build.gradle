@@ -33,6 +33,10 @@ repositories {
         name = "HavenKing"
         url = "https://hephaestus.dev/release"
     }
+    maven {
+        name = "FTB"
+        url = "https://maven.saps.dev/minecraft"
+    }
 }
 
 dependencies {
@@ -57,6 +61,8 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) {
         transitive = false
     }
+
+    modImplementation("dev.ftb.mods:ftb-ranks-fabric:1605.1.2-build.17")
 }
 
 processResources {
@@ -101,7 +107,7 @@ task apiJar(type: Jar, dependsOn: classes) {
     rename("fabric.mod_api.json", "fabric.mod.json")
 }
 
-task remapApiJar(type: net.fabricmc.loom.task.RemapJarTask){
+task remapApiJar(type: net.fabricmc.loom.task.RemapJarTask) {
     archiveClassifier.set "fabric-api"
     input.set apiJar.archiveFile
     addNestedDependencies = false

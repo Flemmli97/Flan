@@ -12,6 +12,7 @@ import io.github.flemmli97.flan.claim.ParticleIndicators;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.EntityInteractEvents;
+import io.github.flemmli97.flan.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
@@ -91,10 +92,15 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public boolean addClaimBlocks(int amount) {
-        if (this.claimBlocks + amount > ConfigHandler.config.maxClaimBlocks)
-            return false;
-        this.setClaimBlocks(this.claimBlocks + amount);
-        return true;
+        if (this.canIncrease(this.claimBlocks + amount)) {
+            this.setClaimBlocks(this.claimBlocks + amount);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean canIncrease(int blocks) {
+        return blocks <= ConfigHandler.config.maxClaimBlocks || PermissionNodeHandler.permBelowEqVal(this.player, PermissionNodeHandler.permClaimBlocks, blocks);
     }
 
     @Override

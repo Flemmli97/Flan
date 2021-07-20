@@ -16,6 +16,14 @@ loom {
     useFabricMixin = true
 }
 
+repositories {
+    mavenCentral()
+    maven {
+        name = "FTB"
+        url = "https://maven.saps.dev/minecraft"
+    }
+}
+
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
 
@@ -28,6 +36,8 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) {
         transitive = false
     }
+
+    modImplementation("dev.ftb.mods:ftb-ranks-forge:1605.1.2-build.17")
 }
 
 processResources {
@@ -73,7 +83,7 @@ task apiJar(type: Jar, dependsOn: classes) {
     include "io/github/flemmli97/flan/api/**"
 }
 
-task remapApiJar(type: net.fabricmc.loom.task.RemapJarTask){
+task remapApiJar(type: net.fabricmc.loom.task.RemapJarTask) {
     archiveClassifier.set "forge-api"
     input.set apiJar.archiveFile
     addNestedDependencies = false

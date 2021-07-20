@@ -2,7 +2,12 @@ Flan 1.6.0
 ======================
 - Separate some stuff to make it more api like and to make it into an api jar.
   Breaks compat with any potential mods using the previous system.
-
+- Add ignoredEntities config to always ignore certain entities.
+  Like grave mods that add the graves as an entity (e.g. corpse mod).
+  Add the corpse entity from that mod to default list
+- Add modid support for ignoredBlocks and ignoredEntities.
+  Use a modid to affect all things from that mod
+- Add FTBRanks support. Permission Nodes are the same
 
 Flan 1.5.4
 ======================

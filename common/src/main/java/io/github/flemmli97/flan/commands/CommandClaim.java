@@ -19,7 +19,7 @@ import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.ClaimMenuScreenHandler;
 import io.github.flemmli97.flan.gui.PersonalGroupScreenHandler;
 import io.github.flemmli97.flan.integration.gunpowder.CommandCurrency;
-import io.github.flemmli97.flan.integration.permissionapi.CommandPermission;
+import io.github.flemmli97.flan.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.EnumEditMode;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
@@ -48,39 +48,39 @@ public class CommandClaim {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("flan")
-                .then(CommandManager.literal("reload").requires(src -> CommandPermission.perm(src, CommandPermission.cmdReload, true)).executes(CommandClaim::reloadConfig))
-                .then(CommandManager.literal("addClaim").requires(src -> CommandPermission.perm(src, CommandPermission.claimCreate)).then(CommandManager.argument("from", BlockPosArgumentType.blockPos()).then(CommandManager.argument("to", BlockPosArgumentType.blockPos()).executes(CommandClaim::addClaim))))
-                .then(CommandManager.literal("menu").requires(src -> CommandPermission.perm(src, CommandPermission.cmdMenu)).executes(CommandClaim::openMenu))
-                .then(CommandManager.literal("setHome").requires(src -> CommandPermission.perm(src, CommandPermission.cmdHome)).executes(CommandClaim::setClaimHome))
-                .then(CommandManager.literal("trapped").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTrapped)).executes(CommandClaim::trapped))
-                .then(CommandManager.literal("name").requires(src -> CommandPermission.perm(src, CommandPermission.cmdName)).then(CommandManager.argument("name", StringArgumentType.string()).executes(CommandClaim::nameClaim)))
+                .then(CommandManager.literal("reload").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdReload, true)).executes(CommandClaim::reloadConfig))
+                .then(CommandManager.literal("addClaim").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.claimCreate)).then(CommandManager.argument("from", BlockPosArgumentType.blockPos()).then(CommandManager.argument("to", BlockPosArgumentType.blockPos()).executes(CommandClaim::addClaim))))
+                .then(CommandManager.literal("menu").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdMenu)).executes(CommandClaim::openMenu))
+                .then(CommandManager.literal("setHome").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdHome)).executes(CommandClaim::setClaimHome))
+                .then(CommandManager.literal("trapped").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdTrapped)).executes(CommandClaim::trapped))
+                .then(CommandManager.literal("name").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdName)).then(CommandManager.argument("name", StringArgumentType.string()).executes(CommandClaim::nameClaim)))
                 .then(CommandManager.literal("unlockDrops").executes(CommandClaim::unlockDrops)
-                        .then(CommandManager.argument("players", GameProfileArgumentType.gameProfile()).requires(src -> CommandPermission.perm(src, CommandPermission.cmdUnlockAll, true)).executes(CommandClaim::unlockDropsPlayers)))
-                .then(CommandManager.literal("personalGroups").requires(src -> CommandPermission.perm(src, CommandPermission.cmdPGroup)).executes(CommandClaim::openPersonalGroups))
-                .then(CommandManager.literal("claimInfo").requires(src -> CommandPermission.perm(src, CommandPermission.cmdInfo)).executes(ctx -> CommandClaim.claimInfo(ctx, Claim.InfoType.ALL))
+                        .then(CommandManager.argument("players", GameProfileArgumentType.gameProfile()).requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdUnlockAll, true)).executes(CommandClaim::unlockDropsPlayers)))
+                .then(CommandManager.literal("personalGroups").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdPGroup)).executes(CommandClaim::openPersonalGroups))
+                .then(CommandManager.literal("claimInfo").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdInfo)).executes(ctx -> CommandClaim.claimInfo(ctx, Claim.InfoType.ALL))
                         .then(CommandManager.argument("type", StringArgumentType.word()).suggests((src, b) -> CommandHelpers.enumSuggestion(Claim.InfoType.class, b)).executes(CommandClaim::claimInfo)))
-                .then(CommandManager.literal("transferClaim").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTransfer)).then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).executes(CommandClaim::transferClaim)))
-                .then(CommandManager.literal("delete").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTransfer)).executes(CommandClaim::deleteClaim))
-                .then(CommandManager.literal("deleteAll").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTransfer)).executes(CommandClaim::deleteAllClaim))
-                .then(CommandManager.literal("deleteSubClaim").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTransfer)).executes(CommandClaim::deleteSubClaim))
-                .then(CommandManager.literal("deleteAllSubClaims").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTransfer)).executes(CommandClaim::deleteAllSubClaim))
-                .then(CommandManager.literal("list").requires(src -> CommandPermission.perm(src, CommandPermission.cmdList)).executes(CommandClaim::listClaims).then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).requires(src -> CommandPermission.perm(src, CommandPermission.cmdListAll, true))
+                .then(CommandManager.literal("transferClaim").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdTransfer)).then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).executes(CommandClaim::transferClaim)))
+                .then(CommandManager.literal("delete").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdTransfer)).executes(CommandClaim::deleteClaim))
+                .then(CommandManager.literal("deleteAll").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdTransfer)).executes(CommandClaim::deleteAllClaim))
+                .then(CommandManager.literal("deleteSubClaim").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdTransfer)).executes(CommandClaim::deleteSubClaim))
+                .then(CommandManager.literal("deleteAllSubClaims").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdTransfer)).executes(CommandClaim::deleteAllSubClaim))
+                .then(CommandManager.literal("list").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdList)).executes(CommandClaim::listClaims).then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdListAll, true))
                         .executes(cmd -> listClaims(cmd, GameProfileArgumentType.getProfileArgument(cmd, "player")))))
-                .then(CommandManager.literal("switchMode").requires(src -> CommandPermission.perm(src, CommandPermission.cmdClaimMode)).executes(CommandClaim::switchClaimMode))
-                .then(CommandManager.literal("adminMode").requires(src -> CommandPermission.perm(src, CommandPermission.cmdAdminMode, true)).executes(CommandClaim::switchAdminMode))
-                .then(CommandManager.literal("readGriefPrevention").requires(src -> CommandPermission.perm(src, CommandPermission.cmdGriefPrevention, true)).executes(CommandClaim::readGriefPreventionData))
-                .then(CommandManager.literal("setAdminClaim").requires(src -> CommandPermission.perm(src, CommandPermission.cmdAdminSet, true)).then(CommandManager.argument("toggle", BoolArgumentType.bool()).executes(CommandClaim::toggleAdminClaim)))
-                .then(CommandManager.literal("listAdminClaims").requires(src -> CommandPermission.perm(src, CommandPermission.cmdAdminList, true)).executes(CommandClaim::listAdminClaims))
-                .then(CommandManager.literal("adminDelete").requires(src -> CommandPermission.perm(src, CommandPermission.cmdAdminDelete, true)).executes(CommandClaim::adminDelete)
+                .then(CommandManager.literal("switchMode").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdClaimMode)).executes(CommandClaim::switchClaimMode))
+                .then(CommandManager.literal("adminMode").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdAdminMode, true)).executes(CommandClaim::switchAdminMode))
+                .then(CommandManager.literal("readGriefPrevention").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdGriefPrevention, true)).executes(CommandClaim::readGriefPreventionData))
+                .then(CommandManager.literal("setAdminClaim").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdAdminSet, true)).then(CommandManager.argument("toggle", BoolArgumentType.bool()).executes(CommandClaim::toggleAdminClaim)))
+                .then(CommandManager.literal("listAdminClaims").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdAdminList, true)).executes(CommandClaim::listAdminClaims))
+                .then(CommandManager.literal("adminDelete").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdAdminDelete, true)).executes(CommandClaim::adminDelete)
                         .then(CommandManager.literal("all").then(CommandManager.argument("players", GameProfileArgumentType.gameProfile())
                                 .executes(CommandClaim::adminDeleteAll))))
-                .then(CommandManager.literal("giveClaimBlocks").requires(src -> CommandPermission.perm(src, CommandPermission.cmdAdminGive, true)).then(CommandManager.argument("players", GameProfileArgumentType.gameProfile())
+                .then(CommandManager.literal("giveClaimBlocks").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdAdminGive, true)).then(CommandManager.argument("players", GameProfileArgumentType.gameProfile())
                         .then(CommandManager.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::giveClaimBlocks))))
-                .then(CommandManager.literal("buyBlocks").requires(src -> CommandPermission.perm(src, CommandPermission.cmdBuy, false))
+                .then(CommandManager.literal("buyBlocks").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdBuy, false))
                         .then(CommandManager.argument("amount", IntegerArgumentType.integer()).executes(CommandCurrency::buyClaimBlocks)))
-                .then(CommandManager.literal("sellBlocks").requires(src -> CommandPermission.perm(src, CommandPermission.cmdSell, false))
+                .then(CommandManager.literal("sellBlocks").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdSell, false))
                         .then(CommandManager.argument("amount", IntegerArgumentType.integer()).executes(CommandCurrency::sellClaimBlocks)))
-                .then(CommandManager.literal("group").requires(src -> CommandPermission.perm(src, CommandPermission.cmdGroup))
+                .then(CommandManager.literal("group").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdGroup))
                         .then(CommandManager.literal("add").then(CommandManager.argument("group", StringArgumentType.string()).executes(CommandClaim::addGroup)))
                         .then(CommandManager.literal("remove").then(CommandManager.argument("group", StringArgumentType.string())
                                 .suggests(CommandHelpers::groupSuggestion).executes(CommandClaim::removeGroup)))
@@ -100,14 +100,14 @@ public class CommandClaim {
                                             }
                                             return CommandSource.suggestMatching(list, build);
                                         }).executes(CommandClaim::removePlayer))))))
-                .then(CommandManager.literal("teleport").requires(src -> CommandPermission.perm(src, CommandPermission.cmdTeleport))
+                .then(CommandManager.literal("teleport").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdTeleport))
                         .then(CommandManager.literal("self").then(CommandManager.argument("claim", StringArgumentType.string()).suggests((ctx, b) -> CommandHelpers.claimSuggestions(ctx, b, ctx.getSource().getPlayer().getUuid()))
                                 .executes(CommandClaim::teleport)))
                         .then(CommandManager.literal("admin").then(CommandManager.argument("claim", StringArgumentType.string()).suggests((ctx, b) -> CommandHelpers.claimSuggestions(ctx, b, null))
                                 .executes(CommandClaim::teleportAdminClaims)))
                         .then(CommandManager.literal("other").then(CommandManager.argument("player", GameProfileArgumentType.gameProfile()).then(CommandManager.argument("claim", StringArgumentType.string()).suggests((ctx, b) -> CommandHelpers.claimSuggestions(ctx, b, CommandHelpers.singleProfile(ctx, "player").getId()))
                                 .executes(src -> CommandClaim.teleport(src, CommandHelpers.singleProfile(src, "player").getId()))))))
-                .then(CommandManager.literal("permission").requires(src -> CommandPermission.perm(src, CommandPermission.cmdPermission))
+                .then(CommandManager.literal("permission").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdPermission))
                         .then(CommandManager.literal("personal").then(CommandManager.argument("group", StringArgumentType.string()).suggests(CommandHelpers::personalGroupSuggestion)
                                 .then(CommandManager.argument("permission", StringArgumentType.word()).suggests((ctx, b) -> CommandHelpers.permSuggestions(ctx, b, true))
                                         .then(CommandManager.argument("toggle", StringArgumentType.word())
@@ -164,7 +164,7 @@ public class CommandClaim {
         }
         if (!enoughBlocks) {
             player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.ownerTransferNoBlocks, Formatting.RED), false);
-            if (CommandPermission.perm(context.getSource(), CommandPermission.cmdAdminMode, true))
+            if (PermissionNodeHandler.perm(context.getSource(), PermissionNodeHandler.cmdAdminMode, true))
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.ownerTransferNoBlocksAdmin, Formatting.RED), false);
             return 0;
         }

@@ -7,6 +7,7 @@ import io.github.flemmli97.flan.event.BlockInteractEvents;
 import io.github.flemmli97.flan.event.EntityInteractEvents;
 import io.github.flemmli97.flan.event.ItemInteractEvents;
 import io.github.flemmli97.flan.integration.playerability.PlayerAbilityEvents;
+import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -34,8 +35,10 @@ public class FlanFabric implements ModInitializer {
         Flan.permissionAPI = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
         Flan.gunpowder = FabricLoader.getInstance().isModLoaded("gunpowder-currency");
         Flan.playerAbilityLib = FabricLoader.getInstance().isModLoaded("playerabilitylib");
+        Flan.ftbRanks = FabricLoader.getInstance().isModLoaded("ftbranks");
         if (Flan.playerAbilityLib)
             PlayerAbilityEvents.register();
+        ClaimCriterias.init();
     }
 
     public static void serverLoad(MinecraftServer server) {

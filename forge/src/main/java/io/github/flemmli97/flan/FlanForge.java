@@ -5,8 +5,10 @@ import io.github.flemmli97.flan.forgeevent.EntityInteractEventsForge;
 import io.github.flemmli97.flan.forgeevent.ItemInteractEventsForge;
 import io.github.flemmli97.flan.forgeevent.ServerEvents;
 import io.github.flemmli97.flan.forgeevent.WorldEventsForge;
+import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod(FlanForge.MODID)
@@ -15,6 +17,8 @@ public class FlanForge {
     public static final String MODID = "flan";
 
     public FlanForge() {
+        Flan.ftbRanks = ModList.get().isLoaded("ftbranks");
+
         IEventBus forge = MinecraftForge.EVENT_BUS;
         forge.addListener(WorldEventsForge::modifyExplosion);
         forge.addListener(WorldEventsForge::pistonCanPush);
@@ -34,5 +38,7 @@ public class FlanForge {
 
         forge.addListener(ServerEvents::serverStart);
         forge.addListener(ServerEvents::commands);
+
+        ClaimCriterias.init();
     }
 }
