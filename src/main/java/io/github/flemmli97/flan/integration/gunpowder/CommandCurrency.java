@@ -36,6 +36,7 @@ public class CommandCurrency {
         BigDecimal price = BigDecimal.valueOf(amount * ConfigHandler.config.sellPrice);
         bal.setBalance(bal.getBalance().add(price));
         data.setAdditionalClaims(data.getAdditionalClaims() - amount);
+        BalanceHandler.INSTANCE.updateUser(bal);
         context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.sellSuccess, amount, price), Formatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
@@ -56,6 +57,7 @@ public class CommandCurrency {
             PlayerClaimData data = PlayerClaimData.get(context.getSource().getPlayer());
             data.setAdditionalClaims(data.getAdditionalClaims() + amount);
             bal.setBalance(bal.getBalance().subtract(price));
+            BalanceHandler.INSTANCE.updateUser(bal);
             context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.buySuccess, amount, price), Formatting.GOLD), false);
             return Command.SINGLE_SUCCESS;
         }
