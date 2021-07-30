@@ -1,6 +1,8 @@
 package io.github.flemmli97.flan.player;
 
 import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.data.IPlayerData;
@@ -34,6 +36,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
@@ -65,7 +71,6 @@ public class PlayerClaimData implements IPlayerData {
     private final ServerPlayerEntity player;
 
     private boolean confirmDeleteAll, adminIgnoreClaim, claimBlockMessage;
-    private boolean dirty;
 
     private final Map<String, Map<ClaimPermission, Boolean>> defaultGroups = new HashMap<>();
 
@@ -87,7 +92,6 @@ public class PlayerClaimData implements IPlayerData {
         this.claimBlocks = amount;
         updateScoreFor(this.player, ClaimCriterias.AMOUNT, this.claimBlocks + this.additionalClaimBlocks);
         updateScoreFor(this.player, ClaimCriterias.FREE, this.claimBlocks + this.additionalClaimBlocks - this.usedBlocks);
-        this.dirty = true;
     }
 
     public boolean addClaimBlocks(int amount) {
@@ -107,7 +111,6 @@ public class PlayerClaimData implements IPlayerData {
         this.additionalClaimBlocks = Math.max(0, amount);
         updateScoreFor(this.player, ClaimCriterias.AMOUNT, this.claimBlocks + this.additionalClaimBlocks);
         updateScoreFor(this.player, ClaimCriterias.FREE, this.claimBlocks + this.additionalClaimBlocks - this.usedBlocks);
-        this.dirty = true;
     }
 
     @Override
@@ -218,7 +221,6 @@ public class PlayerClaimData implements IPlayerData {
             perms.put(perm, mode == 1);
         if (!has)
             this.defaultGroups.put(group, perms);
-        this.dirty = true;
         return true;
     }
 
@@ -324,6 +326,8 @@ public class PlayerClaimData implements IPlayerData {
     public void clone(PlayerClaimData data) {
         this.claimBlocks = data.claimBlocks;
         this.additionalClaimBlocks = data.additionalClaimBlocks;
+        this.defaultGroups.clear();
+        this.defaultGroups.putAll(data.defaultGroups);
         if (ConfigHandler.config.lockDrops)
             this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.unlockDropsCmd, "/flan unlockDrops"), Formatting.GOLD), false);
     }
@@ -362,15 +366,14 @@ public class PlayerClaimData implements IPlayerData {
 
     public void save(MinecraftServer server) {
         Flan.log("Saving player data for player {} with uuid {}", this.player.getName(), this.player.getUuid());
-        File dir = new File(server.getSavePath(WorldSavePath.PLAYERDATA).toFile(), "/claimData/");
-        if (!dir.exists())
-            dir.mkdirs();
+        Path dir = ConfigHandler.getPlayerSavePath(server);
         try {
-            if (!this.dirty)
-                return;
-            File file = new File(dir, this.player.getUuid() + ".json");
-            if (!file.exists())
-                file.createNewFile();
+            Files.createDirectories(dir);
+            Path file = dir.resolve(this.player.getUuid() + ".json");
+            try {
+                Files.createFile(file);
+            } catch (FileAlreadyExistsException e) {
+            }
             JsonObject obj = new JsonObject();
             obj.addProperty("ClaimBlocks", this.claimBlocks);
             obj.addProperty("AdditionalBlocks", this.additionalClaimBlocks);
@@ -382,9 +385,10 @@ public class PlayerClaimData implements IPlayerData {
                 defPerm.add(key, perm);
             });
             obj.add("DefaultGroups", defPerm);
-            FileWriter writer = new FileWriter(file);
-            ConfigHandler.GSON.toJson(obj, writer);
-            writer.close();
+
+            JsonWriter jsonWriter = ConfigHandler.GSON.newJsonWriter(Files.newBufferedWriter(file, StandardCharsets.UTF_8));
+            ConfigHandler.GSON.toJson(obj, jsonWriter);
+            jsonWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -434,24 +438,25 @@ public class PlayerClaimData implements IPlayerData {
 
     public static void editForOfflinePlayer(MinecraftServer server, UUID uuid, int additionalClaimBlocks) {
         Flan.log("Adding {} addional claimblocks for offline player with uuid {}", additionalClaimBlocks, uuid);
-        File dir = new File(server.getSavePath(WorldSavePath.PLAYERDATA).toFile(), "/claimData/");
-        if (!dir.exists())
-            dir.mkdirs();
+        Path dir = ConfigHandler.getPlayerSavePath(server);
         try {
-            File file = new File(dir, uuid.toString() + ".json");
-            if (!file.exists())
-                file.createNewFile();
-            FileReader reader = new FileReader(file);
+            Files.createDirectories(dir);
+            Path file = dir.resolve(uuid.toString() + ".json");
+            try {
+                Files.createFile(file);
+            } catch (FileAlreadyExistsException e) {
+            }
+            JsonReader reader = ConfigHandler.GSON.newJsonReader(Files.newBufferedReader(file, StandardCharsets.UTF_8));
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
             reader.close();
             if (obj == null)
                 obj = new JsonObject();
             int additionalBlocks = ConfigHandler.fromJson(obj, "AdditionalBlocks", 0);
             obj.addProperty("AdditionalBlocks", additionalBlocks + additionalClaimBlocks);
-            Flan.debug("Attempting to write following json data {} to file {}", obj, file.getName());
-            FileWriter writer = new FileWriter(file);
-            ConfigHandler.GSON.toJson(obj, writer);
-            writer.close();
+            Flan.debug("Attempting to write following json data {} to file {}", obj, file.getFileName());
+            JsonWriter jsonWriter = ConfigHandler.GSON.newJsonWriter(Files.newBufferedWriter(file, StandardCharsets.UTF_8));
+            ConfigHandler.GSON.toJson(obj, jsonWriter);
+            jsonWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

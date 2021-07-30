@@ -31,7 +31,9 @@
     "IHungerAccessor",
     "FrostWalkerMixin",
     "LightningMixin",
-    "ScoreboardCriterionAccessor"
+    "ScoreboardCriterionAccessor",
+    "WorldSaveHandlerMixin",
+    "PlayerManagerMixin"
   ],
   "server": [
   ],

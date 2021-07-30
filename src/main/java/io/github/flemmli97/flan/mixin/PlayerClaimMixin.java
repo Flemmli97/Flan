@@ -3,7 +3,6 @@ package io.github.flemmli97.flan.mixin;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.player.IPlayerClaimImpl;
 import io.github.flemmli97.flan.player.PlayerClaimData;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,7 +29,7 @@ public abstract class PlayerClaimMixin implements IPlayerClaimImpl {
         this.claimData = new PlayerClaimData((ServerPlayerEntity) (Object) this);
     }
 
-    @Inject(method = "readCustomDataFromNbt", at = @At("RETURN"))
+    /*@Inject(method = "readCustomDataFromNbt", at = @At("RETURN"))
     private void readData(NbtCompound tag, CallbackInfo info) {
         this.claimData.read(this.server);
     }
@@ -38,7 +37,7 @@ public abstract class PlayerClaimMixin implements IPlayerClaimImpl {
     @Inject(method = "writeCustomDataToNbt", at = @At("RETURN"))
     private void writeData(NbtCompound tag, CallbackInfo info) {
         this.claimData.save(this.server);
-    }
+    }*/
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void tickData(CallbackInfo info) {

@@ -5,6 +5,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.data.IPermissionStorage;
@@ -32,13 +34,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ClaimStorage implements IPermissionStorage {
 
@@ -274,15 +278,16 @@ public class ClaimStorage implements IPermissionStorage {
 
     public void read(MinecraftServer server, ServerWorld world) {
         Flan.log("Loading claim data for world {}", world.getRegistryKey());
-        File dir = new File(DimensionType.getSaveDirectory(world.getRegistryKey(), server.getSavePath(WorldSavePath.ROOT).toFile()), "/data/claims/");
-        if (dir.exists()) {
+        Path dir = ConfigHandler.getClaimSavePath(server, world.getRegistryKey());
+        if (Files.exists(dir)) {
             try {
-                for (File file : dir.listFiles()) {
-                    if (!file.getName().endsWith(".json"))
+                for (Path file : Files.walk(dir).filter(Files::isRegularFile).collect(Collectors.toSet())) {
+                    String name = file.toFile().getName();
+                    if (!name.endsWith(".json"))
                         continue;
-                    String realName = file.getName().replace(".json", "");
-                    UUID uuid = realName.equals(adminClaimString) ? null : UUID.fromString(file.getName().replace(".json", ""));
-                    FileReader reader = new FileReader(file);
+                    String realName = name.replace(".json", "");
+                    UUID uuid = realName.equals(adminClaimString) ? null : UUID.fromString(realName);
+                    JsonReader reader = ConfigHandler.GSON.newJsonReader(Files.newBufferedReader(file, StandardCharsets.UTF_8));
                     JsonArray arr = ConfigHandler.GSON.fromJson(reader, JsonArray.class);
                     reader.close();
                     if (arr == null)
@@ -302,23 +307,22 @@ public class ClaimStorage implements IPermissionStorage {
 
     public void save(MinecraftServer server, RegistryKey<World> reg) {
         Flan.log("Saving claims for world {}", reg);
-        File dir = new File(DimensionType.getSaveDirectory(reg, server.getSavePath(WorldSavePath.ROOT).toFile()), "/data/claims/");
-        if (!dir.exists())
-            dir.mkdir();
+        Path dir = ConfigHandler.getClaimSavePath(server, reg);
         try {
+            Files.createDirectories(dir);
             for (Map.Entry<UUID, Set<Claim>> e : this.playerClaimMap.entrySet()) {
                 String owner = e.getKey() == null ? adminClaimString : e.getKey().toString();
-                File file = new File(dir, owner + ".json");
+                Path file = dir.resolve(owner + ".json");
                 Flan.debug("Attempting saving claim data for player uuid {}", owner);
                 boolean dirty = false;
-                if (!file.exists()) {
+                if (!Files.exists(file)) {
                     if (e.getValue().isEmpty())
                         continue;
-                    file.createNewFile();
+                    Files.createFile(file);
                     dirty = true;
                 } else {
                     if (e.getValue().isEmpty()) {
-                        file.delete();
+                        Files.delete(file);
                         continue;
                     }
                     if (this.dirty.remove(owner.equals(adminClaimString) ? null : e.getKey())) {
@@ -335,9 +339,9 @@ public class ClaimStorage implements IPermissionStorage {
                     JsonArray arr = new JsonArray();
                     e.getValue().forEach(claim -> arr.add(claim.toJson(new JsonObject())));
                     Flan.debug("Attempting saving changed claim data {} for player uuid {}", arr, owner);
-                    FileWriter writer = new FileWriter(file);
-                    ConfigHandler.GSON.toJson(arr, writer);
-                    writer.close();
+                    JsonWriter jsonWriter = ConfigHandler.GSON.newJsonWriter(Files.newBufferedWriter(file, StandardCharsets.UTF_8));
+                    ConfigHandler.GSON.toJson(arr, jsonWriter);
+                    jsonWriter.close();
                 }
             }
         } catch (IOException e) {
