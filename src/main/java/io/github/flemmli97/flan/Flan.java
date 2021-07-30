@@ -63,6 +63,10 @@ public class Flan implements ModInitializer {
             logger.debug(msg, o);
     }
 
+    public static void error(String msg, Object... o) {
+        Flan.logger.error(msg, o);
+    }
+
     public static void serverLoad(MinecraftServer server) {
         ConfigHandler.serverLoad(server);
         ObjectToPermissionMap.reload(server);
