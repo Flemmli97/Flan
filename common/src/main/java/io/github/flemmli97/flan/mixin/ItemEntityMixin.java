@@ -22,14 +22,14 @@ public abstract class ItemEntityMixin implements IOwnedItem {
 
     @Inject(method = "readCustomDataFromTag", at = @At("RETURN"))
     private void readData(CompoundTag tag, CallbackInfo info) {
-        if (tag.contains("io.github.flemmli97.flan.Flan:PlayerOrigin"))
-            this.playerOrigin = tag.getUuid("io.github.flemmli97.flan.Flan:PlayerOrigin");
+        if (tag.contains("Flan:PlayerOrigin"))
+            this.playerOrigin = tag.getUuid("Flan:PlayerOrigin");
     }
 
     @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
     private void writeData(CompoundTag tag, CallbackInfo info) {
         if (this.playerOrigin != null)
-            tag.putUuid("io.github.flemmli97.flan.Flan:PlayerOrigin", this.playerOrigin);
+            tag.putUuid("Flan:PlayerOrigin", this.playerOrigin);
     }
 
     @Override

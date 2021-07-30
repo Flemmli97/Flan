@@ -29,4 +29,8 @@ public class Flan {
         if (ConfigHandler.config.log)
             Flan.logger.debug(msg, o);
     }
+
+    public static void error(String msg, Object... o) {
+        Flan.logger.error(msg, o);
+    }
 }

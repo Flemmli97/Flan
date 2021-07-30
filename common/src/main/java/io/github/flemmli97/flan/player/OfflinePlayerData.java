@@ -1,6 +1,8 @@
 package io.github.flemmli97.flan.player;
 
 import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.data.IPlayerData;
 import io.github.flemmli97.flan.claim.Claim;
@@ -8,12 +10,11 @@ import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.WorldSavePath;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,73 +28,36 @@ public class OfflinePlayerData implements IPlayerData {
     public final LocalDateTime lastOnline;
     public final UUID owner;
     public final MinecraftServer server;
-    public final File saveFile;
+    public final Path save;
 
     public OfflinePlayerData(MinecraftServer server, UUID uuid) {
-        File dir = new File(server.getSavePath(WorldSavePath.PLAYERDATA).toFile(), "/claimData/");
-        this.saveFile = new File(dir, uuid + ".json");
+        this.save = ConfigHandler.getPlayerSavePath(server).resolve(uuid + ".json");
         int claim = ConfigHandler.config.startingBlocks;
         int add = 0;
         this.owner = uuid;
         LocalDateTime last = LocalDateTime.now();
-        if (dir.exists()) {
+        if (Files.exists(this.save)) {
             try {
-                File file = new File(dir, uuid + ".json");
-                if (file.exists()) {
-                    FileReader reader = new FileReader(file);
-                    JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
-                    reader.close();
-                    claim = ConfigHandler.fromJson(obj, "ClaimBlocks", claim);
-                    add = ConfigHandler.fromJson(obj, "AdditionalBlocks", add);
-                    if (obj.has("LastSeen")) {
-                        try {
-                            last = LocalDateTime.parse(obj.get("LastSeen").getAsString(), Flan.onlineTimeFormatter);
-                        } catch (RuntimeException e) {
-                            Flan.log("Error parsing time for {}, ignoring", uuid);
-                        }
-                    }
+                JsonReader reader = ConfigHandler.GSON.newJsonReader(Files.newBufferedReader(this.save, StandardCharsets.UTF_8));
+                JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
+                reader.close();
+                if (obj == null) {
+                    obj = new JsonObject();
+                    Flan.error("Malformed json {}, using default values", uuid);
                 }
+                claim = ConfigHandler.fromJson(obj, "ClaimBlocks", claim);
+                add = ConfigHandler.fromJson(obj, "AdditionalBlocks", add);
+                if (obj.has("LastSeen"))
+                    last = LocalDateTime.parse(obj.get("LastSeen").getAsString(), Flan.onlineTimeFormatter);
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (RuntimeException e) {
+                Flan.error("Error parsing time for {}, ignoring", uuid);
             }
         }
         this.claimBlocks = claim;
         this.additionalClaimBlocks = add;
         this.lastOnline = last;
-        this.server = server;
-    }
-
-    private OfflinePlayerData(MinecraftServer server, File dataFile, UUID uuid) {
-        this.saveFile = dataFile;
-        int claim = ConfigHandler.config.startingBlocks;
-        int add = 0;
-        LocalDateTime last = LocalDateTime.now();
-        try {
-            FileReader reader = new FileReader(dataFile);
-            JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
-            reader.close();
-
-            claim = ConfigHandler.fromJson(obj, "ClaimBlocks", claim);
-            add = ConfigHandler.fromJson(obj, "AdditionalBlocks", add);
-            if (obj.has("LastSeen")) {
-                try {
-                    last = LocalDateTime.parse(obj.get("LastSeen").getAsString(), Flan.onlineTimeFormatter);
-                } catch (RuntimeException e) {
-                    Flan.log("Error parsing time for {}, ignoring", uuid);
-                }
-            } else {
-                obj.addProperty("LastSeen", last.format(Flan.onlineTimeFormatter));
-                FileWriter write = new FileWriter(dataFile);
-                ConfigHandler.GSON.toJson(obj, write);
-                write.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        this.claimBlocks = claim;
-        this.additionalClaimBlocks = add;
-        this.lastOnline = last;
-        this.owner = uuid;
         this.server = server;
     }
 
@@ -122,12 +86,10 @@ public class OfflinePlayerData implements IPlayerData {
     public void setAdditionalClaims(int amount) {
         this.additionalClaimBlocks = amount;
         try {
-            if (!this.saveFile.getParentFile().exists()) {
-                this.saveFile.getParentFile().mkdirs();
-                this.saveFile.createNewFile();
-            } else if (!this.saveFile.exists())
-                this.saveFile.createNewFile();
-            FileReader reader = new FileReader(this.saveFile);
+            Files.createDirectories(this.save.getParent());
+            if (!Files.exists(this.save))
+                Files.createFile(this.save);
+            JsonReader reader = ConfigHandler.GSON.newJsonReader(Files.newBufferedReader(this.save, StandardCharsets.UTF_8));
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
             reader.close();
             if (obj == null) {
@@ -139,24 +101,22 @@ public class OfflinePlayerData implements IPlayerData {
                 obj.add("DefaultGroups", defPerm);
             } else
                 obj.addProperty("AdditionalBlocks", this.additionalClaimBlocks);
-            Flan.debug("Attempting to write following json data {} to file {}", obj, this.saveFile.getName());
-            FileWriter writer = new FileWriter(this.saveFile);
-            ConfigHandler.GSON.toJson(obj, writer);
-            writer.close();
+            Flan.debug("Attempting to write following json data {} to file {}", obj, this.save.getFileName());
+            JsonWriter jsonWriter = ConfigHandler.GSON.newJsonWriter(Files.newBufferedWriter(this.save, StandardCharsets.UTF_8));
+            ConfigHandler.GSON.toJson(obj, jsonWriter);
+            jsonWriter.close();
         } catch (IOException e) {
-            Flan.log("Error adding additional claimblocks to offline player {}", this.owner);
+            Flan.error("Error adding additional claimblocks to offline player {}", this.owner);
         }
     }
 
     public static Map<UUID, OfflinePlayerData> collectAllPlayerData(MinecraftServer server) {
-        File dir = new File(server.getSavePath(WorldSavePath.PLAYERDATA).toFile(), "/claimData/");
+        Path dir = ConfigHandler.getPlayerSavePath(server);
         Map<UUID, OfflinePlayerData> playerDatas = new HashMap<>();
-        if (dir.exists()) {
-            for (File data : dir.listFiles()) {
-                if (data.getName().endsWith(".json")) {
-                    UUID uuid = UUID.fromString(data.getName().replace(".json", ""));
-                    playerDatas.put(uuid, new OfflinePlayerData(server, data, uuid));
-                }
+        if (Files.exists(dir)) {
+            for (String name : dir.toFile().list((d, name) -> name.endsWith(".json"))) {
+                UUID uuid = UUID.fromString(name.replace(".json", ""));
+                playerDatas.put(uuid, new OfflinePlayerData(server, uuid));
             }
         }
         return playerDatas;

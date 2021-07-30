@@ -38,6 +38,8 @@ public class FlanForge {
 
         forge.addListener(ServerEvents::serverStart);
         forge.addListener(ServerEvents::commands);
+        forge.addListener(ServerEvents::savePlayer);
+        forge.addListener(ServerEvents::readPlayer);
 
         ClaimCriterias.init();
     }

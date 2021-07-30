@@ -15,7 +15,9 @@
     "WitherMixin",
     "SnowGolemMixin",
     "FabricFireMixin",
-    "LightningHitMixin"
+    "LightningHitMixin",
+    "WorldSaveHandlerMixin",
+    "PlayerManagerMixin"
   ],
   "server": [
   ],

@@ -1,3 +1,7 @@
+Flan 1.6.1
+======================
+- Better performance
+
 Flan 1.6.0
 ======================
 - Separate some stuff to make it more api like and to make it into an api jar.

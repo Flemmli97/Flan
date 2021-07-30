@@ -149,7 +149,7 @@ public class Config {
                         try {
                             perms.put(PermissionRegistry.get(jperm.getKey()), jperm.getValue().getAsBoolean());
                         } catch (NullPointerException ex) {
-                            Flan.log("No permission with name {}", jperm.getKey());
+                            Flan.error("No permission with name {}", jperm.getKey());
                         }
                     });
                 }
@@ -167,7 +167,7 @@ public class Config {
                             else
                                 perms.put(PermissionRegistry.get(jperm.getKey()), GlobalType.valueOf(jperm.getValue().getAsString()));
                         } catch (NullPointerException ex) {
-                            Flan.log("No permission with name {}", jperm.getKey());
+                            Flan.error("No permission with name {}", jperm.getKey());
                         }
                     });
                 }
