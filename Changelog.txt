@@ -1,6 +1,8 @@
 Flan 1.6.1
 ======================
-- Better performance
+- Improve performance
+- Support for Money and Sign Shops currency (forge)
+- Fix unusable admin cmd with FTBRanks if its not defined in Ranks
 
 Flan 1.6.0
 ======================

@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -39,5 +40,9 @@ public class CrossPlatformStuffImpl {
 
     public static boolean isInventoryTile(BlockEntity blockEntity) {
         return blockEntity instanceof Inventory || blockEntity instanceof InventoryProvider || blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent();
+    }
+
+    public static boolean blockDataContains(CompoundTag nbt, String tag) {
+        return nbt.contains(tag) || nbt.getCompound("ForgeData").contains(tag);
     }
 }

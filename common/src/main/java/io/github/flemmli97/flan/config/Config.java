@@ -40,7 +40,8 @@ public class Config {
     );
     public List<String> blockEntityTagIgnore = Lists.newArrayList(
             "IsDeathChest", //vanilla death chest
-            "gunpowder.owner" //gunpowder
+            "gunpowder.owner", //gunpowder
+            "shop-activated" //dicemc-money
     );
     public List<String> entityTagIgnore = Lists.newArrayList(
             "graves.marker" //vanilla tweaks

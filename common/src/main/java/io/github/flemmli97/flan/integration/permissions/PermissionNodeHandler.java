@@ -61,7 +61,7 @@ public class PermissionNodeHandler {
     }
 
     @ExpectPlatform
-    public static boolean permBelowEqVal(ServerPlayerEntity src, String perm, int val) {
+    public static boolean permBelowEqVal(ServerPlayerEntity src, String perm, int val, int fallback) {
         throw new AssertionError();
     }
 }

@@ -120,10 +120,14 @@ public class BlockInteractEvents {
     }
 
     public static boolean alwaysAllowBlock(Identifier id, BlockEntity blockEntity) {
-        return ConfigHandler.config.ignoredBlocks.contains(id.getNamespace())
-                || ConfigHandler.config.ignoredBlocks.contains(id.toString())
-                || (blockEntity != null
-                && ConfigHandler.config.blockEntityTagIgnore.stream().anyMatch(blockEntity.toTag(new CompoundTag())::contains));
+        if (ConfigHandler.config.ignoredBlocks.contains(id.getNamespace())
+                || ConfigHandler.config.ignoredBlocks.contains(id.toString()))
+            return true;
+        if (blockEntity != null) {
+            CompoundTag nbt = blockEntity.toTag(new CompoundTag());
+            return ConfigHandler.config.blockEntityTagIgnore.stream().anyMatch(tag -> CrossPlatformStuff.blockDataContains(nbt, tag));
+        }
+        return false;
     }
 
     public static boolean cancelEntityBlockCollision(BlockState state, World world, BlockPos pos, Entity entity) {

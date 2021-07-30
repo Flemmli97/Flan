@@ -6,6 +6,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.CompoundTag;
 
 import java.nio.file.Path;
 
@@ -41,4 +42,8 @@ public class CrossPlatformStuff {
         throw new AssertionError();
     }
 
+    @ExpectPlatform
+    public static boolean blockDataContains(CompoundTag nbt, String tag) {
+        throw new AssertionError();
+    }
 }

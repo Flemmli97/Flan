@@ -17,9 +17,7 @@ public class PermissionNodeHandlerImpl {
         }
         if (Flan.ftbRanks && src.getEntity() instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) src.getEntity();
-            if (adminCmd)
-                return FTBRanksAPI.getPermissionValue(player, perm).asBooleanOrFalse();
-            return FTBRanksAPI.getPermissionValue(player, perm).asBooleanOrTrue();
+            return FTBRanksAPI.getPermissionValue(player, perm).asBoolean().orElse(!adminCmd || player.hasPermissionLevel(ConfigHandler.config.permissionLevel));
         }
         return !adminCmd || src.hasPermissionLevel(ConfigHandler.config.permissionLevel);
     }
@@ -31,18 +29,16 @@ public class PermissionNodeHandlerImpl {
             return Permissions.check(src, perm, true);
         }
         if (Flan.ftbRanks) {
-            if (adminCmd)
-                return FTBRanksAPI.getPermissionValue(src, perm).asBooleanOrFalse();
-            return FTBRanksAPI.getPermissionValue(src, perm).asBooleanOrTrue();
+            return FTBRanksAPI.getPermissionValue(src, perm).asBoolean().orElse(!adminCmd || src.hasPermissionLevel(ConfigHandler.config.permissionLevel));
         }
         return !adminCmd || src.hasPermissionLevel(ConfigHandler.config.permissionLevel);
     }
 
-    public static boolean permBelowEqVal(ServerPlayerEntity src, String perm, int val) {
+    public static boolean permBelowEqVal(ServerPlayerEntity src, String perm, int val, int fallback) {
         if (Flan.ftbRanks) {
-            int max = FTBRanksAPI.getPermissionValue(src, perm).asInteger().orElse(0);
+            int max = FTBRanksAPI.getPermissionValue(src, perm).asInteger().orElse(fallback);
             return val <= max;
         }
-        return false;
+        return val <= fallback;
     }
 }

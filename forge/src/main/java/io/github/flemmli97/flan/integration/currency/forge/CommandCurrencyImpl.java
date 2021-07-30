@@ -5,7 +5,6 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dicemc.money.MoneyMod;
-import dicemc.money.api.MoneyManager;
 import dicemc.money.storage.MoneyWSD;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.PermHelper;
@@ -13,7 +12,6 @@ import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 
 import java.util.UUID;
 
