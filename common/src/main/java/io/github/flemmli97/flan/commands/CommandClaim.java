@@ -18,7 +18,7 @@ import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.ClaimMenuScreenHandler;
 import io.github.flemmli97.flan.gui.PersonalGroupScreenHandler;
-import io.github.flemmli97.flan.integration.gunpowder.CommandCurrency;
+import io.github.flemmli97.flan.integration.currency.CommandCurrency;
 import io.github.flemmli97.flan.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.EnumEditMode;

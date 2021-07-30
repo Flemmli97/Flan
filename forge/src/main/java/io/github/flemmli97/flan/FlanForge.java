@@ -18,6 +18,7 @@ public class FlanForge {
 
     public FlanForge() {
         Flan.ftbRanks = ModList.get().isLoaded("ftbranks");
+        Flan.diceMCMoneySign = ModList.get().isLoaded("dicemcmm");
 
         IEventBus forge = MinecraftForge.EVENT_BUS;
         forge.addListener(WorldEventsForge::modifyExplosion);

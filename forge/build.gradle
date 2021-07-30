@@ -22,6 +22,10 @@ repositories {
         name = "FTB"
         url = "https://maven.saps.dev/minecraft"
     }
+    maven {
+        name = "CurseMaven"
+        url "https://www.cursemaven.com"
+    }
 }
 
 dependencies {
@@ -37,7 +41,8 @@ dependencies {
         transitive = false
     }
 
-    modImplementation("dev.ftb.mods:ftb-ranks-forge:1605.1.2-build.17")
+    modImplementation("dev.ftb.mods:ftb-ranks-forge:${ftb_ranks}")
+    modImplementation(dicemcmm)
 }
 
 processResources {

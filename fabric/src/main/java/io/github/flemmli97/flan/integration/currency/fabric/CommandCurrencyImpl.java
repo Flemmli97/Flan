@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.integration.gunpowder.fabric;
+package io.github.flemmli97.flan.integration.currency.fabric;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -20,7 +20,7 @@ public class CommandCurrencyImpl {
 
     public static int sellClaimBlocks(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (!Flan.gunpowder) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.gunpowderMissing, Formatting.DARK_RED), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.currencyMissing, Formatting.DARK_RED), false);
             return 0;
         }
         if (ConfigHandler.config.sellPrice == -1) {
@@ -43,7 +43,7 @@ public class CommandCurrencyImpl {
 
     public static int buyClaimBlocks(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (!Flan.gunpowder) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.gunpowderMissing, Formatting.DARK_RED), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.currencyMissing, Formatting.DARK_RED), false);
             return 0;
         }
         if (ConfigHandler.config.buyPrice == -1) {
@@ -53,7 +53,7 @@ public class CommandCurrencyImpl {
         StoredBalance bal = GunpowderMod.getInstance().getRegistry().getModelHandler(BalanceHandler.class).getUser(context.getSource().getPlayer().getUuid());
         int amount = Math.max(0, IntegerArgumentType.getInteger(context, "amount"));
         BigDecimal price = BigDecimal.valueOf(amount * ConfigHandler.config.buyPrice);
-        if (bal.getBalance().compareTo(price) > 0) {
+        if (bal.getBalance().compareTo(price) >= 0) {
             PlayerClaimData data = PlayerClaimData.get(context.getSource().getPlayer());
             data.setAdditionalClaims(data.getAdditionalClaims() + amount);
             bal.setBalance(bal.getBalance().subtract(price));

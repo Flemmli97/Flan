@@ -122,7 +122,7 @@ public class LangConfig {
     public String buyFail = "Not enough money";
     public String sellSuccess = "Sold %1$s claimblocks for %2$s";
     public String buySuccess = "Bought %1$s claimblocks for %2$s";
-    public String gunpowderMissing = "Missing gunpowder currency mod";
+    public String currencyMissing = "Missing a supported currency mod";
 
     public String trappedRescue = "Rescuing. Don't move for 5 seconds";
     public String trappedFail = "Rescue not necessary or already rescuing";

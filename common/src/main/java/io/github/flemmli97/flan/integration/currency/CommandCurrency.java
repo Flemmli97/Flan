@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.integration.gunpowder;
+package io.github.flemmli97.flan.integration.currency;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
