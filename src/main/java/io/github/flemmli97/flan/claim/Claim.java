@@ -14,7 +14,6 @@ import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.config.ConfigUpdater;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -103,7 +102,7 @@ public class Claim implements IPermissionContainer {
     public static Claim fromJson(JsonObject obj, UUID owner, ServerWorld world) {
         Claim claim = new Claim(world);
         claim.readJson(obj, owner);
-        ConfigUpdater.updateClaim(claim);
+        ClaimUpdater.updateClaim(claim);
         return claim;
     }
 
@@ -719,5 +718,19 @@ public class Claim implements IPermissionContainer {
         SIMPLE,
         GLOBAL,
         GROUP
+    }
+
+    interface ClaimUpdater {
+
+        Map<Integer, ClaimUpdater> updater = Config.createHashMap(map -> {
+            map.put(2, claim -> claim.globalPerm.put(PermissionRegistry.LOCKITEMS, true));
+        });
+
+        static void updateClaim(Claim claim) {
+            updater.entrySet().stream().filter(e -> e.getKey() > ConfigHandler.config.preConfigVersion).map(Map.Entry::getValue)
+                    .forEach(up -> up.update(claim));
+        }
+
+        void update(Claim claim);
     }
 }

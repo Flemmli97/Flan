@@ -74,6 +74,8 @@ public class PlayerClaimData implements IPlayerData {
 
     private final Map<String, Map<ClaimPermission, Boolean>> defaultGroups = new HashMap<>();
 
+    private boolean shouldProtectDrop, calculateShouldDrop = true;
+
     public PlayerClaimData(ServerPlayerEntity player) {
         this.player = player;
         this.claimBlocks = ConfigHandler.config.startingBlocks;
@@ -328,7 +330,7 @@ public class PlayerClaimData implements IPlayerData {
         this.additionalClaimBlocks = data.additionalClaimBlocks;
         this.defaultGroups.clear();
         this.defaultGroups.putAll(data.defaultGroups);
-        if (ConfigHandler.config.lockDrops)
+        if (data.setDeathItemOwner())
             this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.unlockDropsCmd, "/flan unlockDrops"), Formatting.GOLD), false);
     }
 
@@ -362,6 +364,18 @@ public class PlayerClaimData implements IPlayerData {
             }
         }
         return usedClaimsBlocks;
+    }
+
+    public boolean setDeathItemOwner() {
+        if (!this.player.isDead())
+            return false;
+        if (this.calculateShouldDrop) {
+            BlockPos rounded = TeleportUtils.roundedBlockPos(this.player.getPos().add(0, this.player.getActiveEyeHeight(this.player.getPose(), this.player.getDimensions(this.player.getPose())), 0));
+            this.shouldProtectDrop = ClaimStorage.get(this.player.getServerWorld()).getForPermissionCheck(rounded)
+                    .canInteract(this.player, PermissionRegistry.LOCKITEMS, rounded);
+            this.calculateShouldDrop = false;
+        }
+        return this.shouldProtectDrop;
     }
 
     public void save(MinecraftServer server) {

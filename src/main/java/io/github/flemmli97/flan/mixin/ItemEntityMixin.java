@@ -1,9 +1,11 @@
 package io.github.flemmli97.flan.mixin;
 
 import io.github.flemmli97.flan.player.IOwnedItem;
+import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,7 +37,7 @@ public abstract class ItemEntityMixin implements IOwnedItem {
     @Override
     public void setOriginPlayer(PlayerEntity player) {
         this.playerOrigin = player.getUuid();
-        if (player.isDead())
+        if (player instanceof ServerPlayerEntity && PlayerClaimData.get((ServerPlayerEntity) player).setDeathItemOwner())
             this.deathPlayerOrigin = this.playerOrigin;
     }
 
