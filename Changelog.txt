@@ -3,6 +3,8 @@ Flan 1.6.1
 - Improve performance
 - Support for Money and Sign Shops currency (forge)
 - Fix unusable admin cmd with FTBRanks if its not defined in Ranks
+- Change lockItems config to a permission
+  Global default is ALLTRUE
 
 Flan 1.6.0
 ======================

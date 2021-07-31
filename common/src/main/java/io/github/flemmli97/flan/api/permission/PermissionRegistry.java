@@ -85,6 +85,7 @@ public class PermissionRegistry {
     public static ClaimPermission MOBSPAWN = global(new ClaimPermission("MOBSPAWN", () -> new ItemStack(Items.ZOMBIE_SPAWN_EGG), "Prevent hostile mobspawn in claim"));
     public static ClaimPermission ANIMALSPAWN = global(new ClaimPermission("ANIMALSPAWN", () -> new ItemStack(Items.PIG_SPAWN_EGG), "Prevent other spawn in claim"));
     public static ClaimPermission LIGHTNING = global(new ClaimPermission("LIGHTNING", () -> new ItemStack(Items.TRIDENT), "Allow lightning to affect claims", "e.g. set blocks on fire", "or affect animals (mobs are excluded)"));
+    public static ClaimPermission LOCKITEMS = global(new ClaimPermission("LOCKITEMS", () -> new ItemStack(Items.FIREWORK_STAR), true, "If items should be locked on death"));
 
     private static ClaimPermission register(ClaimPermission perm) {
         if (locked) {

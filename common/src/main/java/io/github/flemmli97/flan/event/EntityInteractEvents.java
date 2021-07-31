@@ -228,7 +228,7 @@ public class EntityInteractEvents {
             ServerPlayerEntity sPlayer = (ServerPlayerEntity) player;
             if (entity instanceof ItemEntity) {
                 IOwnedItem ownedItem = (IOwnedItem) entity;
-                if (ownedItem.getDeathPlayer() != null && ConfigHandler.config.lockDrops) {
+                if (ownedItem.getDeathPlayer() != null) {
                     ServerPlayerEntity other = sPlayer.getServer().getPlayerManager().getPlayer(ownedItem.getDeathPlayer());
                     if (other == null)
                         return false;
