@@ -1,9 +1,9 @@
 Flan 1.6.1
 ======================
-- Better performance
+- Improve performance
 - Update default values for gunpowder tag check cause it changed
 - Change lockItems config to a permission
-  Global default is ALLTRUE
+  Global default is ALLTRUE so its still the same as setting it to true in the past config
 
 Flan 1.6.0
 ======================
