@@ -17,11 +17,12 @@ dependencies {
     modImplementation "io.github.flemmli97:flan:${flan_version}-${minecraft_version}:${mod_loader}" // for version 1.5.0 and up
         
     //Use the following lines for 1.6.0+
-    modCompileOnly('io.github.flemmli97:flan:${flan_version}-${minecraft_version}:api') {
+    modCompileOnly("io.github.flemmli97:flan:${minecraft_version}-${flan_version}:api") {
 		transitive = false //Remove this if you want to have all those optional dependencies
 	}
-    modRuntime('io.github.flemmli97:flan:${flan_version}-${minecraft_version}') {
+    modRuntime("io.github.flemmli97:flan:${minecraft_version}-${flan_version}") {
 		transitive = false //Remove this if you want to have all those optional dependencies
 	}
 }
 ```
+
