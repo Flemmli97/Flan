@@ -22,7 +22,8 @@
     "IItemAccessor",
     "IHungerAccessor",
     "FrostWalkerMixin",
-    "LightningFireEntityMixin"
+    "LightningFireEntityMixin",
+    "BannedEntryAccessor"
   ],
   "server": [
   ],

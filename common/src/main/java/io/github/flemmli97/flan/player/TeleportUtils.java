@@ -31,7 +31,7 @@ public class TeleportUtils {
             Vec3d dest = new Vec3d(ret.x, y + 1, ret.z);
             if (player.world.getBlockCollisions(player, player.getBoundingBox().offset(dest.subtract(player.getPos())), (state, p) -> true).allMatch(VoxelShape::isEmpty))
                 return dest;
-            return new Vec3d(rounded.getX() + 0.5, y+1, rounded.getZ() + 0.5);
+            return new Vec3d(rounded.getX() + 0.5, y + 1, rounded.getZ() + 0.5);
         }
         int[] newDim = claim.getDimensions();
         switch (pos.getLeft()) {

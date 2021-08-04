@@ -63,6 +63,8 @@ public class Config {
 
     public int inactivityTime = 30;
     public int inactivityBlocksMax = 2000;
+    public boolean deletePlayerFile = false;
+    public int bannedDeletionTime = 30;
 
     public boolean log;
 
@@ -181,6 +183,8 @@ public class Config {
             this.dropTicks = ConfigHandler.fromJson(obj, "dropTicks", this.dropTicks);
             this.inactivityTime = ConfigHandler.fromJson(obj, "inactivityTimeDays", this.inactivityTime);
             this.inactivityBlocksMax = ConfigHandler.fromJson(obj, "inactivityBlocksMax", this.inactivityBlocksMax);
+            this.deletePlayerFile = ConfigHandler.fromJson(obj, "deletePlayerFile", this.deletePlayerFile);
+            this.bannedDeletionTime = ConfigHandler.fromJson(obj, "bannedDeletionTime", this.bannedDeletionTime);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -240,6 +244,8 @@ public class Config {
         obj.addProperty("dropTicks", this.dropTicks);
         obj.addProperty("inactivityTimeDays", this.inactivityTime);
         obj.addProperty("inactivityBlocksMax", this.inactivityBlocksMax);
+        obj.addProperty("deletePlayerFile", this.deletePlayerFile);
+        obj.addProperty("bannedDeletionTime", this.bannedDeletionTime);
         try {
             FileWriter writer = new FileWriter(this.config);
             ConfigHandler.GSON.toJson(obj, writer);

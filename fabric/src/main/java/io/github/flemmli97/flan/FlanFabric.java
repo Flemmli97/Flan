@@ -7,6 +7,7 @@ import io.github.flemmli97.flan.event.BlockInteractEvents;
 import io.github.flemmli97.flan.event.EntityInteractEvents;
 import io.github.flemmli97.flan.event.ItemInteractEvents;
 import io.github.flemmli97.flan.integration.playerability.PlayerAbilityEvents;
+import io.github.flemmli97.flan.player.PlayerDataHandler;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -29,6 +30,7 @@ public class FlanFabric implements ModInitializer {
         AttackEntityCallback.EVENT.register(EntityInteractEvents::attackEntity);
         UseItemCallback.EVENT.register(ItemInteractEvents::useItem);
         ServerLifecycleEvents.SERVER_STARTING.register(FlanFabric::serverLoad);
+        ServerLifecycleEvents.SERVER_STARTED.register(FlanFabric::serverFinishLoad);
 
         CommandRegistrationCallback.EVENT.register(CommandClaim::register);
 
@@ -45,5 +47,9 @@ public class FlanFabric implements ModInitializer {
         ConfigHandler.serverLoad(server);
         ObjectToPermissionMap.reload(server);
         Flan.lockRegistry(server);
+    }
+
+    public static void serverFinishLoad(MinecraftServer server) {
+        PlayerDataHandler.deleteInactivePlayerData(server);
     }
 }

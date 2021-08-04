@@ -18,6 +18,7 @@ import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.EnumEditMode;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
 import io.github.flemmli97.flan.player.PlayerClaimData;
+import io.github.flemmli97.flan.player.PlayerDataHandler;
 import it.unimi.dsi.fastutil.longs.Long2ObjectArrayMap;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -68,7 +69,7 @@ public class ClaimStorage implements IPermissionStorage {
     public ClaimStorage(MinecraftServer server, ServerWorld world) {
         this.globalClaim = new GlobalClaim(world);
         this.read(server, world);
-        OfflinePlayerData.deleteUnusedClaims(server, this, world);
+        PlayerDataHandler.deleteUnusedClaims(server, this, world);
     }
 
     public UUID generateUUID() {
