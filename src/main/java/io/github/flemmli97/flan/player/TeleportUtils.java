@@ -7,6 +7,7 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.chunk.ChunkStatus;
 
@@ -27,7 +28,10 @@ public class TeleportUtils {
             BlockPos rounded = roundedBlockPos(ret);
             int y = player.getServerWorld().getChunk(rounded.getX() >> 4, rounded.getZ() >> 4, ChunkStatus.HEIGHTMAPS)
                     .sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, rounded.getX() & 15, rounded.getZ() & 15);
-            return new Vec3d(ret.x, y + 1, ret.z);
+            Vec3d dest = new Vec3d(ret.x, y + 1, ret.z);
+            if (player.world.getBlockCollisions(player, player.getBoundingBox().offset(dest.subtract(player.getPos())), (state, p) -> true).allMatch(VoxelShape::isEmpty))
+                return dest;
+            return new Vec3d(rounded.getX() + 0.5, y+1, rounded.getZ() + 0.5);
         }
         int[] newDim = claim.getDimensions();
         switch (pos.getLeft()) {
