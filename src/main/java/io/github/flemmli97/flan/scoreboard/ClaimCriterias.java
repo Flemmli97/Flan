@@ -10,4 +10,8 @@ public class ClaimCriterias {
     public static ScoreboardCriterion FREE = ScoreboardCriterionAccessor.newCriteria("flan:free_claimblocks", true, ScoreboardCriterion.RenderType.INTEGER);
     public static ScoreboardCriterion CLAIMS = ScoreboardCriterionAccessor.newCriteria("flan:claim_number", true, ScoreboardCriterion.RenderType.INTEGER);
 
+
+    public static void init() {
+
+    }
 }

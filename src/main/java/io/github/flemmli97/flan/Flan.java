@@ -8,6 +8,8 @@ import io.github.flemmli97.flan.event.BlockInteractEvents;
 import io.github.flemmli97.flan.event.EntityInteractEvents;
 import io.github.flemmli97.flan.event.ItemInteractEvents;
 import io.github.flemmli97.flan.integration.playerability.PlayerAbilityEvents;
+import io.github.flemmli97.flan.player.PlayerDataHandler;
+import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -39,6 +41,7 @@ public class Flan implements ModInitializer {
         AttackEntityCallback.EVENT.register(EntityInteractEvents::attackEntity);
         UseItemCallback.EVENT.register(ItemInteractEvents::useItem);
         ServerLifecycleEvents.SERVER_STARTING.register(Flan::serverLoad);
+        ServerLifecycleEvents.SERVER_STARTED.register(Flan::serverFinishLoad);
 
         CommandRegistrationCallback.EVENT.register(CommandClaim::register);
 
@@ -47,6 +50,8 @@ public class Flan implements ModInitializer {
         playerAbilityLib = FabricLoader.getInstance().isModLoaded("playerabilitylib");
         if (playerAbilityLib)
             PlayerAbilityEvents.register();
+
+        ClaimCriterias.init();
     }
 
     public static void lockRegistry(MinecraftServer server) {
@@ -71,5 +76,9 @@ public class Flan implements ModInitializer {
         ConfigHandler.serverLoad(server);
         ObjectToPermissionMap.reload(server);
         Flan.lockRegistry(server);
+    }
+
+    public static void serverFinishLoad(MinecraftServer server) {
+        PlayerDataHandler.deleteInactivePlayerData(server);
     }
 }

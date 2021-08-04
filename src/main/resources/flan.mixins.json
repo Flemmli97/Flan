@@ -33,7 +33,8 @@
     "LightningMixin",
     "ScoreboardCriterionAccessor",
     "WorldSaveHandlerMixin",
-    "PlayerManagerMixin"
+    "PlayerManagerMixin",
+    "BannedEntryAccessor"
   ],
   "server": [
   ],

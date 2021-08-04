@@ -8,6 +8,8 @@ import io.github.flemmli97.flan.api.data.IPlayerData;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.mixin.BannedEntryAccessor;
+import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 
@@ -16,9 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class OfflinePlayerData implements IPlayerData {
@@ -110,30 +111,22 @@ public class OfflinePlayerData implements IPlayerData {
         }
     }
 
-    public static Map<UUID, OfflinePlayerData> collectAllPlayerData(MinecraftServer server) {
-        Path dir = ConfigHandler.getPlayerSavePath(server);
-        Map<UUID, OfflinePlayerData> playerDatas = new HashMap<>();
-        if (Files.exists(dir)) {
-            for (String name : dir.toFile().list((d, name) -> name.endsWith(".json"))) {
-                UUID uuid = UUID.fromString(name.replace(".json", ""));
-                playerDatas.put(uuid, new OfflinePlayerData(server, uuid));
-            }
+    public boolean isExpired(LocalDateTime now) {
+        BannedPlayerEntry entry = this.server.getUserCache().getByUuid(this.owner).map(this.server.getPlayerManager().getUserBanList()::get).orElse(null);
+        boolean banned = entry != null && entry.getExpiryDate() != null;
+        if (banned) {
+            LocalDateTime bannedTime = LocalDateTime.ofInstant(((BannedEntryAccessor) entry).getCreationDate().toInstant(), ZoneId.systemDefault());
+            return ConfigHandler.config.bannedDeletionTime != -1 && now.isAfter(bannedTime.plusDays(ConfigHandler.config.bannedDeletionTime));
         }
-        return playerDatas;
+        return ConfigHandler.config.inactivityTime != -1 && now.isAfter(this.lastOnline.plusDays(ConfigHandler.config.inactivityTime)) && this.claimBlocks + this.additionalClaimBlocks < ConfigHandler.config.inactivityBlocksMax;
     }
 
-    public static void deleteUnusedClaims(MinecraftServer server, ClaimStorage storage, ServerWorld world) {
-        if (ConfigHandler.config.inactivityTime == -1)
-            return;
-        Map<UUID, OfflinePlayerData> playerData = collectAllPlayerData(server);
-        LocalDateTime now = LocalDateTime.now();
-        playerData.forEach((uuid, data) -> {
-            if (now.isAfter(data.lastOnline.plusDays(ConfigHandler.config.inactivityTime))
-                    && data.claimBlocks + data.additionalClaimBlocks < ConfigHandler.config.inactivityBlocksMax) {
-                Flan.log("{} Deleting all claims for inactive player {} last seen {}", world.getRegistryKey(), data.owner, data.lastOnline);
-                storage.allClaimsFromPlayer(data.owner)
-                        .forEach(claim -> storage.deleteClaim(claim, true, EnumEditMode.DEFAULT, world));
-            }
-        });
+    public void deleteFile() {
+        try {
+            Files.delete(this.save);
+        } catch (IOException e) {
+            Flan.error("Couldn't delete file player data of {}", this.owner);
+            e.printStackTrace();
+        }
     }
 }
