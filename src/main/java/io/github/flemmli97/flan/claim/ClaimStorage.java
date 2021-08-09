@@ -19,7 +19,8 @@ import io.github.flemmli97.flan.player.EnumEditMode;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.player.PlayerDataHandler;
-import it.unimi.dsi.fastutil.longs.Long2ObjectArrayMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -56,7 +57,7 @@ import java.util.stream.Collectors;
 public class ClaimStorage implements IPermissionStorage {
 
     public static final String adminClaimString = "!AdminClaims";
-    private final Long2ObjectArrayMap<List<Claim>> claims = new Long2ObjectArrayMap<>();
+    private final Long2ObjectMap<List<Claim>> claims = new Long2ObjectOpenHashMap<>();
     private final Map<UUID, Claim> claimUUIDMap = new HashMap<>();
     private final Map<UUID, Set<Claim>> playerClaimMap = new HashMap<>();
     private final Set<UUID> dirty = new HashSet<>();
@@ -204,8 +205,9 @@ public class ClaimStorage implements IPermissionStorage {
 
     public Claim getClaimAt(BlockPos pos) {
         long chunk = ChunkPos.toLong(pos.getX() >> 4, pos.getZ() >> 4);
-        if (this.claims.containsKey(chunk))
-            for (Claim claim : this.claims.get(chunk)) {
+        List<Claim> list = this.claims.get(chunk);
+        if (list != null)
+            for (Claim claim : list) {
                 if (claim.insideClaim(pos))
                     return claim;
             }
