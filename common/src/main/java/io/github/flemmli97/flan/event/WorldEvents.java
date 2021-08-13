@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -94,7 +95,7 @@ public class WorldEvents {
         return true;
     }
 
-    public static void serverTick() {
-        LogoutTracker.getInstance().tick();
+    public static void serverTick(MinecraftServer server) {
+        LogoutTracker.getInstance(server).tick();
     }
 }

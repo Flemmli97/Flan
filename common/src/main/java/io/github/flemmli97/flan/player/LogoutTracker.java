@@ -1,6 +1,7 @@
 package io.github.flemmli97.flan.player;
 
 import io.github.flemmli97.flan.config.ConfigHandler;
+import net.minecraft.server.MinecraftServer;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,13 +10,11 @@ import java.util.stream.Collectors;
 
 public class LogoutTracker {
 
-    private static final LogoutTracker INSTANCE = new LogoutTracker();
-
     private final Set<LogoutTicket> tracker = new HashSet<>();
     private final Set<UUID> trackerUUID = new HashSet<>();
 
-    public static LogoutTracker getInstance() {
-        return INSTANCE;
+    public static LogoutTracker getInstance(MinecraftServer server) {
+        return ((LogoutImpl)server).getInstance();
     }
 
     public void track(UUID player) {

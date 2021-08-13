@@ -36,7 +36,7 @@ public class FlanFabric implements ModInitializer {
         UseItemCallback.EVENT.register(ItemInteractEvents::useItem);
         ServerLifecycleEvents.SERVER_STARTING.register(FlanFabric::serverLoad);
         ServerLifecycleEvents.SERVER_STARTED.register(FlanFabric::serverFinishLoad);
-        ServerTickEvents.START_SERVER_TICK.register(server->WorldEvents.serverTick());
+        ServerTickEvents.START_SERVER_TICK.register(WorldEvents::serverTick);
         ServerPlayConnectionEvents.DISCONNECT.register((handler,server)->PlayerEvents.onLogout(handler.player));
         CommandRegistrationCallback.EVENT.register(CommandClaim::register);
 

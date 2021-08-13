@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import java.util.List;
 
 @Mixin(LightningEntity.class)
-public class LightningHitMixin {
+public abstract class LightningHitMixin {
 
     @ModifyVariable(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"), require = 1)
     private List<Entity> affectedEntities(List<Entity> list) {

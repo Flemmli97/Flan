@@ -7,6 +7,7 @@ import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.PlayerEvents;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerDataHandler;
+import net.minecraft.world.World;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -41,8 +42,8 @@ public class ServerEvents {
         PlayerEvents.onLogout(event.getPlayer());
     }
 
-    public static void serverTick(TickEvent.ServerTickEvent event) {
-        if(event.phase == TickEvent.Phase.START)
-            LogoutTracker.getInstance().tick();
+    public static void serverTick(TickEvent.WorldTickEvent event) {
+        if(event.phase == TickEvent.Phase.START && event.world.getServer() != null && event.world.getRegistryKey() == World.OVERWORLD)
+            LogoutTracker.getInstance(event.world.getServer()).tick();
     }
 }

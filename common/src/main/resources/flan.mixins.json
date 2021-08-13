@@ -23,7 +23,8 @@
     "IHungerAccessor",
     "FrostWalkerMixin",
     "LightningFireEntityMixin",
-    "BannedEntryAccessor"
+    "BannedEntryAccessor",
+    "MinecraftServerMixin"
   ],
   "server": [
   ],
