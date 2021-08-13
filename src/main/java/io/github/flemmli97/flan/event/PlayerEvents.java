@@ -18,6 +18,7 @@ public class PlayerEvents {
     }
 
     public static void onLogout(PlayerEntity player) {
-        LogoutTracker.getInstance().track(player.getUuid());
+        if(player.getServer() != null)
+            LogoutTracker.getInstance(player.getServer()).track(player.getUuid());
     }
 }

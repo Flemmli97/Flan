@@ -18,36 +18,36 @@ import java.util.UUID;
 public abstract class ItemEntityMixin implements IOwnedItem {
 
     @Unique
-    private UUID playerOrigin;
+    private UUID flanPlayerOrigin;
     @Unique
-    private UUID deathPlayerOrigin;
+    private UUID flanDeathPlayerOrigin;
 
     @Inject(method = "readCustomDataFromNbt", at = @At("RETURN"))
     private void readData(NbtCompound tag, CallbackInfo info) {
         if (tag.contains("Flan:PlayerOrigin"))
-            this.playerOrigin = tag.getUuid("Flan:PlayerOrigin");
+            this.flanPlayerOrigin = tag.getUuid("Flan:PlayerOrigin");
     }
 
     @Inject(method = "writeCustomDataToNbt", at = @At("RETURN"))
     private void writeData(NbtCompound tag, CallbackInfo info) {
-        if (this.playerOrigin != null)
-            tag.putUuid("Flan:PlayerOrigin", this.playerOrigin);
+        if (this.flanPlayerOrigin != null)
+            tag.putUuid("Flan:PlayerOrigin", this.flanPlayerOrigin);
     }
 
     @Override
     public void setOriginPlayer(PlayerEntity player) {
-        this.playerOrigin = player.getUuid();
+        this.flanPlayerOrigin = player.getUuid();
         if (player instanceof ServerPlayerEntity && PlayerClaimData.get((ServerPlayerEntity) player).setDeathItemOwner())
-            this.deathPlayerOrigin = this.playerOrigin;
+            this.flanDeathPlayerOrigin = this.flanPlayerOrigin;
     }
 
     @Override
     public UUID getDeathPlayer() {
-        return this.deathPlayerOrigin;
+        return this.flanDeathPlayerOrigin;
     }
 
     @Override
     public UUID getPlayerOrigin() {
-        return this.playerOrigin;
+        return this.flanPlayerOrigin;
     }
 }

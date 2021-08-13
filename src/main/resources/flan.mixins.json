@@ -34,7 +34,8 @@
     "ScoreboardCriterionAccessor",
     "WorldSaveHandlerMixin",
     "PlayerManagerMixin",
-    "BannedEntryAccessor"
+    "BannedEntryAccessor",
+    "MinecraftServerMixin"
   ],
   "server": [
   ],

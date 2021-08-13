@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(WorldSaveHandler.class)
-public class WorldSaveHandlerMixin {
+public abstract class WorldSaveHandlerMixin {
 
     @Inject(method = "savePlayerData", at = @At(value = "RETURN"))
     private void save(PlayerEntity player, CallbackInfo info) {

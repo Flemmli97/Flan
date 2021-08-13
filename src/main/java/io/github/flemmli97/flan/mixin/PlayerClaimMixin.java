@@ -16,17 +16,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PlayerClaimMixin implements IPlayerClaimImpl {
 
     @Unique
-    private PlayerClaimData claimData;
+    private PlayerClaimData flanClaimData;
 
     @Unique
-    private Claim currentClaim;
+    private Claim flanCurrentClaim;
 
     @Shadow
     private MinecraftServer server;
 
     @Inject(method = "<init>*", at = @At("RETURN"))
     private void initData(CallbackInfo info) {
-        this.claimData = new PlayerClaimData((ServerPlayerEntity) (Object) this);
+        this.flanClaimData = new PlayerClaimData((ServerPlayerEntity) (Object) this);
     }
 
     /*@Inject(method = "readCustomDataFromNbt", at = @At("RETURN"))
@@ -41,21 +41,21 @@ public abstract class PlayerClaimMixin implements IPlayerClaimImpl {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void tickData(CallbackInfo info) {
-        this.claimData.tick(this.currentClaim, claim -> this.currentClaim = claim);
+        this.flanClaimData.tick(this.flanCurrentClaim, claim -> this.flanCurrentClaim = claim);
     }
 
     @Inject(method = "copyFrom", at = @At("RETURN"))
     private void copyOld(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo info) {
-        this.claimData.clone(PlayerClaimData.get(oldPlayer));
+        this.flanClaimData.clone(PlayerClaimData.get(oldPlayer));
     }
 
     @Override
     public PlayerClaimData get() {
-        return this.claimData;
+        return this.flanClaimData;
     }
 
     @Override
     public Claim getCurrentClaim() {
-        return this.currentClaim;
+        return this.flanCurrentClaim;
     }
 }

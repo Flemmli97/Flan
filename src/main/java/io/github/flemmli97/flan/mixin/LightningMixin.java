@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(LightningEntity.class)
-public class LightningMixin {
+public abstract class LightningMixin {
 
     @Inject(method = "spawnFire", at = @At(value = "HEAD"), cancellable = true)
     private void stopFire(int attempts, CallbackInfo info) {
