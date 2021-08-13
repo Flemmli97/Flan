@@ -1,3 +1,20 @@
+Flan 1.6.2  
+======================  
+- Fix tp sometimes tp into walls  
+- Add bannedDeletionTime config:  
+  After x amount of days since the ban the claims will be deleted.  
+  Only for permanent bans (so temp bans are not affected).  
+  Temp bans are still affected by the inactivity time though.  
+  Default 30 days (same as inactivity days)  
+- Add deletePlayerFile config:  
+  Previously for inactive players only the claims where deleted.  
+  If this is set to true their player data will also be deleted.  
+  Default false  
+- Add universal graves mods grave to the default ignored entities  
+- Another performance improvement  
+- Add new config "offlineProtectActivation" to only protect claims when the player is offline.  
+  Disabled by default  
+
 Flan 1.6.1
 ======================
 - Improve performance
