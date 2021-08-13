@@ -1,5 +1,5 @@
-Flan 1.6.2  
-======================  
+Flan 1.6.2
+======================
 - Fix tp sometimes tp into walls  
 - Add bannedDeletionTime config:  
   After x amount of days since the ban the claims will be deleted.  
