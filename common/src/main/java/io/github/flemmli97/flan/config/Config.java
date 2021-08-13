@@ -68,6 +68,8 @@ public class Config {
     public boolean deletePlayerFile = false;
     public int bannedDeletionTime = 30;
 
+    public int offlineProtectActivation = -1;
+
     public boolean log;
 
     public int configVersion = 2;
@@ -187,6 +189,7 @@ public class Config {
             this.inactivityBlocksMax = ConfigHandler.fromJson(obj, "inactivityBlocksMax", this.inactivityBlocksMax);
             this.deletePlayerFile = ConfigHandler.fromJson(obj, "deletePlayerFile", this.deletePlayerFile);
             this.bannedDeletionTime = ConfigHandler.fromJson(obj, "bannedDeletionTime", this.bannedDeletionTime);
+            this.offlineProtectActivation = ConfigHandler.fromJson(obj, "offlineProtectActivation", this.offlineProtectActivation);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -248,6 +251,7 @@ public class Config {
         obj.addProperty("inactivityBlocksMax", this.inactivityBlocksMax);
         obj.addProperty("deletePlayerFile", this.deletePlayerFile);
         obj.addProperty("bannedDeletionTime", this.bannedDeletionTime);
+        obj.addProperty("offlineProtectActivation", this.offlineProtectActivation);
         try {
             FileWriter writer = new FileWriter(this.config);
             ConfigHandler.GSON.toJson(obj, writer);

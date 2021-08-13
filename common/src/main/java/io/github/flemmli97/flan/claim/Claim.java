@@ -13,6 +13,7 @@ import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -246,13 +247,18 @@ public class Claim implements IPermissionContainer {
                 return true;
             }
         }
-        Config.GlobalType global = ConfigHandler.config.getGlobal(this.world, perm);
-        if (!this.isAdminClaim() && !global.canModify()) {
-            if (global.getValue() || (player != null && this.isAdminIgnore(player)))
-                return true;
-            if (message)
-                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
-            return false;
+        if (!this.isAdminClaim()) {
+            Config.GlobalType global = ConfigHandler.config.getGlobal(this.world, perm);
+            if(!global.canModify()) {
+                if (global.getValue() || (player != null && this.isAdminIgnore(player)))
+                    return true;
+                if (message)
+                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
+                return false;
+            }
+            if(ConfigHandler.config.offlineProtectActivation != -1 && (LogoutTracker.getInstance().justLoggedOut(this.getOwner()) || this.getOwnerPlayer().isPresent())) {
+                return global == Config.GlobalType.NONE || global.getValue();
+            }
         }
         if (PermissionRegistry.globalPerms().contains(perm)) {
             for (Claim claim : this.subClaims) {
