@@ -10,7 +10,7 @@ Flan 1.6.2
   Previously for inactive players only the claims where deleted.  
   If this is set to true their player data will also be deleted.  
   Default false  
-- Add universal graves mods grave to the default ignored entities  
+- Add universal graves mods grave to the default ignored blocks  
 - Another performance improvement  
 - Add new config "offlineProtectActivation" to only protect claims when the player is offline.  
   Disabled by default  
