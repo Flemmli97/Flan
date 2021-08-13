@@ -35,7 +35,9 @@ public class Config {
     public int minClaimsize = 100;
     public int defaultClaimDepth = 10;
     public boolean lenientBlockEntityCheck;
-    public List<String> ignoredBlocks = new ArrayList<>();
+    public List<String> ignoredBlocks = Lists.newArrayList(
+            "universal_graves:grave"
+    );
     public List<String> ignoredEntityTypes = Lists.newArrayList(
             "corpse:corpse"
     );
