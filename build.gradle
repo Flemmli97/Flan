@@ -165,7 +165,7 @@ def changelog(int versions) {
     try {
         def changelog = ""
         def match = 0
-        file("Changelog.txt").eachLine {
+        file("Changelog.md").eachLine {
             if (it.matches("${project.project_name} ([0-9].[0-9].[0-9])"))
                 match++
             if (match <= versions) {
@@ -210,7 +210,7 @@ curseforge {
         }
         mainArtifact(remapJar) {
             def txt = changelog(1).replace("\n-", "\n\n- ")
-            txt = txt + "\n\n" + "For past versions see: https://github.com/Flemmli97/Flan/blob/1.17/Changelog.txt"
+            txt = txt + "\n\n" + "For past versions see: https://github.com/Flemmli97/Flan/blob/1.17/Changelog.md"
             changelog = txt
             changelogType = "markdown"
             releaseType = 'release'
