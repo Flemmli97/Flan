@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.event;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.claim.ClaimStorage;
+import io.github.flemmli97.flan.player.LogoutTracker;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.SpawnGroup;
@@ -91,5 +92,9 @@ public class WorldEvents {
                     return false;
             }
         return true;
+    }
+
+    public static void serverTick() {
+        LogoutTracker.getInstance().tick();
     }
 }
