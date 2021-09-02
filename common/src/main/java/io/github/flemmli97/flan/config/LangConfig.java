@@ -38,6 +38,7 @@ public class LangConfig {
 
     public String cantClaimHere = "Sorry you cant claim here";
     public String minClaimSize = "This is too small. Minimum claimsize is %d";
+    public String maxClaims = "Maximum amount of claims reached";
     public String landClaimDisabledWorld = "Claiming is disabled in this world";
     public String editMode = "Editing mode set to %s";
     public String notEnoughBlocks = "Not enough claim blocks";
