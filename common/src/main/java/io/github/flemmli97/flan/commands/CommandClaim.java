@@ -710,7 +710,7 @@ public class CommandClaim {
         if (claim == null)
             return 0;
         claim.setHomePos(player.getBlockPos());
-        context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.setHome, player.getBlockPos()), Formatting.GOLD), false);
+        context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.setHome, player.getBlockPos().getX(), player.getBlockPos().getY(), player.getBlockPos().getZ()), Formatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 
