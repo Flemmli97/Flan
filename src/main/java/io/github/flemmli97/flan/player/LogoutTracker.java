@@ -14,11 +14,11 @@ public class LogoutTracker {
     private final Set<UUID> trackerUUID = new HashSet<>();
 
     public static LogoutTracker getInstance(MinecraftServer server) {
-        return ((LogoutImpl)server).getInstance();
+        return ((LogoutImpl) server).getInstance();
     }
 
     public void track(UUID player) {
-        if(ConfigHandler.config.offlineProtectActivation == -1)
+        if (ConfigHandler.config.offlineProtectActivation == -1)
             return;
         this.trackerUUID.add(player);
         this.tracker.add(new LogoutTicket(player));
@@ -32,9 +32,9 @@ public class LogoutTracker {
         this.tracker.stream().filter(LogoutTicket::tick)
                 .collect(Collectors.toSet())
                 .forEach(ticket -> {
-                            this.tracker.remove(ticket);
-                            this.trackerUUID.remove(ticket.uuid);
-                        });
+                    this.tracker.remove(ticket);
+                    this.trackerUUID.remove(ticket.uuid);
+                });
     }
 
     private static class LogoutTicket {

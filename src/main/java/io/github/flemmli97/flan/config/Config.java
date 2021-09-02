@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,6 +33,7 @@ public class Config {
     public int ticksForNextBlock = 600;
     public int minClaimsize = 100;
     public int defaultClaimDepth = 10;
+    public int maxClaims = -1;
     public boolean lenientBlockEntityCheck;
     public List<String> ignoredBlocks = Lists.newArrayList(
             "universal_graves:grave"
@@ -127,6 +127,7 @@ public class Config {
             this.ticksForNextBlock = ConfigHandler.fromJson(obj, "ticksForNextBlock", this.ticksForNextBlock);
             this.minClaimsize = ConfigHandler.fromJson(obj, "minClaimsize", this.minClaimsize);
             this.defaultClaimDepth = ConfigHandler.fromJson(obj, "defaultClaimDepth", this.defaultClaimDepth);
+            this.maxClaims = ConfigHandler.fromJson(obj, "maxClaims", this.maxClaims);
             this.lenientBlockEntityCheck = ConfigHandler.fromJson(obj, "lenientBlockEntityCheck", this.lenientBlockEntityCheck);
             this.ignoredBlocks.clear();
             ConfigHandler.arryFromJson(obj, "ignoredBlocks").forEach(e -> this.ignoredBlocks.add(e.getAsString()));
@@ -206,6 +207,7 @@ public class Config {
         obj.addProperty("ticksForNextBlock", this.ticksForNextBlock);
         obj.addProperty("minClaimsize", this.minClaimsize);
         obj.addProperty("defaultClaimDepth", this.defaultClaimDepth);
+        obj.addProperty("maxClaims", this.maxClaims);
         JsonArray blocks = new JsonArray();
         this.ignoredBlocks.forEach(blocks::add);
         obj.add("ignoredBlocks", blocks);

@@ -14,6 +14,7 @@ import io.github.flemmli97.flan.api.data.IPlayerData;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.EnumEditMode;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
@@ -87,6 +88,10 @@ public class ClaimStorage implements IPermissionStorage {
             PlayerClaimData data = PlayerClaimData.get(player);
             if (claim.getPlane() < ConfigHandler.config.minClaimsize) {
                 player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.minClaimSize, ConfigHandler.config.minClaimsize), Formatting.RED), false);
+                return false;
+            }
+            if (ConfigHandler.config.maxClaims != -1 && !PermissionNodeHandler.permBelowEqVal(player, PermissionNodeHandler.permMaxClaims, this.playerClaimMap.getOrDefault(player.getUuid(), Sets.newHashSet()).size() + 1, ConfigHandler.config.maxClaims)) {
+                player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.maxClaims), Formatting.RED), false);
                 return false;
             }
             if (!data.canUseClaimBlocks(claim.getPlane())) {

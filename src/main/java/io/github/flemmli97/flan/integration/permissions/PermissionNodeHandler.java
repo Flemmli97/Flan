@@ -46,6 +46,9 @@ public class PermissionNodeHandler {
     public static final String cmdHome = "flan.command.home";
     public static final String cmdTeleport = "flan.command.teleport";
 
+    public static final String permClaimBlocks = "flan.claim.blocks.max";
+    public static final String permMaxClaims = "flan.claims.amount";
+
     public static boolean perm(ServerCommandSource src, String perm) {
         return perm(src, perm, false);
     }
@@ -64,5 +67,9 @@ public class PermissionNodeHandler {
         if (adminCmd)
             return Permissions.check(src, perm, ConfigHandler.config.permissionLevel);
         return Permissions.check(src, perm, true);
+    }
+
+    public static boolean permBelowEqVal(ServerPlayerEntity src, String perm, int val, int fallback) {
+        return val <= fallback;
     }
 }

@@ -249,14 +249,14 @@ public class Claim implements IPermissionContainer {
         }
         if (!this.isAdminClaim()) {
             Config.GlobalType global = ConfigHandler.config.getGlobal(this.world, perm);
-            if(!global.canModify()) {
+            if (!global.canModify()) {
                 if (global.getValue() || (player != null && this.isAdminIgnore(player)))
                     return true;
                 if (message)
                     player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
                 return false;
             }
-            if(ConfigHandler.config.offlineProtectActivation != -1 && (LogoutTracker.getInstance(this.world.getServer()).justLoggedOut(this.getOwner()) || this.getOwnerPlayer().isPresent())) {
+            if (ConfigHandler.config.offlineProtectActivation != -1 && (LogoutTracker.getInstance(this.world.getServer()).justLoggedOut(this.getOwner()) || this.getOwnerPlayer().isPresent())) {
                 return global == Config.GlobalType.NONE || global.getValue();
             }
         }

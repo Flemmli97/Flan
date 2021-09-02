@@ -33,7 +33,7 @@ public class Flan implements ModInitializer {
 
     public static final Logger logger = LogManager.getLogger("flan");
 
-    public static boolean permissionAPI, gunpowder, playerAbilityLib;
+    public static boolean permissionAPI, gunpowder, playerAbilityLib, ftbRanks, diceMCMoneySign;
 
     public static final DateTimeFormatter onlineTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -47,7 +47,7 @@ public class Flan implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTING.register(Flan::serverLoad);
         ServerLifecycleEvents.SERVER_STARTED.register(Flan::serverFinishLoad);
         ServerTickEvents.START_SERVER_TICK.register(WorldEvents::serverTick);
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server)-> PlayerEvents.onLogout(handler.player));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PlayerEvents.onLogout(handler.player));
 
         CommandRegistrationCallback.EVENT.register(CommandClaim::register);
 
