@@ -1,3 +1,12 @@
+Flan 1.6.3
+======================
+- Fix sethome command feedback error
+- Add maxClaims config to specify max amount of claims (regardless of size)
+  a player can have. Ignored in admin mode  
+  Also has a permission node for it: flan.claims.amount  
+  Default is -1 (aka disabled)
+- Change the need to have enough claimblocks if the player is in adminmode  
+
 Flan 1.6.2
 ======================
 - Fix tp sometimes tp into walls  
