@@ -90,11 +90,11 @@ public class ClaimStorage implements IPermissionStorage {
                 player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.minClaimSize, ConfigHandler.config.minClaimsize), Formatting.RED), false);
                 return false;
             }
-            if (ConfigHandler.config.maxClaims != -1 && !PermissionNodeHandler.permBelowEqVal(player, PermissionNodeHandler.permMaxClaims, this.playerClaimMap.getOrDefault(player.getUuid(), Sets.newHashSet()).size() + 1, ConfigHandler.config.maxClaims)) {
+            if (!data.isAdminIgnoreClaim() && ConfigHandler.config.maxClaims != -1 && !PermissionNodeHandler.permBelowEqVal(player, PermissionNodeHandler.permMaxClaims, this.playerClaimMap.getOrDefault(player.getUuid(), Sets.newHashSet()).size() + 1, ConfigHandler.config.maxClaims)) {
                 player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.maxClaims), Formatting.RED), false);
                 return false;
             }
-            if (!data.canUseClaimBlocks(claim.getPlane())) {
+            if (!data.isAdminIgnoreClaim() && !data.canUseClaimBlocks(claim.getPlane())) {
                 player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.notEnoughBlocks, Formatting.RED), false);
                 return false;
             }
@@ -188,7 +188,7 @@ public class ClaimStorage implements IPermissionStorage {
                 return data;
             return (IPlayerData) PlayerClaimData.get(o);
         }).orElse(new OfflinePlayerData(player.getServer(), claim.getOwner()));
-        boolean enoughBlocks = claim.isAdminClaim() || newData.canUseClaimBlocks(diff);
+        boolean enoughBlocks = claim.isAdminClaim() || data.isAdminIgnoreClaim() || newData.canUseClaimBlocks(diff);
         if (enoughBlocks) {
             Flan.log("Resizing claim {}", claim);
             this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.getServerWorld());
