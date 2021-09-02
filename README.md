@@ -13,8 +13,7 @@ repositories {
 }
 
 dependencies {
-    modImplementation "io.github.flemmli97:flan:${flan_version}-${minecraft_version}" // for version 1.5.0 below
-    modImplementation "io.github.flemmli97:flan:${flan_version}-${minecraft_version}:${mod_loader}" // for version 1.5.0 and up
+    modImplementation "io.github.flemmli97:flan:${minecraft_version}-${flan_version}"
         
     //Use the following lines for 1.6.0+
     modCompileOnly("io.github.flemmli97:flan:${minecraft_version}-${flan_version}:api") {
