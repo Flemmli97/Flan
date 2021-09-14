@@ -27,11 +27,15 @@ import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.GameProfileArgumentType;
+import net.minecraft.command.argument.TextArgumentType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
@@ -81,6 +85,10 @@ public class CommandClaim {
                         .then(CommandManager.argument("amount", IntegerArgumentType.integer()).executes(CommandCurrency::buyClaimBlocks)))
                 .then(CommandManager.literal("sellBlocks").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdSell, false))
                         .then(CommandManager.argument("amount", IntegerArgumentType.integer()).executes(CommandCurrency::sellClaimBlocks)))
+                .then(CommandManager.literal("claimMessage").then(CommandManager.argument("type", StringArgumentType.word()).suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"enter", "leave"}, b))
+                        .then(CommandManager.argument("title", StringArgumentType.word()).suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"title", "subtitle"}, b))
+                                .then(CommandManager.literal("text").then(CommandManager.argument("component", TextArgumentType.text()).executes(ctx -> CommandClaim.editClaimMessages(ctx, TextArgumentType.getTextArgument(ctx, "component")))))
+                                .then(CommandManager.literal("string").then(CommandManager.argument("message", StringArgumentType.string()).executes(CommandClaim::editClaimMessages))))))
                 .then(CommandManager.literal("group").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdGroup))
                         .then(CommandManager.literal("add").then(CommandManager.argument("group", StringArgumentType.string()).executes(CommandClaim::addGroup)))
                         .then(CommandManager.literal("remove").then(CommandManager.argument("group", StringArgumentType.string())
@@ -719,5 +727,51 @@ public class CommandClaim {
                         context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), false);
                     return 0;
                 }).orElse(0);
+    }
+
+    public static int editClaimMessages(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        return editClaimMessages(context, new LiteralText(StringArgumentType.getString(context, "message")));
+    }
+
+    public static int editClaimMessages(CommandContext<ServerCommandSource> context, Text text) throws CommandSyntaxException {
+        if (text instanceof MutableText) {
+            Style style = text.getStyle();
+            if (style.isEmpty())
+                style = style.withFormatting(Formatting.WHITE);
+            if (!style.isItalic())
+                style = style.withItalic(false);
+            ((MutableText) text).setStyle(style);
+        }
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        Claim claim = PermHelper.checkReturn(player, PermissionRegistry.EDITPERMS, PermHelper.genericNoPermMessage(player));
+        if (claim == null)
+            return 0;
+        boolean sub = StringArgumentType.getString(context, "title").equals("subtitle");
+        boolean enter = StringArgumentType.getString(context, "type").equals("enter");
+        String feedback;
+        if (enter) {
+            if (sub) {
+                claim.setEnterTitle(claim.enterTitle, text);
+                feedback = ConfigHandler.lang.setEnterSubMessage;
+            } else {
+                claim.setEnterTitle(text, claim.enterSubtitle);
+                feedback = ConfigHandler.lang.setEnterMessage;
+            }
+        } else {
+            if (sub) {
+                claim.setLeaveTitle(claim.leaveTitle, text);
+                feedback = ConfigHandler.lang.setLeaveSubMessage;
+            } else {
+                claim.setLeaveTitle(text, claim.leaveSubtitle);
+                feedback = ConfigHandler.lang.setLeaveMessage;
+            }
+        }
+        String[] unf = feedback.split("%s", 2);
+        MutableText cmdFeed = new LiteralText(unf[0]).formatted(Formatting.GOLD)
+                .append(text);
+        if (unf.length > 1)
+            cmdFeed.append(new LiteralText(unf[1])).formatted(Formatting.GOLD);
+        context.getSource().sendFeedback(cmdFeed, false);
+        return Command.SINGLE_SUCCESS;
     }
 }

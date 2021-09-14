@@ -106,6 +106,7 @@ public class LangConfig {
     public String screenMenuGlobal = "Edit Global Permissions";
     public String screenMenuGroup = "Edit Permissiongroups";
     public String screenMenuPotion = "Edit Potioneffects";
+    public String screenMenuClaimText = "Edit Enter/Leave Text";
     public String screenMenuDelete = "Delete Claim";
     public String screenConfirm = "Confirm";
     public String screenYes = "Yes";
@@ -116,7 +117,12 @@ public class LangConfig {
     public String screenGroupPerms = "%s-Permissions";
     public String screenPersonalGroups = "Personal-Groups";
     public String screenPersonalPermissions = "Personal Permissions for %s";
+    public String screenEnterText = "Edit title text on enter. (Right-Click to use JSON text. See MC Wiki for that)";
+    public String screenEnterSubText = "Edit subtitle text on enter. (Right-Click to use JSON text. See MC Wiki for that)";
+    public String screenLeaveText = "Edit title text on leave. (Right-Click to use JSON text. See MC Wiki for that)";
+    public String screenLeaveSubText = "Edit subtitle text on enter. (Right-Click to use JSON text. See MC Wiki for that)";
 
+    public String chatClaimTextEdit = "[Click for command]";
     public String sellDisabled = "Claimblocks selling is disabled";
     public String buyDisabled = "Claimblocks purchasing is disabled";
     public String sellFail = "Not enough claimblocks to sell";
@@ -140,6 +146,11 @@ public class LangConfig {
     public String setHome = "Claim home set to [x=%s,y=%s,z=%s]";
     public String teleportHome = "Teleporting to claim home. Don't move for 5 seconds";
     public String teleportHomeFail = "Teleport already happening";
+
+    public String setEnterMessage = "Set enter title to %s";
+    public String setEnterSubMessage = "Set enter subtitle to %s";
+    public String setLeaveMessage = "Set leave title to %s";
+    public String setLeaveSubMessage = "Set leave subtitle to %s";
 
     public String wiki = "For more info check out the wiki:";
 

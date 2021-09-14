@@ -311,7 +311,12 @@ public class EntityInteractEvents {
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
         if (currentClaim != null) {
             if (!currentClaim.intersects(player.getBoundingBox())) {
-                cons.accept(null);
+                Claim claim = storage.getClaimAt(rounded);
+                cons.accept(claim);
+                if (claim == null)
+                    currentClaim.displayLeaveTitle(player);
+                else
+                    claim.displayEnterTitle(player);
             } else {
                 if (!player.isSpectator()) {
                     BlockPos.Mutable bPos = rounded.mutableCopy();
@@ -332,6 +337,8 @@ public class EntityInteractEvents {
         } else if (player.age % 3 == 0) {
             Claim claim = storage.getClaimAt(rounded);
             cons.accept(claim);
+            if (claim != null)
+                claim.displayEnterTitle(player);
         }
     }
 
