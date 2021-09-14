@@ -17,6 +17,7 @@ import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -67,6 +68,8 @@ public class Claim implements IPermissionContainer {
     private final ServerWorld world;
 
     private final Map<StatusEffect, Integer> potions = new HashMap<>();
+
+    public Text enterTitle, enterSubtitle, leaveTitle, leaveSubtitle;
 
     private Claim(ServerWorld world) {
         this.world = world;
@@ -514,6 +517,34 @@ public class Claim implements IPermissionContainer {
 
     public BlockPos getHomePos() {
         return this.homePos;
+    }
+
+    public void setEnterTitle(Text title, Text sub) {
+        this.enterTitle = title;
+        this.enterSubtitle = sub;
+        this.setDirty(true);
+    }
+
+    public void setLeaveTitle(Text title, Text sub) {
+        this.leaveTitle = title;
+        this.leaveSubtitle = sub;
+        this.setDirty(true);
+    }
+
+    public void displayEnterTitle(ServerPlayerEntity player) {
+        if (this.enterTitle != null) {
+            player.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, this.enterTitle));
+            if (this.enterSubtitle != null)
+                player.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, this.enterSubtitle));
+        }
+    }
+
+    public void displayLeaveTitle(ServerPlayerEntity player) {
+        if (this.leaveTitle != null) {
+            player.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, this.leaveTitle));
+            if (this.leaveSubtitle != null)
+                player.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, this.leaveSubtitle));
+        }
     }
 
     /**
