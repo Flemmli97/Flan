@@ -6,7 +6,8 @@ Flan 1.6.3
   Also has a permission node for it: flan.claims.amount  
   Default is -1 (aka disabled)
 - Change the need to have enough claimblocks if the player is in adminmode  
-
+- Add messages for entering and leaving a claim
+  
 Flan 1.6.2
 ======================
 - Fix tp sometimes tp into walls  
