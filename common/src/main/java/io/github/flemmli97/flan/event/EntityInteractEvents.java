@@ -272,11 +272,12 @@ public class EntityInteractEvents {
         if (wither.world.isClient)
             return true;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) wither.world);
-        BlockPos.Mutable pos = wither.getBlockPos().mutableCopy();
+        BlockPos.Mutable pos = new BlockPos.Mutable();
         for (int x = -1; x <= 1; x++)
             for (int z = -1; z <= 1; z++) {
-                IPermissionContainer claim = storage.getForPermissionCheck(wither.getBlockPos().add(x, 0, z));
-                if (!claim.canInteract(null, PermissionRegistry.WITHER, pos.set(pos.getX() + x, pos.getY() + 3, pos.getZ() + z), false))
+                pos.set(wither.getBlockPos(), x, 3, z);
+                IPermissionContainer claim = storage.getForPermissionCheck(pos);
+                if (!claim.canInteract(null, PermissionRegistry.WITHER, pos, false))
                     return false;
             }
         return true;
