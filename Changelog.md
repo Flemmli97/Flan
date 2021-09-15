@@ -5,8 +5,12 @@ Flan 1.6.3
   a player can have. Ignored in admin mode  
   Also has a permission node for it: flan.claims.amount  
   Default is -1 (aka disabled)
-- Change the need to have enough claimblocks if the player is in adminmode  
+- Change the need to have enough claimblocks if the player is in adminmode
 - Add messages for entering and leaving a claim
+- Add option to create a claim of a given size to the addClaim command  
+  e.g. /flan addClaim rect 10 10 will create a claim of size 10x10 centered around the player
+- Add option to use up all unused claimblocks to create a square claim  
+  /flan addClaim all
 
 Flan 1.6.2
 ======================

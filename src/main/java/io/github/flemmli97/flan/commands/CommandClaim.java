@@ -54,7 +54,10 @@ public class CommandClaim {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("flan")
                 .then(CommandManager.literal("reload").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdReload, true)).executes(CommandClaim::reloadConfig))
-                .then(CommandManager.literal("addClaim").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.claimCreate)).then(CommandManager.argument("from", BlockPosArgumentType.blockPos()).then(CommandManager.argument("to", BlockPosArgumentType.blockPos()).executes(CommandClaim::addClaim))))
+                .then(CommandManager.literal("addClaim").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.claimCreate))
+                        .then(CommandManager.argument("from", BlockPosArgumentType.blockPos()).then(CommandManager.argument("to", BlockPosArgumentType.blockPos()).executes(CommandClaim::addClaim)))
+                        .then(CommandManager.literal("all").executes(CommandClaim::addClaimAll))
+                        .then(CommandManager.literal("rect").then(CommandManager.argument("x", IntegerArgumentType.integer()).then(CommandManager.argument("z", IntegerArgumentType.integer()).executes(ctx->CommandClaim.addClaimRect(ctx, IntegerArgumentType.getInteger(ctx, "x"), IntegerArgumentType.getInteger(ctx, "z")))))))
                 .then(CommandManager.literal("menu").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdMenu)).executes(CommandClaim::openMenu))
                 .then(CommandManager.literal("setHome").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdHome)).executes(CommandClaim::setClaimHome))
                 .then(CommandManager.literal("trapped").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdTrapped)).executes(CommandClaim::trapped))
@@ -145,6 +148,25 @@ public class CommandClaim {
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
         BlockPos from = BlockPosArgumentType.getLoadedBlockPos(context, "from");
         BlockPos to = BlockPosArgumentType.getLoadedBlockPos(context, "to");
+        storage.createClaim(from, to, player);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int addClaimAll(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        PlayerClaimData data = PlayerClaimData.get(player);
+        int usable = data.getClaimBlocks() + data.getAdditionalClaims() - data.usedClaimBlocks();
+        int size = (int) Math.floor(Math.sqrt(usable));
+        return addClaimRect(context, size, size);
+    }
+
+    private static int addClaimRect(CommandContext<ServerCommandSource> context, int x, int z) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
+        boolean evenX = x % 2 == 0;
+        boolean evenZ = z % 2 == 0;
+        BlockPos from = player.getBlockPos().add(evenX ? -(int)((x-1)*0.5) : -(int)(x*0.5), -5, evenZ ? -(int)((z-1)*0.5) : -(int)(z*0.5));
+        BlockPos to = player.getBlockPos().add((int)(x*0.5), -5, (int)(z*0.5));
         storage.createClaim(from, to, player);
         return Command.SINGLE_SUCCESS;
     }
