@@ -574,6 +574,18 @@ public class Claim implements IPermissionContainer {
             else {
                 this.homePos = new BlockPos(home.get(0).getAsInt(), home.get(1).getAsInt(), home.get(2).getAsInt());
             }
+            String message = ConfigHandler.fromJson(obj, "EnterTitle", "");
+            if(!message.isEmpty())
+                this.enterTitle = Text.Serializer.fromJson(message);
+            message = ConfigHandler.fromJson(obj, "EnterSubtitle", "");
+            if(!message.isEmpty())
+                this.enterSubtitle = Text.Serializer.fromJson(message);
+            message = ConfigHandler.fromJson(obj, "LeaveTitle", "");
+            if(!message.isEmpty())
+                this.leaveTitle = Text.Serializer.fromJson(message);
+            message = ConfigHandler.fromJson(obj, "LeaveSubtitle", "");
+            if(!message.isEmpty())
+                this.leaveSubtitle = Text.Serializer.fromJson(message);
             JsonObject potion = ConfigHandler.fromJson(obj, "Potions");
             potion.entrySet().forEach(e -> this.potions.put(CrossPlatformStuff.effectFromString(e.getKey()), e.getValue().getAsInt()));
             if (ConfigHandler.fromJson(obj, "AdminClaim", false))
@@ -640,6 +652,10 @@ public class Claim implements IPermissionContainer {
         home.add(this.homePos.getY());
         home.add(this.homePos.getZ());
         obj.add("Home", home);
+        obj.addProperty("EnterTitle", this.enterTitle == null ? "" : Text.Serializer.toJson(this.enterTitle));
+        obj.addProperty("EnterSubtitle", this.enterSubtitle == null ? "" : Text.Serializer.toJson(this.enterSubtitle));
+        obj.addProperty("LeaveTitle", this.leaveTitle == null ? "" : Text.Serializer.toJson(this.leaveTitle));
+        obj.addProperty("LeaveSubtitle", this.leaveSubtitle == null ? "" : Text.Serializer.toJson(this.leaveSubtitle));
         JsonObject potions = new JsonObject();
         this.potions.forEach((effect, amp) -> potions.addProperty(CrossPlatformStuff.stringFromEffect(effect), amp));
         obj.add("Potions", potions);
