@@ -270,7 +270,7 @@ public class EntityInteractEvents {
         BlockPos.Mutable pos = new BlockPos.Mutable();
         for (int x = -1; x <= 1; x++)
             for (int z = -1; z <= 1; z++) {
-                pos.set(wither.getBlockPos(), x, 0, z);
+                pos.set(wither.getBlockPos(), x, 3, z);
                 IPermissionContainer claim = storage.getForPermissionCheck(pos);
                 if (!claim.canInteract(null, PermissionRegistry.WITHER, pos, false))
                     return false;
