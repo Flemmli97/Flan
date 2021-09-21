@@ -41,7 +41,7 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
 
             @Override
             public Text getDisplayName() {
-                return PermHelper.simpleColoredText(claim.parentClaim() != null ? ConfigHandler.lang.screenMenuSub : ConfigHandler.lang.screenMenu);
+                return PermHelper.simpleColoredText(claim.parentClaim() != null ? ConfigHandler.lang.screenTitleEditorSub : ConfigHandler.lang.screenTitleEditor);
             }
         };
         player.openHandledScreen(fac);

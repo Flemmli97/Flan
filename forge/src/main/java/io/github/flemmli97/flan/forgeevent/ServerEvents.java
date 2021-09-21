@@ -43,7 +43,7 @@ public class ServerEvents {
     }
 
     public static void serverTick(TickEvent.WorldTickEvent event) {
-        if(event.phase == TickEvent.Phase.START && event.world.getServer() != null && event.world.getRegistryKey() == World.OVERWORLD)
+        if (event.phase == TickEvent.Phase.START && event.world.getServer() != null && event.world.getRegistryKey() == World.OVERWORLD)
             LogoutTracker.getInstance(event.world.getServer()).tick();
     }
 }

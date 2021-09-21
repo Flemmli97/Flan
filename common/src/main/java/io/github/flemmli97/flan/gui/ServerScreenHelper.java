@@ -44,8 +44,8 @@ public class ServerScreenHelper {
         if (!claim.isAdminClaim() && !global.canModify()) {
             Text text = ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenUneditable, Formatting.DARK_RED);
             lore.add(text);
-            String permFlag = String.valueOf(global.getValue());
-            Text text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals("true") ? Formatting.GREEN : Formatting.RED);
+            String permFlag = global.getValue() ? ConfigHandler.lang.screenTrue : ConfigHandler.lang.screenFalse;
+            Text text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? Formatting.GREEN : Formatting.RED);
             lore.add(text2);
         } else {
             String permFlag;
@@ -55,30 +55,30 @@ public class ServerScreenHelper {
                 else {
                     switch (claim.permEnabled(perm)) {
                         case -1:
-                            permFlag = "default";
+                            permFlag = ConfigHandler.lang.screenDefault;
                             break;
                         case 1:
-                            permFlag = "true";
+                            permFlag = ConfigHandler.lang.screenTrue;
                             break;
                         default:
-                            permFlag = "false";
+                            permFlag = ConfigHandler.lang.screenFalse;
                             break;
                     }
                 }
             } else {
                 switch (claim.groupHasPerm(group, perm)) {
                     case -1:
-                        permFlag = "default";
+                        permFlag = ConfigHandler.lang.screenDefault;
                         break;
                     case 1:
-                        permFlag = "true";
+                        permFlag = ConfigHandler.lang.screenTrue;
                         break;
                     default:
-                        permFlag = "false";
+                        permFlag = ConfigHandler.lang.screenFalse;
                         break;
                 }
             }
-            Text text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals("true") ? Formatting.GREEN : Formatting.RED);
+            Text text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? Formatting.GREEN : Formatting.RED);
             lore.add(text);
         }
         addLore(stack, lore);
@@ -98,16 +98,16 @@ public class ServerScreenHelper {
             Text text = ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenUneditable, Formatting.DARK_RED);
             lore.add(StringTag.of(Text.Serializer.toJson(text)));
             String permFlag = String.valueOf(global.getValue());
-            Text text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals("true") ? Formatting.GREEN : Formatting.RED);
+            Text text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? Formatting.GREEN : Formatting.RED);
             lore.add(StringTag.of(Text.Serializer.toJson(text2)));
         } else {
             String permFlag;
             Map<ClaimPermission, Boolean> map = PlayerClaimData.get(player).playerDefaultGroups().getOrDefault(group, new HashMap<>());
             if (map.containsKey(perm))
-                permFlag = map.get(perm) ? "true" : "false";
+                permFlag = map.get(perm) ? ConfigHandler.lang.screenTrue : ConfigHandler.lang.screenFalse;
             else
-                permFlag = "default";
-            Text text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals("true") ? Formatting.GREEN : Formatting.RED);
+                permFlag = ConfigHandler.lang.screenDefault;
+            Text text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? Formatting.GREEN : Formatting.RED);
             lore.add(StringTag.of(Text.Serializer.toJson(text)));
         }
         stack.getOrCreateSubTag("display").put("Lore", lore);
