@@ -11,7 +11,8 @@ Flan 1.6.3
   e.g. /flan addClaim rect 10 10 will create a claim of size 10x10 centered around the player  
 - Add option to use up all unused claimblocks to create a square claim  
   /flan addClaim all  
-  
+- Fix some stuff not using translation (e.g. Claim-Group menu title)
+
 Flan 1.6.2
 ======================
 - Fix tp sometimes tp into walls  
