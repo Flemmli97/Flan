@@ -26,7 +26,7 @@ public class LangConfig {
     public String listClaims = "Listing all claims:";
     public String listAdminClaims = "Listing all admin-claims in %1$s:";
     public String onlyOnePlayer = "Only one player can be used as argument";
-    public String ownerTransferSuccess = "New Claimowner now: %s";
+    public String ownerTransferSuccess = "New Claimowner now: %1$s";
     public String ownerTransferFail = "Only the owner may transfer claims";
     public String ownerTransferNoBlocks = "The new owner doesnt have enough claimblocks";
     public String ownerTransferNoBlocksAdmin = "You can ignore this by switching to admin mode";
@@ -40,14 +40,14 @@ public class LangConfig {
     public String minClaimSize = "This is too small. Minimum claimsize is %d";
     public String maxClaims = "Maximum amount of claims reached";
     public String landClaimDisabledWorld = "Claiming is disabled in this world";
-    public String editMode = "Editing mode set to %s";
+    public String editMode = "Editing mode set to %1$s";
     public String notEnoughBlocks = "Not enough claim blocks";
     public String conflictOther = "Claim would overlap other claims";
-    public String wrongMode = "Wrong claim mode. You are in %s-mode";
+    public String wrongMode = "Wrong claim mode. You are in %1$s-mode";
     public String stringScreenReturn = "Click on paper to go back";
 
-    public String groupAdd = "Added group %s";
-    public String groupRemove = "Removed group %s";
+    public String groupAdd = "Added group %1$s";
+    public String groupRemove = "Removed group %1$s";
     public String groupExist = "Group already exist";
     public String playerModify = "Modified permission group for following players to %1$s: %2$s";
     public String playerModifyNo = "Couldn't set permission group for the players. Probably cause they already belong to a group";
@@ -63,19 +63,19 @@ public class LangConfig {
     public String deleteClaimError = "You can't delete this claim here";
     public String deleteSubClaim = "Subclaim deleted";
     public String deleteSubClaimAll = "All Subclaims from this claim deleted";
-    public String noSuchPerm = "No such Permission %s";
+    public String noSuchPerm = "No such Permission %1$s";
     public String editPerm = "%1$s now set to %2$s";
     public String editPermGroup = "%1$s for %2$s now set to %3$s";
     public String editPersonalGroup = "Default permission %1$s for group %2$s now set to %3$s";
 
-    public String adminMode = "Adminmode (Ignore Claims) set to: %s";
-    public String adminDeleteAll = "Deleted all claims for following players: %s";
-    public String setAdminClaim = "Adminclaim of this claim now: %s";
+    public String adminMode = "Adminmode (Ignore Claims) set to: %1$s";
+    public String adminDeleteAll = "Deleted all claims for following players: %1$s";
+    public String setAdminClaim = "Adminclaim of this claim now: %1$s";
     public String readGriefpreventionData = "Reading data from GriefPrevention";
     public String readGriefpreventionClaimDataSuccess = "Successfully read claim data";
     public String readGriefpreventionPlayerDataSuccess = "Successfully read player data";
-    public String cantFindData = "No griefprevention data at %s";
-    public String errorFile = "Error reading file %s";
+    public String cantFindData = "No griefprevention data at %1$s";
+    public String errorFile = "Error reading file %1$s";
     public String readConflict = "%1$s conflicts with existing claims. Not added to world! Conflicts:";
     public String giveClaimBlocks = "Gave following players %2$d claimblocks: %1$s";
 
@@ -84,15 +84,15 @@ public class LangConfig {
     public String claimSubHeader = "==SubclaimInfo==";
     public String claimBasicInfoSub = "Owner: %1$s, from: [x=%2$d,z=%3$d] to [x=%4$d,z=%5$d]";
     public String claimBasicInfoSubNamed = "Claim: %6$s, Owner: %1$s, from: [x=%2$d,z=%3$d] to [x=%4$d,z=%5$d]";
-    public String claimInfoPerms = "Permissions: %s";
+    public String claimInfoPerms = "Permissions: %1$s";
     public String claimGroupInfoHeader = "Groups: ";
-    public String claimGroupPerms = "    Permissions: %s";
-    public String claimGroupPlayers = "    Players: %s";
+    public String claimGroupPerms = "    Permissions: %1$s";
+    public String claimGroupPlayers = "    Players: %1$s";
     public String helpHeader = "Available subcommands are (page %d):";
     public String helpCmdHeader = "====================";
-    public String helpCmdSyntax = "Syntax: %s";
+    public String helpCmdSyntax = "Syntax: %1$s";
 
-    public String screenEnableText = "Enabled: %s";
+    public String screenEnableText = "Enabled: %1$s";
     public String screenUneditable = "Non Editable!";
     public String screenClose = "Close";
     public String screenNext = "Next";
@@ -100,6 +100,9 @@ public class LangConfig {
     public String screenAdd = "Add";
     public String screenBack = "Back";
     public String screenNoPerm = "No Permission";
+    public String screenFalse = "false";
+    public String screenTrue = "true";
+    public String screenDefault = "default";
 
     public String screenMenu = "Claim-Menu";
     public String screenMenuSub = "SubClaim-Menu";
@@ -111,18 +114,23 @@ public class LangConfig {
     public String screenConfirm = "Confirm";
     public String screenYes = "Yes";
     public String screenNo = "No";
-    public String screenGroupPlayers = "%s-Players";
-    public String screenRemoveMode = "Remove Mode: %s";
+    public String screenGroupPlayers = "%1$s-Players";
+    public String screenRemoveMode = "Remove Mode: %1$s";
     public String screenGlobalPerms = "Global-Permissions";
-    public String screenGroupPerms = "%s-Permissions";
+    public String screenGroups = "Claim-Groups";
+    public String screenGroupPerms = "%1$s-Permissions";
     public String screenPersonalGroups = "Personal-Groups";
-    public String screenPersonalPermissions = "Personal Permissions for %s";
+    public String screenPersonalPermissions = "Personal Permissions for %1$s";
+    public String screenPotions = "Claim Potions";
+    public String screenTitleEditor = "Claim messages";
+    public String screenTitleEditorSub = "Subclaim messages";
     public String screenEnterText = "Edit title text on enter. (Right-Click to use JSON text. See MC Wiki for that)";
     public String screenEnterSubText = "Edit subtitle text on enter. (Right-Click to use JSON text. See MC Wiki for that)";
     public String screenLeaveText = "Edit title text on leave. (Right-Click to use JSON text. See MC Wiki for that)";
     public String screenLeaveSubText = "Edit subtitle text on enter. (Right-Click to use JSON text. See MC Wiki for that)";
 
     public String chatClaimTextEdit = "[Click for command]";
+
     public String sellDisabled = "Claimblocks selling is disabled";
     public String buyDisabled = "Claimblocks purchasing is disabled";
     public String sellFail = "Not enough claimblocks to sell";
@@ -135,22 +143,22 @@ public class LangConfig {
     public String trappedFail = "Rescue not necessary or already rescuing";
     public String trappedMove = "You moved. Aborting teleport";
 
-    public String unlockDropsCmd = "Your deathitems are protected. Use %s to unlock them for other players";
-    public String unlockDrops = "Your deathitems are now unlocked for %s ticks";
-    public String unlockDropsMulti = "Unlocked drops for %s";
+    public String unlockDropsCmd = "Your deathitems are protected. Use %1$s to unlock them for other players";
+    public String unlockDrops = "Your deathitems are now unlocked for %1$s ticks";
+    public String unlockDropsMulti = "Unlocked drops for %1$s";
 
-    public String claimNameSet = "Claims name set to %s";
+    public String claimNameSet = "Claims name set to %1$s";
     public String claimNameUsed = "The owner of the claim already has another claim with the same name";
     public String claimNameUsedSub = "One of the subclaim of this claim already has this name";
 
-    public String setHome = "Claim home set to [x=%s,y=%s,z=%s]";
+    public String setHome = "Claim home set to [x=%1$s,y=%2$s,z=%3$s]";
     public String teleportHome = "Teleporting to claim home. Don't move for 5 seconds";
     public String teleportHomeFail = "Teleport already happening";
 
-    public String setEnterMessage = "Set enter title to %s";
-    public String setEnterSubMessage = "Set enter subtitle to %s";
-    public String setLeaveMessage = "Set leave title to %s";
-    public String setLeaveSubMessage = "Set leave subtitle to %s";
+    public String setEnterMessage = "Set enter title to %1$s";
+    public String setEnterSubMessage = "Set enter subtitle to %1$s";
+    public String setLeaveMessage = "Set leave title to %1$s";
+    public String setLeaveSubMessage = "Set leave subtitle to %1$s";
 
     public String wiki = "For more info check out the wiki:";
 

@@ -53,7 +53,7 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler<ClaimGroup>
 
             @Override
             public Text getDisplayName() {
-                return PermHelper.simpleColoredText(group == null ? "Global-Permissions" : String.format("%s-Permissions", group));
+                return PermHelper.simpleColoredText(group == null ? ConfigHandler.lang.screenGlobalPerms : String.format(ConfigHandler.lang.screenGroupPerms, group));
             }
         };
         player.openHandledScreen(fac);

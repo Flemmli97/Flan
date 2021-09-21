@@ -34,6 +34,19 @@ public class Config {
     public int minClaimsize = 100;
     public int defaultClaimDepth = 10;
     public int maxClaims = -1;
+
+    public String[] blacklistedWorlds = new String[0];
+    public boolean worldWhitelist;
+
+    public Item claimingItem = Items.GOLDEN_HOE;
+    public Item inspectionItem = Items.STICK;
+
+    public int claimDisplayTime = 1000;
+    public int permissionLevel = 2;
+
+    public int sellPrice = -1;
+    public int buyPrice = -1;
+
     public boolean lenientBlockEntityCheck;
     public List<String> ignoredBlocks = Lists.newArrayList(
             "universal_graves:grave"
@@ -48,18 +61,6 @@ public class Config {
     public List<String> entityTagIgnore = Lists.newArrayList(
             "graves.marker" //vanilla tweaks
     );
-
-    public String[] blacklistedWorlds = new String[0];
-    public boolean worldWhitelist;
-
-    public Item claimingItem = Items.GOLDEN_HOE;
-    public Item inspectionItem = Items.STICK;
-
-    public int claimDisplayTime = 1000;
-    public int permissionLevel = 2;
-
-    public int sellPrice = -1;
-    public int buyPrice = -1;
 
     public int dropTicks = 6000;
 
@@ -128,6 +129,23 @@ public class Config {
             this.minClaimsize = ConfigHandler.fromJson(obj, "minClaimsize", this.minClaimsize);
             this.defaultClaimDepth = ConfigHandler.fromJson(obj, "defaultClaimDepth", this.defaultClaimDepth);
             this.maxClaims = ConfigHandler.fromJson(obj, "maxClaims", this.maxClaims);
+
+            JsonArray arr = ConfigHandler.arryFromJson(obj, "blacklistedWorlds");
+            this.blacklistedWorlds = new String[arr.size()];
+            for (int i = 0; i < arr.size(); i++)
+                this.blacklistedWorlds[i] = arr.get(i).getAsString();
+            this.worldWhitelist = ConfigHandler.fromJson(obj, "worldWhitelist", this.worldWhitelist);
+
+            if (obj.has("claimingItem"))
+                this.claimingItem = Registry.ITEM.get(new Identifier((obj.get("claimingItem").getAsString())));
+            if (obj.has("inspectionItem"))
+                this.inspectionItem = Registry.ITEM.get(new Identifier((obj.get("inspectionItem").getAsString())));
+            this.claimDisplayTime = ConfigHandler.fromJson(obj, "claimDisplayTime", this.claimDisplayTime);
+            this.permissionLevel = ConfigHandler.fromJson(obj, "permissionLevel", this.permissionLevel);
+
+            this.sellPrice = ConfigHandler.fromJson(obj, "sellPrice", this.sellPrice);
+            this.buyPrice = ConfigHandler.fromJson(obj, "buyPrice", this.buyPrice);
+
             this.lenientBlockEntityCheck = ConfigHandler.fromJson(obj, "lenientBlockEntityCheck", this.lenientBlockEntityCheck);
             this.ignoredBlocks.clear();
             ConfigHandler.arryFromJson(obj, "ignoredBlocks").forEach(e -> this.ignoredBlocks.add(e.getAsString()));
@@ -138,16 +156,14 @@ public class Config {
             this.entityTagIgnore.clear();
             ConfigHandler.arryFromJson(obj, "entityTagIgnore").forEach(e -> this.entityTagIgnore.add(e.getAsString()));
 
-            JsonArray arr = ConfigHandler.arryFromJson(obj, "blacklistedWorlds");
-            this.blacklistedWorlds = new String[arr.size()];
-            for (int i = 0; i < arr.size(); i++)
-                this.blacklistedWorlds[i] = arr.get(i).getAsString();
-            this.worldWhitelist = ConfigHandler.fromJson(obj, "worldWhitelist", this.worldWhitelist);
-            if (obj.has("claimingItem"))
-                this.claimingItem = Registry.ITEM.get(new Identifier((obj.get("claimingItem").getAsString())));
-            if (obj.has("inspectionItem"))
-                this.inspectionItem = Registry.ITEM.get(new Identifier((obj.get("inspectionItem").getAsString())));
-            this.claimDisplayTime = ConfigHandler.fromJson(obj, "claimDisplayTime", this.claimDisplayTime);
+            this.dropTicks = ConfigHandler.fromJson(obj, "dropTicks", this.dropTicks);
+            this.inactivityTime = ConfigHandler.fromJson(obj, "inactivityTimeDays", this.inactivityTime);
+            this.inactivityBlocksMax = ConfigHandler.fromJson(obj, "inactivityBlocksMax", this.inactivityBlocksMax);
+            this.deletePlayerFile = ConfigHandler.fromJson(obj, "deletePlayerFile", this.deletePlayerFile);
+            this.bannedDeletionTime = ConfigHandler.fromJson(obj, "bannedDeletionTime", this.bannedDeletionTime);
+            this.offlineProtectActivation = ConfigHandler.fromJson(obj, "offlineProtectActivation", this.offlineProtectActivation);
+            this.log = ConfigHandler.fromJson(obj, "enableLogs", this.log);
+
             this.defaultGroups.clear();
             JsonObject defP = ConfigHandler.fromJson(obj, "defaultGroups");
             defP.entrySet().forEach(e -> {
@@ -181,16 +197,6 @@ public class Config {
                 }
                 this.globalDefaultPerms.put(e.getKey(), perms);
             });
-            this.log = ConfigHandler.fromJson(obj, "enableLogs", this.log);
-            this.permissionLevel = ConfigHandler.fromJson(obj, "permissionLevel", this.permissionLevel);
-            this.sellPrice = ConfigHandler.fromJson(obj, "sellPrice", this.sellPrice);
-            this.buyPrice = ConfigHandler.fromJson(obj, "buyPrice", this.buyPrice);
-            this.dropTicks = ConfigHandler.fromJson(obj, "dropTicks", this.dropTicks);
-            this.inactivityTime = ConfigHandler.fromJson(obj, "inactivityTimeDays", this.inactivityTime);
-            this.inactivityBlocksMax = ConfigHandler.fromJson(obj, "inactivityBlocksMax", this.inactivityBlocksMax);
-            this.deletePlayerFile = ConfigHandler.fromJson(obj, "deletePlayerFile", this.deletePlayerFile);
-            this.bannedDeletionTime = ConfigHandler.fromJson(obj, "bannedDeletionTime", this.bannedDeletionTime);
-            this.offlineProtectActivation = ConfigHandler.fromJson(obj, "offlineProtectActivation", this.offlineProtectActivation);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -208,6 +214,21 @@ public class Config {
         obj.addProperty("minClaimsize", this.minClaimsize);
         obj.addProperty("defaultClaimDepth", this.defaultClaimDepth);
         obj.addProperty("maxClaims", this.maxClaims);
+
+        JsonArray arr = new JsonArray();
+        for (String blacklistedWorld : this.blacklistedWorlds)
+            arr.add(blacklistedWorld);
+        obj.add("blacklistedWorlds", arr);
+        obj.addProperty("worldWhitelist", this.worldWhitelist);
+
+        obj.addProperty("claimingItem", Registry.ITEM.getId(this.claimingItem).toString());
+        obj.addProperty("inspectionItem", Registry.ITEM.getId(this.inspectionItem).toString());
+        obj.addProperty("claimDisplayTime", this.claimDisplayTime);
+        obj.addProperty("permissionLevel", this.permissionLevel);
+
+        obj.addProperty("sellPrice", this.sellPrice);
+        obj.addProperty("buyPrice", this.buyPrice);
+
         JsonArray blocks = new JsonArray();
         this.ignoredBlocks.forEach(blocks::add);
         obj.add("ignoredBlocks", blocks);
@@ -222,15 +243,14 @@ public class Config {
         this.entityTagIgnore.forEach(entitiesTags::add);
         obj.add("entityTagIgnore", entitiesTags);
 
-        JsonArray arr = new JsonArray();
-        for (String blacklistedWorld : this.blacklistedWorlds)
-            arr.add(blacklistedWorld);
-        obj.add("blacklistedWorlds", arr);
-        obj.addProperty("worldWhitelist", this.worldWhitelist);
-        obj.addProperty("claimingItem", Registry.ITEM.getId(this.claimingItem).toString());
-        obj.addProperty("inspectionItem", Registry.ITEM.getId(this.inspectionItem).toString());
-        obj.addProperty("claimDisplayTime", this.claimDisplayTime);
-        obj.addProperty("permissionLevel", this.permissionLevel);
+        obj.addProperty("dropTicks", this.dropTicks);
+        obj.addProperty("inactivityTimeDays", this.inactivityTime);
+        obj.addProperty("inactivityBlocksMax", this.inactivityBlocksMax);
+        obj.addProperty("deletePlayerFile", this.deletePlayerFile);
+        obj.addProperty("bannedDeletionTime", this.bannedDeletionTime);
+        obj.addProperty("offlineProtectActivation", this.offlineProtectActivation);
+        obj.addProperty("enableLogs", this.log);
+
         JsonObject defPerm = new JsonObject();
         this.defaultGroups.forEach((key, value) -> {
             JsonObject perm = new JsonObject();
@@ -245,15 +265,6 @@ public class Config {
             global.add(key, perm);
         });
         obj.add("globalDefaultPerms", global);
-        obj.addProperty("enableLogs", this.log);
-        obj.addProperty("sellPrice", this.sellPrice);
-        obj.addProperty("buyPrice", this.buyPrice);
-        obj.addProperty("dropTicks", this.dropTicks);
-        obj.addProperty("inactivityTimeDays", this.inactivityTime);
-        obj.addProperty("inactivityBlocksMax", this.inactivityBlocksMax);
-        obj.addProperty("deletePlayerFile", this.deletePlayerFile);
-        obj.addProperty("bannedDeletionTime", this.bannedDeletionTime);
-        obj.addProperty("offlineProtectActivation", this.offlineProtectActivation);
         try {
             FileWriter writer = new FileWriter(this.config);
             ConfigHandler.GSON.toJson(obj, writer);

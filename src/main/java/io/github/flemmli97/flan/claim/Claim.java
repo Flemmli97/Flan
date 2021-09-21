@@ -575,16 +575,16 @@ public class Claim implements IPermissionContainer {
                 this.homePos = new BlockPos(home.get(0).getAsInt(), home.get(1).getAsInt(), home.get(2).getAsInt());
             }
             String message = ConfigHandler.fromJson(obj, "EnterTitle", "");
-            if(!message.isEmpty())
+            if (!message.isEmpty())
                 this.enterTitle = Text.Serializer.fromJson(message);
             message = ConfigHandler.fromJson(obj, "EnterSubtitle", "");
-            if(!message.isEmpty())
+            if (!message.isEmpty())
                 this.enterSubtitle = Text.Serializer.fromJson(message);
             message = ConfigHandler.fromJson(obj, "LeaveTitle", "");
-            if(!message.isEmpty())
+            if (!message.isEmpty())
                 this.leaveTitle = Text.Serializer.fromJson(message);
             message = ConfigHandler.fromJson(obj, "LeaveSubtitle", "");
-            if(!message.isEmpty())
+            if (!message.isEmpty())
                 this.leaveSubtitle = Text.Serializer.fromJson(message);
             JsonObject potion = ConfigHandler.fromJson(obj, "Potions");
             potion.entrySet().forEach(e -> this.potions.put(CrossPlatformStuff.effectFromString(e.getKey()), e.getValue().getAsInt()));
