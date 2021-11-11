@@ -47,16 +47,23 @@ public class Config {
     public int buyPrice = -1;
 
     public boolean lenientBlockEntityCheck;
-    public List<String> ignoredBlocks = Lists.newArrayList(
+    public List<String> breakBlockBlacklist = Lists.newArrayList(
             "universal_graves:grave"
     );
-    public List<String> ignoredEntityTypes = Lists.newArrayList(
-            "corpse:corpse"
+    public List<String> interactBlockBlacklist = Lists.newArrayList(
+            "universal_graves:grave"
     );
-    public List<String> blockEntityTagIgnore = Lists.newArrayList(
+
+    public List<String> breakBETagBlacklist = Lists.newArrayList(
+    );
+    public List<String> interactBETagBlacklist = Lists.newArrayList(
             "IsDeathChest", //vanilla death chest
             "gunpowder.owner", //gunpowder
             "shop-activated" //dicemc-money
+    );
+
+    public List<String> ignoredEntityTypes = Lists.newArrayList(
+            "corpse:corpse"
     );
     public List<String> entityTagIgnore = Lists.newArrayList(
             "graves.marker" //vanilla tweaks
@@ -73,7 +80,7 @@ public class Config {
 
     public boolean log;
 
-    public int configVersion = 2;
+    public int configVersion = 3;
     public int preConfigVersion;
 
     public Map<String, Map<ClaimPermission, Boolean>> defaultGroups = createHashMap(map -> {
@@ -147,12 +154,16 @@ public class Config {
             this.buyPrice = ConfigHandler.fromJson(obj, "buyPrice", this.buyPrice);
 
             this.lenientBlockEntityCheck = ConfigHandler.fromJson(obj, "lenientBlockEntityCheck", this.lenientBlockEntityCheck);
-            this.ignoredBlocks.clear();
-            ConfigHandler.arryFromJson(obj, "ignoredBlocks").forEach(e -> this.ignoredBlocks.add(e.getAsString()));
+            this.breakBlockBlacklist.clear();
+            ConfigHandler.arryFromJson(obj, "breakBlockBlacklist").forEach(e -> this.breakBlockBlacklist.add(e.getAsString()));
+            this.interactBlockBlacklist.clear();
+            ConfigHandler.arryFromJson(obj, "interactBlockBlacklist").forEach(e -> this.interactBlockBlacklist.add(e.getAsString()));
+            this.breakBETagBlacklist.clear();
+            ConfigHandler.arryFromJson(obj, "breakBlockEntityTagBlacklist").forEach(e -> this.breakBETagBlacklist.add(e.getAsString()));
+            this.interactBETagBlacklist.clear();
+            ConfigHandler.arryFromJson(obj, "interactBlockEntityTagBlacklist").forEach(e -> this.interactBETagBlacklist.add(e.getAsString()));
             this.ignoredEntityTypes.clear();
             ConfigHandler.arryFromJson(obj, "ignoredEntities").forEach(e -> this.ignoredEntityTypes.add(e.getAsString()));
-            this.blockEntityTagIgnore.clear();
-            ConfigHandler.arryFromJson(obj, "blockEntityTagIgnore").forEach(e -> this.blockEntityTagIgnore.add(e.getAsString()));
             this.entityTagIgnore.clear();
             ConfigHandler.arryFromJson(obj, "entityTagIgnore").forEach(e -> this.entityTagIgnore.add(e.getAsString()));
 
@@ -197,10 +208,10 @@ public class Config {
                 }
                 this.globalDefaultPerms.put(e.getKey(), perms);
             });
+            ConfigUpdater.updateConfig(this.preConfigVersion, obj);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        ConfigUpdater.updateConfig(this.preConfigVersion);
         this.save();
     }
 
@@ -229,16 +240,22 @@ public class Config {
         obj.addProperty("sellPrice", this.sellPrice);
         obj.addProperty("buyPrice", this.buyPrice);
 
-        JsonArray blocks = new JsonArray();
-        this.ignoredBlocks.forEach(blocks::add);
-        obj.add("ignoredBlocks", blocks);
+        obj.addProperty("lenientBlockEntityCheck", this.lenientBlockEntityCheck);
+        JsonArray blocksBreak = new JsonArray();
+        this.breakBlockBlacklist.forEach(blocksBreak::add);
+        obj.add("breakBlockBlacklist", blocksBreak);
+        JsonArray blocksInteract = new JsonArray();
+        this.interactBlockBlacklist.forEach(blocksInteract::add);
+        obj.add("interactBlockBlacklist", blocksInteract);
+        JsonArray blocksEntities = new JsonArray();
+        this.breakBETagBlacklist.forEach(blocksEntities::add);
+        obj.add("breakBlockEntityTagBlacklist", blocksEntities);
+        JsonArray blocksEntitiesInteract = new JsonArray();
+        this.interactBETagBlacklist.forEach(blocksEntitiesInteract::add);
+        obj.add("interactBlockEntityTagBlacklist", blocksEntitiesInteract);
         JsonArray entities = new JsonArray();
         this.ignoredEntityTypes.forEach(entities::add);
         obj.add("ignoredEntities", entities);
-        obj.addProperty("lenientBlockEntityCheck", this.lenientBlockEntityCheck);
-        JsonArray blocksEntities = new JsonArray();
-        this.blockEntityTagIgnore.forEach(blocksEntities::add);
-        obj.add("blockEntityTagIgnore", blocksEntities);
         JsonArray entitiesTags = new JsonArray();
         this.entityTagIgnore.forEach(entitiesTags::add);
         obj.add("entityTagIgnore", entitiesTags);

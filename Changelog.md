@@ -12,6 +12,9 @@ Flan 1.6.3
 - Add option to use up all unused claimblocks to create a square claim  
   /flan addClaim all  
 - Fix some stuff not using translation (e.g. Claim-Group menu title)
+- Split ignoredBlocks config into breakBlockBlacklist and interactBlockBlacklist.  
+  For shops which should be right clickable and unbreakable or graves which should just be breakable
+- Split blockEntityTagIgnore into breakBlockEntityTagBlacklist and interactBlockEntityTagBlacklist
 
 Flan 1.6.2
 ======================

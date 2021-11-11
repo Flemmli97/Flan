@@ -33,6 +33,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 public class BlockInteractEvents {
 
     public static ActionResult startBreakBlocks(PlayerEntity player, World world, Hand hand, BlockPos pos, Direction direction) {
@@ -47,7 +49,7 @@ public class BlockInteractEvents {
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
             Identifier id = CrossPlatformStuff.registryBlocks().getIDFrom(state.getBlock());
-            if (alwaysAllowBlock(id, world.getBlockEntity(pos)))
+            if (contains(id, world.getBlockEntity(pos), ConfigHandler.config.breakBlockBlacklist, ConfigHandler.config.breakBETagBlacklist))
                 return true;
             if (!claim.canInteract(player, PermissionRegistry.BREAK, pos, true)) {
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
@@ -77,7 +79,7 @@ public class BlockInteractEvents {
             BlockState state = world.getBlockState(hitResult.getBlockPos());
             Identifier id = CrossPlatformStuff.registryBlocks().getIDFrom(state.getBlock());
             BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
-            if (alwaysAllowBlock(id, blockEntity))
+            if (contains(id, blockEntity, ConfigHandler.config.interactBlockBlacklist, ConfigHandler.config.interactBETagBlacklist))
                 return ActionResult.PASS;
             ClaimPermission perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
             if (perm == PermissionRegistry.PROJECTILES)
@@ -119,13 +121,13 @@ public class BlockInteractEvents {
         return ActionResult.PASS;
     }
 
-    public static boolean alwaysAllowBlock(Identifier id, BlockEntity blockEntity) {
-        if (ConfigHandler.config.ignoredBlocks.contains(id.getNamespace())
-                || ConfigHandler.config.ignoredBlocks.contains(id.toString()))
+    public static boolean contains(Identifier id, BlockEntity blockEntity, List<String> idList, List<String> tagList) {
+        if (idList.contains(id.getNamespace())
+                || idList.contains(id.toString()))
             return true;
-        if (blockEntity != null) {
+        if (blockEntity != null && !tagList.isEmpty()) {
             CompoundTag nbt = blockEntity.toTag(new CompoundTag());
-            return ConfigHandler.config.blockEntityTagIgnore.stream().anyMatch(tag -> CrossPlatformStuff.blockDataContains(nbt, tag));
+            return tagList.stream().anyMatch(tag -> CrossPlatformStuff.blockDataContains(nbt, tag));
         }
         return false;
     }
