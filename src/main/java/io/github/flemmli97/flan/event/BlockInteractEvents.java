@@ -35,6 +35,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 public class BlockInteractEvents {
 
     public static ActionResult startBreakBlocks(PlayerEntity player, World world, Hand hand, BlockPos pos, Direction direction) {
@@ -49,7 +51,7 @@ public class BlockInteractEvents {
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
             Identifier id = Registry.BLOCK.getId(state.getBlock());
-            if (alwaysAllowBlock(id, world.getBlockEntity(pos)))
+            if (contains(id, world.getBlockEntity(pos), ConfigHandler.config.breakBlockBlacklist, ConfigHandler.config.breakBETagBlacklist))
                 return true;
             if (!claim.canInteract(player, PermissionRegistry.BREAK, pos, true)) {
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
@@ -79,7 +81,7 @@ public class BlockInteractEvents {
             BlockState state = world.getBlockState(hitResult.getBlockPos());
             Identifier id = Registry.BLOCK.getId(state.getBlock());
             BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
-            if (alwaysAllowBlock(id, blockEntity))
+            if (contains(id, blockEntity, ConfigHandler.config.interactBlockBlacklist, ConfigHandler.config.interactBETagBlacklist))
                 return ActionResult.PASS;
             ClaimPermission perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
             if (perm == PermissionRegistry.PROJECTILES)
@@ -128,11 +130,11 @@ public class BlockInteractEvents {
         return blockEntity instanceof Inventory || blockEntity instanceof InventoryProvider;
     }
 
-    public static boolean alwaysAllowBlock(Identifier id, BlockEntity blockEntity) {
-        return ConfigHandler.config.ignoredBlocks.contains(id.toString())
-                || ConfigHandler.config.ignoredBlocks.contains(id.toString())
+    public static boolean contains(Identifier id, BlockEntity blockEntity, List<String> idList, List<String> tagList) {
+        return idList.contains(id.getNamespace())
+                || idList.contains(id.toString())
                 || (blockEntity != null
-                && ConfigHandler.config.blockEntityTagIgnore.stream().anyMatch(blockEntity.writeNbt(new NbtCompound())::contains));
+                && tagList.stream().anyMatch(blockEntity.writeNbt(new NbtCompound())::contains));
     }
 
     public static boolean cancelEntityBlockCollision(BlockState state, World world, BlockPos pos, Entity entity) {
