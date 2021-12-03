@@ -1,8 +1,8 @@
 package io.github.flemmli97.flan.integration.permissions;
 
-import me.shedaniel.architectury.annotations.ExpectPlatform;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
+import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
 
 public class PermissionNodeHandler {
 
@@ -47,22 +47,22 @@ public class PermissionNodeHandler {
     public static final String permClaimBlocks = "flan.claim.blocks.max";
     public static final String permMaxClaims = "flan.claims.amount";
 
-    public static boolean perm(ServerCommandSource src, String perm) {
+    public static boolean perm(CommandSourceStack src, String perm) {
         return perm(src, perm, false);
     }
 
     @ExpectPlatform
-    public static boolean perm(ServerCommandSource src, String perm, boolean adminCmd) {
+    public static boolean perm(CommandSourceStack src, String perm, boolean adminCmd) {
         throw new AssertionError();
     }
 
     @ExpectPlatform
-    public static boolean perm(ServerPlayerEntity src, String perm, boolean adminCmd) {
+    public static boolean perm(ServerPlayer src, String perm, boolean adminCmd) {
         throw new AssertionError();
     }
 
     @ExpectPlatform
-    public static boolean permBelowEqVal(ServerPlayerEntity src, String perm, int val, int fallback) {
+    public static boolean permBelowEqVal(ServerPlayer src, String perm, int val, int fallback) {
         throw new AssertionError();
     }
 }

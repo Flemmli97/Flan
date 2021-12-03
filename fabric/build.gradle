@@ -1,14 +1,18 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "5.0.0"
-}
-
-configurations {
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    id "com.github.johnrengelman.shadow" version "7.1.0"
 }
 
 architectury {
     platformSetupLoomIde()
     fabric()
+}
+
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentFabric.extendsFrom common
 }
 
 repositories {
@@ -44,7 +48,10 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
-
+    
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+/*
     modImplementation "me.lucko:fabric-permissions-api:${rootProject.fabric_permissions_api}"
     modCompileOnly "io.github.gunpowder:gunpowder-api:${rootProject.gunpowder_version}"
     modRuntime "io.github.gunpowder:gunpowder-base:${rootProject.gunpowder_version}"
@@ -52,17 +59,7 @@ dependencies {
 
     modImplementation "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
 
-    implementation(project(path: ":common")) {
-        transitive = false
-    }
-    developmentFabric(project(path: ":common")) {
-        transitive = false
-    }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) {
-        transitive = false
-    }
-
-    modImplementation("dev.ftb.mods:ftb-ranks-fabric:1605.1.2-build.17")
+    modImplementation("dev.ftb.mods:ftb-ranks-fabric:1605.1.2-build.17")*/
 }
 
 processResources {
@@ -88,15 +85,17 @@ jar {
     classifier "dev"
 }
 
-java {
-    withSourcesJar()
-}
-
 sourcesJar {
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
     from commonSources.archiveFile.map { zipTree(it) }
     classifier "fabric-source"
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
 }
 
 task apiJar(type: Jar, dependsOn: classes) {

@@ -5,8 +5,8 @@ buildscript {
 }
 
 plugins {
-    id "architectury-plugin" version "3.1-SNAPSHOT"
-    id "dev.architectury.loom" version "0.7.2-SNAPSHOT" apply false
+    id "architectury-plugin" version "3.4-SNAPSHOT"
+    id "dev.architectury.loom" version "0.10.0-SNAPSHOT" apply false
     id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
 
@@ -27,7 +27,7 @@ subprojects {
 
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+        mappings loom.officialMojangMappings()
     }
 }
 
@@ -42,10 +42,7 @@ allprojects {
 
     tasks.withType(JavaCompile) {
         options.encoding = "UTF-8"
-        def targetVersion = 8
-        if (JavaVersion.current().isJava9Compatible()) {
-            options.release = targetVersion
-        }
+        options.release = 17
     }
 
     java {
@@ -119,7 +116,7 @@ curseforge {
         addGameVersion "Fabric"
         mainArtifact(project(":fabric").tasks.getByName('remapJar')) {
             def txt = changelog(1).replace("\n-", "\n\n- ")
-            txt = txt + "\n\n" + "For past versions see: https://github.com/Flemmli97/Flan/blob/1.16/Changelog.md"
+            txt = txt + "\n\n" + "For past versions see: ${project.full_changelog}"
             changelog = txt
             changelogType = "markdown"
             releaseType = 'release'
@@ -138,7 +135,7 @@ curseforge {
         addGameVersion "Forge"
         mainArtifact(project(":forge").tasks.getByName('remapJar')) {
             def txt = changelog(1).replace("\n-", "\n\n- ")
-            txt = txt + "\n\n" + "For past versions see: https://github.com/Flemmli97/Flan/blob/1.16/Changelog.md"
+            txt = txt + "\n\n" + "For past versions see: ${project.full_changelog}"
             changelog = txt
             changelogType = "markdown"
             releaseType = 'release'
@@ -161,7 +158,7 @@ tasks.getByName("curseforge").doLast {
         def message = new Message()
         def version = project.curse_versions.split(', ')[0]
         message.setUsername("Curseforge Release")
-        message.setContent("<@&852113509243682817>  ${project.project_name} ${project.mod_version} for Minecraft ${version} has been released!")
+        message.setContent("${project.discord_role} ${project.project_name} ${project.mod_version} for Minecraft ${version} has been released!")
         message.setAvatarUrl("https://cdn.discordapp.com/avatars/680540027255652407/e4b7a058b24843ae13389a9a3cc3ae8c.png?size=128")
 
         def embed = new Embed()

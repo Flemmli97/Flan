@@ -22,21 +22,21 @@ import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.player.PlayerDataHandler;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Pair;
-import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.LevelResource;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -64,11 +64,11 @@ public class ClaimStorage implements IPermissionStorage {
     private final Set<UUID> dirty = new HashSet<>();
     private final GlobalClaim globalClaim;
 
-    public static ClaimStorage get(ServerWorld world) {
+    public static ClaimStorage get(ServerLevel world) {
         return ((IClaimStorage) world).get();
     }
 
-    public ClaimStorage(MinecraftServer server, ServerWorld world) {
+    public ClaimStorage(MinecraftServer server, ServerLevel world) {
         this.globalClaim = new GlobalClaim(world);
         this.read(server, world);
         PlayerDataHandler.deleteUnusedClaims(server, this, world);
@@ -81,36 +81,36 @@ public class ClaimStorage implements IPermissionStorage {
         return uuid;
     }
 
-    public boolean createClaim(BlockPos pos1, BlockPos pos2, ServerPlayerEntity player) {
-        Claim claim = new Claim(pos1.down(ConfigHandler.config.defaultClaimDepth), pos2.down(ConfigHandler.config.defaultClaimDepth), player);
+    public boolean createClaim(BlockPos pos1, BlockPos pos2, ServerPlayer player) {
+        Claim claim = new Claim(pos1.below(ConfigHandler.config.defaultClaimDepth), pos2.below(ConfigHandler.config.defaultClaimDepth), player);
         Set<Claim> conflicts = this.conflicts(claim, null);
         if (conflicts.isEmpty()) {
             PlayerClaimData data = PlayerClaimData.get(player);
             if (claim.getPlane() < ConfigHandler.config.minClaimsize) {
-                player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.minClaimSize, ConfigHandler.config.minClaimsize), Formatting.RED), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.minClaimSize, ConfigHandler.config.minClaimsize), ChatFormatting.RED), false);
                 return false;
             }
-            if (!data.isAdminIgnoreClaim() && ConfigHandler.config.maxClaims != -1 && !PermissionNodeHandler.permBelowEqVal(player, PermissionNodeHandler.permMaxClaims, this.playerClaimMap.getOrDefault(player.getUuid(), Sets.newHashSet()).size() + 1, ConfigHandler.config.maxClaims)) {
-                player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.maxClaims), Formatting.RED), false);
+            if (!data.isAdminIgnoreClaim() && ConfigHandler.config.maxClaims != -1 && !PermissionNodeHandler.permBelowEqVal(player, PermissionNodeHandler.permMaxClaims, this.playerClaimMap.getOrDefault(player.getUUID(), Sets.newHashSet()).size() + 1, ConfigHandler.config.maxClaims)) {
+                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.maxClaims), ChatFormatting.RED), false);
                 return false;
             }
             if (!data.isAdminIgnoreClaim() && !data.canUseClaimBlocks(claim.getPlane())) {
-                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.notEnoughBlocks, Formatting.RED), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.notEnoughBlocks, ChatFormatting.RED), false);
                 return false;
             }
             claim.setClaimID(this.generateUUID());
             Flan.log("Creating new claim {}", claim);
             this.addClaim(claim);
-            data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+            data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
             data.updateScoreboard();
-            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.claimCreateSuccess, Formatting.GOLD), false);
-            player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
-                    data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks()), Formatting.GOLD), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.claimCreateSuccess, ChatFormatting.GOLD), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
+                    data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks()), ChatFormatting.GOLD), false);
             return true;
         }
         PlayerClaimData data = PlayerClaimData.get(player);
-        conflicts.forEach(conf -> data.addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.getBlockPos().getY()));
-        player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
+        conflicts.forEach(conf -> data.addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.blockPosition().getY()));
+        player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, ChatFormatting.RED), false);
         return false;
     }
 
@@ -119,7 +119,7 @@ public class ClaimStorage implements IPermissionStorage {
         int[] chunks = getChunkPos(claim);
         for (int x = chunks[0]; x <= chunks[1]; x++)
             for (int z = chunks[2]; z <= chunks[3]; z++) {
-                List<Claim> claims = this.claims.get(ChunkPos.toLong(x, z));
+                List<Claim> claims = this.claims.get(ChunkPos.asLong(x, z));
                 if (claims != null)
                     for (Claim other : claims) {
                         if (claim.intersects(other) && !other.equals(except)) {
@@ -130,7 +130,7 @@ public class ClaimStorage implements IPermissionStorage {
         return conflicted;
     }
 
-    public boolean deleteClaim(Claim claim, boolean updateClaim, EnumEditMode mode, ServerWorld world) {
+    public boolean deleteClaim(Claim claim, boolean updateClaim, EnumEditMode mode, ServerLevel world) {
         if (mode == EnumEditMode.SUBCLAIM) {
             if (claim.parentClaim() != null)
                 return claim.parentClaim().deleteSubClaim(claim);
@@ -140,7 +140,7 @@ public class ClaimStorage implements IPermissionStorage {
         int[] pos = getChunkPos(claim);
         for (int x = pos[0]; x <= pos[1]; x++)
             for (int z = pos[2]; z <= pos[3]; z++) {
-                this.claims.compute(ChunkPos.toLong(x, z), (key, val) -> {
+                this.claims.compute(ChunkPos.asLong(x, z), (key, val) -> {
                     if (val == null)
                         return null;
                     val.remove(claim);
@@ -156,9 +156,9 @@ public class ClaimStorage implements IPermissionStorage {
         return this.claimUUIDMap.remove(claim.getClaimID()) != null;
     }
 
-    public void toggleAdminClaim(ServerPlayerEntity player, Claim claim, boolean toggle) {
+    public void toggleAdminClaim(ServerPlayer player, Claim claim, boolean toggle) {
         Flan.log("Set claim {} to an admin claim", claim);
-        this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.getServerWorld());
+        this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.getLevel());
         if (toggle)
             claim.getOwnerPlayer().ifPresent(o -> PlayerClaimData.get(o).updateScoreboard());
         claim.toggleAdminClaim(player, toggle);
@@ -167,18 +167,18 @@ public class ClaimStorage implements IPermissionStorage {
         this.addClaim(claim);
     }
 
-    public boolean resizeClaim(Claim claim, BlockPos from, BlockPos to, ServerPlayerEntity player) {
+    public boolean resizeClaim(Claim claim, BlockPos from, BlockPos to, ServerPlayer player) {
         int[] dims = claim.getDimensions();
         BlockPos opposite = new BlockPos(dims[0] == from.getX() ? dims[1] : dims[0], dims[4], dims[2] == from.getZ() ? dims[3] : dims[2]);
-        Claim newClaim = new Claim(opposite, to, player.getUuid(), player.getServerWorld());
+        Claim newClaim = new Claim(opposite, to, player.getUUID(), player.getLevel());
         if (newClaim.getPlane() < ConfigHandler.config.minClaimsize) {
-            player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.minClaimSize, ConfigHandler.config.minClaimsize), Formatting.RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.minClaimSize, ConfigHandler.config.minClaimsize), ChatFormatting.RED), false);
             return false;
         }
         Set<Claim> conflicts = this.conflicts(newClaim, claim);
         if (!conflicts.isEmpty()) {
-            conflicts.forEach(conf -> PlayerClaimData.get(player).addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.getBlockPos().getY()));
-            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
+            conflicts.forEach(conf -> PlayerClaimData.get(player).addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.blockPosition().getY()));
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, ChatFormatting.RED), false);
             return false;
         }
         int diff = newClaim.getPlane() - claim.getPlane();
@@ -191,23 +191,23 @@ public class ClaimStorage implements IPermissionStorage {
         boolean enoughBlocks = claim.isAdminClaim() || data.isAdminIgnoreClaim() || newData.canUseClaimBlocks(diff);
         if (enoughBlocks) {
             Flan.log("Resizing claim {}", claim);
-            this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.getServerWorld());
+            this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.getLevel());
             claim.copySizes(newClaim);
             this.addClaim(claim);
-            data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+            data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
             if (newData instanceof PlayerClaimData)
                 ((PlayerClaimData) newData).updateScoreboard();
-            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.resizeSuccess, Formatting.GOLD), false);
-            player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
-                    newData.getClaimBlocks(), newData.getAdditionalClaims(), newData.usedClaimBlocks()), Formatting.GOLD), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.resizeSuccess, ChatFormatting.GOLD), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
+                    newData.getClaimBlocks(), newData.getAdditionalClaims(), newData.usedClaimBlocks()), ChatFormatting.GOLD), false);
             return true;
         }
-        player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.notEnoughBlocks, Formatting.RED), false);
+        player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.notEnoughBlocks, ChatFormatting.RED), false);
         return false;
     }
 
     public Claim getClaimAt(BlockPos pos) {
-        long chunk = ChunkPos.toLong(pos.getX() >> 4, pos.getZ() >> 4);
+        long chunk = ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4);
         List<Claim> list = this.claims.get(chunk);
         if (list != null)
             for (Claim claim : list) {
@@ -233,7 +233,7 @@ public class ClaimStorage implements IPermissionStorage {
         int[] pos = getChunkPos(claim);
         for (int x = pos[0]; x <= pos[1]; x++)
             for (int z = pos[2]; z <= pos[3]; z++) {
-                this.claims.merge(ChunkPos.toLong(x, z), Lists.newArrayList(claim), (old, val) -> {
+                this.claims.merge(ChunkPos.asLong(x, z), Lists.newArrayList(claim), (old, val) -> {
                     old.add(claim);
                     return old;
                 });
@@ -245,8 +245,8 @@ public class ClaimStorage implements IPermissionStorage {
         });
     }
 
-    public boolean transferOwner(Claim claim, ServerPlayerEntity player, UUID newOwner) {
-        if (!player.getUuid().equals(claim.getOwner()))
+    public boolean transferOwner(Claim claim, ServerPlayer player, UUID newOwner) {
+        if (!player.getUUID().equals(claim.getOwner()))
             return false;
         this.playerClaimMap.merge(claim.getOwner(), new HashSet<>(), (old, val) -> {
             old.remove(claim);
@@ -281,9 +281,9 @@ public class ClaimStorage implements IPermissionStorage {
         return pos;
     }
 
-    public void read(MinecraftServer server, ServerWorld world) {
-        Flan.log("Loading claim data for world {}", world.getRegistryKey());
-        Path dir = ConfigHandler.getClaimSavePath(server, world.getRegistryKey());
+    public void read(MinecraftServer server, ServerLevel world) {
+        Flan.log("Loading claim data for world {}", world.dimension());
+        Path dir = ConfigHandler.getClaimSavePath(server, world.dimension());
         if (Files.exists(dir)) {
             try {
                 for (Path file : Files.walk(dir).filter(Files::isRegularFile).collect(Collectors.toSet())) {
@@ -310,7 +310,7 @@ public class ClaimStorage implements IPermissionStorage {
         }
     }
 
-    public void save(MinecraftServer server, RegistryKey<World> reg) {
+    public void save(MinecraftServer server, ResourceKey<Level> reg) {
         Flan.log("Saving claims for world {}", reg);
         Path dir = ConfigHandler.getClaimSavePath(server, reg);
         try {
@@ -354,11 +354,11 @@ public class ClaimStorage implements IPermissionStorage {
         }
     }
 
-    public static boolean readGriefPreventionData(MinecraftServer server, ServerCommandSource src) {
+    public static boolean readGriefPreventionData(MinecraftServer server, CommandSourceStack src) {
         Yaml yml = new Yaml();
-        File griefPrevention = server.getSavePath(WorldSavePath.ROOT).resolve("plugins/GriefPreventionData/ClaimData").toFile();
+        File griefPrevention = server.getWorldPath(LevelResource.ROOT).resolve("plugins/GriefPreventionData/ClaimData").toFile();
         if (!griefPrevention.exists()) {
-            src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.cantFindData, griefPrevention.getAbsolutePath()), Formatting.DARK_RED), false);
+            src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.cantFindData, griefPrevention.getAbsolutePath()), ChatFormatting.DARK_RED), false);
             return false;
         }
         Map<File, List<File>> subClaimMap = new HashMap<>();
@@ -392,7 +392,7 @@ public class ClaimStorage implements IPermissionStorage {
                         try {
                             intFileMap.put(Integer.valueOf(f.getName().replace(".yml", "")), f);
                         } catch (NumberFormatException e) {
-                            src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.errorFile, f.getName(), Formatting.RED)), false);
+                            src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.errorFile, f.getName(), ChatFormatting.RED)), false);
                         }
                     }
                 }
@@ -413,28 +413,28 @@ public class ClaimStorage implements IPermissionStorage {
             }
             for (File parent : intFileMap.values()) {
                 try {
-                    Pair<ServerWorld, Claim> parentClaim = parseFromYaml(parent, yml, server, perms);
+                    Tuple<ServerLevel, Claim> parentClaim = parseFromYaml(parent, yml, server, perms);
                     List<File> childs = subClaimMap.get(parent);
                     if (childs != null && !childs.isEmpty()) {
                         for (File childF : childs)
-                            parentClaim.getRight().addSubClaimGriefprevention(parseFromYaml(childF, yml, server, perms).getRight());
+                            parentClaim.getB().addSubClaimGriefprevention(parseFromYaml(childF, yml, server, perms).getB());
                     }
-                    ClaimStorage storage = ClaimStorage.get(parentClaim.getLeft());
-                    Set<Claim> conflicts = storage.conflicts(parentClaim.getRight(), null);
+                    ClaimStorage storage = ClaimStorage.get(parentClaim.getA());
+                    Set<Claim> conflicts = storage.conflicts(parentClaim.getB(), null);
                     if (conflicts.isEmpty()) {
-                        parentClaim.getRight().setClaimID(storage.generateUUID());
-                        storage.addClaim(parentClaim.getRight());
+                        parentClaim.getB().setClaimID(storage.generateUUID());
+                        storage.addClaim(parentClaim.getB());
                     } else {
-                        src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.readConflict, parent.getName(), conflicts), Formatting.DARK_RED), false);
+                        src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.readConflict, parent.getName(), conflicts), ChatFormatting.DARK_RED), false);
                         for (Claim claim : conflicts) {
                             int[] dim = claim.getDimensions();
-                            MutableText text = PermHelper.simpleColoredText(String.format("@[x=%d;z=%d]", dim[0], dim[2]), Formatting.RED);
-                            text.setStyle(text.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + dim[0] + " ~ " + dim[2])).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip"))));
-                            src.sendFeedback(text, false);
+                            MutableComponent text = PermHelper.simpleColoredText(String.format("@[x=%d;z=%d]", dim[0], dim[2]), ChatFormatting.RED);
+                            text.setStyle(text.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + dim[0] + " ~ " + dim[2])).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("chat.coordinates.tooltip"))));
+                            src.sendSuccess(text, false);
                         }
                     }
                 } catch (Exception e) {
-                    src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.errorFile, parent.getName(), Formatting.RED)), false);
+                    src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.errorFile, parent.getName(), ChatFormatting.RED)), false);
                     e.printStackTrace();
                 }
             }
@@ -451,8 +451,8 @@ public class ClaimStorage implements IPermissionStorage {
         return set;
     }
 
-    private static Pair<ServerWorld, Claim> parseFromYaml(File file, Yaml yml, MinecraftServer server,
-                                                          Map<String, Set<ClaimPermission>> perms) throws IOException {
+    private static Tuple<ServerLevel, Claim> parseFromYaml(File file, Yaml yml, MinecraftServer server,
+                                                           Map<String, Set<ClaimPermission>> perms) throws IOException {
         FileReader reader = new FileReader(file);
         Map<String, Object> values = yml.load(reader);
         reader.close();
@@ -465,7 +465,7 @@ public class ClaimStorage implements IPermissionStorage {
         List<String> accessors = readList(values, "Accessors");
         String[] lesserCorner = values.get("Lesser Boundary Corner").toString().split(";");
         String[] greaterCorner = values.get("Greater Boundary Corner").toString().split(";");
-        ServerWorld world = server.getWorld(worldRegFromString(lesserCorner[0]));
+        ServerLevel world = server.getLevel(worldRegFromString(lesserCorner[0]));
         Claim claim = new Claim(Integer.parseInt(lesserCorner[1]), Integer.parseInt(greaterCorner[1]),
                 Integer.parseInt(lesserCorner[3]), Integer.parseInt(greaterCorner[3]), ConfigHandler.config.defaultClaimDepth == 255 ? 0 :
                 Integer.parseInt(lesserCorner[2]), owner, world);
@@ -513,7 +513,7 @@ public class ClaimStorage implements IPermissionStorage {
                 accessors.forEach(s -> claim.setPlayerGroup(UUID.fromString(s), "Accessors", true));
             }
         }
-        return new Pair<>(world, claim);
+        return new Tuple<>(world, claim);
     }
 
     @SuppressWarnings("unchecked")
@@ -524,11 +524,11 @@ public class ClaimStorage implements IPermissionStorage {
         return new ArrayList<>();
     }
 
-    public static RegistryKey<World> worldRegFromString(String spigot) {
+    public static ResourceKey<Level> worldRegFromString(String spigot) {
         if (spigot.equals("world_the_end"))
-            return World.END;
+            return Level.END;
         if (spigot.equals("world_nether"))
-            return World.NETHER;
-        return World.OVERWORLD;
+            return Level.NETHER;
+        return Level.OVERWORLD;
     }
 }

@@ -1,10 +1,10 @@
 package io.github.flemmli97.flan.api.permission;
 
 import io.github.flemmli97.flan.config.ConfigHandler;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.Identifier;
-import net.minecraft.village.raid.Raid;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.raid.Raid;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,9 +21,9 @@ public class PermissionRegistry {
     private static final Map<String, ClaimPermission> permissions = new LinkedHashMap<>();
     private static final Map<String, ClaimPermission> globalPermissions = new LinkedHashMap<>();
 
-    private static final Map<Identifier, ClaimPermission> interactBlocks = new HashMap<>();
-    private static final Map<Identifier, ClaimPermission> breakBlocks = new HashMap<>();
-    private static final Map<Identifier, ClaimPermission> items = new HashMap<>();
+    private static final Map<ResourceLocation, ClaimPermission> interactBlocks = new HashMap<>();
+    private static final Map<ResourceLocation, ClaimPermission> breakBlocks = new HashMap<>();
+    private static final Map<ResourceLocation, ClaimPermission> items = new HashMap<>();
 
     private static boolean locked;
 
@@ -55,7 +55,7 @@ public class PermissionRegistry {
     public static ClaimPermission TRAMPLE = register(new ClaimPermission("TRAMPLE", () -> new ItemStack(Items.FARMLAND), "Permission to enable block trampling", "(farmland, turtle eggs)"));
     public static ClaimPermission FROSTWALKER = register(new ClaimPermission("FROSTWALKER", () -> new ItemStack(Items.LEATHER_BOOTS), "Permission for frostwalker to activate"));
     public static ClaimPermission PORTAL = register(new ClaimPermission("PORTAL", () -> new ItemStack(Items.OBSIDIAN), true, "Permission to use nether portals"));
-    public static ClaimPermission RAID = register(new ClaimPermission("RAID", Raid::getOminousBanner, "Permission to trigger raids in claim.", "Wont prevent raids (just) outside"));
+    public static ClaimPermission RAID = register(new ClaimPermission("RAID", Raid::getLeaderBannerInstance, "Permission to trigger raids in claim.", "Wont prevent raids (just) outside"));
     public static ClaimPermission BOAT = register(new ClaimPermission("BOAT", () -> new ItemStack(Items.OAK_BOAT), "Permission to sit in boats"));
     public static ClaimPermission MINECART = register(new ClaimPermission("MINECART", () -> new ItemStack(Items.MINECART), "Permission to sit in minecarts"));
     public static ClaimPermission BUCKET = register(new ClaimPermission("BUCKET", () -> new ItemStack(Items.BUCKET), "Permission to take liquids with buckets"));
@@ -121,23 +121,23 @@ public class PermissionRegistry {
         return globalPermissions.values();
     }
 
-    public static ClaimPermission registerBreakPerm(ClaimPermission perm, Identifier... affectedBlocks) {
+    public static ClaimPermission registerBreakPerm(ClaimPermission perm, ResourceLocation... affectedBlocks) {
         ClaimPermission reg = register(perm);
-        for (Identifier blocks : affectedBlocks)
+        for (ResourceLocation blocks : affectedBlocks)
             breakBlocks.put(blocks, perm);
         return reg;
     }
 
-    public static ClaimPermission registerBlockInteract(ClaimPermission perm, Identifier... affectedBlocks) {
+    public static ClaimPermission registerBlockInteract(ClaimPermission perm, ResourceLocation... affectedBlocks) {
         ClaimPermission reg = register(perm);
-        for (Identifier blocks : affectedBlocks)
+        for (ResourceLocation blocks : affectedBlocks)
             interactBlocks.put(blocks, perm);
         return reg;
     }
 
-    public static ClaimPermission registerItemUse(ClaimPermission perm, Identifier... affectedBlocks) {
+    public static ClaimPermission registerItemUse(ClaimPermission perm, ResourceLocation... affectedBlocks) {
         ClaimPermission reg = register(perm);
-        for (Identifier blocks : affectedBlocks)
+        for (ResourceLocation blocks : affectedBlocks)
             items.put(blocks, perm);
         return reg;
     }

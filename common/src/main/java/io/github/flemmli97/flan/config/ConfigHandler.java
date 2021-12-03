@@ -4,11 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.storage.LevelResource;
 
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ public class ConfigHandler {
 
     public static Config config;
     public static LangConfig lang;
-    private static Map<RegistryKey<World>, Path> claimSavePath = new HashMap<>();
+    private static Map<ResourceKey<Level>, Path> claimSavePath = new HashMap<>();
     private static Path playerSavePath;
 
     public static void serverLoad(MinecraftServer server) {
@@ -34,13 +34,13 @@ public class ConfigHandler {
         lang.load();
     }
 
-    public static Path getClaimSavePath(MinecraftServer server, RegistryKey<World> reg) {
-        return claimSavePath.computeIfAbsent(reg, r -> DimensionType.getSaveDirectory(r, server.getSavePath(WorldSavePath.ROOT).toFile()).toPath().resolve("data").resolve("claims"));
+    public static Path getClaimSavePath(MinecraftServer server, ResourceKey<Level> reg) {
+        return claimSavePath.computeIfAbsent(reg, r -> DimensionType.getStorageFolder(r, server.getWorldPath(LevelResource.ROOT)).resolve("data").resolve("claims"));
     }
 
     public static Path getPlayerSavePath(MinecraftServer server) {
         if (playerSavePath == null)
-            playerSavePath = server.getSavePath(WorldSavePath.PLAYERDATA).resolve("claimData");
+            playerSavePath = server.getWorldPath(LevelResource.PLAYER_DATA_DIR).resolve("claimData");
         return playerSavePath;
     }
 

@@ -1,6 +1,6 @@
 package io.github.flemmli97.flan.api.data;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 public interface IPermissionStorage {
 

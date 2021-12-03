@@ -24,7 +24,8 @@
     "FrostWalkerMixin",
     "LightningFireEntityMixin",
     "BannedEntryAccessor",
-    "MinecraftServerMixin"
+    "MinecraftServerMixin",
+    "AbstractContainerAccessor"
   ],
   "server": [
   ],

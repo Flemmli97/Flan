@@ -1,5 +1,6 @@
-package io.github.flemmli97.flan;
+package io.github.flemmli97.flan.forge;
 
+import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.forgeevent.BlockInteractEventsForge;
 import io.github.flemmli97.flan.forgeevent.EntityInteractEventsForge;
 import io.github.flemmli97.flan.forgeevent.ItemInteractEventsForge;
@@ -11,6 +12,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 
+//Moved from io.github.flemmli97.flan to here since module thingy with forge
 @Mod(FlanForge.MODID)
 public class FlanForge {
 

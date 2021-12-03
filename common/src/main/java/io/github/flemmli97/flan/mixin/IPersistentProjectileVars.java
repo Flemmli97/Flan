@@ -1,31 +1,31 @@
 package io.github.flemmli97.flan.mixin;
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.sound.SoundEvent;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(PersistentProjectileEntity.class)
+@Mixin(AbstractArrow.class)
 public interface IPersistentProjectileVars {
 
-    @Accessor("inBlockState")
+    @Accessor("lastState")
     void setInBlockState(BlockState state);
 
     @Accessor("inGround")
     void setInGround(boolean flag);
 
-    @Invoker("getSound")
+    @Invoker("getHitGroundSoundEvent")
     SoundEvent getSoundEvent();
 
-    @Invoker("clearPiercingStatus")
+    @Invoker("resetPiercedEntities")
     void resetPiercingStatus();
 
-    @Accessor("piercedEntities")
+    @Accessor("piercingIgnoreEntityIds")
     IntOpenHashSet getPiercedEntities();
 
-    @Accessor("piercedEntities")
+    @Accessor("piercingIgnoreEntityIds")
     void setPiercedEntities(IntOpenHashSet set);
 }

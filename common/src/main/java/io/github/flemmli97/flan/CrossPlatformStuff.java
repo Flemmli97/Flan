@@ -1,12 +1,12 @@
 package io.github.flemmli97.flan;
 
-import me.shedaniel.architectury.annotations.ExpectPlatform;
-import net.minecraft.block.Block;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.item.Item;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.nio.file.Path;
 
@@ -18,7 +18,7 @@ public class CrossPlatformStuff {
     }
 
     @ExpectPlatform
-    public static SimpleRegistryWrapper<StatusEffect> registryStatusEffects() {
+    public static SimpleRegistryWrapper<MobEffect> registryStatusEffects() {
         throw new AssertionError();
     }
 

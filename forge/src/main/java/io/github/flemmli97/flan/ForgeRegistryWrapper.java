@@ -1,6 +1,7 @@
 package io.github.flemmli97.flan;
 
-import net.minecraft.util.Identifier;
+import io.github.flemmli97.flan.SimpleRegistryWrapper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
@@ -13,12 +14,12 @@ public class ForgeRegistryWrapper<T extends IForgeRegistryEntry<T>> implements S
     }
 
     @Override
-    public T getFromId(Identifier id) {
+    public T getFromId(ResourceLocation id) {
         return this.registry.getValue(id);
     }
 
     @Override
-    public Identifier getIDFrom(T entry) {
+    public ResourceLocation getIDFrom(T entry) {
         return entry.getRegistryName();
     }
 

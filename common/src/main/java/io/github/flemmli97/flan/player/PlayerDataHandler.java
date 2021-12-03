@@ -4,7 +4,7 @@ import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,11 +40,11 @@ public class PlayerDataHandler {
         return playerDatas;
     }
 
-    public static void deleteUnusedClaims(MinecraftServer server, ClaimStorage storage, ServerWorld world) {
+    public static void deleteUnusedClaims(MinecraftServer server, ClaimStorage storage, ServerLevel world) {
         if (inActivePlayerData == null)
             initInactivePlayers(server);
         inActivePlayerData.forEach((uuid, data) -> {
-            Flan.log("{} Deleting all claims for inactive player {} last seen {}", world.getRegistryKey(), data.owner, data.lastOnline);
+            Flan.log("{} Deleting all claims for inactive player {} last seen {}", world.dimension(), data.owner, data.lastOnline);
             storage.allClaimsFromPlayer(data.owner)
                     .forEach(claim -> storage.deleteClaim(claim, true, EnumEditMode.DEFAULT, world));
         });

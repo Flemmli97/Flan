@@ -7,22 +7,22 @@ import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.PlayerEvents;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerDataHandler;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 
 public class ServerEvents {
 
-    public static void serverStart(FMLServerAboutToStartEvent event) {
+    public static void serverStart(ServerAboutToStartEvent event) {
         ConfigHandler.serverLoad(event.getServer());
         ObjectToPermissionMap.reload(event.getServer());
         Flan.lockRegistry(event.getServer());
     }
 
-    public static void serverFinishLoad(FMLServerStartedEvent event) {
+    public static void serverFinishLoad(ServerStartedEvent event) {
         PlayerDataHandler.deleteInactivePlayerData(event.getServer());
     }
 
@@ -43,7 +43,7 @@ public class ServerEvents {
     }
 
     public static void serverTick(TickEvent.WorldTickEvent event) {
-        if (event.phase == TickEvent.Phase.START && event.world.getServer() != null && event.world.getRegistryKey() == World.OVERWORLD)
+        if (event.phase == TickEvent.Phase.START && event.world.getServer() != null && event.world.dimension() == Level.OVERWORLD)
             LogoutTracker.getInstance(event.world.getServer()).tick();
     }
 }

@@ -1,12 +1,12 @@
 package io.github.flemmli97.flan.mixin;
 
-import net.minecraft.entity.player.HungerManager;
+import net.minecraft.world.food.FoodData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(HungerManager.class)
+@Mixin(FoodData.class)
 public interface IHungerAccessor {
 
-    @Accessor("foodSaturationLevel")
+    @Accessor("saturationLevel")
     void setSaturation(float saturation);
 }

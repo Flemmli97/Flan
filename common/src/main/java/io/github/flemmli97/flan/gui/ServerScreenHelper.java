@@ -6,18 +6,18 @@ import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,24 +28,24 @@ public class ServerScreenHelper {
 
     public static ItemStack emptyFiller() {
         ItemStack stack = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
-        stack.setCustomName(PermHelper.simpleColoredText(""));
+        stack.setHoverName(PermHelper.simpleColoredText(""));
         return stack;
     }
 
     public static ItemStack fromPermission(Claim claim, ClaimPermission perm, String group) {
         ItemStack stack = perm.getItem();
-        stack.setCustomName(ServerScreenHelper.coloredGuiText(perm.id, Formatting.GOLD));
-        List<Text> lore = new ArrayList<>();
+        stack.setHoverName(ServerScreenHelper.coloredGuiText(perm.id, ChatFormatting.GOLD));
+        List<Component> lore = new ArrayList<>();
         for (String pdesc : perm.desc) {
-            Text trans = ServerScreenHelper.coloredGuiText(pdesc, Formatting.YELLOW);
+            Component trans = ServerScreenHelper.coloredGuiText(pdesc, ChatFormatting.YELLOW);
             lore.add(trans);
         }
         Config.GlobalType global = ConfigHandler.config.getGlobal(claim.getWorld(), perm);
         if (!claim.isAdminClaim() && !global.canModify()) {
-            Text text = ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenUneditable, Formatting.DARK_RED);
+            Component text = ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenUneditable, ChatFormatting.DARK_RED);
             lore.add(text);
             String permFlag = global.getValue() ? ConfigHandler.lang.screenTrue : ConfigHandler.lang.screenFalse;
-            Text text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? Formatting.GREEN : Formatting.RED);
+            Component text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? ChatFormatting.GREEN : ChatFormatting.RED);
             lore.add(text2);
         } else {
             String permFlag;
@@ -78,28 +78,28 @@ public class ServerScreenHelper {
                         break;
                 }
             }
-            Text text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? Formatting.GREEN : Formatting.RED);
+            Component text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? ChatFormatting.GREEN : ChatFormatting.RED);
             lore.add(text);
         }
         addLore(stack, lore);
         return stack;
     }
 
-    public static ItemStack getFromPersonal(ServerPlayerEntity player, ClaimPermission perm, String group) {
+    public static ItemStack getFromPersonal(ServerPlayer player, ClaimPermission perm, String group) {
         ItemStack stack = perm.getItem();
-        stack.setCustomName(ServerScreenHelper.coloredGuiText(perm.id, Formatting.GOLD));
+        stack.setHoverName(ServerScreenHelper.coloredGuiText(perm.id, ChatFormatting.GOLD));
         ListTag lore = new ListTag();
         for (String pdesc : perm.desc) {
-            Text trans = ServerScreenHelper.coloredGuiText(pdesc, Formatting.YELLOW);
-            lore.add(StringTag.of(Text.Serializer.toJson(trans)));
+            Component trans = ServerScreenHelper.coloredGuiText(pdesc, ChatFormatting.YELLOW);
+            lore.add(StringTag.valueOf(Component.Serializer.toJson(trans)));
         }
-        Config.GlobalType global = ConfigHandler.config.getGlobal(player.getServerWorld(), perm);
+        Config.GlobalType global = ConfigHandler.config.getGlobal(player.getLevel(), perm);
         if (!global.canModify()) {
-            Text text = ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenUneditable, Formatting.DARK_RED);
-            lore.add(StringTag.of(Text.Serializer.toJson(text)));
+            Component text = ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenUneditable, ChatFormatting.DARK_RED);
+            lore.add(StringTag.valueOf(Component.Serializer.toJson(text)));
             String permFlag = String.valueOf(global.getValue());
-            Text text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? Formatting.GREEN : Formatting.RED);
-            lore.add(StringTag.of(Text.Serializer.toJson(text2)));
+            Component text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? ChatFormatting.GREEN : ChatFormatting.RED);
+            lore.add(StringTag.valueOf(Component.Serializer.toJson(text2)));
         } else {
             String permFlag;
             Map<ClaimPermission, Boolean> map = PlayerClaimData.get(player).playerDefaultGroups().getOrDefault(group, new HashMap<>());
@@ -107,31 +107,31 @@ public class ServerScreenHelper {
                 permFlag = map.get(perm) ? ConfigHandler.lang.screenTrue : ConfigHandler.lang.screenFalse;
             else
                 permFlag = ConfigHandler.lang.screenDefault;
-            Text text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? Formatting.GREEN : Formatting.RED);
-            lore.add(StringTag.of(Text.Serializer.toJson(text)));
+            Component text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? ChatFormatting.GREEN : ChatFormatting.RED);
+            lore.add(StringTag.valueOf(Component.Serializer.toJson(text)));
         }
-        stack.getOrCreateSubTag("display").put("Lore", lore);
+        stack.getOrCreateTagElement("display").put("Lore", lore);
         return stack;
     }
 
-    public static void playSongToPlayer(ServerPlayerEntity player, SoundEvent event, float vol, float pitch) {
-        player.networkHandler.sendPacket(
-                new PlaySoundS2CPacket(event, SoundCategory.PLAYERS, player.getPos().x, player.getPos().y, player.getPos().z, vol, pitch));
+    public static void playSongToPlayer(ServerPlayer player, SoundEvent event, float vol, float pitch) {
+        player.connection.send(
+                new ClientboundSoundPacket(event, SoundSource.PLAYERS, player.position().x, player.position().y, player.position().z, vol, pitch));
     }
 
-    public static Text coloredGuiText(String text, Formatting... formattings) {
-        return new LiteralText(text).setStyle(Style.EMPTY.withItalic(false).withFormatting(formattings));
+    public static Component coloredGuiText(String text, ChatFormatting... formattings) {
+        return new TextComponent(text).setStyle(Style.EMPTY.withItalic(false).applyFormats(formattings));
     }
 
-    public static void addLore(ItemStack stack, Text text) {
+    public static void addLore(ItemStack stack, Component text) {
         ListTag lore = new ListTag();
-        lore.add(StringTag.of(Text.Serializer.toJson(text)));
-        stack.getOrCreateSubTag("display").put("Lore", lore);
+        lore.add(StringTag.valueOf(Component.Serializer.toJson(text)));
+        stack.getOrCreateTagElement("display").put("Lore", lore);
     }
 
-    public static void addLore(ItemStack stack, List<Text> texts) {
+    public static void addLore(ItemStack stack, List<Component> texts) {
         ListTag lore = new ListTag();
-        texts.forEach(text -> lore.add(StringTag.of(Text.Serializer.toJson(text))));
-        stack.getOrCreateSubTag("display").put("Lore", lore);
+        texts.forEach(text -> lore.add(StringTag.valueOf(Component.Serializer.toJson(text))));
+        stack.getOrCreateTagElement("display").put("Lore", lore);
     }
 }

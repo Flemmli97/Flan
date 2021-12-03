@@ -2,14 +2,14 @@ package io.github.flemmli97.flan.forge;
 
 import io.github.flemmli97.flan.ForgeRegistryWrapper;
 import io.github.flemmli97.flan.SimpleRegistryWrapper;
-import net.minecraft.block.Block;
-import net.minecraft.block.InventoryProvider;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.Container;
+import net.minecraft.world.WorldlyContainerHolder;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -22,8 +22,8 @@ public class CrossPlatformStuffImpl {
         return FMLPaths.CONFIGDIR.get();
     }
 
-    public static SimpleRegistryWrapper<StatusEffect> registryStatusEffects() {
-        return new ForgeRegistryWrapper<>(ForgeRegistries.POTIONS);
+    public static SimpleRegistryWrapper<MobEffect> registryStatusEffects() {
+        return new ForgeRegistryWrapper<>(ForgeRegistries.MOB_EFFECTS);
     }
 
     public static SimpleRegistryWrapper<Block> registryBlocks() {
@@ -39,7 +39,7 @@ public class CrossPlatformStuffImpl {
     }
 
     public static boolean isInventoryTile(BlockEntity blockEntity) {
-        return blockEntity instanceof Inventory || blockEntity instanceof InventoryProvider || blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent();
+        return blockEntity instanceof Container || blockEntity instanceof WorldlyContainerHolder || blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent();
     }
 
     public static boolean blockDataContains(CompoundTag nbt, String tag) {

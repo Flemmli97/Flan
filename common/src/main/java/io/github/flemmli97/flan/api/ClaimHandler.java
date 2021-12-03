@@ -7,8 +7,8 @@ import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.UUID;
 
@@ -19,14 +19,14 @@ public class ClaimHandler {
      * You can then use IPermissionContainer#getForPermissionCheck
      * to return an {@link IPermissionContainer} for which you can then check permissions against
      */
-    public static IPermissionStorage getPermissionStorage(ServerWorld world) {
+    public static IPermissionStorage getPermissionStorage(ServerLevel world) {
         return ClaimStorage.get(world);
     }
 
     /**
      * Gets the claim data for the given player
      */
-    public static IPlayerData getPlayerData(ServerPlayerEntity player) {
+    public static IPlayerData getPlayerData(ServerPlayer player) {
         return PlayerClaimData.get(player);
     }
 
@@ -34,7 +34,7 @@ public class ClaimHandler {
      * Same as the above but with an uuid. Use this if the player is not online.
      */
     public static IPlayerData getPlayerData(MinecraftServer server, UUID uuid) {
-        ServerPlayerEntity player = server.getPlayerManager().getPlayer(uuid);
+        ServerPlayer player = server.getPlayerList().getPlayer(uuid);
         if (player != null)
             return getPlayerData(player);
         return new OfflinePlayerData(server, uuid);

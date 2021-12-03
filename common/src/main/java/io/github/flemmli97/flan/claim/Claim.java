@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
@@ -15,20 +14,21 @@ import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerClaimData;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,30 +65,30 @@ public class Claim implements IPermissionContainer {
      */
     private boolean removed;
 
-    private final ServerWorld world;
+    private final ServerLevel world;
 
-    private final Map<StatusEffect, Integer> potions = new HashMap<>();
+    private final Map<MobEffect, Integer> potions = new HashMap<>();
 
-    public Text enterTitle, enterSubtitle, leaveTitle, leaveSubtitle;
+    public Component enterTitle, enterSubtitle, leaveTitle, leaveSubtitle;
 
-    private Claim(ServerWorld world) {
+    private Claim(ServerLevel world) {
         this.world = world;
     }
 
-    public Claim(BlockPos pos1, BlockPos pos2, ServerPlayerEntity creator) {
-        this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator.getUuid(), creator.getServerWorld(), PlayerClaimData.get(creator).playerDefaultGroups().isEmpty());
+    public Claim(BlockPos pos1, BlockPos pos2, ServerPlayer creator) {
+        this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator.getUUID(), creator.getLevel(), PlayerClaimData.get(creator).playerDefaultGroups().isEmpty());
         PlayerClaimData.get(creator).playerDefaultGroups().forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0, true)));
     }
 
-    public Claim(BlockPos pos1, BlockPos pos2, UUID creator, ServerWorld world) {
+    public Claim(BlockPos pos1, BlockPos pos2, UUID creator, ServerLevel world) {
         this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator, world);
     }
 
-    public Claim(int x1, int x2, int z1, int z2, int minY, UUID creator, ServerWorld world) {
+    public Claim(int x1, int x2, int z1, int z2, int minY, UUID creator, ServerLevel world) {
         this(x1, x2, z1, z2, minY, creator, world, true);
     }
 
-    public Claim(int x1, int x2, int z1, int z2, int minY, UUID creator, ServerWorld world, boolean setDefaultGroups) {
+    public Claim(int x1, int x2, int z1, int z2, int minY, UUID creator, ServerLevel world, boolean setDefaultGroups) {
         this.minX = Math.min(x1, x2);
         this.minZ = Math.min(z1, z2);
         this.maxX = Math.max(x1, x2);
@@ -103,7 +103,7 @@ public class Claim implements IPermissionContainer {
             ConfigHandler.config.defaultGroups.forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0, true)));
     }
 
-    public static Claim fromJson(JsonObject obj, UUID owner, ServerWorld world) {
+    public static Claim fromJson(JsonObject obj, UUID owner, ServerLevel world) {
         Claim claim = new Claim(world);
         claim.readJson(obj, owner);
         ClaimUpdater.updateClaim(claim);
@@ -112,7 +112,7 @@ public class Claim implements IPermissionContainer {
 
     private BlockPos getInitCenterPos() {
         BlockPos center = new BlockPos(this.minX + (this.maxX - this.minX) * 0.5, 0, this.minZ + (this.maxZ - this.minZ) * 0.5);
-        int y = this.world.getChunk(center.getX() >> 4, center.getZ() >> 4, ChunkStatus.HEIGHTMAPS).sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, center.getX() & 15, center.getZ() & 15);
+        int y = this.world.getChunk(center.getX() >> 4, center.getZ() >> 4, ChunkStatus.HEIGHTMAPS).getHeight(Heightmap.Types.MOTION_BLOCKING, center.getX() & 15, center.getZ() & 15);
         return new BlockPos(center.getX(), y + 1, center.getZ());
     }
 
@@ -148,13 +148,13 @@ public class Claim implements IPermissionContainer {
         return this.owner;
     }
 
-    public Optional<ServerPlayerEntity> getOwnerPlayer() {
+    public Optional<ServerPlayer> getOwnerPlayer() {
         if (this.getOwner() != null)
-            return Optional.ofNullable(this.world.getServer().getPlayerManager().getPlayer(this.getOwner()));
+            return Optional.ofNullable(this.world.getServer().getPlayerList().getPlayer(this.getOwner()));
         return Optional.empty();
     }
 
-    public ServerWorld getWorld() {
+    public ServerLevel getWorld() {
         return this.world;
     }
 
@@ -178,9 +178,9 @@ public class Claim implements IPermissionContainer {
         this.setDirty(true);
     }
 
-    public void toggleAdminClaim(ServerPlayerEntity player, boolean flag) {
+    public void toggleAdminClaim(ServerPlayer player, boolean flag) {
         if (!flag)
-            this.transferOwner(player.getUuid());
+            this.transferOwner(player.getUUID());
         else {
             this.owner = null;
             this.subClaims.forEach(claim -> claim.owner = null);
@@ -217,7 +217,7 @@ public class Claim implements IPermissionContainer {
         return this.minX <= other.maxX && this.maxX >= other.minX && this.minZ <= other.maxZ && this.maxZ >= other.minZ;
     }
 
-    public boolean intersects(Box box) {
+    public boolean intersects(AABB box) {
         return this.minX < box.maxX && this.maxX + 1 > box.minX && this.minZ < box.maxZ && this.maxZ + 1 > box.minZ && box.maxY >= this.minY;
     }
 
@@ -235,16 +235,16 @@ public class Claim implements IPermissionContainer {
     }
 
     @Override
-    public boolean canInteract(ServerPlayerEntity player, ClaimPermission perm, BlockPos pos, boolean message) {
-        ActionResult res = ClaimPermissionCheck.check(player, perm, pos);
-        if (res != ActionResult.PASS)
-            return res != ActionResult.FAIL;
+    public boolean canInteract(ServerPlayer player, ClaimPermission perm, BlockPos pos, boolean message) {
+        InteractionResult res = ClaimPermissionCheck.check(player, perm, pos);
+        if (res != InteractionResult.PASS)
+            return res != InteractionResult.FAIL;
         if (perm != null) {
             ClaimPermission.PermissionFlag flag = perm.test.test(this, player, pos);
             if (flag != ClaimPermission.PermissionFlag.PASS) {
                 if (flag == ClaimPermission.PermissionFlag.NO) {
                     if (message)
-                        player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
+                        player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, ChatFormatting.DARK_RED), true);
                     return false;
                 }
                 return true;
@@ -256,7 +256,7 @@ public class Claim implements IPermissionContainer {
                 if (global.getValue() || (player != null && this.isAdminIgnore(player)))
                     return true;
                 if (message)
-                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
+                    player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, ChatFormatting.DARK_RED), true);
                 return false;
             }
             if (ConfigHandler.config.offlineProtectActivation != -1 && (LogoutTracker.getInstance(this.world.getServer()).justLoggedOut(this.getOwner()) || this.getOwnerPlayer().isPresent())) {
@@ -272,10 +272,10 @@ public class Claim implements IPermissionContainer {
             if (this.hasPerm(perm))
                 return true;
             if (message)
-                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, ChatFormatting.DARK_RED), true);
             return false;
         }
-        if (this.isAdminIgnore(player) || player.getUuid().equals(this.owner))
+        if (this.isAdminIgnore(player) || player.getUUID().equals(this.owner))
             return true;
         if (perm != PermissionRegistry.EDITCLAIM && perm != PermissionRegistry.EDITPERMS)
             for (Claim claim : this.subClaims) {
@@ -283,25 +283,25 @@ public class Claim implements IPermissionContainer {
                     return claim.canInteract(player, perm, pos, message);
                 }
             }
-        if (this.playersGroups.containsKey(player.getUuid())) {
-            Map<ClaimPermission, Boolean> map = this.permissions.get(this.playersGroups.get(player.getUuid()));
+        if (this.playersGroups.containsKey(player.getUUID())) {
+            Map<ClaimPermission, Boolean> map = this.permissions.get(this.playersGroups.get(player.getUUID()));
             if (map != null && map.containsKey(perm)) {
                 if (map.get(perm))
                     return true;
                 if (message)
-                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
+                    player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, ChatFormatting.DARK_RED), true);
                 return false;
             }
         }
         if (this.hasPerm(perm))
             return true;
         if (message)
-            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, ChatFormatting.DARK_RED), true);
         return false;
     }
 
-    private boolean isAdminIgnore(ServerPlayerEntity player) {
-        return player == null || ((this.isAdminClaim() && player.hasPermissionLevel(2)) || PlayerClaimData.get(player).isAdminIgnoreClaim());
+    private boolean isAdminIgnore(ServerPlayer player) {
+        return player == null || ((this.isAdminClaim() && player.hasPermissions(2)) || PlayerClaimData.get(player).isAdminIgnoreClaim());
     }
 
     /**
@@ -408,17 +408,13 @@ public class Claim implements IPermissionContainer {
                 l.add(uuid);
         });
         List<String> names = new ArrayList<>();
-        l.forEach(uuid -> {
-            GameProfile prof = server.getUserCache().getByUuid(uuid);
-            if (prof != null)
-                names.add(prof.getName());
-        });
+        l.forEach(uuid -> server.getProfileCache().get(uuid).ifPresent(prof -> names.add(prof.getName())));
         names.sort(null);
         return names;
     }
 
-    public boolean editGlobalPerms(ServerPlayerEntity player, ClaimPermission toggle, int mode) {
-        if ((player != null && !this.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos())) || (!this.isAdminClaim() && ConfigHandler.config.globallyDefined(this.world, toggle)))
+    public boolean editGlobalPerms(ServerPlayer player, ClaimPermission toggle, int mode) {
+        if ((player != null && !this.canInteract(player, PermissionRegistry.EDITPERMS, player.blockPosition())) || (!this.isAdminClaim() && ConfigHandler.config.globallyDefined(this.world, toggle)))
             return false;
         if (mode > 1)
             mode = -1;
@@ -430,7 +426,7 @@ public class Claim implements IPermissionContainer {
         return true;
     }
 
-    public boolean editPerms(ServerPlayerEntity player, String group, ClaimPermission perm, int mode) {
+    public boolean editPerms(ServerPlayer player, String group, ClaimPermission perm, int mode) {
         return this.editPerms(player, group, perm, mode, false);
     }
 
@@ -440,10 +436,10 @@ public class Claim implements IPermissionContainer {
      * @param mode -1 = makes it resort to the global perm, 0 = deny perm, 1 = allow perm
      * @return If editing was successful or not
      */
-    public boolean editPerms(ServerPlayerEntity player, String group, ClaimPermission perm, int mode, boolean alwaysCan) {
+    public boolean editPerms(ServerPlayer player, String group, ClaimPermission perm, int mode, boolean alwaysCan) {
         if (PermissionRegistry.globalPerms().contains(perm) || (!this.isAdminClaim() && ConfigHandler.config.globallyDefined(this.world, perm)))
             return false;
-        if (alwaysCan || this.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos())) {
+        if (alwaysCan || this.canInteract(player, PermissionRegistry.EDITPERMS, player.blockPosition())) {
             if (mode > 1)
                 mode = -1;
             boolean has = this.permissions.containsKey(group);
@@ -460,8 +456,8 @@ public class Claim implements IPermissionContainer {
         return false;
     }
 
-    public boolean removePermGroup(ServerPlayerEntity player, String group) {
-        if (this.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos())) {
+    public boolean removePermGroup(ServerPlayer player, String group) {
+        if (this.canInteract(player, PermissionRegistry.EDITPERMS, player.blockPosition())) {
             this.permissions.remove(group);
             List<UUID> toRemove = new ArrayList<>();
             this.playersGroups.forEach((uuid, g) -> {
@@ -496,54 +492,54 @@ public class Claim implements IPermissionContainer {
         return false;
     }
 
-    public void addPotion(StatusEffect effect, int amplifier) {
+    public void addPotion(MobEffect effect, int amplifier) {
         this.potions.put(effect, amplifier);
         this.setDirty(true);
     }
 
-    public void removePotion(StatusEffect effect) {
+    public void removePotion(MobEffect effect) {
         this.potions.remove(effect);
         this.setDirty(true);
     }
 
-    public Map<StatusEffect, Integer> getPotions() {
+    public Map<MobEffect, Integer> getPotions() {
         return this.potions;
     }
 
-    public void applyEffects(ServerPlayerEntity player) {
-        if (player.world.getTime() % 80 == 0)
-            this.potions.forEach((effect, amp) -> player.applyStatusEffect(new StatusEffectInstance(effect, 200, amp - 1, true, false)));
+    public void applyEffects(ServerPlayer player) {
+        if (player.level.getGameTime() % 80 == 0)
+            this.potions.forEach((effect, amp) -> player.forceAddEffect(new MobEffectInstance(effect, 200, amp - 1, true, false), null));
     }
 
     public BlockPos getHomePos() {
         return this.homePos;
     }
 
-    public void setEnterTitle(Text title, Text sub) {
+    public void setEnterTitle(Component title, Component sub) {
         this.enterTitle = title;
         this.enterSubtitle = sub;
         this.setDirty(true);
     }
 
-    public void setLeaveTitle(Text title, Text sub) {
+    public void setLeaveTitle(Component title, Component sub) {
         this.leaveTitle = title;
         this.leaveSubtitle = sub;
         this.setDirty(true);
     }
 
-    public void displayEnterTitle(ServerPlayerEntity player) {
+    public void displayEnterTitle(ServerPlayer player) {
         if (this.enterTitle != null) {
-            player.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, this.enterTitle));
+            player.connection.send(new ClientboundSetTitleTextPacket(this.enterTitle));
             if (this.enterSubtitle != null)
-                player.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, this.enterSubtitle));
+                player.connection.send(new ClientboundSetSubtitleTextPacket(this.enterSubtitle));
         }
     }
 
-    public void displayLeaveTitle(ServerPlayerEntity player) {
+    public void displayLeaveTitle(ServerPlayer player) {
         if (this.leaveTitle != null) {
-            player.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, this.leaveTitle));
+            player.connection.send(new ClientboundSetTitleTextPacket(this.leaveTitle));
             if (this.leaveSubtitle != null)
-                player.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, this.leaveSubtitle));
+                player.connection.send(new ClientboundSetSubtitleTextPacket(this.leaveSubtitle));
         }
     }
 
@@ -579,18 +575,18 @@ public class Claim implements IPermissionContainer {
             }
             String message = ConfigHandler.fromJson(obj, "EnterTitle", "");
             if (!message.isEmpty())
-                this.enterTitle = Text.Serializer.fromJson(message);
+                this.enterTitle = Component.Serializer.fromJson(message);
             message = ConfigHandler.fromJson(obj, "EnterSubtitle", "");
             if (!message.isEmpty())
-                this.enterSubtitle = Text.Serializer.fromJson(message);
+                this.enterSubtitle = Component.Serializer.fromJson(message);
             message = ConfigHandler.fromJson(obj, "LeaveTitle", "");
             if (!message.isEmpty())
-                this.leaveTitle = Text.Serializer.fromJson(message);
+                this.leaveTitle = Component.Serializer.fromJson(message);
             message = ConfigHandler.fromJson(obj, "LeaveSubtitle", "");
             if (!message.isEmpty())
-                this.leaveSubtitle = Text.Serializer.fromJson(message);
+                this.leaveSubtitle = Component.Serializer.fromJson(message);
             JsonObject potion = ConfigHandler.fromJson(obj, "Potions");
-            potion.entrySet().forEach(e -> this.potions.put(CrossPlatformStuff.registryStatusEffects().getFromId(new Identifier(e.getKey())), e.getValue().getAsInt()));
+            potion.entrySet().forEach(e -> this.potions.put(CrossPlatformStuff.registryStatusEffects().getFromId(new ResourceLocation(e.getKey())), e.getValue().getAsInt()));
             if (ConfigHandler.fromJson(obj, "AdminClaim", false))
                 this.owner = null;
             else
@@ -655,10 +651,10 @@ public class Claim implements IPermissionContainer {
         home.add(this.homePos.getY());
         home.add(this.homePos.getZ());
         obj.add("Home", home);
-        obj.addProperty("EnterTitle", this.enterTitle == null ? "" : Text.Serializer.toJson(this.enterTitle));
-        obj.addProperty("EnterSubtitle", this.enterSubtitle == null ? "" : Text.Serializer.toJson(this.enterSubtitle));
-        obj.addProperty("LeaveTitle", this.leaveTitle == null ? "" : Text.Serializer.toJson(this.leaveTitle));
-        obj.addProperty("LeaveSubtitle", this.leaveSubtitle == null ? "" : Text.Serializer.toJson(this.leaveSubtitle));
+        obj.addProperty("EnterTitle", this.enterTitle == null ? "" : Component.Serializer.toJson(this.enterTitle));
+        obj.addProperty("EnterSubtitle", this.enterSubtitle == null ? "" : Component.Serializer.toJson(this.enterSubtitle));
+        obj.addProperty("LeaveTitle", this.leaveTitle == null ? "" : Component.Serializer.toJson(this.leaveTitle));
+        obj.addProperty("LeaveSubtitle", this.leaveSubtitle == null ? "" : Component.Serializer.toJson(this.leaveSubtitle));
         JsonObject potions = new JsonObject();
         this.potions.forEach((effect, amp) -> potions.addProperty(CrossPlatformStuff.registryStatusEffects().getIDFrom(effect).toString(), amp));
         obj.add("Potions", potions);
@@ -730,46 +726,45 @@ public class Claim implements IPermissionContainer {
         return String.format("%s:[x=%d,z=%d] - [x=%d,z=%d]", this.claimName, this.minX, this.minZ, this.maxX, this.maxZ);
     }
 
-    public List<Text> infoString(ServerPlayerEntity player, InfoType infoType) {
-        boolean perms = this.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos());
-        List<Text> l = new ArrayList<>();
-        l.add(PermHelper.simpleColoredText("=============================================", Formatting.GREEN));
-        GameProfile prof = this.owner != null ? player.getServer().getUserCache().getByUuid(this.owner) : null;
-        String ownerName = this.isAdminClaim() ? "Admin" : prof != null ? prof.getName() : "<UNKNOWN>";
+    public List<Component> infoString(ServerPlayer player, InfoType infoType) {
+        boolean perms = this.canInteract(player, PermissionRegistry.EDITPERMS, player.blockPosition());
+        List<Component> l = new ArrayList<>();
+        l.add(PermHelper.simpleColoredText("=============================================", ChatFormatting.GREEN));
+        String ownerName = this.isAdminClaim() ? "Admin" : player.getServer().getProfileCache().get(this.owner).map(prof -> prof.getName()).orElse("<UNKNOWN>");
         if (this.parent == null) {
             if (this.claimName.isEmpty())
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfo, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), Formatting.GOLD));
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfo, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), ChatFormatting.GOLD));
             else
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoNamed, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size(), this.claimName), Formatting.GOLD));
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoNamed, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size(), this.claimName), ChatFormatting.GOLD));
         } else {
             if (this.claimName.isEmpty())
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoSub, ownerName, this.minX, this.minZ, this.maxX, this.maxZ), Formatting.GOLD));
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoSub, ownerName, this.minX, this.minZ, this.maxX, this.maxZ), ChatFormatting.GOLD));
             else
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoSubNamed, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.claimName), Formatting.GOLD));
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoSubNamed, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.claimName), ChatFormatting.GOLD));
         }
         if (perms) {
             if (infoType == InfoType.ALL || infoType == InfoType.GLOBAL)
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimInfoPerms, this.globalPerm), Formatting.RED));
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimInfoPerms, this.globalPerm), ChatFormatting.RED));
             if (infoType == InfoType.ALL || infoType == InfoType.GROUP) {
-                l.add(PermHelper.simpleColoredText(ConfigHandler.lang.claimGroupInfoHeader, Formatting.RED));
+                l.add(PermHelper.simpleColoredText(ConfigHandler.lang.claimGroupInfoHeader, ChatFormatting.RED));
                 Map<String, List<String>> nameToGroup = new HashMap<>();
                 for (Map.Entry<UUID, String> e : this.playersGroups.entrySet()) {
-                    GameProfile pgroup = player.getServer().getUserCache().getByUuid(e.getKey());
-                    if (prof != null) {
-                        nameToGroup.merge(e.getValue(), Lists.newArrayList(pgroup.getName()), (old, val) -> {
-                            old.add(pgroup.getName());
-                            return old;
-                        });
-                    }
+                    player.getServer().getProfileCache().get(e.getKey()).ifPresent(pgroup ->
+
+                            nameToGroup.merge(e.getValue(), Lists.newArrayList(pgroup.getName()), (old, val) -> {
+                                old.add(pgroup.getName());
+                                return old;
+                            })
+                    );
                 }
                 for (Map.Entry<String, Map<ClaimPermission, Boolean>> e : this.permissions.entrySet()) {
-                    l.add(PermHelper.simpleColoredText(String.format("  %s:", e.getKey()), Formatting.DARK_RED));
-                    l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPerms, e.getValue()), Formatting.RED));
-                    l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPlayers, nameToGroup.getOrDefault(e.getKey(), new ArrayList<>())), Formatting.RED));
+                    l.add(PermHelper.simpleColoredText(String.format("  %s:", e.getKey()), ChatFormatting.DARK_RED));
+                    l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPerms, e.getValue()), ChatFormatting.RED));
+                    l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPlayers, nameToGroup.getOrDefault(e.getKey(), new ArrayList<>())), ChatFormatting.RED));
                 }
             }
         }
-        l.add(PermHelper.simpleColoredText("=============================================", Formatting.GREEN));
+        l.add(PermHelper.simpleColoredText("=============================================", ChatFormatting.GREEN));
         return l;
     }
 

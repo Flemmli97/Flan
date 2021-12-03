@@ -1,17 +1,17 @@
 package io.github.flemmli97.flan.mixin;
 
-import net.minecraft.block.entity.LecternBlockEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.world.Container;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(LecternBlockEntity.class)
 public interface ILecternBlockValues {
 
-    @Accessor("inventory")
-    Inventory getInv();
+    @Accessor("bookAccess")
+    Container getInv();
 
-    @Accessor("propertyDelegate")
-    PropertyDelegate getProp();
+    @Accessor("dataAccess")
+    ContainerData getProp();
 }

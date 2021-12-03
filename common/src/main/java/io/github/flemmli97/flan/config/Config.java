@@ -7,11 +7,11 @@ import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 
 import java.io.File;
 import java.io.FileReader;
@@ -144,9 +144,9 @@ public class Config {
             this.worldWhitelist = ConfigHandler.fromJson(obj, "worldWhitelist", this.worldWhitelist);
 
             if (obj.has("claimingItem"))
-                this.claimingItem = CrossPlatformStuff.registryItems().getFromId(new Identifier((obj.get("claimingItem").getAsString())));
+                this.claimingItem = CrossPlatformStuff.registryItems().getFromId(new ResourceLocation((obj.get("claimingItem").getAsString())));
             if (obj.has("inspectionItem"))
-                this.inspectionItem = CrossPlatformStuff.registryItems().getFromId(new Identifier((obj.get("inspectionItem").getAsString())));
+                this.inspectionItem = CrossPlatformStuff.registryItems().getFromId(new ResourceLocation((obj.get("inspectionItem").getAsString())));
             this.claimDisplayTime = ConfigHandler.fromJson(obj, "claimDisplayTime", this.claimDisplayTime);
             this.permissionLevel = ConfigHandler.fromJson(obj, "permissionLevel", this.permissionLevel);
 
@@ -291,26 +291,26 @@ public class Config {
         }
     }
 
-    public boolean globallyDefined(ServerWorld world, ClaimPermission perm) {
+    public boolean globallyDefined(ServerLevel world, ClaimPermission perm) {
         return !this.getGlobal(world, perm).canModify();
     }
 
-    public GlobalType getGlobal(ServerWorld world, ClaimPermission perm) {
+    public GlobalType getGlobal(ServerLevel world, ClaimPermission perm) {
         //Update permission map if not done already
         Map<ClaimPermission, GlobalType> allMap = ConfigHandler.config.globalDefaultPerms.get("*");
         if (allMap != null) {
-            world.getServer().getWorlds().forEach(w -> {
-                Map<ClaimPermission, GlobalType> wMap = ConfigHandler.config.globalDefaultPerms.getOrDefault(w.getRegistryKey().getValue().toString(), new HashMap<>());
+            world.getServer().getAllLevels().forEach(w -> {
+                Map<ClaimPermission, GlobalType> wMap = ConfigHandler.config.globalDefaultPerms.getOrDefault(w.dimension().location().toString(), new HashMap<>());
                 allMap.forEach((key, value) -> {
                     if (!wMap.containsKey(key))
                         wMap.put(key, value);
                 });
-                ConfigHandler.config.globalDefaultPerms.put(w.getRegistryKey().getValue().toString(), wMap);
+                ConfigHandler.config.globalDefaultPerms.put(w.dimension().location().toString(), wMap);
             });
             ConfigHandler.config.globalDefaultPerms.remove("*");
         }
 
-        Map<ClaimPermission, GlobalType> permMap = ConfigHandler.config.globalDefaultPerms.get(world.getRegistryKey().getValue().toString());
+        Map<ClaimPermission, GlobalType> permMap = ConfigHandler.config.globalDefaultPerms.get(world.dimension().location().toString());
         return permMap == null ? GlobalType.NONE : permMap.getOrDefault(perm, GlobalType.NONE);
     }
 

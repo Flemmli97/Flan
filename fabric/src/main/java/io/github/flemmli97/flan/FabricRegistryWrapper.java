@@ -1,7 +1,7 @@
 package io.github.flemmli97.flan;
 
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 
 public class FabricRegistryWrapper<T> implements SimpleRegistryWrapper<T> {
 
@@ -12,13 +12,13 @@ public class FabricRegistryWrapper<T> implements SimpleRegistryWrapper<T> {
     }
 
     @Override
-    public T getFromId(Identifier id) {
+    public T getFromId(ResourceLocation id) {
         return this.delegate.get(id);
     }
 
     @Override
-    public Identifier getIDFrom(T entry) {
-        return this.delegate.getId(entry);
+    public ResourceLocation getIDFrom(T entry) {
+        return this.delegate.getKey(entry);
     }
 
     @Override

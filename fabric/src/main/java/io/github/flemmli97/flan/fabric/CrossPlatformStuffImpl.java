@@ -3,16 +3,16 @@ package io.github.flemmli97.flan.fabric;
 import io.github.flemmli97.flan.FabricRegistryWrapper;
 import io.github.flemmli97.flan.SimpleRegistryWrapper;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.Block;
-import net.minecraft.block.InventoryProvider;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
+import net.minecraft.world.WorldlyContainerHolder;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.nio.file.Path;
 
@@ -22,16 +22,16 @@ public class CrossPlatformStuffImpl {
         return FabricLoader.getInstance().getConfigDir();
     }
 
-    public static StatusEffect effectFromString(String s) {
-        return Registry.STATUS_EFFECT.get(new Identifier(s));
+    public static MobEffect effectFromString(String s) {
+        return Registry.MOB_EFFECT.get(new ResourceLocation(s));
     }
 
-    public static String stringFromEffect(StatusEffect s) {
-        return Registry.STATUS_EFFECT.getId(s).toString();
+    public static String stringFromEffect(MobEffect s) {
+        return Registry.MOB_EFFECT.getKey(s).toString();
     }
 
-    public static SimpleRegistryWrapper<StatusEffect> registryStatusEffects() {
-        return new FabricRegistryWrapper<>(Registry.STATUS_EFFECT);
+    public static SimpleRegistryWrapper<MobEffect> registryStatusEffects() {
+        return new FabricRegistryWrapper<>(Registry.MOB_EFFECT);
     }
 
     public static SimpleRegistryWrapper<Block> registryBlocks() {
@@ -47,7 +47,7 @@ public class CrossPlatformStuffImpl {
     }
 
     public static boolean isInventoryTile(BlockEntity blockEntity) {
-        return blockEntity instanceof Inventory || blockEntity instanceof InventoryProvider;
+        return blockEntity instanceof Container || blockEntity instanceof WorldlyContainerHolder;
     }
 
     public static boolean blockDataContains(CompoundTag nbt, String tag) {

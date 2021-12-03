@@ -1,18 +1,18 @@
 package io.github.flemmli97.flan.fabric.mixin;
 
 import io.github.flemmli97.flan.event.EntityInteractEvents;
-import net.minecraft.entity.passive.SnowGolemEntity;
+import net.minecraft.world.entity.animal.SnowGolem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(SnowGolemEntity.class)
+@Mixin(SnowGolem.class)
 public abstract class SnowGolemMixin {
 
-    @Inject(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getGameRules()Lnet/minecraft/world/GameRules;"), cancellable = true)
+    @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getGameRules()Lnet/minecraft/world/level/GameRules;"), cancellable = true)
     private void checkSnow(CallbackInfo info) {
-        if (!EntityInteractEvents.canSnowGolemInteract((SnowGolemEntity) (Object) this)) {
+        if (!EntityInteractEvents.canSnowGolemInteract((SnowGolem) (Object) this)) {
             info.cancel();
         }
     }

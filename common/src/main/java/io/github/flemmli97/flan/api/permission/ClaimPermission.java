@@ -1,9 +1,9 @@
 package io.github.flemmli97.flan.api.permission;
 
 import io.github.flemmli97.flan.claim.Claim;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Supplier;
 
@@ -56,7 +56,7 @@ public class ClaimPermission {
     }
 
     public interface ClaimTest {
-        PermissionFlag test(Claim claim, PlayerEntity player, BlockPos pos);
+        PermissionFlag test(Claim claim, Player player, BlockPos pos);
     }
 
     private static final ClaimTest pass = (claim, player, pos) -> PermissionFlag.PASS;

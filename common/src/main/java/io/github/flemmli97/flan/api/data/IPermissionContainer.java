@@ -1,12 +1,12 @@
 package io.github.flemmli97.flan.api.data;
 
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 
 public interface IPermissionContainer {
 
-    default boolean canInteract(ServerPlayerEntity player, ClaimPermission perm, BlockPos pos) {
+    default boolean canInteract(ServerPlayer player, ClaimPermission perm, BlockPos pos) {
         return this.canInteract(player, perm, pos, false);
     }
 
@@ -15,6 +15,6 @@ public interface IPermissionContainer {
      *
      * @param player The player doing the action. Can be null
      */
-    boolean canInteract(ServerPlayerEntity player, ClaimPermission perm, BlockPos pos, boolean message);
+    boolean canInteract(ServerPlayer player, ClaimPermission perm, BlockPos pos, boolean message);
 
 }

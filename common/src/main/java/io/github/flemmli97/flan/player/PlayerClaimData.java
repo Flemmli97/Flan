@@ -16,21 +16,20 @@ import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.EntityInteractEvents;
 import io.github.flemmli97.flan.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
-import net.minecraft.block.BlockState;
-import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
-import net.minecraft.scoreboard.ScoreboardCriterion;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,7 +56,7 @@ public class PlayerClaimData implements IPlayerData {
     private int usedBlocks;
 
     private int lastBlockTick, trappedTick = -1, deathPickupTick;
-    private Vec3d trappedPos;
+    private Vec3 trappedPos;
     private BlockPos tpPos;
     private EnumEditMode mode = EnumEditMode.DEFAULT;
     private Claim editingClaim;
@@ -69,7 +68,7 @@ public class PlayerClaimData implements IPlayerData {
     private final Set<ClaimDisplay> claimDisplayList = new HashSet<>();
     private final Set<ClaimDisplay> displayToAdd = new HashSet<>();
 
-    private final ServerPlayerEntity player;
+    private final ServerPlayer player;
 
     private boolean confirmDeleteAll, adminIgnoreClaim, claimBlockMessage;
 
@@ -77,12 +76,12 @@ public class PlayerClaimData implements IPlayerData {
 
     private boolean shouldProtectDrop, calculateShouldDrop = true;
 
-    public PlayerClaimData(ServerPlayerEntity player) {
+    public PlayerClaimData(ServerPlayer player) {
         this.player = player;
         this.claimBlocks = ConfigHandler.config.startingBlocks;
     }
 
-    public static PlayerClaimData get(ServerPlayerEntity player) {
+    public static PlayerClaimData get(ServerPlayer player) {
         return ((IPlayerClaimImpl) player).get();
     }
 
@@ -185,12 +184,12 @@ public class PlayerClaimData implements IPlayerData {
 
     public void setEditingCorner(BlockPos pos) {
         if (pos != null) {
-            BlockState state = this.player.world.getBlockState(pos);
+            BlockState state = this.player.level.getBlockState(pos);
             while (state.isAir() || state.getMaterial().isReplaceable()) {
-                pos = pos.down();
-                state = this.player.world.getBlockState(pos);
+                pos = pos.below();
+                state = this.player.level.getBlockState(pos);
             }
-            this.cornerRenderPos = ClaimDisplay.getPosFrom(this.player.getServerWorld(), pos.getX(), pos.getZ(), pos.getY());
+            this.cornerRenderPos = ClaimDisplay.getPosFrom(this.player.getLevel(), pos.getX(), pos.getZ(), pos.getY());
         } else
             this.cornerRenderPos = null;
         this.firstCorner = pos;
@@ -218,7 +217,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public boolean editDefaultPerms(String group, ClaimPermission perm, int mode) {
-        if (PermissionRegistry.globalPerms().contains(perm) || ConfigHandler.config.globallyDefined(this.player.getServerWorld(), perm))
+        if (PermissionRegistry.globalPerms().contains(perm) || ConfigHandler.config.globallyDefined(this.player.getLevel(), perm))
             return false;
         if (mode > 1)
             mode = -1;
@@ -235,9 +234,9 @@ public class PlayerClaimData implements IPlayerData {
 
     public boolean setTrappedRescue() {
         Claim claim = ((IPlayerClaimImpl) this.player).getCurrentClaim();
-        if (this.trappedTick < 0 && claim != null && !this.player.getUuid().equals(claim.getOwner())) {
+        if (this.trappedTick < 0 && claim != null && !this.player.getUUID().equals(claim.getOwner())) {
             this.trappedTick = 101;
-            this.trappedPos = this.player.getPos();
+            this.trappedPos = this.player.position();
             return true;
         }
         return false;
@@ -246,7 +245,7 @@ public class PlayerClaimData implements IPlayerData {
     public boolean setTeleportTo(BlockPos tp) {
         if (this.trappedTick < 0) {
             this.trappedTick = 101;
-            this.trappedPos = this.player.getPos();
+            this.trappedPos = this.player.position();
             this.tpPos = tp;
             return true;
         }
@@ -255,10 +254,10 @@ public class PlayerClaimData implements IPlayerData {
 
     public void tick(Claim currentClaim, Consumer<Claim> cons) {
         EntityInteractEvents.updateClaim(this.player, currentClaim, cons);
-        boolean tool = this.player.getMainHandStack().getItem() == ConfigHandler.config.claimingItem
-                || this.player.getOffHandStack().getItem() == ConfigHandler.config.claimingItem;
-        boolean stick = this.player.getMainHandStack().getItem() == ConfigHandler.config.inspectionItem
-                || this.player.getOffHandStack().getItem() == ConfigHandler.config.inspectionItem;
+        boolean tool = this.player.getMainHandItem().getItem() == ConfigHandler.config.claimingItem
+                || this.player.getOffhandItem().getItem() == ConfigHandler.config.claimingItem;
+        boolean stick = this.player.getMainHandItem().getItem() == ConfigHandler.config.inspectionItem
+                || this.player.getOffhandItem().getItem() == ConfigHandler.config.inspectionItem;
         this.displayToAdd.forEach(add -> {
             if (!this.claimDisplayList.add(add)) {
                 this.claimDisplayList.removeIf(c -> c.equals(add) && c.type != add.type);
@@ -273,8 +272,8 @@ public class PlayerClaimData implements IPlayerData {
         }
         if (this.cornerRenderPos != null) {
             if (this.cornerRenderPos[1] != this.cornerRenderPos[2])
-                this.player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.SETCORNER, true, this.cornerRenderPos[0] + 0.5, this.cornerRenderPos[2] + 0.25, this.cornerRenderPos[3] + 0.5, 0, 0.25f, 0, 0, 2));
-            this.player.networkHandler.sendPacket(new ParticleS2CPacket(ParticleIndicators.SETCORNER, true, this.cornerRenderPos[0] + 0.5, this.cornerRenderPos[1] + 0.25, this.cornerRenderPos[3] + 0.5, 0, 0.25f, 0, 0, 2));
+                this.player.connection.send(new ClientboundLevelParticlesPacket(ParticleIndicators.SETCORNER, true, this.cornerRenderPos[0] + 0.5, this.cornerRenderPos[2] + 0.25, this.cornerRenderPos[3] + 0.5, 0, 0.25f, 0, 0, 2));
+            this.player.connection.send(new ClientboundLevelParticlesPacket(ParticleIndicators.SETCORNER, true, this.cornerRenderPos[0] + 0.5, this.cornerRenderPos[1] + 0.25, this.cornerRenderPos[3] + 0.5, 0, 0.25f, 0, 0, 2));
         }
         if (--this.confirmTick < 0)
             this.confirmDeleteAll = false;
@@ -286,43 +285,43 @@ public class PlayerClaimData implements IPlayerData {
             this.claimBlockMessage = false;
         } else if (!this.claimBlockMessage) {
             this.claimBlockMessage = true;
-            this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
-                    this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks()), Formatting.GOLD), false);
+            this.player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
+                    this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks()), ChatFormatting.GOLD), false);
         }
         this.actionCooldown--;
         if (--this.trappedTick >= 0) {
             if (this.trappedTick == 0) {
                 if (this.tpPos != null) {
-                    BlockPos.Mutable tpTo = this.tpPos.mutableCopy();
-                    Vec3d offset = new Vec3d(this.tpPos.getX() + 0.5, this.tpPos.getY() + 0.01, this.tpPos.getZ() + 0.5).subtract(this.player.getPos());
-                    int yHighest = this.player.world.getChunk(this.tpPos.getX() >> 4, this.tpPos.getZ() >> 4, ChunkStatus.HEIGHTMAPS).sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, this.tpPos.getX() & 15, this.tpPos.getZ() & 15);
-                    Box box = this.player.getBoundingBox().offset(offset);
+                    BlockPos.MutableBlockPos tpTo = this.tpPos.mutable();
+                    Vec3 offset = new Vec3(this.tpPos.getX() + 0.5, this.tpPos.getY() + 0.01, this.tpPos.getZ() + 0.5).subtract(this.player.position());
+                    int yHighest = this.player.level.getChunk(this.tpPos.getX() >> 4, this.tpPos.getZ() >> 4, ChunkStatus.HEIGHTMAPS).getHeight(Heightmap.Types.MOTION_BLOCKING, this.tpPos.getX() & 15, this.tpPos.getZ() & 15);
+                    AABB box = this.player.getBoundingBox().move(offset);
                     if (tpTo.getY() < yHighest) {
                         while (tpTo.getY() < yHighest) {
-                            if (this.player.world.getBlockCollisions(this.player, box, (state, pos) -> true).allMatch(VoxelShape::isEmpty))
+                            if (this.player.level.noCollision(this.player, box))
                                 break;
                             tpTo.set(tpTo.getX(), tpTo.getY() + 1, tpTo.getZ());
-                            box = box.offset(0, 1, 0);
+                            box = box.move(0, 1, 0);
                         }
                         tpTo.set(tpTo.getX(), tpTo.getY() + 1, tpTo.getZ());
                     } else
                         tpTo.set(tpTo.getX(), yHighest, tpTo.getZ());
-                    this.player.teleport(tpTo.getX() + 0.5, tpTo.getY(), tpTo.getZ() + 0.5);
+                    this.player.teleportToWithTicket(tpTo.getX() + 0.5, tpTo.getY(), tpTo.getZ() + 0.5);
                     this.tpPos = null;
                 } else {
-                    Vec3d tp = TeleportUtils.getTeleportPos(this.player, this.player.getPos(), ClaimStorage.get(this.player.getServerWorld()),
+                    Vec3 tp = TeleportUtils.getTeleportPos(this.player, this.player.position(), ClaimStorage.get(this.player.getLevel()),
                             ((IPlayerClaimImpl) this.player).getCurrentClaim().getDimensions(),
-                            TeleportUtils.roundedBlockPos(this.player.getPos()).mutableCopy(), (claim, nPos) -> false);
-                    this.player.teleport(tp.getX(), tp.getY(), tp.getZ());
+                            TeleportUtils.roundedBlockPos(this.player.position()).mutable(), (claim, nPos) -> false);
+                    this.player.teleportToWithTicket(tp.x(), tp.y(), tp.z());
                 }
-            } else if (this.player.getPos().squaredDistanceTo(this.trappedPos) > 0.15) {
+            } else if (this.player.position().distanceToSqr(this.trappedPos) > 0.15) {
                 this.trappedTick = -1;
                 this.trappedPos = null;
-                this.player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.trappedMove, Formatting.RED), false);
+                this.player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.trappedMove, ChatFormatting.RED), false);
             }
         }
         this.deathPickupTick--;
-        if (!this.player.isDead())
+        if (!this.player.isDeadOrDying())
             this.calculateShouldDrop = true;
     }
 
@@ -340,7 +339,7 @@ public class PlayerClaimData implements IPlayerData {
         this.defaultGroups.clear();
         this.defaultGroups.putAll(data.defaultGroups);
         if (data.setDeathItemOwner())
-            this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.unlockDropsCmd, "/flan unlockDrops"), Formatting.GOLD), false);
+            this.player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.unlockDropsCmd, "/flan unlockDrops"), ChatFormatting.GOLD), false);
     }
 
     public void updateScoreboard() {
@@ -353,8 +352,8 @@ public class PlayerClaimData implements IPlayerData {
     private int updateClaimScores() {
         int usedClaimsBlocks = 0;
         int claimsAmount = 0;
-        for (ServerWorld world : this.player.getServer().getWorlds()) {
-            Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.player.getUuid());
+        for (ServerLevel world : this.player.getServer().getAllLevels()) {
+            Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.player.getUUID());
             if (claims != null) {
                 usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
                 claimsAmount += claims.size();
@@ -366,8 +365,8 @@ public class PlayerClaimData implements IPlayerData {
 
     private int calculateUsedClaimBlocks() {
         int usedClaimsBlocks = 0;
-        for (ServerWorld world : this.player.getServer().getWorlds()) {
-            Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.player.getUuid());
+        for (ServerLevel world : this.player.getServer().getAllLevels()) {
+            Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.player.getUUID());
             if (claims != null) {
                 usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
             }
@@ -376,11 +375,11 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public boolean setDeathItemOwner() {
-        if (!this.player.isDead())
+        if (!this.player.isDeadOrDying())
             return false;
         if (this.calculateShouldDrop) {
-            BlockPos rounded = TeleportUtils.roundedBlockPos(this.player.getPos().add(0, this.player.getActiveEyeHeight(this.player.getPose(), this.player.getDimensions(this.player.getPose())), 0));
-            this.shouldProtectDrop = ClaimStorage.get(this.player.getServerWorld()).getForPermissionCheck(rounded)
+            BlockPos rounded = TeleportUtils.roundedBlockPos(this.player.position().add(0, this.player.getStandingEyeHeight(this.player.getPose(), this.player.getDimensions(this.player.getPose())), 0));
+            this.shouldProtectDrop = ClaimStorage.get(this.player.getLevel()).getForPermissionCheck(rounded)
                     .canInteract(this.player, PermissionRegistry.LOCKITEMS, rounded);
             this.calculateShouldDrop = false;
         }
@@ -388,11 +387,11 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public void save(MinecraftServer server) {
-        Flan.log("Saving player data for player {} with uuid {}", this.player.getName(), this.player.getUuid());
+        Flan.log("Saving player data for player {} with uuid {}", this.player.getName(), this.player.getUUID());
         Path dir = ConfigHandler.getPlayerSavePath(server);
         try {
             Files.createDirectories(dir);
-            Path file = dir.resolve(this.player.getUuid() + ".json");
+            Path file = dir.resolve(this.player.getUUID() + ".json");
             try {
                 Files.createFile(file);
             } catch (FileAlreadyExistsException e) {
@@ -418,11 +417,11 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public void read(MinecraftServer server) {
-        Flan.log("Reading player data for player {} with uuid {}", this.player.getName(), this.player.getUuid());
+        Flan.log("Reading player data for player {} with uuid {}", this.player.getName(), this.player.getUUID());
         try {
-            Path file = ConfigHandler.getPlayerSavePath(server).resolve(this.player.getUuid() + ".json");
+            Path file = ConfigHandler.getPlayerSavePath(server).resolve(this.player.getUUID() + ".json");
             if (!Files.exists(file)) {
-                Flan.log("No player data found for player {} with uuid {}", this.player.getName(), this.player.getUuid());
+                Flan.log("No player data found for player {} with uuid {}", this.player.getName(), this.player.getUUID());
                 return;
             }
             JsonReader reader = ConfigHandler.GSON.newJsonReader(Files.newBufferedReader(file, StandardCharsets.UTF_8));
@@ -438,7 +437,7 @@ public class PlayerClaimData implements IPlayerData {
                         try {
                             this.editDefaultPerms(e.getKey(), PermissionRegistry.get(p.getKey()), p.getValue().getAsBoolean() ? 1 : 0);
                         } catch (NullPointerException ex) {
-                            Flan.logger.error("Error reading Permission {} for personal group {} for player {}. Permission doesnt exist", p.getKey(), e.getKey(), this.player.getName().asString());
+                            Flan.logger.error("Error reading Permission {} for personal group {} for player {}. Permission doesnt exist", p.getKey(), e.getKey(), this.player.getName().getContents());
                         }
                     });
                 }
@@ -450,8 +449,8 @@ public class PlayerClaimData implements IPlayerData {
         }
     }
 
-    public static void updateScoreFor(ServerPlayerEntity player, ScoreboardCriterion criterion, int val) {
-        player.getScoreboard().forEachScore(criterion, player.getEntityName(), (scoreboardPlayerScore) -> {
+    public static void updateScoreFor(ServerPlayer player, ObjectiveCriteria criterion, int val) {
+        player.getScoreboard().forAllObjectives(criterion, player.getScoreboardName(), (scoreboardPlayerScore) -> {
             scoreboardPlayerScore.setScore(val);
         });
     }
@@ -482,11 +481,11 @@ public class PlayerClaimData implements IPlayerData {
         }
     }
 
-    public static boolean readGriefPreventionPlayerData(MinecraftServer server, ServerCommandSource src) {
+    public static boolean readGriefPreventionPlayerData(MinecraftServer server, CommandSourceStack src) {
         Flan.log("Reading grief prevention data");
-        File griefPrevention = server.getSavePath(WorldSavePath.ROOT).resolve("plugins/GriefPreventionData/PlayerData").toFile();
+        File griefPrevention = server.getWorldPath(LevelResource.ROOT).resolve("plugins/GriefPreventionData/PlayerData").toFile();
         if (!griefPrevention.exists()) {
-            src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.cantFindData, griefPrevention.getAbsolutePath()), Formatting.DARK_RED), false);
+            src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.cantFindData, griefPrevention.getAbsolutePath()), ChatFormatting.DARK_RED), false);
             return false;
         }
         for (File f : griefPrevention.listFiles()) {
@@ -497,14 +496,14 @@ public class PlayerClaimData implements IPlayerData {
 
                 } else {
                     BufferedReader reader = new BufferedReader(new FileReader(f));
-                    ServerPlayerEntity player = server.getPlayerManager().getPlayer(UUID.fromString(f.getName()));
+                    ServerPlayer player = server.getPlayerList().getPlayer(UUID.fromString(f.getName()));
                     if (player != null) {
                         PlayerClaimData data = PlayerClaimData.get(player);
                         reader.readLine();
                         data.claimBlocks = Integer.parseInt(reader.readLine());
                         data.additionalClaimBlocks = Integer.parseInt(reader.readLine());
                     } else {
-                        File dir = new File(server.getSavePath(WorldSavePath.PLAYERDATA).toFile(), "/claimData/");
+                        File dir = new File(server.getWorldPath(LevelResource.PLAYER_DATA_DIR).toFile(), "/claimData/");
                         if (!dir.exists())
                             dir.mkdir();
                         File file = new File(dir, f.getName() + ".json");
@@ -521,7 +520,7 @@ public class PlayerClaimData implements IPlayerData {
                     reader.close();
                 }
             } catch (Exception e) {
-                src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.errorFile, f.getName(), Formatting.RED)), false);
+                src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.errorFile, f.getName(), ChatFormatting.RED)), false);
             }
         }
         return true;

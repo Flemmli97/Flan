@@ -6,20 +6,20 @@ import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.function.Consumer;
 
@@ -27,59 +27,59 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
 
     private final Claim claim;
 
-    private ClaimTextHandler(int syncId, PlayerInventory playerInventory, Claim claim) {
+    private ClaimTextHandler(int syncId, Inventory playerInventory, Claim claim) {
         super(syncId, playerInventory, 1, claim);
         this.claim = claim;
     }
 
-    public static void openClaimMenu(ServerPlayerEntity player, Claim claim) {
-        NamedScreenHandlerFactory fac = new NamedScreenHandlerFactory() {
+    public static void openClaimMenu(ServerPlayer player, Claim claim) {
+        MenuProvider fac = new MenuProvider() {
             @Override
-            public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+            public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
                 return new ClaimTextHandler(syncId, inv, claim);
             }
 
             @Override
-            public Text getDisplayName() {
+            public Component getDisplayName() {
                 return PermHelper.simpleColoredText(claim.parentClaim() != null ? ConfigHandler.lang.screenTitleEditorSub : ConfigHandler.lang.screenTitleEditor);
             }
         };
-        player.openHandledScreen(fac);
+        player.openMenu(fac);
     }
 
     @Override
-    protected void fillInventoryWith(PlayerEntity player, SeparateInv inv, Claim claim) {
+    protected void fillInventoryWith(Player player, SeparateInv inv, Claim claim) {
         for (int i = 0; i < 9; i++) {
             switch (i) {
                 case 0:
                     ItemStack close = new ItemStack(Items.TNT);
-                    close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenBack, Formatting.DARK_RED));
+                    close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenBack, ChatFormatting.DARK_RED));
                     inv.updateStack(i, close);
                     break;
                 case 2:
                     ItemStack stack = new ItemStack(Items.OAK_SIGN);
-                    stack.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenEnterText, Formatting.GOLD));
+                    stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenEnterText, ChatFormatting.GOLD));
                     if (claim.enterTitle != null)
                         ServerScreenHelper.addLore(stack, claim.enterTitle);
                     inv.updateStack(i, stack);
                     break;
                 case 3:
                     ItemStack stack2 = new ItemStack(Items.OAK_SIGN);
-                    stack2.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenEnterSubText, Formatting.GOLD));
+                    stack2.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenEnterSubText, ChatFormatting.GOLD));
                     if (claim.enterSubtitle != null)
                         ServerScreenHelper.addLore(stack2, claim.enterSubtitle);
                     inv.updateStack(i, stack2);
                     break;
                 case 4:
                     ItemStack stack3 = new ItemStack(Items.OAK_SIGN);
-                    stack3.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenLeaveText, Formatting.GOLD));
+                    stack3.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenLeaveText, ChatFormatting.GOLD));
                     if (claim.leaveTitle != null)
                         ServerScreenHelper.addLore(stack3, claim.leaveTitle);
                     inv.updateStack(i, stack3);
                     break;
                 case 5:
                     ItemStack stack4 = new ItemStack(Items.OAK_SIGN);
-                    stack4.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenLeaveSubText, Formatting.GOLD));
+                    stack4.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenLeaveSubText, ChatFormatting.GOLD));
                     if (claim.leaveSubtitle != null)
                         ServerScreenHelper.addLore(stack4, claim.leaveSubtitle);
                     inv.updateStack(i, stack4);
@@ -96,13 +96,13 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
     }
 
     @Override
-    protected boolean handleSlotClicked(ServerPlayerEntity player, int index, Slot slot, int clickType) {
+    protected boolean handleSlotClicked(ServerPlayer player, int index, Slot slot, int clickType) {
         if (index == 0) {
-            player.closeHandledScreen();
+            player.closeContainer();
             player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.claim));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
         } else {
-            Consumer<Text> cons = null;
+            Consumer<Component> cons = null;
             switch (index) {
                 case 2:
                     cons = text -> this.claim.setEnterTitle(text, this.claim.enterSubtitle);
@@ -118,25 +118,25 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                     break;
             }
             if (cons != null) {
-                player.closeHandledScreen();
-                Consumer<Text> finalCons = cons;
+                player.closeContainer();
+                Consumer<Component> finalCons = cons;
                 if (clickType == 0) {
                     player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
-                        player.closeHandledScreen();
-                        finalCons.accept(new LiteralText(s).fillStyle(Style.EMPTY.withItalic(false).withFormatting(Formatting.WHITE)));
+                        player.closeContainer();
+                        finalCons.accept(new TextComponent(s).withStyle(Style.EMPTY.withItalic(false).applyFormat(ChatFormatting.WHITE)));
                         player.getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.claim));
-                        ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_USE, 1, 1f);
+                        ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
                     }, () -> {
-                        player.closeHandledScreen();
+                        player.closeContainer();
                         player.getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.claim));
-                        ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_VILLAGER_NO, 1, 1f);
+                        ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                     }));
                 } else {
-                    LiteralText text = new LiteralText(ConfigHandler.lang.chatClaimTextEdit);
+                    TextComponent text = new TextComponent(ConfigHandler.lang.chatClaimTextEdit);
                     String command = "/flan claimMessage" + (index == 2 || index == 3 ? " enter" : " leave")
                             + (index == 2 || index == 4 ? " title" : " subtitle") + " text ";
-                    text.fillStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)));
-                    player.sendMessage(text, false);
+                    text.withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)));
+                    player.displayClientMessage(text, false);
                 }
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             }
@@ -144,14 +144,14 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
         return true;
     }
 
-    private boolean hasEditPerm(Claim claim, ServerPlayerEntity player) {
-        return ((claim.parentClaim() != null && claim.parentClaim().canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos()))
-                || claim.canInteract(player, PermissionRegistry.EDITPERMS, player.getBlockPos()));
+    private boolean hasEditPerm(Claim claim, ServerPlayer player) {
+        return ((claim.parentClaim() != null && claim.parentClaim().canInteract(player, PermissionRegistry.EDITPERMS, player.blockPosition()))
+                || claim.canInteract(player, PermissionRegistry.EDITPERMS, player.blockPosition()));
     }
 
-    private boolean hasPerm(Claim claim, ServerPlayerEntity player, ClaimPermission perm) {
+    private boolean hasPerm(Claim claim, ServerPlayer player, ClaimPermission perm) {
         if (claim.parentClaim() != null)
-            return claim.parentClaim().canInteract(player, perm, player.getBlockPos());
-        return claim.canInteract(player, perm, player.getBlockPos());
+            return claim.parentClaim().canInteract(player, perm, player.blockPosition());
+        return claim.canInteract(player, perm, player.blockPosition());
     }
 }

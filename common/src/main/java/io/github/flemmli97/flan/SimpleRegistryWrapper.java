@@ -1,15 +1,15 @@
 package io.github.flemmli97.flan;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Simple structure to get stuff from registries
  */
 public interface SimpleRegistryWrapper<T> {
 
-    T getFromId(Identifier id);
+    T getFromId(ResourceLocation id);
 
-    Identifier getIDFrom(T entry);
+    ResourceLocation getIDFrom(T entry);
 
     Iterable<T> getIterator();
 }

@@ -1,25 +1,25 @@
 package io.github.flemmli97.flan.fabric.mixin;
 
 import io.github.flemmli97.flan.event.PlayerEvents;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.WorldSaveHandler;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.storage.PlayerDataStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(WorldSaveHandler.class)
+@Mixin(PlayerDataStorage.class)
 public abstract class WorldSaveHandlerMixin {
 
-    @Inject(method = "savePlayerData", at = @At(value = "RETURN"))
-    private void save(PlayerEntity player, CallbackInfo info) {
+    @Inject(method = "save", at = @At(value = "RETURN"))
+    private void save(Player player, CallbackInfo info) {
         PlayerEvents.saveClaimData(player);
     }
 
-    @Inject(method = "loadPlayerData", at = @At(value = "RETURN"))
-    private void load(PlayerEntity player, CallbackInfoReturnable<CompoundTag> info) {
+    @Inject(method = "load", at = @At(value = "RETURN"))
+    private void load(Player player, CallbackInfoReturnable<CompoundTag> info) {
         PlayerEvents.readClaimData(player);
     }
 }

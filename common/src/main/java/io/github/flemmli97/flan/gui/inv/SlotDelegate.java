@@ -1,8 +1,8 @@
 package io.github.flemmli97.flan.gui.inv;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 public class SlotDelegate extends Slot {
 
@@ -14,22 +14,22 @@ public class SlotDelegate extends Slot {
     }
 
     @Override
-    public void setStack(ItemStack stack) {
-        ((SeparateInvImpl) this.inventory).updateStack(this.index, stack);
+    public void set(ItemStack stack) {
+        ((SeparateInvImpl) this.container).updateStack(this.index, stack);
     }
 
     @Override
-    public ItemStack getStack() {
-        return ((SeparateInvImpl) this.inventory).getActualStack(this.index);
+    public ItemStack getItem() {
+        return ((SeparateInvImpl) this.container).getActualStack(this.index);
     }
 
     @Override
-    public boolean canInsert(ItemStack stack) {
+    public boolean mayPlace(ItemStack stack) {
         return false;
     }
 
     @Override
-    public boolean canTakeItems(PlayerEntity playerEntity) {
+    public boolean mayPickup(Player playerEntity) {
         return false;
     }
 }

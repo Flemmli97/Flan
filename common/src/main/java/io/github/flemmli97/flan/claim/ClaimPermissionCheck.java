@@ -1,15 +1,15 @@
 package io.github.flemmli97.flan.claim;
 
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
-import me.shedaniel.architectury.annotations.ExpectPlatform;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 
 public class ClaimPermissionCheck {
 
     @ExpectPlatform
-    public static ActionResult check(ServerPlayerEntity player, ClaimPermission permission, BlockPos pos) {
+    public static InteractionResult check(ServerPlayer player, ClaimPermission permission, BlockPos pos) {
         throw new AssertionError();
     }
 }

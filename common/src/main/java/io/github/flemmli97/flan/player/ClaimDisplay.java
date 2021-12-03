@@ -3,13 +3,12 @@ package io.github.flemmli97.flan.player;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ParticleIndicators;
 import io.github.flemmli97.flan.config.ConfigHandler;
-import net.minecraft.block.BlockState;
-import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
-import net.minecraft.particle.DustParticleEffect;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,7 +27,7 @@ public class ClaimDisplay {
 
     private int[] prevDims;
 
-    private final DustParticleEffect corner, middle;
+    private final DustParticleOptions corner, middle;
 
     public ClaimDisplay(Claim claim, EnumDisplayType type, int y) {
         this.toDisplay = claim;
@@ -56,29 +55,29 @@ public class ClaimDisplay {
         }
     }
 
-    public boolean display(ServerPlayerEntity player, boolean remove) {
+    public boolean display(ServerPlayer player, boolean remove) {
         if (--this.displayTime % 2 == 0)
             return this.toDisplay.isRemoved();
         int[] dims = this.toDisplay.getDimensions();
         if (this.poss == null || this.changed(dims)) {
-            this.middlePoss = calculateDisplayPos(player.getServerWorld(), dims, this.height);
+            this.middlePoss = calculateDisplayPos(player.getLevel(), dims, this.height);
             this.poss = new int[][]{
-                    getPosFrom(player.getServerWorld(), dims[0], dims[2], this.height),
-                    getPosFrom(player.getServerWorld(), dims[1], dims[2], this.height),
-                    getPosFrom(player.getServerWorld(), dims[0], dims[3], this.height),
-                    getPosFrom(player.getServerWorld(), dims[1], dims[3], this.height),
+                    getPosFrom(player.getLevel(), dims[0], dims[2], this.height),
+                    getPosFrom(player.getLevel(), dims[1], dims[2], this.height),
+                    getPosFrom(player.getLevel(), dims[0], dims[3], this.height),
+                    getPosFrom(player.getLevel(), dims[1], dims[3], this.height),
             };
         }
         for (int[] pos : this.poss) {
             if (pos[1] != pos[2])
-                player.networkHandler.sendPacket(new ParticleS2CPacket(this.corner, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
-            player.networkHandler.sendPacket(new ParticleS2CPacket(this.corner, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
+                player.connection.send(new ClientboundLevelParticlesPacket(this.corner, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
+            player.connection.send(new ClientboundLevelParticlesPacket(this.corner, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
         }
         if (this.middlePoss != null)
             for (int[] pos : this.middlePoss) {
                 if (pos[1] != pos[2])
-                    player.networkHandler.sendPacket(new ParticleS2CPacket(this.middle, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
-                player.networkHandler.sendPacket(new ParticleS2CPacket(this.middle, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
+                    player.connection.send(new ClientboundLevelParticlesPacket(this.middle, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
+                player.connection.send(new ClientboundLevelParticlesPacket(this.middle, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
             }
         this.prevDims = dims;
         return this.toDisplay.isRemoved() || (remove && this.displayTime < 0);
@@ -91,7 +90,7 @@ public class ClaimDisplay {
         return false;
     }
 
-    public static int[][] calculateDisplayPos(ServerWorld world, int[] from, int height) {
+    public static int[][] calculateDisplayPos(ServerLevel world, int[] from, int height) {
         List<int[]> l = new ArrayList<>();
         Set<Integer> xs = new HashSet<>();
         addEvenly(from[0], from[1], 10, xs);
@@ -131,37 +130,37 @@ public class ClaimDisplay {
      * Returns an array of of form [x,y1,y2,z] where y1 = height of the lowest replaceable block and y2 = height of the
      * lowest air block above water (if possible)
      */
-    public static int[] getPosFrom(ServerWorld world, int x, int z, int maxY) {
+    public static int[] getPosFrom(ServerLevel world, int x, int z, int maxY) {
         int[] y = nextAirAndWaterBlockFrom(world, x, maxY, z);
         return new int[]{x, y[0], y[1], z};
     }
 
-    private static int[] nextAirAndWaterBlockFrom(ServerWorld world, int x, int y, int z) {
+    private static int[] nextAirAndWaterBlockFrom(ServerLevel world, int x, int y, int z) {
         BlockPos pos = new BlockPos(x, y, z);
         BlockState state = world.getBlockState(pos);
         if (state.getMaterial().isReplaceable()) {
-            pos = pos.down();
+            pos = pos.below();
             state = world.getBlockState(pos);
-            while (state.getMaterial().isReplaceable() && !World.isOutOfBuildLimitVertically(pos)) {
-                pos = pos.down();
+            while (state.getMaterial().isReplaceable() && !world.isOutsideBuildHeight(pos)) {
+                pos = pos.below();
                 state = world.getBlockState(pos);
             }
-            pos = pos.up();
+            pos = pos.above();
             state = world.getBlockState(pos);
         } else {
-            pos = pos.up();
+            pos = pos.above();
             state = world.getBlockState(pos);
             while (!state.getMaterial().isReplaceable()) {
-                pos = pos.up();
+                pos = pos.above();
                 state = world.getBlockState(pos);
             }
         }
         int[] yRet = {pos.getY(), pos.getY()};
         if (state.getMaterial().isLiquid()) {
-            pos = pos.up();
+            pos = pos.above();
             state = world.getBlockState(pos);
             while (state.getMaterial().isLiquid()) {
-                pos = pos.up();
+                pos = pos.above();
                 state = world.getBlockState(pos);
             }
             if (state.getMaterial().isReplaceable())

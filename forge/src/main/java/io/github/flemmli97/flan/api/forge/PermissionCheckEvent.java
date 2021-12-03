@@ -1,17 +1,17 @@
 package io.github.flemmli97.flan.api.forge;
 
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 import net.minecraftforge.eventbus.api.Event;
 
 public class PermissionCheckEvent extends Event {
 
-    public final ServerPlayerEntity player;
+    public final ServerPlayer player;
     public final ClaimPermission permission;
     public final BlockPos pos;
-    private ActionResult result = ActionResult.PASS;
+    private InteractionResult result = InteractionResult.PASS;
 
     /**
      * Event for when permissions are checked
@@ -20,7 +20,7 @@ public class PermissionCheckEvent extends Event {
      * @param permission The permission to check
      * @param pos        The block pos where the action is occuring
      */
-    public PermissionCheckEvent(ServerPlayerEntity player, ClaimPermission permission, BlockPos pos) {
+    public PermissionCheckEvent(ServerPlayer player, ClaimPermission permission, BlockPos pos) {
         this.player = player;
         this.permission = permission;
         this.pos = pos;
@@ -29,11 +29,11 @@ public class PermissionCheckEvent extends Event {
     /**
      * @return ActionResult#PASS to do nothing. ActionResult#FAIL to prevent the action. Else to allow the action
      */
-    public ActionResult getActionResult() {
+    public InteractionResult getActionResult() {
         return this.result;
     }
 
-    public void setResult(ActionResult result) {
+    public void setResult(InteractionResult result) {
         this.result = result;
     }
 }

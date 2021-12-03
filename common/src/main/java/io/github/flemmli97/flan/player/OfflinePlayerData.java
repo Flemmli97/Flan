@@ -3,16 +3,15 @@ package io.github.flemmli97.flan.player;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.data.IPlayerData;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.mixin.BannedEntryAccessor;
-import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.players.UserBanListEntry;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -76,7 +75,7 @@ public class OfflinePlayerData implements IPlayerData {
     @Override
     public int usedClaimBlocks() {
         int usedClaimsBlocks = 0;
-        for (ServerWorld world : this.server.getWorlds()) {
+        for (ServerLevel world : this.server.getAllLevels()) {
             Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.owner);
             if (claims != null)
                 usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
@@ -113,9 +112,8 @@ public class OfflinePlayerData implements IPlayerData {
     }
 
     public boolean isExpired(LocalDateTime now) {
-        GameProfile prof = this.server.getUserCache().getByUuid(this.owner);
-        BannedPlayerEntry entry = prof != null ? this.server.getPlayerManager().getUserBanList().get(prof) : null;
-        boolean banned = entry != null && entry.getExpiryDate() == null;
+        UserBanListEntry entry = this.server.getProfileCache().get(this.owner).map(this.server.getPlayerList().getBans()::get).orElse(null);
+        boolean banned = entry != null && entry.getExpires() == null;
         if (banned) {
             LocalDateTime bannedTime = LocalDateTime.ofInstant(((BannedEntryAccessor) entry).getCreationDate().toInstant(), ZoneId.systemDefault());
             return ConfigHandler.config.bannedDeletionTime != -1 && now.isAfter(bannedTime.plusDays(ConfigHandler.config.bannedDeletionTime));
