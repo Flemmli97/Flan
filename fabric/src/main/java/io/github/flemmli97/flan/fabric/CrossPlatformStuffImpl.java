@@ -1,6 +1,5 @@
 package io.github.flemmli97.flan.fabric;
 
-import io.github.flemmli97.flan.FabricRegistryWrapper;
 import io.github.flemmli97.flan.SimpleRegistryWrapper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;

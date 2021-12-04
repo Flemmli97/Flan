@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan;
+package io.github.flemmli97.flan.forge;
 
 import io.github.flemmli97.flan.SimpleRegistryWrapper;
 import net.minecraft.resources.ResourceLocation;

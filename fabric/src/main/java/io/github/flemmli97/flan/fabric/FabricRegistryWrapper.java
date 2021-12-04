@@ -1,5 +1,6 @@
-package io.github.flemmli97.flan;
+package io.github.flemmli97.flan.fabric;
 
+import io.github.flemmli97.flan.SimpleRegistryWrapper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 

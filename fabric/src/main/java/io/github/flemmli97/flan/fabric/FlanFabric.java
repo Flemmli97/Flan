@@ -1,5 +1,6 @@
-package io.github.flemmli97.flan;
+package io.github.flemmli97.flan.fabric;
 
+import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
 import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.config.ConfigHandler;
