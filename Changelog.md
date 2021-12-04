@@ -1,20 +1,6 @@
 Flan 1.6.3
 ======================
-- Fix sethome command feedback error
-- Add maxClaims config to specify max amount of claims (regardless of size)
-  a player can have. Ignored in admin mode  
-  Also has a permission node for it: flan.claims.amount  
-  Default is -1 (aka disabled)
-- Change the need to have enough claimblocks if the player is in adminmode  
-- Add messages for entering and leaving a claim
-- Add option to create a claim of a given size to the addClaim command  
-  e.g. /flan addClaim rect 10 10 will create a claim of size 10x10 centered around the player  
-- Add option to use up all unused claimblocks to create a square claim  
-  /flan addClaim all  
-- Fix some stuff not using translation (e.g. Claim-Group menu title)
-- Split ignoredBlocks config into breakBlockBlacklist and interactBlockBlacklist.  
-  For shops which should be right clickable and unbreakable or graves which should just be breakable
-- Split blockEntityTagIgnore into breakBlockEntityTagBlacklist and interactBlockEntityTagBlacklist
+- Port to 1.18
 
 Flan 1.6.2
 ======================
