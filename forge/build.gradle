@@ -7,18 +7,18 @@ architectury {
     forge()
 }
 
+loom {
+    forge {
+        mixinConfigs = ["flan.mixins.json", "flan.forge.mixins.json"]
+    }
+}
+
 configurations {
     common
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentForge.extendsFrom common
-}
-
-loom {
-    forge {
-        mixinConfigs = ["flan.mixins.json", "flan.forge.mixins.json"]
-    }
 }
 
 repositories {
