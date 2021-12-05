@@ -1,3 +1,9 @@
+Flan 1.6.4
+======================
+- Add back all integrations with other mods  
+  This assumes no breaking changes between the 1.17 version of those mods and 1.18
+  FTBRanks integration for forge still missing
+
 Flan 1.6.3
 ======================
 - Port to 1.18

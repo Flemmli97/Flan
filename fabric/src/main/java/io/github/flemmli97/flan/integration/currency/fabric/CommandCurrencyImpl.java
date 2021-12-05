@@ -1,13 +1,20 @@
 package io.github.flemmli97.flan.integration.currency.fabric;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.player.PlayerClaimData;
+import io.github.gunpowder.api.GunpowderMod;
+import io.github.gunpowder.api.module.currency.dataholders.StoredBalance;
+import io.github.gunpowder.api.module.currency.modelhandlers.BalanceHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
+
+import java.math.BigDecimal;
 
 public class CommandCurrencyImpl {
 
@@ -16,7 +23,7 @@ public class CommandCurrencyImpl {
             context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.lang.currencyMissing, ChatFormatting.DARK_RED), false);
             return 0;
         }
-        /*if (ConfigHandler.config.sellPrice == -1) {
+        if (ConfigHandler.config.sellPrice == -1) {
             context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.lang.sellDisabled, ChatFormatting.DARK_RED), false);
             return 0;
         }
@@ -30,7 +37,7 @@ public class CommandCurrencyImpl {
         BigDecimal price = BigDecimal.valueOf(amount * ConfigHandler.config.sellPrice);
         bal.setBalance(bal.getBalance().add(price));
         data.setAdditionalClaims(data.getAdditionalClaims() - amount);
-        context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.sellSuccess, amount, price), ChatFormatting.GOLD), false);*/
+        context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.sellSuccess, amount, price), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -39,7 +46,7 @@ public class CommandCurrencyImpl {
             context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.lang.currencyMissing, ChatFormatting.DARK_RED), false);
             return 0;
         }
-        /*if (ConfigHandler.config.buyPrice == -1) {
+        if (ConfigHandler.config.buyPrice == -1) {
             context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.lang.buyDisabled, ChatFormatting.DARK_RED), false);
             return 0;
         }
@@ -53,7 +60,7 @@ public class CommandCurrencyImpl {
             context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.buySuccess, amount, price), ChatFormatting.GOLD), false);
             return Command.SINGLE_SUCCESS;
         }
-        context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.lang.buyFail, ChatFormatting.DARK_RED), false);*/
+        context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.lang.buyFail, ChatFormatting.DARK_RED), false);
         return 0;
     }
 }
