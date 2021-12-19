@@ -56,14 +56,16 @@ dependencies {
     modCompileOnly("io.github.gunpowder:gunpowder-api:${rootProject.gunpowder_version}") { //Might need changes later
         exclude group: "com.google.guava", module:"failureaccess"
     }
-    modRuntime("io.github.gunpowder:gunpowder-base:${rootProject.gunpowder_version}") {
+    /*modRuntime("io.github.gunpowder:gunpowder-base:${rootProject.gunpowder_version}") {
         exclude group: "com.google.guava", module:"failureaccess"
     }
     modRuntime("io.github.gunpowder:gunpowder-currency:${rootProject.gunpowder_currency_version}")
+*/
+    //modImplementation "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
+    modCompileOnly "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
 
-    modImplementation "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
-
-    modImplementation("dev.ftb.mods:ftb-ranks-fabric:${rootProject.ftb_ranks}")
+    //modImplementation("dev.ftb.mods:ftb-ranks-fabric:${rootProject.ftb_ranks}")
+    modCompileOnly("dev.ftb.mods:ftb-ranks-fabric:${rootProject.ftb_ranks}")
 }
 
 processResources {
