@@ -20,9 +20,18 @@ public class TeleportUtils {
     }
 
     public static Vec3d getTeleportPos(ServerPlayerEntity player, Vec3d playerPos, ClaimStorage storage, int[] dim, BlockPos.Mutable bPos, BiFunction<Claim, BlockPos, Boolean> check) {
+        return getTeleportPos(player, playerPos, storage, dim, false, bPos, check);
+    }
+
+    public static Vec3d getTeleportPos(ServerPlayerEntity player, Vec3d playerPos, ClaimStorage storage, int[] dim, boolean checkSub, BlockPos.Mutable bPos, BiFunction<Claim, BlockPos, Boolean> check) {
         Pair<Direction, Vec3d> pos = nearestOutside(dim, playerPos);
         bPos.set(pos.getRight().getX(), pos.getRight().getY(), pos.getRight().getZ());
         Claim claim = storage.getClaimAt(bPos);
+        if (checkSub) {
+            Claim sub = claim != null ? claim.getSubClaim(bPos) : null;
+            if (sub != null)
+                claim = sub;
+        }
         if (claim == null || check.apply(claim, bPos)) {
             Vec3d ret = pos.getRight();
             BlockPos rounded = roundedBlockPos(ret);
