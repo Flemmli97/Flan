@@ -93,7 +93,7 @@ public class Claim implements IPermissionContainer {
         this.minZ = Math.min(z1, z2);
         this.maxX = Math.max(x1, x2);
         this.maxZ = Math.max(z1, z2);
-        this.minY = Math.max(0, minY);
+        this.minY = Math.max(world.getMinBuildHeight(), minY);
         this.owner = creator;
         this.world = world;
         this.homePos = this.getInitCenterPos();

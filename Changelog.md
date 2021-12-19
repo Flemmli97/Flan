@@ -1,3 +1,7 @@
+Flan 1.6.5
+======================
+- Fix claims below 0 not working
+
 Flan 1.6.4
 ======================
 - Add back all integrations with other mods  
