@@ -1,6 +1,7 @@
 Flan 1.6.5
 ======================
-- Fix claims below 0 not working
+- Fix claims below 0 not working  
+- Only kick players out of subclaim if the mainclaim allows them to stay
 
 Flan 1.6.4
 ======================
