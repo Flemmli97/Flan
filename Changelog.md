@@ -1,3 +1,7 @@
+Flan 1.6.5
+======================
+- Only kick players out of subclaim if the mainclaim allows them to stay
+
 Flan 1.6.3
 ======================
 - Fix sethome command feedback error

@@ -322,7 +322,8 @@ public class EntityInteractEvents {
                 if (!player.isSpectator()) {
                     BlockPos.Mutable bPos = rounded.mutableCopy();
                     if (!currentClaim.canInteract(player, PermissionRegistry.CANSTAY, bPos, true)) {
-                        Vec3d tp = TeleportUtils.getTeleportPos(player, pos, storage, currentClaim.getDimensions(), bPos, (claim, nPos) -> claim.canInteract(player, PermissionRegistry.CANSTAY, nPos, false));
+                        Claim sub = currentClaim.getSubClaim(bPos);
+                        Vec3d tp = TeleportUtils.getTeleportPos(player, pos, storage, sub != null ? sub.getDimensions() : currentClaim.getDimensions(), true, bPos, (claim, nPos) -> claim.canInteract(player, PermissionRegistry.CANSTAY, nPos, false));
                         player.teleport(tp.getX(), tp.getY(), tp.getZ());
                     }
                     if (player.getAbilities().flying && !player.isCreative() && !currentClaim.canInteract(player, PermissionRegistry.FLIGHT, rounded, true)) {
