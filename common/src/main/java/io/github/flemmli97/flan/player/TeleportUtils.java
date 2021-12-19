@@ -19,9 +19,18 @@ public class TeleportUtils {
     }
 
     public static Vec3 getTeleportPos(ServerPlayer player, Vec3 playerPos, ClaimStorage storage, int[] dim, BlockPos.MutableBlockPos bPos, BiFunction<Claim, BlockPos, Boolean> check) {
+        return getTeleportPos(player, playerPos, storage, dim, false, bPos, check);
+    }
+
+    public static Vec3 getTeleportPos(ServerPlayer player, Vec3 playerPos, ClaimStorage storage, int[] dim, boolean checkSub, BlockPos.MutableBlockPos bPos, BiFunction<Claim, BlockPos, Boolean> check) {
         Tuple<Direction, Vec3> pos = nearestOutside(dim, playerPos);
         bPos.set(pos.getB().x(), pos.getB().y(), pos.getB().z());
         Claim claim = storage.getClaimAt(bPos);
+        if (checkSub) {
+            Claim sub = claim != null ? claim.getSubClaim(bPos) : null;
+            if (sub != null)
+                claim = sub;
+        }
         if (claim == null || check.apply(claim, bPos)) {
             Vec3 ret = pos.getB();
             BlockPos rounded = roundedBlockPos(ret);
@@ -47,7 +56,7 @@ public class TeleportUtils {
                 dim[0] = newDim[0];
                 break;
         }
-        return getTeleportPos(player, playerPos, storage, dim, bPos, check);
+        return getTeleportPos(player, playerPos, storage, dim, checkSub, bPos, check);
     }
 
     private static Tuple<Direction, Vec3> nearestOutside(int[] dim, Vec3 from) {
