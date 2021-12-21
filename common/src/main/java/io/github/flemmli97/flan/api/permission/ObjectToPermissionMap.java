@@ -67,7 +67,7 @@ public class ObjectToPermissionMap {
             String[] sub = s.split("-");
             boolean remove = sub[1].equals("NONE");
             if (s.startsWith("@")) {
-                Tag<Item> t = SerializationTags.getInstance().getTagOrThrow(Registry.ITEM_REGISTRY, new ResourceLocation(sub[0].substring(1)), id -> new JsonSyntaxException("Unknown item tag '" + id + "'"));
+                Tag<Item> t = SerializationTags.getInstance().getOrEmpty(Registry.ITEM_REGISTRY).getTag(new ResourceLocation(sub[0].substring(1)));
                 if (t != null) {
                     t.getValues().forEach(i -> {
                         if (remove)
@@ -87,7 +87,7 @@ public class ObjectToPermissionMap {
             String[] sub = s.split("-");
             boolean remove = sub[1].equals("NONE");
             if (s.startsWith("@")) {
-                Tag<Block> t = SerializationTags.getInstance().getTagOrThrow(Registry.BLOCK_REGISTRY, new ResourceLocation(sub[0].substring(1)), id -> new JsonSyntaxException("Unknown item tag '" + id + "'"));
+                Tag<Block> t = SerializationTags.getInstance().getOrEmpty(Registry.BLOCK_REGISTRY).getTag(new ResourceLocation(sub[0].substring(1)));
                 if (t != null)
                     t.getValues().forEach(i -> {
                         if (remove)
