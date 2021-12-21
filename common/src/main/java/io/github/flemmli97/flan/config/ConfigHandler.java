@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
@@ -26,12 +27,13 @@ public class ConfigHandler {
     public static void serverLoad(MinecraftServer server) {
         config = new Config(server);
         lang = new LangConfig(server);
-        reloadConfigs();
+        reloadConfigs(server);
     }
 
-    public static void reloadConfigs() {
+    public static void reloadConfigs(MinecraftServer server) {
         config.load();
         lang.load();
+        ObjectToPermissionMap.reload(server);
     }
 
     public static Path getClaimSavePath(MinecraftServer server, ResourceKey<Level> reg) {

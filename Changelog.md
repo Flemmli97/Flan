@@ -2,6 +2,11 @@ Flan 1.6.5
 ======================
 - Fix claims below 0 not working  
 - Only kick players out of subclaim if the mainclaim allows them to stay
+- New config "customItemPermission" and "customBlockPermission"  
+  allows to specify a mapping of item/block to permission  
+  example is endcrystals are mapped to the ENDCRYSTALPLACE permission internally  
+  Syntax is <item/block>-<permission>  
+  Use @ to indicate a tag
 
 Flan 1.6.4
 ======================

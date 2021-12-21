@@ -137,7 +137,7 @@ public class CommandClaim {
     }
 
     private static int reloadConfig(CommandContext<CommandSourceStack> context) {
-        ConfigHandler.reloadConfigs();
+        ConfigHandler.reloadConfigs(context.getSource().getServer());
         context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.lang.configReload), true);
         return Command.SINGLE_SUCCESS;
     }

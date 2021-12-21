@@ -1,7 +1,13 @@
 package io.github.flemmli97.flan.api.permission;
 
+import com.google.gson.JsonSyntaxException;
 import io.github.flemmli97.flan.CrossPlatformStuff;
+import io.github.flemmli97.flan.config.ConfigHandler;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tags.SerializationTags;
+import net.minecraft.tags.Tag;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.item.Item;
@@ -56,6 +62,45 @@ public class ObjectToPermissionMap {
         }
         for (Item item : CrossPlatformStuff.registryItems().getIterator()) {
             itemPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(item)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> itemToPermission.put(item, sub.get()));
+        }
+        for (String s : ConfigHandler.config.itemPermission) {
+            String[] sub = s.split("-");
+            boolean remove = sub[1].equals("NONE");
+            if (s.startsWith("@")) {
+                Tag<Item> t = SerializationTags.getInstance().getTagOrThrow(Registry.ITEM_REGISTRY, new ResourceLocation(sub[0].substring(1)), id -> new JsonSyntaxException("Unknown item tag '" + id + "'"));
+                if (t != null) {
+                    t.getValues().forEach(i -> {
+                        if (remove)
+                            itemToPermission.remove(i);
+                        else
+                            itemToPermission.put(i, PermissionRegistry.get(sub[1]));
+                    });
+                }
+            } else {
+                if (remove)
+                    itemToPermission.remove(CrossPlatformStuff.registryItems().getFromId(new ResourceLocation(sub[0])));
+                else
+                    itemToPermission.put(CrossPlatformStuff.registryItems().getFromId(new ResourceLocation(sub[0])), PermissionRegistry.get(sub[1]));
+            }
+        }
+        for (String s : ConfigHandler.config.blockPermission) {
+            String[] sub = s.split("-");
+            boolean remove = sub[1].equals("NONE");
+            if (s.startsWith("@")) {
+                Tag<Block> t = SerializationTags.getInstance().getTagOrThrow(Registry.BLOCK_REGISTRY, new ResourceLocation(sub[0].substring(1)), id -> new JsonSyntaxException("Unknown item tag '" + id + "'"));
+                if (t != null)
+                    t.getValues().forEach(i -> {
+                        if (remove)
+                            blockToPermission.remove(i);
+                        else
+                            blockToPermission.put(i, PermissionRegistry.get(sub[1]));
+                    });
+            } else {
+                if (remove)
+                    blockToPermission.remove(CrossPlatformStuff.registryBlocks().getFromId(new ResourceLocation(sub[0])));
+                else
+                    blockToPermission.put(CrossPlatformStuff.registryBlocks().getFromId(new ResourceLocation(sub[0])), PermissionRegistry.get(sub[1]));
+            }
         }
     }
 

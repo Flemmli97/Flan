@@ -1,7 +1,6 @@
 package io.github.flemmli97.flan.forgeevent;
 
 import io.github.flemmli97.flan.Flan;
-import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
 import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.PlayerEvents;
@@ -17,9 +16,8 @@ import net.minecraftforge.event.server.ServerStartedEvent;
 public class ServerEvents {
 
     public static void serverStart(ServerAboutToStartEvent event) {
-        ConfigHandler.serverLoad(event.getServer());
-        ObjectToPermissionMap.reload(event.getServer());
         Flan.lockRegistry(event.getServer());
+        ConfigHandler.serverLoad(event.getServer());
     }
 
     public static void serverFinishLoad(ServerStartedEvent event) {
