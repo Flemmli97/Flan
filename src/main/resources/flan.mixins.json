@@ -15,7 +15,6 @@
     "WitherMixin",
     "IPersistentProjectileVars",
     "EntityDamageMixin",
-    "ItemStackMixin",
     "ILecternBlockValues",
     "FluidMixin",
     "PistonMixin",
