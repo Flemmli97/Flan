@@ -71,7 +71,8 @@ public class Config {
     );
 
     public List<String> itemPermission = Lists.newArrayList(
-            "@c:wrenches-INTERACTBLOCK"
+            "appliedenergistics2:nether_quartz_wrench-INTERACTBLOCK",
+            "appliedenergistics2:certus_quartz_wrench-INTERACTBLOCK"
     );
     public List<String> blockPermission = Lists.newArrayList(
     );
