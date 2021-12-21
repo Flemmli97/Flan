@@ -37,7 +37,8 @@ public class ConfigUpdater {
         });
         map.put(4, old -> {
             Flan.debug("Updating config to version 4");
-            ConfigHandler.config.itemPermission.add("@c:wrenches-INTERACTBLOCK");
+            ConfigHandler.config.itemPermission.add("appliedenergistics2:nether_quartz_wrench-INTERACTBLOCK");
+            ConfigHandler.config.itemPermission.add("appliedenergistics2:certus_quartz_wrench-INTERACTBLOCK");
         });
     });
 

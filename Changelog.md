@@ -4,8 +4,9 @@ Flan 1.6.5
 - New config "customItemPermission" and "customBlockPermission"  
   allows to specify a mapping of item/block to permission  
   example is endcrystals are mapped to the ENDCRYSTALPLACE permission internally  
-  Syntax is <item/block>-<permission>  
+  Syntax is <item/block>-\<permission>  
   Use @ to indicate a tag
+- Moved some interaction checks to a different location so more mods should be covered by default
 
 Flan 1.6.3
 ======================

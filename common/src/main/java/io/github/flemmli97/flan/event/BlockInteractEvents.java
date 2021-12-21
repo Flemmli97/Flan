@@ -21,6 +21,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -101,7 +102,7 @@ public class BlockInteractEvents {
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                 return ActionResult.FAIL;
             }
-            if (blockEntity != null) {
+            if (blockEntity != null && !player.shouldCancelInteraction() && !stack.isEmpty()) {
                 if (blockEntity instanceof LecternBlockEntity) {
                     if (claim.canInteract(player, PermissionRegistry.LECTERNTAKE, hitResult.getBlockPos(), false))
                         return ActionResult.PASS;
@@ -116,7 +117,13 @@ public class BlockInteractEvents {
                     return ActionResult.FAIL;
                 }
             }
-            return claim.canInteract(player, PermissionRegistry.INTERACTBLOCK, hitResult.getBlockPos(), false) ? ActionResult.PASS : ActionResult.FAIL;
+            ActionResult res = ItemInteractEvents.onItemUseBlock(new ItemUsageContext(player, hand, hitResult));
+            if (claim.canInteract(player, PermissionRegistry.INTERACTBLOCK, hitResult.getBlockPos(), false) || res == ActionResult.FAIL) {
+                if (res == ActionResult.FAIL)
+                    PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+                return res;
+            }
+            return ActionResult.PASS;
         }
         return ActionResult.PASS;
     }
