@@ -22,4 +22,12 @@ public class BlockInteractEventsForge {
         if (!BlockInteractEvents.breakBlocks((Level) event.getWorld(), event.getPlayer(), event.getPos(), event.getState(), event.getWorld().getBlockEntity(event.getPos())))
             event.setCanceled(true);
     }
+
+    public static void useBlocks(PlayerInteractEvent.RightClickBlock event) {
+        InteractionResult res = BlockInteractEvents.useBlocks(event.getPlayer(), event.getWorld(), event.getHand(), event.getHitVec());
+        if (res != InteractionResult.PASS) {
+            event.setCancellationResult(res);
+            event.setCanceled(true);
+        }
+    }
 }

@@ -24,6 +24,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.LecternBlock;
@@ -101,7 +102,7 @@ public class BlockInteractEvents {
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
                 return InteractionResult.FAIL;
             }
-            if (blockEntity != null) {
+            if (blockEntity != null && !player.isSecondaryUseActive() && !stack.isEmpty()) {
                 if (blockEntity instanceof LecternBlockEntity) {
                     if (claim.canInteract(player, PermissionRegistry.LECTERNTAKE, hitResult.getBlockPos(), false))
                         return InteractionResult.PASS;
@@ -116,7 +117,13 @@ public class BlockInteractEvents {
                     return InteractionResult.FAIL;
                 }
             }
-            return claim.canInteract(player, PermissionRegistry.INTERACTBLOCK, hitResult.getBlockPos(), false) ? InteractionResult.PASS : InteractionResult.FAIL;
+            InteractionResult res = ItemInteractEvents.onItemUseBlock(new UseOnContext(player, hand, hitResult));
+            if (claim.canInteract(player, PermissionRegistry.INTERACTBLOCK, hitResult.getBlockPos(), false) || res == InteractionResult.FAIL) {
+                if (res == InteractionResult.FAIL)
+                    PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
+                return res;
+            }
+            return InteractionResult.PASS;
         }
         return InteractionResult.PASS;
     }

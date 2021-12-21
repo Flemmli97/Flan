@@ -10,7 +10,6 @@
     "EntityMixin",
     "TurtleEggMixin",
     "IPersistentProjectileVars",
-    "ItemStackMixin",
     "ILecternBlockValues",
     "FluidMixin",
     "RaidManagerMixin",
