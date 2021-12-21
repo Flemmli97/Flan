@@ -1,5 +1,6 @@
 package io.github.flemmli97.flan.api.permission;
 
+import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.block.AbstractButtonBlock;
 import net.minecraft.block.AbstractPressurePlateBlock;
 import net.minecraft.block.AbstractRedstoneGateBlock;
@@ -32,6 +33,10 @@ import net.minecraft.item.EnderPearlItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.ItemTags;
+import net.minecraft.tag.Tag;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 import java.util.HashMap;
@@ -58,6 +63,45 @@ public class ObjectToPermissionMap {
         }
         for (Item item : Registry.ITEM) {
             itemPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(item)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> itemToPermission.put(item, sub.get()));
+        }
+        for (String s : ConfigHandler.config.itemPermission) {
+            String[] sub = s.split("-");
+            boolean remove = sub[1].equals("NONE");
+            if (s.startsWith("@")) {
+                Tag<Item> t = ItemTags.getTagGroup().getTag(new Identifier(sub[0].substring(1)));
+                if (t != null) {
+                    t.values().forEach(i -> {
+                        if (remove)
+                            itemToPermission.remove(i);
+                        else
+                            itemToPermission.put(i, PermissionRegistry.get(sub[1]));
+                    });
+                }
+            } else {
+                if (remove)
+                    itemToPermission.remove(Registry.ITEM.get(new Identifier(sub[0])));
+                else
+                    itemToPermission.put(Registry.ITEM.get(new Identifier(sub[0])), PermissionRegistry.get(sub[1]));
+            }
+        }
+        for (String s : ConfigHandler.config.blockPermission) {
+            String[] sub = s.split("-");
+            boolean remove = sub[1].equals("NONE");
+            if (s.startsWith("@")) {
+                Tag<Block> t = BlockTags.getTagGroup().getTag(new Identifier(sub[0].substring(1)));
+                if (t != null)
+                    t.values().forEach(i -> {
+                        if (remove)
+                            blockToPermission.remove(i);
+                        else
+                            blockToPermission.put(i, PermissionRegistry.get(sub[1]));
+                    });
+            } else {
+                if (remove)
+                    blockToPermission.remove(Registry.BLOCK.get(new Identifier(sub[0])));
+                else
+                    blockToPermission.put(Registry.BLOCK.get(new Identifier(sub[0])), PermissionRegistry.get(sub[1]));
+            }
         }
     }
 

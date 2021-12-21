@@ -1,6 +1,5 @@
 package io.github.flemmli97.flan;
 
-import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -79,9 +78,8 @@ public class Flan implements ModInitializer {
     }
 
     public static void serverLoad(MinecraftServer server) {
-        ConfigHandler.serverLoad(server);
-        ObjectToPermissionMap.reload(server);
         Flan.lockRegistry(server);
+        ConfigHandler.serverLoad(server);
     }
 
     public static void serverFinishLoad(MinecraftServer server) {
