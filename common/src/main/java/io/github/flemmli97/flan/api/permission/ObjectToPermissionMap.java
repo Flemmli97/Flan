@@ -1,6 +1,7 @@
 package io.github.flemmli97.flan.api.permission;
 
 import io.github.flemmli97.flan.CrossPlatformStuff;
+import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.block.AbstractButtonBlock;
 import net.minecraft.block.AbstractPressurePlateBlock;
 import net.minecraft.block.AbstractRedstoneGateBlock;
@@ -31,6 +32,9 @@ import net.minecraft.item.EnderPearlItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tag.ServerTagManagerHolder;
+import net.minecraft.tag.Tag;
+import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,11 +55,51 @@ public class ObjectToPermissionMap {
     public static void reload(MinecraftServer server) {
         blockToPermission.clear();
         itemToPermission.clear();
+
         for (Block block : CrossPlatformStuff.registryBlocks().getIterator()) {
             blockPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(block)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> blockToPermission.put(block, sub.get()));
         }
         for (Item item : CrossPlatformStuff.registryItems().getIterator()) {
             itemPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(item)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> itemToPermission.put(item, sub.get()));
+        }
+        for (String s : ConfigHandler.config.itemPermission) {
+            String[] sub = s.split("-");
+            boolean remove = sub[1].equals("NONE");
+            if (s.startsWith("@")) {
+                Tag<Item> t = ServerTagManagerHolder.getTagManager().getItems().getTag(new Identifier(sub[0].substring(1)));
+                if (t != null) {
+                    t.values().forEach(i -> {
+                        if (remove)
+                            itemToPermission.remove(i);
+                        else
+                            itemToPermission.put(i, PermissionRegistry.get(sub[1]));
+                    });
+                }
+            } else {
+                if (remove)
+                    itemToPermission.remove(CrossPlatformStuff.registryItems().getFromId(new Identifier(sub[0])));
+                else
+                    itemToPermission.put(CrossPlatformStuff.registryItems().getFromId(new Identifier(sub[0])), PermissionRegistry.get(sub[1]));
+            }
+        }
+        for (String s : ConfigHandler.config.blockPermission) {
+            String[] sub = s.split("-");
+            boolean remove = sub[1].equals("NONE");
+            if (s.startsWith("@")) {
+                Tag<Block> t = ServerTagManagerHolder.getTagManager().getBlocks().getTag(new Identifier(sub[0].substring(1)));
+                if (t != null)
+                    t.values().forEach(i -> {
+                        if (remove)
+                            blockToPermission.remove(i);
+                        else
+                            blockToPermission.put(i, PermissionRegistry.get(sub[1]));
+                    });
+            } else {
+                if (remove)
+                    blockToPermission.remove(CrossPlatformStuff.registryBlocks().getFromId(new Identifier(sub[0])));
+                else
+                    blockToPermission.put(CrossPlatformStuff.registryBlocks().getFromId(new Identifier(sub[0])), PermissionRegistry.get(sub[1]));
+            }
         }
     }
 

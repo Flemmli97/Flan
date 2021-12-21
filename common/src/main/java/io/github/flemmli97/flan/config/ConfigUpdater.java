@@ -35,6 +35,10 @@ public class ConfigUpdater {
                     ConfigHandler.config.interactBETagBlacklist.add(e.getAsString());
             });
         });
+        map.put(4, old -> {
+            Flan.debug("Updating config to version 4");
+            ConfigHandler.config.itemPermission.add("@c:wrenches-INTERACTBLOCK");
+        });
     });
 
     public static void updateConfig(int preVersion, JsonObject oldVals) {

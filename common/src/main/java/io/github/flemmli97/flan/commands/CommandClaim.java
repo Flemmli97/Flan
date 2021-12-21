@@ -137,7 +137,7 @@ public class CommandClaim {
     }
 
     private static int reloadConfig(CommandContext<ServerCommandSource> context) {
-        ConfigHandler.reloadConfigs();
+        ConfigHandler.reloadConfigs(context.getSource().getMinecraftServer());
         context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.configReload), true);
         return Command.SINGLE_SUCCESS;
     }
