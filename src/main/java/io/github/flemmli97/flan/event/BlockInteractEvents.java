@@ -104,7 +104,7 @@ public class BlockInteractEvents {
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                 return ActionResult.FAIL;
             }
-            if (blockEntity != null && !player.shouldCancelInteraction() && !stack.isEmpty()) {
+            if (blockEntity != null && !(player.shouldCancelInteraction() && !stack.isEmpty())) {
                 if (blockEntity instanceof LecternBlockEntity lectern) {
                     if (claim.canInteract(player, PermissionRegistry.LECTERNTAKE, hitResult.getBlockPos(), false))
                         return ActionResult.PASS;
