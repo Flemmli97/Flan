@@ -1,3 +1,8 @@
+Flan 1.6.6
+======================
+- Fix blockentity interaction not working
+- Fix globalDefaultPerms defined in config not applying to claim on creation
+
 Flan 1.6.5
 ======================
 - Fix claims below 0 not working  
