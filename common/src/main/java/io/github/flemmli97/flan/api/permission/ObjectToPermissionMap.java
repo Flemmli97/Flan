@@ -1,6 +1,5 @@
 package io.github.flemmli97.flan.api.permission;
 
-import com.google.gson.JsonSyntaxException;
 import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.core.Registry;
