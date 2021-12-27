@@ -4,11 +4,13 @@ import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ParticleIndicators;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -127,41 +129,44 @@ public class ClaimDisplay {
     }
 
     /**
-     * Returns an array of of form [x,y1,y2,z] where y1 = height of the lowest replaceable block and y2 = height of the
+     * Returns an array of form [x,y1,y2,z] where y1 = height of the lowest replaceable block and y2 = height of the
      * lowest air block above water (if possible)
      */
     public static int[] getPosFrom(ServerLevel world, int x, int z, int maxY) {
-        int[] y = nextAirAndWaterBlockFrom(world, x, maxY, z);
+        LevelChunk chunk = world.getChunk(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(z));
+        int[] y = nextAirAndWaterBlockFrom(chunk, x, maxY, z);
         return new int[]{x, y[0], y[1], z};
     }
 
-    private static int[] nextAirAndWaterBlockFrom(ServerLevel world, int x, int y, int z) {
+    // SAFETY: Ensure that the X/Z coordinates are for the given chunk
+    // since the position is mutating only up or down, it's always in the same chunk
+    private static int[] nextAirAndWaterBlockFrom(LevelChunk chunk, int x, int y, int z) {
         BlockPos pos = new BlockPos(x, y, z);
-        BlockState state = world.getBlockState(pos);
+        BlockState state = chunk.getBlockState(pos);
         if (state.getMaterial().isReplaceable()) {
             pos = pos.below();
-            state = world.getBlockState(pos);
-            while (state.getMaterial().isReplaceable() && !world.isOutsideBuildHeight(pos)) {
+            state = chunk.getBlockState(pos);
+            while (state.getMaterial().isReplaceable() && !chunk.isOutsideBuildHeight(pos)) {
                 pos = pos.below();
-                state = world.getBlockState(pos);
+                state = chunk.getBlockState(pos);
             }
             pos = pos.above();
-            state = world.getBlockState(pos);
+            state = chunk.getBlockState(pos);
         } else {
             pos = pos.above();
-            state = world.getBlockState(pos);
+            state = chunk.getBlockState(pos);
             while (!state.getMaterial().isReplaceable()) {
                 pos = pos.above();
-                state = world.getBlockState(pos);
+                state = chunk.getBlockState(pos);
             }
         }
         int[] yRet = {pos.getY(), pos.getY()};
         if (state.getMaterial().isLiquid()) {
             pos = pos.above();
-            state = world.getBlockState(pos);
+            state = chunk.getBlockState(pos);
             while (state.getMaterial().isLiquid()) {
                 pos = pos.above();
-                state = world.getBlockState(pos);
+                state = chunk.getBlockState(pos);
             }
             if (state.getMaterial().isReplaceable())
                 yRet[1] = pos.getY();
