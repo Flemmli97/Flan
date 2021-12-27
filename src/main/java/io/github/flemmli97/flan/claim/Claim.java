@@ -100,6 +100,7 @@ public class Claim implements IPermissionContainer {
         this.homePos = this.getInitCenterPos();
         this.setDirty(true);
         PermissionRegistry.getPerms().stream().filter(perm -> perm.defaultVal).forEach(perm -> this.globalPerm.put(perm, true));
+        ConfigHandler.config.getGloballyDefinedVals(world).forEach(e -> this.globalPerm.put(e.getKey(), e.getValue().getValue()));
         if (setDefaultGroups)
             ConfigHandler.config.defaultGroups.forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0, true)));
     }

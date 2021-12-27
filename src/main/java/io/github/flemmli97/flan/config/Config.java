@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class Config {
 
@@ -332,6 +333,23 @@ public class Config {
 
         Map<ClaimPermission, GlobalType> permMap = ConfigHandler.config.globalDefaultPerms.get(world.getRegistryKey().getValue().toString());
         return permMap == null ? GlobalType.NONE : permMap.getOrDefault(perm, GlobalType.NONE);
+    }
+
+    public Stream<Map.Entry<ClaimPermission, GlobalType>> getGloballyDefinedVals(ServerWorld world) {
+        Map<ClaimPermission, GlobalType> allMap = ConfigHandler.config.globalDefaultPerms.get("*");
+        if (allMap != null) {
+            world.getServer().getWorlds().forEach(w -> {
+                Map<ClaimPermission, GlobalType> wMap = ConfigHandler.config.globalDefaultPerms.getOrDefault(w.getRegistryKey().getValue().toString(), new HashMap<>());
+                allMap.forEach((key, value) -> {
+                    if (!wMap.containsKey(key))
+                        wMap.put(key, value);
+                });
+                ConfigHandler.config.globalDefaultPerms.put(w.getRegistryKey().getValue().toString(), wMap);
+            });
+            ConfigHandler.config.globalDefaultPerms.remove("*");
+        }
+        Map<ClaimPermission, GlobalType> permMap = ConfigHandler.config.globalDefaultPerms.get(world.getRegistryKey().getValue().toString());
+        return permMap == null ? Stream.empty() : permMap.entrySet().stream().filter(e -> e.getValue().canModify());
     }
 
     public static <V, K> Map<V, K> createHashMap(Consumer<Map<V, K>> cons) {
