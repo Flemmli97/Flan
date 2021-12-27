@@ -9,7 +9,10 @@ import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.WorldChunk;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,7 +38,7 @@ public class ClaimDisplay {
         this.displayTime = ConfigHandler.config.claimDisplayTime;
         this.prevDims = claim.getDimensions();
         this.type = type;
-        this.height = y;
+        this.height = Math.max(1, y);
         switch (type) {
             case SUB:
                 this.corner = ParticleIndicators.SUBCLAIMCORNER;
@@ -128,46 +131,56 @@ public class ClaimDisplay {
     }
 
     /**
-     * Returns an array of of form [x,y1,y2,z] where y1 = height of the lowest replaceable block and y2 = height of the
+     * Returns an array of form [x,y1,y2,z] where y1 = height of the lowest replaceable block and y2 = height of the
      * lowest air block above water (if possible)
      */
     public static int[] getPosFrom(ServerWorld world, int x, int z, int maxY) {
-        int[] y = nextAirAndWaterBlockFrom(world, x, maxY, z);
+        WorldChunk chunk = world.getChunk(x >> 4, z >> 4);
+        int[] y = nextAirAndWaterBlockFrom(chunk, x, maxY, z);
         return new int[]{x, y[0], y[1], z};
     }
 
-    private static int[] nextAirAndWaterBlockFrom(ServerWorld world, int x, int y, int z) {
-        BlockPos pos = new BlockPos(x, y, z);
-        BlockState state = world.getBlockState(pos);
+    private static int[] nextAirAndWaterBlockFrom(WorldChunk chunk, int x, int y, int z) {
+        BlockPos.Mutable pos = new BlockPos.Mutable(x, y, z);
+        BlockState state = chunk.getBlockState(pos);
         if (state.getMaterial().isReplaceable()) {
-            pos = pos.down();
-            state = world.getBlockState(pos);
+            //Move Down
+            boolean startedInLiquid = state.getMaterial().isLiquid();
+            boolean liquidCheck = false;
+            int liquidHeight = pos.getY();
             while (state.getMaterial().isReplaceable() && !World.isOutOfBuildLimitVertically(pos)) {
-                pos = pos.down();
-                state = world.getBlockState(pos);
+                pos.move(0, -1, 0);
+                state = chunk.getBlockState(pos);
+                if (!startedInLiquid && !liquidCheck && state.getMaterial().isLiquid()) {
+                    liquidCheck = true;
+                    liquidHeight = pos.getY();
+                }
             }
-            pos = pos.up();
-            state = world.getBlockState(pos);
-        } else {
-            pos = pos.up();
-            state = world.getBlockState(pos);
-            while (!state.getMaterial().isReplaceable()) {
-                pos = pos.up();
-                state = world.getBlockState(pos);
+            int[] yRet = {pos.getY() + 1, (liquidCheck ? liquidHeight : pos.getY()) + 1};
+            if (startedInLiquid) {
+                pos.set(pos.getX(), liquidHeight + 1, pos.getZ());
+                state = chunk.getBlockState(pos);
+                while (state.getMaterial().isLiquid() && !World.isOutOfBuildLimitVertically(pos)) {
+                    pos.move(0, 1, 0);
+                    state = chunk.getBlockState(pos);
+                }
+                if (state.getMaterial().isReplaceable())
+                    yRet[1] = pos.getY();
             }
+            return yRet;
+        }
+        //Move Up
+        while (!state.getMaterial().isReplaceable() && !World.isOutOfBuildLimitVertically(pos)) {
+            pos.move(0, 1, 0);
+            state = chunk.getBlockState(pos);
         }
         int[] yRet = {pos.getY(), pos.getY()};
-        if (state.getMaterial().isLiquid()) {
-            pos = pos.up();
-            state = world.getBlockState(pos);
-            while (state.getMaterial().isLiquid()) {
-                pos = pos.up();
-                state = world.getBlockState(pos);
-            }
-            if (state.getMaterial().isReplaceable())
-                yRet[1] = pos.getY();
+        while (state.getMaterial().isLiquid() && !World.isOutOfBuildLimitVertically(pos)) {
+            pos.move(0, 1, 0);
+            state = chunk.getBlockState(pos);
         }
-
+        if (state.getMaterial().isReplaceable())
+            yRet[1] = pos.getY();
         return yRet;
     }
 
