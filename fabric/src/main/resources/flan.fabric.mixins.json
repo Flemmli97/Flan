@@ -17,7 +17,9 @@
     "FabricFireMixin",
     "LightningHitMixin",
     "WorldSaveHandlerMixin",
-    "PlayerManagerMixin"
+    "PlayerManagerMixin",
+
+    "CustomExplosionMixin"
   ],
   "server": [
   ],
