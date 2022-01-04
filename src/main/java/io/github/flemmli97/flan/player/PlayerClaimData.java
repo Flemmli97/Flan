@@ -300,12 +300,16 @@ public class PlayerClaimData implements IPlayerData {
                         tpTo.set(tpTo.getX(), tpTo.getY() + 1, tpTo.getZ());
                     } else
                         tpTo.set(tpTo.getX(), yHighest, tpTo.getZ());
+                    if(this.player.hasVehicle())
+                        this.player.stopRiding();
                     this.player.teleport(tpTo.getX() + 0.5, tpTo.getY(), tpTo.getZ() + 0.5);
                     this.tpPos = null;
                 } else {
                     Vec3d tp = TeleportUtils.getTeleportPos(this.player, this.player.getPos(), ClaimStorage.get(this.player.getServerWorld()),
                             ((IPlayerClaimImpl) this.player).getCurrentClaim().getDimensions(),
                             TeleportUtils.roundedBlockPos(this.player.getPos()).mutableCopy(), (claim, nPos) -> false);
+                    if(this.player.hasVehicle())
+                        this.player.stopRiding();
                     this.player.teleport(tp.getX(), tp.getY(), tp.getZ());
                 }
             } else if (this.player.getPos().squaredDistanceTo(this.trappedPos) > 0.15) {
