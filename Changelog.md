@@ -1,3 +1,7 @@
+Flan 1.6.7
+======================
+- Yeet players off riding entities when teleporting
+
 Flan 1.6.6
 ======================
 - Fix blockentity interaction not working
