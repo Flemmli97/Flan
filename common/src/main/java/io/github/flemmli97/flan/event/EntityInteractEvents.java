@@ -329,6 +329,8 @@ public class EntityInteractEvents {
                     if (!currentClaim.canInteract(player, PermissionRegistry.CANSTAY, bPos, true)) {
                         Claim sub = currentClaim.getSubClaim(bPos);
                         Vec3 tp = TeleportUtils.getTeleportPos(player, pos, storage, sub != null ? sub.getDimensions() : currentClaim.getDimensions(), true, bPos, (claim, nPos) -> claim.canInteract(player, PermissionRegistry.CANSTAY, nPos, false));
+                        if(player.isPassenger())
+                            player.stopRiding();
                         player.teleportToWithTicket(tp.x(), tp.y(), tp.z());
                     }
                     if (player.getAbilities().flying && !player.isCreative() && !currentClaim.canInteract(player, PermissionRegistry.FLIGHT, rounded, true)) {
