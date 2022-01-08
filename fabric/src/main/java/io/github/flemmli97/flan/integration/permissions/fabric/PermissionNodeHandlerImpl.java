@@ -15,8 +15,7 @@ public class PermissionNodeHandlerImpl {
                 return Permissions.check(src, perm, ConfigHandler.config.permissionLevel);
             return Permissions.check(src, perm, true);
         }
-        if (Flan.ftbRanks && src.getEntity() instanceof ServerPlayer) {
-            ServerPlayer player = (ServerPlayer) src.getEntity();
+        if (Flan.ftbRanks && src.getEntity() instanceof ServerPlayer player) {
             return FTBRanksAPI.getPermissionValue(player, perm).asBoolean().orElse(!adminCmd || player.hasPermissions(ConfigHandler.config.permissionLevel));
         }
         return !adminCmd || src.hasPermission(ConfigHandler.config.permissionLevel);

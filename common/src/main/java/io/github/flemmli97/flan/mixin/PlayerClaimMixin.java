@@ -29,16 +29,6 @@ public abstract class PlayerClaimMixin implements IPlayerClaimImpl {
         this.flanClaimData = new PlayerClaimData((ServerPlayer) (Object) this);
     }
 
-    /*@Inject(method = "readCustomDataFromTag", at = @At("RETURN"))
-    private void readData(CompoundTag tag, CallbackInfo info) {
-        this.claimData.read(this.server);
-    }
-
-    @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
-    private void writeData(CompoundTag tag, CallbackInfo info) {
-        this.claimData.save(this.server);
-    }*/
-
     @Inject(method = "tick", at = @At("HEAD"))
     private void tickData(CallbackInfo info) {
         this.flanClaimData.tick(this.flanCurrentClaim, claim -> this.flanCurrentClaim = claim);

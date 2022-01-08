@@ -4,13 +4,7 @@ import io.github.flemmli97.flan.SimpleRegistryWrapper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 
-public class FabricRegistryWrapper<T> implements SimpleRegistryWrapper<T> {
-
-    private final Registry<T> delegate;
-
-    public FabricRegistryWrapper(Registry<T> delegate) {
-        this.delegate = delegate;
-    }
+public record FabricRegistryWrapper<T>(Registry<T> delegate) implements SimpleRegistryWrapper<T> {
 
     @Override
     public T getFromId(ResourceLocation id) {

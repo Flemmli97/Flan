@@ -71,9 +71,8 @@ public class StringResultScreenHandler extends AnvilMenu {
 
     @Override
     public void clicked(int i, int j, ClickType actionType, Player playerEntity) {
-        if (i < 0 || !(playerEntity instanceof ServerPlayer))
+        if (i < 0 || !(playerEntity instanceof ServerPlayer player))
             return;
-        ServerPlayer player = (ServerPlayer) playerEntity;
         Slot slot = this.slots.get(i);
         if (((AbstractContainerAccessor) this).containerSync() != null)
             ((AbstractContainerAccessor) this).containerSync().sendCarriedChange(this, this.getCarried().copy());
@@ -105,15 +104,6 @@ public class StringResultScreenHandler extends AnvilMenu {
         this.broadcastChanges();
         return ItemStack.EMPTY;
     }
-/*
-    @Override
-    public void addSlotListener(ContainerListener listener) {
-        if (!this.listeners.contains(listener)) {
-            this.listeners.add(listener);
-            listener.refreshContainer(this, this.getItems());
-            this.broadcastChanges();
-        }
-    }*/
 
     @Override
     public void broadcastChanges() {

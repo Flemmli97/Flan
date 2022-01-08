@@ -5,13 +5,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-public class ForgeRegistryWrapper<T extends IForgeRegistryEntry<T>> implements SimpleRegistryWrapper<T> {
-
-    private final IForgeRegistry<T> registry;
-
-    public ForgeRegistryWrapper(IForgeRegistry<T> registry) {
-        this.registry = registry;
-    }
+public record ForgeRegistryWrapper<T extends IForgeRegistryEntry<T>>(
+        IForgeRegistry<T> registry) implements SimpleRegistryWrapper<T> {
 
     @Override
     public T getFromId(ResourceLocation id) {

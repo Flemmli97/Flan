@@ -18,7 +18,6 @@ import net.minecraft.world.item.ItemStack;
 public abstract class ServerOnlyScreenHandler<T> extends AbstractContainerMenu {
 
     private final SeparateInvImpl inventory;
-    private boolean update = true;
 
     protected ServerOnlyScreenHandler(int syncId, Inventory playerInventory, int rows, T additionalData) {
         super(fromRows(rows), syncId);
@@ -65,19 +64,14 @@ public abstract class ServerOnlyScreenHandler<T> extends AbstractContainerMenu {
     }
 
     private static MenuType<ChestMenu> fromRows(int rows) {
-        switch (rows) {
-            case 2:
-                return MenuType.GENERIC_9x2;
-            case 3:
-                return MenuType.GENERIC_9x3;
-            case 4:
-                return MenuType.GENERIC_9x4;
-            case 5:
-                return MenuType.GENERIC_9x5;
-            case 6:
-                return MenuType.GENERIC_9x6;
-        }
-        return MenuType.GENERIC_9x1;
+        return switch (rows) {
+            case 2 -> MenuType.GENERIC_9x2;
+            case 3 -> MenuType.GENERIC_9x3;
+            case 4 -> MenuType.GENERIC_9x4;
+            case 5 -> MenuType.GENERIC_9x5;
+            case 6 -> MenuType.GENERIC_9x6;
+            default -> MenuType.GENERIC_9x1;
+        };
     }
 
     protected abstract void fillInventoryWith(Player player, SeparateInv inv, T additionalData);
@@ -110,24 +104,6 @@ public abstract class ServerOnlyScreenHandler<T> extends AbstractContainerMenu {
         if (this.isRightSlot(index))
             this.handleSlotClicked((ServerPlayer) player, index, slot, 0);
         return slot.getItem().copy();
-    }
-
-    /*@Override
-    public void addSlotListener(ContainerListener listener) {
-        this.update = false;
-        super.addSlotListener(listener);
-        if (!this.listeners.contains(listener)) {
-            this.listeners.add(listener);
-            listener.refreshContainer(this, this.getItems());
-            this.update = true;
-            this.broadcastChanges();
-        }
-    }*/
-
-    @Override
-    public void broadcastChanges() {
-        //if (this.update)
-        super.broadcastChanges();
     }
 
     protected abstract boolean isRightSlot(int slot);

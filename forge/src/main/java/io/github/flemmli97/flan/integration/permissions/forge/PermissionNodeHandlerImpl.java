@@ -8,9 +8,8 @@ import net.minecraft.server.level.ServerPlayer;
 public class PermissionNodeHandlerImpl {
 
     public static boolean perm(CommandSourceStack src, String perm, boolean adminCmd) {
-        if (!Flan.ftbRanks || !(src.getEntity() instanceof ServerPlayer))
+        if (!Flan.ftbRanks || !(src.getEntity() instanceof ServerPlayer player))
             return !adminCmd || src.hasPermission(ConfigHandler.config.permissionLevel);
-        ServerPlayer player = (ServerPlayer) src.getEntity();
         return /*FTBRanksAPI.getPermissionValue(player, perm).asBoolean().orElse(!adminCmd || */player.hasPermissions(ConfigHandler.config.permissionLevel);
     }
 

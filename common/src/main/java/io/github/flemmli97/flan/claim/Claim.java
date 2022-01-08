@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
@@ -237,6 +238,7 @@ public class Claim implements IPermissionContainer {
 
     @Override
     public boolean canInteract(ServerPlayer player, ClaimPermission perm, BlockPos pos, boolean message) {
+        message = message && player.getClass().equals(ServerPlayer.class); //dont send messages to fake players
         InteractionResult res = ClaimPermissionCheck.check(player, perm, pos);
         if (res != InteractionResult.PASS)
             return res != InteractionResult.FAIL;
@@ -706,8 +708,7 @@ public class Claim implements IPermissionContainer {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj instanceof Claim) {
-            Claim other = (Claim) obj;
+        if (obj instanceof Claim other) {
             if (this.claimID == null && other.claimID == null)
                 return Arrays.equals(this.getDimensions(), ((Claim) obj).getDimensions());
             if (this.claimID != null)
@@ -731,7 +732,7 @@ public class Claim implements IPermissionContainer {
         boolean perms = this.canInteract(player, PermissionRegistry.EDITPERMS, player.blockPosition());
         List<Component> l = new ArrayList<>();
         l.add(PermHelper.simpleColoredText("=============================================", ChatFormatting.GREEN));
-        String ownerName = this.isAdminClaim() ? "Admin" : player.getServer().getProfileCache().get(this.owner).map(prof -> prof.getName()).orElse("<UNKNOWN>");
+        String ownerName = this.isAdminClaim() ? "Admin" : player.getServer().getProfileCache().get(this.owner).map(GameProfile::getName).orElse("<UNKNOWN>");
         if (this.parent == null) {
             if (this.claimName.isEmpty())
                 l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfo, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), ChatFormatting.GOLD));
@@ -778,9 +779,7 @@ public class Claim implements IPermissionContainer {
 
     interface ClaimUpdater {
 
-        Map<Integer, ClaimUpdater> updater = Config.createHashMap(map -> {
-            map.put(2, claim -> claim.globalPerm.put(PermissionRegistry.LOCKITEMS, true));
-        });
+        Map<Integer, ClaimUpdater> updater = Config.createHashMap(map -> map.put(2, claim -> claim.globalPerm.put(PermissionRegistry.LOCKITEMS, true)));
 
         static void updateClaim(Claim claim) {
             updater.entrySet().stream().filter(e -> e.getKey() > ConfigHandler.config.preConfigVersion).map(Map.Entry::getValue)

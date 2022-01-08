@@ -11,16 +11,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
-public class GlobalClaim implements IPermissionContainer {
-
-    private final ServerLevel world;
-
-    public GlobalClaim(ServerLevel world) {
-        this.world = world;
-    }
+public record GlobalClaim(ServerLevel world) implements IPermissionContainer {
 
     @Override
     public boolean canInteract(ServerPlayer player, ClaimPermission perm, BlockPos pos, boolean message) {
+        message = message && player.getClass().equals(ServerPlayer.class); //dont send messages to fake players
         Config.GlobalType global = ConfigHandler.config.getGlobal(this.world, perm);
         if (global != Config.GlobalType.NONE && (player == null || !PlayerClaimData.get(player).isAdminIgnoreClaim())) {
             if (global.getValue())

@@ -45,18 +45,17 @@ public class ConfirmScreenHandler extends ServerOnlyScreenHandler<Object> {
     protected void fillInventoryWith(Player player, SeparateInv inv, Object additionalData) {
         for (int i = 0; i < 9; i++) {
             switch (i) {
-                case 3:
+                case 3 -> {
                     ItemStack yes = new ItemStack(Items.GREEN_WOOL);
                     yes.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenYes, ChatFormatting.GREEN));
                     inv.updateStack(i, yes);
-                    break;
-                case 5:
+                }
+                case 5 -> {
                     ItemStack no = new ItemStack(Items.RED_WOOL);
                     no.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNo, ChatFormatting.RED));
                     inv.updateStack(i, no);
-                    break;
-                default:
-                    inv.updateStack(i, ServerScreenHelper.emptyFiller());
+                }
+                default -> inv.updateStack(i, ServerScreenHelper.emptyFiller());
             }
         }
     }
@@ -69,12 +68,8 @@ public class ConfirmScreenHandler extends ServerOnlyScreenHandler<Object> {
     @Override
     protected boolean handleSlotClicked(ServerPlayer player, int index, Slot slot, int clickType) {
         switch (index) {
-            case 3:
-                this.cons.accept(true);
-                break;
-            case 5:
-                this.cons.accept(false);
-                break;
+            case 3 -> this.cons.accept(true);
+            case 5 -> this.cons.accept(false);
         }
         return true;
     }

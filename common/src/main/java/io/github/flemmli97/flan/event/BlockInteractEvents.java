@@ -43,9 +43,8 @@ public class BlockInteractEvents {
     }
 
     public static boolean breakBlocks(Level world, Player p, BlockPos pos, BlockState state, BlockEntity tile) {
-        if (world.isClientSide || p.isSpectator())
+        if (!(p instanceof ServerPlayer player) || p.isSpectator())
             return true;
-        ServerPlayer player = (ServerPlayer) p;
         ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
@@ -62,9 +61,8 @@ public class BlockInteractEvents {
 
     //Right click block
     public static InteractionResult useBlocks(Player p, Level world, InteractionHand hand, BlockHitResult hitResult) {
-        if (world.isClientSide)
+        if (!(p instanceof ServerPlayer player))
             return InteractionResult.PASS;
-        ServerPlayer player = (ServerPlayer) p;
         ItemStack stack = player.getItemInHand(hand);
         if (stack.getItem() == ConfigHandler.config.claimingItem) {
             ItemInteractEvents.claimLandHandling(player, hitResult.getBlockPos());

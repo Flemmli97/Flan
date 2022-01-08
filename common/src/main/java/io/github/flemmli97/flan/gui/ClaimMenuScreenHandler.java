@@ -48,48 +48,47 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
     protected void fillInventoryWith(Player player, SeparateInv inv, Claim claim) {
         for (int i = 0; i < 9; i++) {
             switch (i) {
-                case 0:
+                case 0 -> {
                     ItemStack close = new ItemStack(Items.TNT);
                     close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenClose, ChatFormatting.DARK_RED));
                     inv.updateStack(i, close);
-                    break;
-                case 2:
+                }
+                case 2 -> {
                     ItemStack perm = new ItemStack(Items.BEACON);
                     perm.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuGlobal, ChatFormatting.GOLD));
                     if (player instanceof ServerPlayer && !this.hasEditPerm(claim, (ServerPlayer) player))
                         ServerScreenHelper.addLore(perm, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, ChatFormatting.DARK_RED));
                     inv.updateStack(i, perm);
-                    break;
-                case 3:
+                }
+                case 3 -> {
                     ItemStack group = new ItemStack(Items.WRITABLE_BOOK);
                     group.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuGroup, ChatFormatting.GOLD));
                     if (player instanceof ServerPlayer && !this.hasEditPerm(claim, (ServerPlayer) player))
                         ServerScreenHelper.addLore(group, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, ChatFormatting.DARK_RED));
                     inv.updateStack(i, group);
-                    break;
-                case 4:
+                }
+                case 4 -> {
                     ItemStack potions = new ItemStack(Items.POTION);
                     potions.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuPotion, ChatFormatting.GOLD));
                     if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, PermissionRegistry.EDITPOTIONS))
                         ServerScreenHelper.addLore(potions, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, ChatFormatting.DARK_RED));
                     inv.updateStack(i, potions);
-                    break;
-                case 5:
+                }
+                case 5 -> {
                     ItemStack sign = new ItemStack(Items.OAK_SIGN);
                     sign.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuClaimText, ChatFormatting.GOLD));
                     if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, PermissionRegistry.EDITCLAIM))
                         ServerScreenHelper.addLore(sign, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, ChatFormatting.DARK_RED));
                     inv.updateStack(i, sign);
-                    break;
-                case 8:
+                }
+                case 8 -> {
                     ItemStack delete = new ItemStack(Items.BARRIER);
                     delete.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuDelete, ChatFormatting.RED));
                     if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, PermissionRegistry.EDITCLAIM))
                         ServerScreenHelper.addLore(delete, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, ChatFormatting.DARK_RED));
                     inv.updateStack(i, delete);
-                    break;
-                default:
-                    inv.updateStack(i, ServerScreenHelper.emptyFiller());
+                }
+                default -> inv.updateStack(i, ServerScreenHelper.emptyFiller());
             }
         }
     }

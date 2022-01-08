@@ -63,7 +63,7 @@ public class EntityInteractEvents {
     }
 
     public static InteractionResult useAtEntity(Player player, Level world, InteractionHand hand, Entity entity, /* Nullable */ EntityHitResult hitResult) {
-        if (player.level.isClientSide || player.isSpectator() || canInteract(entity))
+        if (!(player instanceof ServerPlayer) || player.isSpectator() || canInteract(entity))
             return InteractionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
         BlockPos pos = entity.blockPosition();
@@ -78,9 +78,8 @@ public class EntityInteractEvents {
     }
 
     public static InteractionResult useEntity(Player p, Level world, InteractionHand hand, Entity entity) {
-        if (p.level.isClientSide || p.isSpectator() || canInteract(entity))
+        if (!(p instanceof ServerPlayer player) || p.isSpectator() || canInteract(entity))
             return InteractionResult.PASS;
-        ServerPlayer player = (ServerPlayer) p;
         ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
@@ -96,8 +95,7 @@ public class EntityInteractEvents {
                 return claim.canInteract(player, PermissionRegistry.TRADING, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             if (entity instanceof ItemFrame)
                 return claim.canInteract(player, PermissionRegistry.ITEMFRAMEROTATE, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
-            if (entity instanceof TamableAnimal) {
-                TamableAnimal tame = (TamableAnimal) entity;
+            if (entity instanceof TamableAnimal tame) {
                 if (tame.isOwnedBy(player))
                     return InteractionResult.PASS;
             }
@@ -117,8 +115,7 @@ public class EntityInteractEvents {
         if (proj.level.isClientSide)
             return false;
         Entity owner = proj.getOwner();
-        if (owner instanceof ServerPlayer) {
-            ServerPlayer player = (ServerPlayer) owner;
+        if (owner instanceof ServerPlayer player) {
             if (res.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult blockRes = (BlockHitResult) res;
                 BlockPos pos = blockRes.getBlockPos();
@@ -138,8 +135,7 @@ public class EntityInteractEvents {
                     return false;
                 boolean flag = !claim.canInteract(player, perm, pos, true);
                 if (flag) {
-                    if (proj instanceof AbstractArrow) {
-                        AbstractArrow pers = (AbstractArrow) proj;
+                    if (proj instanceof AbstractArrow pers) {
                         ((IPersistentProjectileVars) pers).setInBlockState(pers.level.getBlockState(pos));
                         Vec3 vec3d = blockRes.getLocation().subtract(pers.getX(), pers.getY(), pers.getZ());
                         pers.setDeltaMovement(vec3d);
@@ -168,8 +164,7 @@ public class EntityInteractEvents {
                 }
                 Entity hit = ((EntityHitResult) res).getEntity();
                 boolean fail = attackSimple(player, hit, true) != InteractionResult.PASS;
-                if (fail && proj instanceof AbstractArrow && ((AbstractArrow) proj).getPierceLevel() > 0) {
-                    AbstractArrow pers = (AbstractArrow) proj;
+                if (fail && proj instanceof AbstractArrow pers && ((AbstractArrow) proj).getPierceLevel() > 0) {
                     IntOpenHashSet pierced = ((IPersistentProjectileVars) pers).getPiercedEntities();
                     if (pierced == null)
                         pierced = new IntOpenHashSet(5);
@@ -194,11 +189,10 @@ public class EntityInteractEvents {
     }
 
     public static InteractionResult attackSimple(Player p, Entity entity, boolean message) {
-        if (p.level.isClientSide || p.isSpectator() || canInteract(entity))
+        if (!(p instanceof ServerPlayer player) || p.isSpectator() || canInteract(entity))
             return InteractionResult.PASS;
         if (entity instanceof Enemy)
             return InteractionResult.PASS;
-        ServerPlayer player = (ServerPlayer) p;
         ClaimStorage storage = ClaimStorage.get(player.getLevel());
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
@@ -224,8 +218,7 @@ public class EntityInteractEvents {
     }
 
     public static boolean canCollideWith(Player player, Entity entity) {
-        if (player instanceof ServerPlayer) {
-            ServerPlayer sPlayer = (ServerPlayer) player;
+        if (player instanceof ServerPlayer sPlayer) {
             if (entity instanceof ItemEntity) {
                 IOwnedItem ownedItem = (IOwnedItem) entity;
                 if (ownedItem.getDeathPlayer() != null) {
@@ -329,7 +322,7 @@ public class EntityInteractEvents {
                     if (!currentClaim.canInteract(player, PermissionRegistry.CANSTAY, bPos, true)) {
                         Claim sub = currentClaim.getSubClaim(bPos);
                         Vec3 tp = TeleportUtils.getTeleportPos(player, pos, storage, sub != null ? sub.getDimensions() : currentClaim.getDimensions(), true, bPos, (claim, nPos) -> claim.canInteract(player, PermissionRegistry.CANSTAY, nPos, false));
-                        if(player.isPassenger())
+                        if (player.isPassenger())
                             player.stopRiding();
                         player.teleportToWithTicket(tp.x(), tp.y(), tp.z());
                     }

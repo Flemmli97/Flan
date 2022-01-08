@@ -81,10 +81,9 @@ public class WorldEvents {
     }
 
     public static boolean lightningFire(LightningBolt lightning) {
-        if (!(lightning.level instanceof ServerLevel))
+        if (!(lightning.level instanceof ServerLevel world))
             return true;
         BlockPos.MutableBlockPos mutable = lightning.blockPosition().mutable();
-        ServerLevel world = (ServerLevel) lightning.level;
         for (int x = -1; x <= 1; x++)
             for (int z = -1; z <= 1; z++) {
                 mutable.set(mutable.getX() + x, mutable.getY(), mutable.getZ() + z);

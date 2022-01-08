@@ -159,8 +159,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public void addDisplayClaim(IPermissionContainer cont, EnumDisplayType type, int height) {
-        if (cont instanceof Claim) {
-            Claim claim = (Claim) cont;
+        if (cont instanceof Claim claim) {
             this.displayToAdd.add(new ClaimDisplay(claim, type, height));
             if (type == EnumDisplayType.MAIN)
                 for (Claim sub : claim.getAllSubclaims())
@@ -306,7 +305,7 @@ public class PlayerClaimData implements IPlayerData {
                         tpTo.set(tpTo.getX(), tpTo.getY() + 1, tpTo.getZ());
                     } else
                         tpTo.set(tpTo.getX(), yHighest, tpTo.getZ());
-                    if(this.player.isPassenger())
+                    if (this.player.isPassenger())
                         this.player.stopRiding();
                     this.player.teleportToWithTicket(tpTo.getX() + 0.5, tpTo.getY(), tpTo.getZ() + 0.5);
                     this.tpPos = null;
@@ -314,7 +313,7 @@ public class PlayerClaimData implements IPlayerData {
                     Vec3 tp = TeleportUtils.getTeleportPos(this.player, this.player.position(), ClaimStorage.get(this.player.getLevel()),
                             ((IPlayerClaimImpl) this.player).getCurrentClaim().getDimensions(),
                             TeleportUtils.roundedBlockPos(this.player.position()).mutable(), (claim, nPos) -> false);
-                    if(this.player.isPassenger())
+                    if (this.player.isPassenger())
                         this.player.stopRiding();
                     this.player.teleportToWithTicket(tp.x(), tp.y(), tp.z());
                 }
@@ -454,9 +453,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public static void updateScoreFor(ServerPlayer player, ObjectiveCriteria criterion, int val) {
-        player.getScoreboard().forAllObjectives(criterion, player.getScoreboardName(), (scoreboardPlayerScore) -> {
-            scoreboardPlayerScore.setScore(val);
-        });
+        player.getScoreboard().forAllObjectives(criterion, player.getScoreboardName(), (scoreboardPlayerScore) -> scoreboardPlayerScore.setScore(val));
     }
 
     public static void editForOfflinePlayer(MinecraftServer server, UUID uuid, int additionalClaimBlocks) {

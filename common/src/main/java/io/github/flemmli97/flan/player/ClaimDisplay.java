@@ -38,22 +38,22 @@ public class ClaimDisplay {
         this.type = type;
         this.height = Math.max(1 + claim.getWorld().getMinBuildHeight(), y);
         switch (type) {
-            case SUB:
+            case SUB -> {
                 this.corner = ParticleIndicators.SUBCLAIMCORNER;
                 this.middle = ParticleIndicators.SUBCLAIMMIDDLE;
-                break;
-            case CONFLICT:
+            }
+            case CONFLICT -> {
                 this.corner = ParticleIndicators.OVERLAPCLAIM;
                 this.middle = ParticleIndicators.OVERLAPCLAIM;
-                break;
-            case EDIT:
+            }
+            case EDIT -> {
                 this.corner = ParticleIndicators.EDITCLAIMCORNER;
                 this.middle = ParticleIndicators.EDITCLAIMMIDDLE;
-                break;
-            default:
+            }
+            default -> {
                 this.corner = ParticleIndicators.CLAIMCORNER;
                 this.middle = ParticleIndicators.CLAIMMIDDLE;
-                break;
+            }
         }
     }
 

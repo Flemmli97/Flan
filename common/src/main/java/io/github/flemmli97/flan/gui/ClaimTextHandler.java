@@ -51,41 +51,40 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
     protected void fillInventoryWith(Player player, SeparateInv inv, Claim claim) {
         for (int i = 0; i < 9; i++) {
             switch (i) {
-                case 0:
+                case 0 -> {
                     ItemStack close = new ItemStack(Items.TNT);
                     close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenBack, ChatFormatting.DARK_RED));
                     inv.updateStack(i, close);
-                    break;
-                case 2:
+                }
+                case 2 -> {
                     ItemStack stack = new ItemStack(Items.OAK_SIGN);
                     stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenEnterText, ChatFormatting.GOLD));
                     if (claim.enterTitle != null)
                         ServerScreenHelper.addLore(stack, claim.enterTitle);
                     inv.updateStack(i, stack);
-                    break;
-                case 3:
+                }
+                case 3 -> {
                     ItemStack stack2 = new ItemStack(Items.OAK_SIGN);
                     stack2.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenEnterSubText, ChatFormatting.GOLD));
                     if (claim.enterSubtitle != null)
                         ServerScreenHelper.addLore(stack2, claim.enterSubtitle);
                     inv.updateStack(i, stack2);
-                    break;
-                case 4:
+                }
+                case 4 -> {
                     ItemStack stack3 = new ItemStack(Items.OAK_SIGN);
                     stack3.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenLeaveText, ChatFormatting.GOLD));
                     if (claim.leaveTitle != null)
                         ServerScreenHelper.addLore(stack3, claim.leaveTitle);
                     inv.updateStack(i, stack3);
-                    break;
-                case 5:
+                }
+                case 5 -> {
                     ItemStack stack4 = new ItemStack(Items.OAK_SIGN);
                     stack4.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenLeaveSubText, ChatFormatting.GOLD));
                     if (claim.leaveSubtitle != null)
                         ServerScreenHelper.addLore(stack4, claim.leaveSubtitle);
                     inv.updateStack(i, stack4);
-                    break;
-                default:
-                    inv.updateStack(i, ServerScreenHelper.emptyFiller());
+                }
+                default -> inv.updateStack(i, ServerScreenHelper.emptyFiller());
             }
         }
     }
@@ -102,21 +101,13 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
             player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.claim));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
         } else {
-            Consumer<Component> cons = null;
-            switch (index) {
-                case 2:
-                    cons = text -> this.claim.setEnterTitle(text, this.claim.enterSubtitle);
-                    break;
-                case 3:
-                    cons = text -> this.claim.setEnterTitle(this.claim.enterTitle, text);
-                    break;
-                case 4:
-                    cons = text -> this.claim.setLeaveTitle(text, this.claim.leaveSubtitle);
-                    break;
-                case 5:
-                    cons = text -> this.claim.setLeaveTitle(this.claim.leaveTitle, text);
-                    break;
-            }
+            Consumer<Component> cons = switch (index) {
+                case 2 -> text -> this.claim.setEnterTitle(text, this.claim.enterSubtitle);
+                case 3 -> text -> this.claim.setEnterTitle(this.claim.enterTitle, text);
+                case 4 -> text -> this.claim.setLeaveTitle(text, this.claim.leaveSubtitle);
+                case 5 -> text -> this.claim.setLeaveTitle(this.claim.leaveTitle, text);
+                default -> null;
+            };
             if (cons != null) {
                 player.closeContainer();
                 Consumer<Component> finalCons = cons;

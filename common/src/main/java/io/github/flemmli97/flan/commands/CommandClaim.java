@@ -487,8 +487,7 @@ public class CommandClaim {
 
     private static int adminDeleteAll(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         CommandSourceStack src = context.getSource();
-        if (src.getEntity() instanceof ServerPlayer) {
-            ServerPlayer player = (ServerPlayer) src.getEntity();
+        if (src.getEntity() instanceof ServerPlayer player) {
             PlayerClaimData data = PlayerClaimData.get(player);
             if (!data.confirmedDeleteAll()) {
                 data.setConfirmDeleteAll(true);
@@ -634,34 +633,22 @@ public class CommandClaim {
     }
 
     private static int editGlobalPerm(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        int mode = 0;
-        switch (StringArgumentType.getString(context, "toggle")) {
-            case "true":
-                mode = 1;
-                break;
-            case "false":
-                mode = 0;
-                break;
-            case "default":
-                mode = -1;
-                break;
-        }
+        int mode = switch (StringArgumentType.getString(context, "toggle")) {
+            case "true" -> 1;
+            case "false" -> 0;
+            case "default" -> -1;
+            default -> 0;
+        };
         return editPerms(context, null, mode);
     }
 
     private static int editGroupPerm(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        int mode = 0;
-        switch (StringArgumentType.getString(context, "toggle")) {
-            case "true":
-                mode = 1;
-                break;
-            case "false":
-                mode = 0;
-                break;
-            case "default":
-                mode = -1;
-                break;
-        }
+        int mode = switch (StringArgumentType.getString(context, "toggle")) {
+            case "true" -> 1;
+            case "false" -> 0;
+            case "default" -> -1;
+            default -> 0;
+        };
         return editPerms(context, StringArgumentType.getString(context, "group"), mode);
     }
 
@@ -706,18 +693,12 @@ public class CommandClaim {
     private static int editPersonalPerm(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         String group = StringArgumentType.getString(context, "group");
-        int mode = 0;
-        switch (StringArgumentType.getString(context, "toggle")) {
-            case "true":
-                mode = 1;
-                break;
-            case "false":
-                mode = 0;
-                break;
-            case "default":
-                mode = -1;
-                break;
-        }
+        int mode = switch (StringArgumentType.getString(context, "toggle")) {
+            case "true" -> 1;
+            case "false" -> 0;
+            case "default" -> -1;
+            default -> 0;
+        };
         ClaimPermission perm;
         String p = StringArgumentType.getString(context, "permission");
         try {

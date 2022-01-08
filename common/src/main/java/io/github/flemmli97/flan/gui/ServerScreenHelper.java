@@ -53,30 +53,18 @@ public class ServerScreenHelper {
                 if (claim.parentClaim() == null)
                     permFlag = "" + (claim.permEnabled(perm) == 1);
                 else {
-                    switch (claim.permEnabled(perm)) {
-                        case -1:
-                            permFlag = ConfigHandler.lang.screenDefault;
-                            break;
-                        case 1:
-                            permFlag = ConfigHandler.lang.screenTrue;
-                            break;
-                        default:
-                            permFlag = ConfigHandler.lang.screenFalse;
-                            break;
-                    }
+                    permFlag = switch (claim.permEnabled(perm)) {
+                        case -1 -> ConfigHandler.lang.screenDefault;
+                        case 1 -> ConfigHandler.lang.screenTrue;
+                        default -> ConfigHandler.lang.screenFalse;
+                    };
                 }
             } else {
-                switch (claim.groupHasPerm(group, perm)) {
-                    case -1:
-                        permFlag = ConfigHandler.lang.screenDefault;
-                        break;
-                    case 1:
-                        permFlag = ConfigHandler.lang.screenTrue;
-                        break;
-                    default:
-                        permFlag = ConfigHandler.lang.screenFalse;
-                        break;
-                }
+                permFlag = switch (claim.groupHasPerm(group, perm)) {
+                    case -1 -> ConfigHandler.lang.screenDefault;
+                    case 1 -> ConfigHandler.lang.screenTrue;
+                    default -> ConfigHandler.lang.screenFalse;
+                };
             }
             Component text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? ChatFormatting.GREEN : ChatFormatting.RED);
             lore.add(text);

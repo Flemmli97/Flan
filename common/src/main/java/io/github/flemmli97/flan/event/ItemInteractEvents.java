@@ -43,9 +43,8 @@ import java.util.Set;
 public class ItemInteractEvents {
 
     public static InteractionResultHolder<ItemStack> useItem(Player p, Level world, InteractionHand hand) {
-        if (world.isClientSide || p.isSpectator())
+        if (!(p instanceof ServerPlayer player) || p.isSpectator())
             return InteractionResultHolder.pass(p.getItemInHand(hand));
-        ServerPlayer player = (ServerPlayer) p;
         ItemStack stack = player.getItemInHand(hand);
         if (stack.getItem() == ConfigHandler.config.claimingItem) {
             HitResult ray = player.pick(64, 0, false);
@@ -96,8 +95,7 @@ public class ItemInteractEvents {
     private static final Set<Item> blackListedItems = Sets.newHashSet(Items.COMPASS, Items.FILLED_MAP, Items.FIREWORK_ROCKET);
 
     public static InteractionResult onItemUseBlock(UseOnContext context) {
-        //Check for Fakeplayer. Since there is no api for that directly check the class
-        if (!(context.getPlayer() instanceof ServerPlayer) || !context.getPlayer().getClass().equals(ServerPlayer.class) || context.getItemInHand().isEmpty())
+        if (!(context.getPlayer() instanceof ServerPlayer player) || context.getItemInHand().isEmpty())
             return InteractionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerLevel) context.getLevel());
         BlockPos placePos = new BlockPlaceContext(context).getClickedPos();
@@ -107,7 +105,6 @@ public class ItemInteractEvents {
         if (blackListedItems.contains(context.getItemInHand().getItem()))
             return InteractionResult.PASS;
         boolean actualInClaim = !(claim instanceof Claim) || placePos.getY() >= ((Claim) claim).getDimensions()[4];
-        ServerPlayer player = (ServerPlayer) context.getPlayer();
         ClaimPermission perm = ObjectToPermissionMap.getFromItem(context.getItemInHand().getItem());
         if (perm != null) {
             if (claim.canInteract(player, perm, placePos, false))
