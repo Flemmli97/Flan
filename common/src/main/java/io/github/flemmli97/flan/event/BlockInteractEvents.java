@@ -43,7 +43,7 @@ public class BlockInteractEvents {
     }
 
     public static boolean breakBlocks(World world, PlayerEntity p, BlockPos pos, BlockState state, BlockEntity tile) {
-        if (world.isClient || p.isSpectator())
+        if (!(p instanceof ServerPlayerEntity)  || p.isSpectator())
             return true;
         ServerPlayerEntity player = (ServerPlayerEntity) p;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
@@ -62,7 +62,7 @@ public class BlockInteractEvents {
 
     //Right click block
     public static ActionResult useBlocks(PlayerEntity p, World world, Hand hand, BlockHitResult hitResult) {
-        if (world.isClient)
+        if (!(p instanceof ServerPlayerEntity))
             return ActionResult.PASS;
         ServerPlayerEntity player = (ServerPlayerEntity) p;
         ItemStack stack = player.getStackInHand(hand);

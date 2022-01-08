@@ -43,7 +43,7 @@ import java.util.Set;
 public class ItemInteractEvents {
 
     public static TypedActionResult<ItemStack> useItem(PlayerEntity p, World world, Hand hand) {
-        if (world.isClient || p.isSpectator())
+        if (!(p instanceof ServerPlayerEntity)|| p.isSpectator())
             return TypedActionResult.pass(p.getStackInHand(hand));
         ServerPlayerEntity player = (ServerPlayerEntity) p;
         ItemStack stack = player.getStackInHand(hand);
@@ -96,8 +96,7 @@ public class ItemInteractEvents {
     private static final Set<Item> blackListedItems = Sets.newHashSet(Items.COMPASS, Items.FILLED_MAP, Items.FIREWORK_ROCKET);
 
     public static ActionResult onItemUseBlock(ItemUsageContext context) {
-        //Check for Fakeplayer. Since there is no api for that directly check the class
-        if (!(context.getPlayer() instanceof ServerPlayerEntity) || !context.getPlayer().getClass().equals(ServerPlayerEntity.class) || context.getStack().isEmpty())
+        if (!(context.getPlayer() instanceof ServerPlayerEntity) || context.getStack().isEmpty())
             return ActionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) context.getWorld());
         BlockPos placePos = new ItemPlacementContext(context).getBlockPos();
