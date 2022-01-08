@@ -9,10 +9,11 @@
   ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/flan",
+    "issues": "https://github.com/Flemmli97/Flan/issues",
     "sources": "https://github.com/Flemmli97/Flan"
   },
   "license": "ARR",
-  "icon": "assets/flan/icon.png",
+  "icon": "icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -24,10 +25,7 @@
     "flan.fabric.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.7.4",
-    "fabric": ">=0.42.0"
-  },
-  "suggests": {
-    "flamingo": "*"
+    "fabric": ">=0.42.0",
+    "minecraft": ">=1.18"
   }
 }

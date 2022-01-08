@@ -2,14 +2,17 @@ modLoader="javafml"
 loaderVersion="[38,)"
 license="All rights reserved"
 issueTrackerURL="https://github.com/Flemmli97/Flan/issues"
-displayURL="https://github.com/Flemmli97/Flan"
-# logoFile="assets/flan/icon.png"
-credits=""
-authors="Flemmli97"
 [[mods]] 
-  modId="flan"
-  version="${version}"
-  displayName="Flan"
-  # updateJSONURL=""
-  authors="Flemmli97"
-  description='''Flan (Forge version): A serverside claiming mod'''
+modId="flan"
+version="${version}"
+displayName="Flan"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/flan-forge"
+logoFile="icon.png"
+authors="Flemmli97"
+description='''Flan (Forge version): A serverside claiming mod'''
+[[dependencies.flan]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.18,)"
+ordering="NONE"
+side="BOTH"
