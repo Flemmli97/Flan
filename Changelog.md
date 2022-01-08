@@ -1,6 +1,7 @@
 Flan 1.6.7
 ======================
 - Yeet players off riding entities when teleporting
+- Some mod integration fixes
 
 Flan 1.6.6
 ======================

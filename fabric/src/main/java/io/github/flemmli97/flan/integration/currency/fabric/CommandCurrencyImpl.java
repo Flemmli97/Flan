@@ -8,9 +8,8 @@ import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
-import io.github.gunpowder.api.GunpowderMod;
-import io.github.gunpowder.api.module.currency.dataholders.StoredBalance;
-import io.github.gunpowder.api.module.currency.modelhandlers.BalanceHandler;
+import io.github.gunpowder.entities.StoredBalance;
+import io.github.gunpowder.modelhandlers.BalanceHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 
@@ -33,9 +32,10 @@ public class CommandCurrencyImpl {
             context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.lang.sellFail, ChatFormatting.DARK_RED), false);
             return 0;
         }
-        StoredBalance bal = GunpowderMod.getInstance().getRegistry().getModelHandler(BalanceHandler.class).getUser(context.getSource().getPlayerOrException().getUUID());
+        StoredBalance bal = BalanceHandler.INSTANCE.getUser(context.getSource().getPlayerOrException().getUUID());
         BigDecimal price = BigDecimal.valueOf(amount * ConfigHandler.config.sellPrice);
         bal.setBalance(bal.getBalance().add(price));
+        BalanceHandler.INSTANCE.updateUser(bal);
         data.setAdditionalClaims(data.getAdditionalClaims() - amount);
         context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.sellSuccess, amount, price), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
@@ -50,13 +50,14 @@ public class CommandCurrencyImpl {
             context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.lang.buyDisabled, ChatFormatting.DARK_RED), false);
             return 0;
         }
-        StoredBalance bal = GunpowderMod.getInstance().getRegistry().getModelHandler(BalanceHandler.class).getUser(context.getSource().getPlayerOrException().getUUID());
+        StoredBalance bal = BalanceHandler.INSTANCE.getUser(context.getSource().getPlayerOrException().getUUID());
         int amount = Math.max(0, IntegerArgumentType.getInteger(context, "amount"));
         BigDecimal price = BigDecimal.valueOf(amount * ConfigHandler.config.buyPrice);
         if (bal.getBalance().compareTo(price) >= 0) {
             PlayerClaimData data = PlayerClaimData.get(context.getSource().getPlayerOrException());
             data.setAdditionalClaims(data.getAdditionalClaims() + amount);
             bal.setBalance(bal.getBalance().subtract(price));
+            BalanceHandler.INSTANCE.updateUser(bal);
             context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.buySuccess, amount, price), ChatFormatting.GOLD), false);
             return Command.SINGLE_SUCCESS;
         }
