@@ -238,6 +238,7 @@ public class Claim implements IPermissionContainer {
 
     @Override
     public boolean canInteract(ServerPlayerEntity player, ClaimPermission perm, BlockPos pos, boolean message) {
+        message = message && player.getClass().equals(ServerPlayerEntity.class); //dont send messages to fake players
         ActionResult res = ClaimPermissionEvent.CHECK.invoker().check(player, perm, pos);
         if (res != ActionResult.PASS)
             return res != ActionResult.FAIL;

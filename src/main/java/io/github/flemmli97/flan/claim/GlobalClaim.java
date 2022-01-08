@@ -15,6 +15,7 @@ public record GlobalClaim(ServerWorld world) implements IPermissionContainer {
 
     @Override
     public boolean canInteract(ServerPlayerEntity player, ClaimPermission perm, BlockPos pos, boolean message) {
+        message = message && player.getClass().equals(ServerPlayerEntity.class); //dont send messages to fake players
         Config.GlobalType global = ConfigHandler.config.getGlobal(this.world, perm);
         if (global != Config.GlobalType.NONE && (player == null || !PlayerClaimData.get(player).isAdminIgnoreClaim())) {
             if (global.getValue())
