@@ -1,9 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "5.0.0"
-}
-
-configurations {
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    id "com.github.johnrengelman.shadow" version "7.1.0"
 }
 
 architectury {
@@ -12,8 +8,17 @@ architectury {
 }
 
 loom {
-    mixinConfigs = ["flan.mixins.json", "flan.forge.mixins.json"]
-    useFabricMixin = true
+    forge {
+        mixinConfigs = ["flan.mixins.json", "flan.forge.mixins.json"]
+    }
+}
+
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
 }
 
 repositories {
@@ -31,15 +36,8 @@ repositories {
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
 
-    implementation(project(path: ":common")) {
-        transitive = false
-    }
-    developmentForge(project(path: ":common")) {
-        transitive = false
-    }
-    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) {
-        transitive = false
-    }
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
     modImplementation("dev.ftb.mods:ftb-ranks-forge:${ftb_ranks}")
     modImplementation(dicemcmm)
