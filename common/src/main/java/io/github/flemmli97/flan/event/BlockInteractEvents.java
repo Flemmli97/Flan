@@ -21,7 +21,6 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -43,7 +42,7 @@ public class BlockInteractEvents {
     }
 
     public static boolean breakBlocks(World world, PlayerEntity p, BlockPos pos, BlockState state, BlockEntity tile) {
-        if (!(p instanceof ServerPlayerEntity)  || p.isSpectator())
+        if (!(p instanceof ServerPlayerEntity) || p.isSpectator())
             return true;
         ServerPlayerEntity player = (ServerPlayerEntity) p;
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
@@ -117,13 +116,11 @@ public class BlockInteractEvents {
                     return ActionResult.FAIL;
                 }
             }
-            ActionResult res = ItemInteractEvents.onItemUseBlock(new ItemUsageContext(player, hand, hitResult));
-            if (claim.canInteract(player, PermissionRegistry.INTERACTBLOCK, hitResult.getBlockPos(), false) || res == ActionResult.FAIL) {
-                if (res == ActionResult.FAIL)
-                    PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
-                return res;
-            }
-            return ActionResult.PASS;
+            boolean shift = player.shouldCancelInteraction() || stack.isEmpty();
+            boolean res = claim.canInteract(player, PermissionRegistry.INTERACTBLOCK, hitResult.getBlockPos(), shift);
+            if (!res && shift)
+                PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
+            return res ? ActionResult.PASS : ActionResult.FAIL;
         }
         return ActionResult.PASS;
     }

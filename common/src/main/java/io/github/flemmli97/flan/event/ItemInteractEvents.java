@@ -43,7 +43,7 @@ import java.util.Set;
 public class ItemInteractEvents {
 
     public static TypedActionResult<ItemStack> useItem(PlayerEntity p, World world, Hand hand) {
-        if (!(p instanceof ServerPlayerEntity)|| p.isSpectator())
+        if (!(p instanceof ServerPlayerEntity) || p.isSpectator())
             return TypedActionResult.pass(p.getStackInHand(hand));
         ServerPlayerEntity player = (ServerPlayerEntity) p;
         ItemStack stack = player.getStackInHand(hand);
