@@ -17,6 +17,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Tameable;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -95,8 +96,8 @@ public class EntityInteractEvents {
                 return claim.canInteract(player, PermissionRegistry.TRADING, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
             if (entity instanceof ItemFrameEntity)
                 return claim.canInteract(player, PermissionRegistry.ITEMFRAMEROTATE, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
-            if (entity instanceof TameableEntity tame) {
-                if (tame.isOwner(player))
+            if (entity instanceof Tameable tame) {
+                if (tame.getOwnerUuid() != null && tame.getOwnerUuid().equals(player.getUuid()))
                     return ActionResult.PASS;
             }
             return claim.canInteract(player, PermissionRegistry.ANIMALINTERACT, pos, true) ? ActionResult.PASS : ActionResult.FAIL;
