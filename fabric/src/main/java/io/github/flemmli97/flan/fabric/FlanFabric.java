@@ -26,6 +26,13 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 
 public class FlanFabric implements ModInitializer {
 
@@ -36,7 +43,7 @@ public class FlanFabric implements ModInitializer {
         PlayerBlockBreakEvents.BEFORE.register(BlockInteractEvents::breakBlocks);
         AttackBlockCallback.EVENT.register(BlockInteractEvents::startBreakBlocks);
         UseBlockCallback.EVENT.addPhaseOrdering(EventPhase, Event.DEFAULT_PHASE);
-        UseBlockCallback.EVENT.register(EventPhase, BlockInteractEvents::useBlocks);
+        UseBlockCallback.EVENT.register(EventPhase, FlanFabric::useBlocks);
         UseEntityCallback.EVENT.register(EntityInteractEvents::useAtEntity);
         AttackEntityCallback.EVENT.register(EntityInteractEvents::attackEntity);
         UseItemCallback.EVENT.register(ItemInteractEvents::useItem);
@@ -62,5 +69,14 @@ public class FlanFabric implements ModInitializer {
 
     public static void serverFinishLoad(MinecraftServer server) {
         PlayerDataHandler.deleteInactivePlayerData(server);
+    }
+
+    public static InteractionResult useBlocks(Player p, Level world, InteractionHand hand, BlockHitResult hitResult) {
+        if (p instanceof ServerPlayer serverPlayer) {
+            ItemUseBlockFlags flags = ItemUseBlockFlags.fromPlayer(serverPlayer);
+            flags.stopCanUseBlocks(BlockInteractEvents.useBlocks(p, world, hand, hitResult) == InteractionResult.FAIL);
+            flags.stopCanUseItems(ItemInteractEvents.onItemUseBlock(new UseOnContext(p, hand, hitResult)) == InteractionResult.FAIL);
+        }
+        return InteractionResult.PASS;
     }
 }
