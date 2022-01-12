@@ -28,7 +28,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.decoration.ArmorStand;
@@ -95,8 +95,8 @@ public class EntityInteractEvents {
                 return claim.canInteract(player, PermissionRegistry.TRADING, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             if (entity instanceof ItemFrame)
                 return claim.canInteract(player, PermissionRegistry.ITEMFRAMEROTATE, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
-            if (entity instanceof TamableAnimal tame) {
-                if (tame.isOwnedBy(player))
+            if (entity instanceof OwnableEntity tame) {
+                if (tame.getOwnerUUID() != null && tame.getOwnerUUID().equals(player.getUUID()))
                     return InteractionResult.PASS;
             }
             return claim.canInteract(player, PermissionRegistry.ANIMALINTERACT, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
