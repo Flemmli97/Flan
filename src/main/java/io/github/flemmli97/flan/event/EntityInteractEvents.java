@@ -25,7 +25,6 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.SnowGolemEntity;
-import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -323,7 +322,7 @@ public class EntityInteractEvents {
                     if (!currentClaim.canInteract(player, PermissionRegistry.CANSTAY, bPos, true)) {
                         Claim sub = currentClaim.getSubClaim(bPos);
                         Vec3d tp = TeleportUtils.getTeleportPos(player, pos, storage, sub != null ? sub.getDimensions() : currentClaim.getDimensions(), true, bPos, (claim, nPos) -> claim.canInteract(player, PermissionRegistry.CANSTAY, nPos, false));
-                        if(player.hasVehicle())
+                        if (player.hasVehicle())
                             player.stopRiding();
                         player.teleport(tp.getX(), tp.getY(), tp.getZ());
                     }

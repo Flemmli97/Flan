@@ -34,7 +34,8 @@
     "WorldSaveHandlerMixin",
     "PlayerManagerMixin",
     "BannedEntryAccessor",
-    "MinecraftServerMixin"
+    "MinecraftServerMixin",
+    "ServerPlayerInteractionManagerMixin"
   ],
   "server": [
   ],

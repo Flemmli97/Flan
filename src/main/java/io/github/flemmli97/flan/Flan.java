@@ -24,8 +24,15 @@ import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,7 +52,7 @@ public class Flan implements ModInitializer {
         PlayerBlockBreakEvents.BEFORE.register(BlockInteractEvents::breakBlocks);
         AttackBlockCallback.EVENT.register(BlockInteractEvents::startBreakBlocks);
         UseBlockCallback.EVENT.addPhaseOrdering(EventPhase, Event.DEFAULT_PHASE);
-        UseBlockCallback.EVENT.register(EventPhase, BlockInteractEvents::useBlocks);
+        UseBlockCallback.EVENT.register(EventPhase, Flan::useBlocks);
         UseEntityCallback.EVENT.register(EntityInteractEvents::useAtEntity);
         AttackEntityCallback.EVENT.register(EntityInteractEvents::attackEntity);
         UseItemCallback.EVENT.register(ItemInteractEvents::useItem);
@@ -90,5 +97,14 @@ public class Flan implements ModInitializer {
 
     public static void serverFinishLoad(MinecraftServer server) {
         PlayerDataHandler.deleteInactivePlayerData(server);
+    }
+
+    public static ActionResult useBlocks(PlayerEntity p, World world, Hand hand, BlockHitResult hitResult) {
+        if (p instanceof ServerPlayerEntity serverPlayer) {
+            ItemUseBlockFlags flags = ItemUseBlockFlags.fromPlayer(serverPlayer);
+            flags.stopCanUseBlocks(BlockInteractEvents.useBlocks(p, world, hand, hitResult) == ActionResult.FAIL);
+            flags.stopCanUseItems(ItemInteractEvents.onItemUseBlock(new ItemUsageContext(p, hand, hitResult)) == ActionResult.FAIL);
+        }
+        return ActionResult.PASS;
     }
 }
