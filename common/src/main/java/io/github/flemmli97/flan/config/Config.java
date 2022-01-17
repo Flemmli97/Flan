@@ -89,6 +89,8 @@ public class Config {
 
     public boolean log;
 
+    public String lang = "default";
+
     public int configVersion = 4;
     public int preConfigVersion;
 

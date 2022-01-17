@@ -39,7 +39,7 @@ public class LangCommands {
         map.put("giveClaimBlocks", new String[]{"giveClaimBlocks <amount>", "Gives a player additional claim blocks."});
     });
 
-    public void load(JsonObject obj) throws IllegalAccessException {
+    public void load(JsonObject obj) {
         obj.entrySet().forEach(e -> {
             String[] val;
             if (e.getValue().isJsonArray()) {
@@ -55,7 +55,7 @@ public class LangCommands {
         });
     }
 
-    public void save(JsonObject obj) throws IllegalAccessException {
+    public void save(JsonObject obj) {
         this.commands.forEach((cmd, val) -> {
             JsonArray arr = new JsonArray();
             if (val != null)

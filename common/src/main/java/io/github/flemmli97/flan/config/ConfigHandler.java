@@ -21,18 +21,21 @@ public class ConfigHandler {
 
     public static Config config;
     public static LangConfig lang;
+    public static ServerLangManager langManager;
     private static Map<ResourceKey<Level>, Path> claimSavePath = new HashMap<>();
     private static Path playerSavePath;
 
     public static void serverLoad(MinecraftServer server) {
         config = new Config(server);
         lang = new LangConfig(server);
+        langManager = new ServerLangManager(server);
         reloadConfigs(server);
     }
 
     public static void reloadConfigs(MinecraftServer server) {
         config.load();
         lang.load();
+        langManager.reload(config.lang);
         ObjectToPermissionMap.reload(server);
     }
 
