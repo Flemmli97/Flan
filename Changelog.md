@@ -1,3 +1,7 @@
+Flan 1.6.8
+======================
+- Rewrite block interaction check again which should fix some issues with it
+
 Flan 1.6.7
 ======================
 - Yeet players off riding entities when teleporting
