@@ -28,6 +28,11 @@ public class BlockInteractEventsForge {
 
     public static void useBlocks(PlayerInteractEvent.RightClickBlock event) {
         ActionResult res = BlockInteractEvents.useBlocks(event.getPlayer(), event.getWorld(), event.getHand(), event.getHitVec());
+        if (res == ActionResult.SUCCESS) {
+            event.setCancellationResult(res);
+            event.setCanceled(true);
+            return;
+        }
         if (res == ActionResult.FAIL)
             event.setUseBlock(Event.Result.DENY);
         res = ItemInteractEvents.onItemUseBlock(new ItemUsageContext(event.getPlayer(), event.getHand(), event.getHitVec()));

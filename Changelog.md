@@ -1,3 +1,8 @@
+Flan 1.6.9
+======================
+- Fix claiming tools bypassing permissions *cough*
+- Also fix claiming tool still doing their normal actions (aka hoeing the ground)
+
 Flan 1.6.8
 ======================
 - Rewrite block interaction check again which should fix some issues with it

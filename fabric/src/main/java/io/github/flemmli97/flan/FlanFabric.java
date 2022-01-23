@@ -73,7 +73,10 @@ public class FlanFabric implements ModInitializer {
     public static ActionResult useBlocks(PlayerEntity p, World world, Hand hand, BlockHitResult hitResult) {
         if (p instanceof ServerPlayerEntity) {
             ItemUseBlockFlags flags = ItemUseBlockFlags.fromPlayer((ServerPlayerEntity) p);
-            flags.stopCanUseBlocks(BlockInteractEvents.useBlocks(p, world, hand, hitResult) == ActionResult.FAIL);
+            ActionResult res = BlockInteractEvents.useBlocks(p, world, hand, hitResult);
+            if (res == ActionResult.SUCCESS)
+                return res;
+            flags.stopCanUseBlocks(res == ActionResult.FAIL);
             flags.stopCanUseItems(ItemInteractEvents.onItemUseBlock(new ItemUsageContext(p, hand, hitResult)) == ActionResult.FAIL);
         }
         return ActionResult.PASS;
