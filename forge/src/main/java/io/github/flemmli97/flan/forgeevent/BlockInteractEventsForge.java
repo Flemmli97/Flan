@@ -28,10 +28,15 @@ public class BlockInteractEventsForge {
 
     public static void useBlocks(PlayerInteractEvent.RightClickBlock event) {
         InteractionResult res = BlockInteractEvents.useBlocks(event.getPlayer(), event.getWorld(), event.getHand(), event.getHitVec());
-        if(res == InteractionResult.FAIL)
+        if (res == InteractionResult.SUCCESS) {
+            event.setCancellationResult(res);
+            event.setCanceled(true);
+            return;
+        }
+        if (res == InteractionResult.FAIL)
             event.setUseBlock(Event.Result.DENY);
         res = ItemInteractEvents.onItemUseBlock(new UseOnContext(event.getPlayer(), event.getHand(), event.getHitVec()));
-        if(res == InteractionResult.FAIL)
+        if (res == InteractionResult.FAIL)
             event.setUseItem(Event.Result.DENY);
     }
 }
