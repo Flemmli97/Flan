@@ -1,3 +1,12 @@
+Flan 1.7.0
+======================
+- FAKEPLAYER permission for fake players
+- Ability to remove claim enter/leave messages.
+  Simply use "$empty" instead to remove a message
+- Rewritten the language system so its not possible to specify
+  a language to use if a translation exist.  
+  PR for translations go under data/flan/lang
+
 Flan 1.6.9
 ======================
 - Fix claiming tools bypassing permissions *cough*
