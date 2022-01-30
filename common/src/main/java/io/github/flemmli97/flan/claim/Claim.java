@@ -247,7 +247,7 @@ public class Claim implements IPermissionContainer {
             if (flag != ClaimPermission.PermissionFlag.PASS) {
                 if (flag == ClaimPermission.PermissionFlag.NO) {
                     if (message)
-                        player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, ChatFormatting.DARK_RED), true);
+                        player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), ChatFormatting.DARK_RED), true);
                     return false;
                 }
                 return true;
@@ -259,7 +259,7 @@ public class Claim implements IPermissionContainer {
                 if (global.getValue() || (player != null && this.isAdminIgnore(player)))
                     return true;
                 if (message)
-                    player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, ChatFormatting.DARK_RED), true);
+                    player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), ChatFormatting.DARK_RED), true);
                 return false;
             }
             if (ConfigHandler.config.offlineProtectActivation != -1 && (LogoutTracker.getInstance(this.world.getServer()).justLoggedOut(this.getOwner()) || this.getOwnerPlayer().isPresent())) {
@@ -275,7 +275,7 @@ public class Claim implements IPermissionContainer {
             if (this.hasPerm(perm))
                 return true;
             if (message)
-                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, ChatFormatting.DARK_RED), true);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), ChatFormatting.DARK_RED), true);
             return false;
         }
         if (this.isAdminIgnore(player) || player.getUUID().equals(this.owner))
@@ -292,14 +292,14 @@ public class Claim implements IPermissionContainer {
                 if (map.get(perm))
                     return true;
                 if (message)
-                    player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, ChatFormatting.DARK_RED), true);
+                    player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), ChatFormatting.DARK_RED), true);
                 return false;
             }
         }
         if (this.hasPerm(perm))
             return true;
         if (message)
-            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, ChatFormatting.DARK_RED), true);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), ChatFormatting.DARK_RED), true);
         return false;
     }
 
@@ -735,20 +735,20 @@ public class Claim implements IPermissionContainer {
         String ownerName = this.isAdminClaim() ? "Admin" : player.getServer().getProfileCache().get(this.owner).map(GameProfile::getName).orElse("<UNKNOWN>");
         if (this.parent == null) {
             if (this.claimName.isEmpty())
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfo, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), ChatFormatting.GOLD));
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBasicInfo"), ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), ChatFormatting.GOLD));
             else
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoNamed, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size(), this.claimName), ChatFormatting.GOLD));
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBasicInfoNamed"), ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size(), this.claimName), ChatFormatting.GOLD));
         } else {
             if (this.claimName.isEmpty())
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoSub, ownerName, this.minX, this.minZ, this.maxX, this.maxZ), ChatFormatting.GOLD));
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBasicInfoSub"), ownerName, this.minX, this.minZ, this.maxX, this.maxZ), ChatFormatting.GOLD));
             else
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBasicInfoSubNamed, ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.claimName), ChatFormatting.GOLD));
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBasicInfoSubNamed"), ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.claimName), ChatFormatting.GOLD));
         }
         if (perms) {
             if (infoType == InfoType.ALL || infoType == InfoType.GLOBAL)
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimInfoPerms, this.globalPerm), ChatFormatting.RED));
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimInfoPerms"), this.globalPerm), ChatFormatting.RED));
             if (infoType == InfoType.ALL || infoType == InfoType.GROUP) {
-                l.add(PermHelper.simpleColoredText(ConfigHandler.lang.claimGroupInfoHeader, ChatFormatting.RED));
+                l.add(PermHelper.simpleColoredText(ConfigHandler.langManager.get("claimGroupInfoHeader"), ChatFormatting.RED));
                 Map<String, List<String>> nameToGroup = new HashMap<>();
                 for (Map.Entry<UUID, String> e : this.playersGroups.entrySet()) {
                     player.getServer().getProfileCache().get(e.getKey()).ifPresent(pgroup ->
@@ -761,8 +761,8 @@ public class Claim implements IPermissionContainer {
                 }
                 for (Map.Entry<String, Map<ClaimPermission, Boolean>> e : this.permissions.entrySet()) {
                     l.add(PermHelper.simpleColoredText(String.format("  %s:", e.getKey()), ChatFormatting.DARK_RED));
-                    l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPerms, e.getValue()), ChatFormatting.RED));
-                    l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimGroupPlayers, nameToGroup.getOrDefault(e.getKey(), new ArrayList<>())), ChatFormatting.RED));
+                    l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimGroupPerms"), e.getValue()), ChatFormatting.RED));
+                    l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimGroupPlayers"), nameToGroup.getOrDefault(e.getKey(), new ArrayList<>())), ChatFormatting.RED));
                 }
             }
         }

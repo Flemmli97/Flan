@@ -41,7 +41,7 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.simpleColoredText(claim.parentClaim() != null ? ConfigHandler.lang.screenTitleEditorSub : ConfigHandler.lang.screenTitleEditor);
+                return PermHelper.simpleColoredText(claim.parentClaim() != null ? ConfigHandler.langManager.get("screenTitleEditorSub") : ConfigHandler.langManager.get("screenTitleEditor"));
             }
         };
         player.openMenu(fac);
@@ -53,33 +53,33 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
             switch (i) {
                 case 0 -> {
                     ItemStack close = new ItemStack(Items.TNT);
-                    close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenBack, ChatFormatting.DARK_RED));
+                    close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenBack"), ChatFormatting.DARK_RED));
                     inv.updateStack(i, close);
                 }
                 case 2 -> {
                     ItemStack stack = new ItemStack(Items.OAK_SIGN);
-                    stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenEnterText, ChatFormatting.GOLD));
+                    stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenEnterText"), ChatFormatting.GOLD));
                     if (claim.enterTitle != null)
                         ServerScreenHelper.addLore(stack, claim.enterTitle);
                     inv.updateStack(i, stack);
                 }
                 case 3 -> {
                     ItemStack stack2 = new ItemStack(Items.OAK_SIGN);
-                    stack2.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenEnterSubText, ChatFormatting.GOLD));
+                    stack2.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenEnterSubText"), ChatFormatting.GOLD));
                     if (claim.enterSubtitle != null)
                         ServerScreenHelper.addLore(stack2, claim.enterSubtitle);
                     inv.updateStack(i, stack2);
                 }
                 case 4 -> {
                     ItemStack stack3 = new ItemStack(Items.OAK_SIGN);
-                    stack3.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenLeaveText, ChatFormatting.GOLD));
+                    stack3.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenLeaveText"), ChatFormatting.GOLD));
                     if (claim.leaveTitle != null)
                         ServerScreenHelper.addLore(stack3, claim.leaveTitle);
                     inv.updateStack(i, stack3);
                 }
                 case 5 -> {
                     ItemStack stack4 = new ItemStack(Items.OAK_SIGN);
-                    stack4.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenLeaveSubText, ChatFormatting.GOLD));
+                    stack4.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenLeaveSubText"), ChatFormatting.GOLD));
                     if (claim.leaveSubtitle != null)
                         ServerScreenHelper.addLore(stack4, claim.leaveSubtitle);
                     inv.updateStack(i, stack4);
@@ -123,7 +123,7 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                         ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                     }));
                 } else {
-                    TextComponent text = new TextComponent(ConfigHandler.lang.chatClaimTextEdit);
+                    TextComponent text = new TextComponent(ConfigHandler.langManager.get("chatClaimTextEdit"));
                     String command = "/flan claimMessage" + (index == 2 || index == 3 ? " enter" : " leave")
                             + (index == 2 || index == 4 ? " title" : " subtitle") + " text ";
                     text.withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)));

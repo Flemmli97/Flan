@@ -30,7 +30,7 @@ public class CommandHelp {
         int max = subCommands.size() / 8;
         if (page > max)
             page = max;
-        context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.helpHeader, page), ChatFormatting.GOLD), false);
+        context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("helpHeader"), page), ChatFormatting.GOLD), false);
         for (int i = 8 * page; i < 8 * (page + 1); i++)
             if (i < subCommands.size()) {
                 MutableComponent cmdText = PermHelper.simpleColoredText("- " + subCommands.get(i), ChatFormatting.GRAY);
@@ -57,18 +57,18 @@ public class CommandHelp {
     }
 
     public static int helpCmd(CommandContext<CommandSourceStack> context, String command) {
-        String[] cmdHelp = ConfigHandler.lang.cmdLang.getCommandHelp(command);
-        context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.lang.helpCmdHeader, ChatFormatting.DARK_GREEN), false);
+        String[] cmdHelp = ConfigHandler.langManager.getArray("command." + command);
+        context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("helpCmdHeader"), ChatFormatting.DARK_GREEN), false);
         for (int i = 0; i < cmdHelp.length; i++) {
             if (i == 0) {
-                context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.helpCmdSyntax, cmdHelp[i]), ChatFormatting.GOLD), false);
+                context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("helpCmdSyntax"), cmdHelp[i]), ChatFormatting.GOLD), false);
                 context.getSource().sendSuccess(PermHelper.simpleColoredText(""), false);
             } else {
                 context.getSource().sendSuccess(PermHelper.simpleColoredText(cmdHelp[i], ChatFormatting.GOLD), false);
             }
         }
         if (command.equals("help")) {
-            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.lang.wiki, ChatFormatting.GOLD), false);
+            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("wiki"), ChatFormatting.GOLD), false);
             MutableComponent wiki = PermHelper.simpleColoredText("https://github.com/Flemmli97/Flan/wiki", ChatFormatting.GREEN);
             wiki.setStyle(wiki.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/Flemmli97/Flan/wiki")));
             context.getSource().sendSuccess(wiki, false);

@@ -40,7 +40,7 @@ public class CommandHelpers {
     public static GameProfile singleProfile(CommandContext<CommandSourceStack> context, String arg) throws CommandSyntaxException {
         Collection<GameProfile> profs = GameProfileArgument.getGameProfiles(context, arg);
         if (profs.size() != 1) {
-            throw new SimpleCommandExceptionType(() -> ConfigHandler.lang.onlyOnePlayer).create();
+            throw new SimpleCommandExceptionType(() -> ConfigHandler.langManager.get("onlyOnePlayer")).create();
         }
         return profs.stream().findFirst().get();
     }

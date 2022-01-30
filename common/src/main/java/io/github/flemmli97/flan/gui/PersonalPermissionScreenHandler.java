@@ -44,7 +44,7 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.simpleColoredText(String.format(ConfigHandler.lang.screenPersonalPermissions, group));
+                return PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("screenPersonalPermissions"), group));
             }
         };
         player.openMenu(fac);
@@ -61,15 +61,15 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
             int page = 0;
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
-                close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenBack, ChatFormatting.DARK_RED));
+                close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenBack"), ChatFormatting.DARK_RED));
                 inv.updateStack(i, close);
             } else if (page == 1 && i == 47) {
                 ItemStack close = new ItemStack(Items.ARROW);
-                close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenPrevious, ChatFormatting.WHITE));
+                close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenPrevious"), ChatFormatting.WHITE));
                 inv.updateStack(i, close);
             } else if (page == 0 && i == 51) {
                 ItemStack close = new ItemStack(Items.ARROW);
-                close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNext, ChatFormatting.WHITE));
+                close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenNext"), ChatFormatting.WHITE));
                 inv.updateStack(i, close);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 inv.updateStack(i, ServerScreenHelper.emptyFiller());
@@ -92,20 +92,20 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
-                close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenBack, ChatFormatting.DARK_RED));
+                close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenBack"), ChatFormatting.DARK_RED));
                 this.slots.get(i).set(close);
             } else if (i == 47) {
                 ItemStack stack = ServerScreenHelper.emptyFiller();
                 if (this.page >= 1) {
                     stack = new ItemStack(Items.ARROW);
-                    stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenPrevious, ChatFormatting.WHITE));
+                    stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenPrevious"), ChatFormatting.WHITE));
                 }
                 this.slots.get(i).set(stack);
             } else if (i == 51) {
                 ItemStack stack = ServerScreenHelper.emptyFiller();
                 if (this.page < maxPages) {
                     stack = new ItemStack(Items.ARROW);
-                    stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNext, ChatFormatting.WHITE));
+                    stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenNext"), ChatFormatting.WHITE));
                 }
                 this.slots.get(i).set(stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
