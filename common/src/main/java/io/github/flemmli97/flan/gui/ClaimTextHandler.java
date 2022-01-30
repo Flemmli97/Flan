@@ -59,6 +59,7 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                 case 2 -> {
                     ItemStack stack = new ItemStack(Items.OAK_SIGN);
                     stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenEnterText"), ChatFormatting.GOLD));
+                    ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenDelete"), ChatFormatting.DARK_RED));
                     if (claim.enterTitle != null)
                         ServerScreenHelper.addLore(stack, claim.enterTitle);
                     inv.updateStack(i, stack);
@@ -66,6 +67,7 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                 case 3 -> {
                     ItemStack stack2 = new ItemStack(Items.OAK_SIGN);
                     stack2.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenEnterSubText"), ChatFormatting.GOLD));
+                    ServerScreenHelper.addLore(stack2, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenDelete"), ChatFormatting.DARK_RED));
                     if (claim.enterSubtitle != null)
                         ServerScreenHelper.addLore(stack2, claim.enterSubtitle);
                     inv.updateStack(i, stack2);
@@ -73,6 +75,7 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                 case 4 -> {
                     ItemStack stack3 = new ItemStack(Items.OAK_SIGN);
                     stack3.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenLeaveText"), ChatFormatting.GOLD));
+                    ServerScreenHelper.addLore(stack3, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenDelete"), ChatFormatting.DARK_RED));
                     if (claim.leaveTitle != null)
                         ServerScreenHelper.addLore(stack3, claim.leaveTitle);
                     inv.updateStack(i, stack3);
@@ -80,6 +83,7 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                 case 5 -> {
                     ItemStack stack4 = new ItemStack(Items.OAK_SIGN);
                     stack4.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenLeaveSubText"), ChatFormatting.GOLD));
+                    ServerScreenHelper.addLore(stack4, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenDelete"), ChatFormatting.DARK_RED));
                     if (claim.leaveSubtitle != null)
                         ServerScreenHelper.addLore(stack4, claim.leaveSubtitle);
                     inv.updateStack(i, stack4);

@@ -144,6 +144,7 @@ public class LangManager {
         this.defaultTranslation.put("screenEnterSubText", "Edit subtitle text on enter. (Right-Click to use JSON text. See MC Wiki for that)");
         this.defaultTranslation.put("screenLeaveText", "Edit title text on leave. (Right-Click to use JSON text. See MC Wiki for that)");
         this.defaultTranslation.put("screenLeaveSubText", "Edit subtitle text on enter. (Right-Click to use JSON text. See MC Wiki for that)");
+        this.defaultTranslation.put("screenDelete", "Use \"$empty\" to delete the message");
 
         this.defaultTranslation.put("chatClaimTextEdit", "[Click for command]");
 
@@ -202,6 +203,7 @@ public class LangManager {
         this.defaultTranslationArray.put("command.setHome", new String[]{"setHome", "Standing in a claim with sufficient permission sets that claims home to the players position"});
         this.defaultTranslationArray.put("command.teleport", new String[]{"teleport self | admin | (other <player>) (<claim name> | <claim uuid>)", "Teleport to the given claims home position. Use admin to teleport to admin claims"});
         this.defaultTranslationArray.put("command.name", new String[]{"name self <name>", "Sets the current claims name"});
+        this.defaultTranslationArray.put("command.claimMessage", new String[]{"claimMessage (enter | leave) (title | subtitle) (string | text) <value>", "Sets the claims message. Use \"$empty\" to remove the message"});
 
         this.defaultTranslationArray.put("command.reload", new String[]{"reload", "Reloads the config ingame."});
         this.defaultTranslationArray.put("command.adminMode", new String[]{"adminMode", "Switches to admin mode ignoring all claims."});
