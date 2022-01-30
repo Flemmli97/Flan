@@ -309,7 +309,8 @@ public class LangManager {
             });
             //en_us is basically used as a default modifiable file
             if (lang.equals("en_us")) {
-                this.defaultTranslation.forEach((key, t) -> this.translation.putIfAbsent(key, t));
+                this.defaultTranslation.forEach(this.translation::putIfAbsent);
+                this.defaultTranslationArray.forEach(this.translationArr::putIfAbsent);
                 saveTo(this.confDir.resolve("en_us.json").toFile(), this.translation, this.translationArr);
             }
         } catch (IOException e) {
