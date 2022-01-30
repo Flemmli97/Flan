@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 public class ClaimPermission {
 
     private final Supplier<ItemStack> guiItem;
-    public String[] desc;
+    public final String[] desc;
     public final String id;
     public final ClaimTest test;
     public final boolean defaultVal;
