@@ -6,6 +6,14 @@ Flan 1.7.0
 - Rewritten the language system so its not possible to specify
   a language to use if a translation exist.  
   PR for translations go under data/flan/lang
+- defaultClaimName config:  
+  If not an empty string sets a claims name on creation to this  
+  2 arguments are passed to this string:  
+  The claims owner, and the amount of claims the player has  
+  Example: "%1$s's Claim #%2$s" would then result in the name "Player's Claim #x"  
+- defaultEnterMessage and defaultLeaveMessage:  
+  Automatically sets the enter/leave message to this  
+  The claims name is passed on to this so "Entering %s" -> "Entering <Claim>"
 
 Flan 1.6.9
 ======================

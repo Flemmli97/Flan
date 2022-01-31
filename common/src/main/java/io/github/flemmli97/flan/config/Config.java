@@ -34,6 +34,9 @@ public class Config {
     public int minClaimsize = 100;
     public int defaultClaimDepth = 10;
     public int maxClaims = -1;
+    public String defaultClaimName = "";
+    public String defaultEnterMessage = "";
+    public String defaultLeaveMessage = "";
 
     public String[] blacklistedWorlds = new String[0];
     public boolean worldWhitelist;
@@ -147,6 +150,9 @@ public class Config {
             this.minClaimsize = ConfigHandler.fromJson(obj, "minClaimsize", this.minClaimsize);
             this.defaultClaimDepth = ConfigHandler.fromJson(obj, "defaultClaimDepth", this.defaultClaimDepth);
             this.maxClaims = ConfigHandler.fromJson(obj, "maxClaims", this.maxClaims);
+            this.defaultClaimName = ConfigHandler.fromJson(obj, "defaultClaimName", this.defaultClaimName);
+            this.defaultEnterMessage = ConfigHandler.fromJson(obj, "defaultEnterMessage", this.defaultEnterMessage);
+            this.defaultLeaveMessage = ConfigHandler.fromJson(obj, "defaultLeaveMessage", this.defaultLeaveMessage);
 
             JsonArray arr = ConfigHandler.arryFromJson(obj, "blacklistedWorlds");
             this.blacklistedWorlds = new String[arr.size()];
@@ -241,6 +247,9 @@ public class Config {
         obj.addProperty("minClaimsize", this.minClaimsize);
         obj.addProperty("defaultClaimDepth", this.defaultClaimDepth);
         obj.addProperty("maxClaims", this.maxClaims);
+        obj.addProperty("defaultClaimName", this.defaultClaimName);
+        obj.addProperty("defaultEnterMessage", this.defaultEnterMessage);
+        obj.addProperty("defaultLeaveMessage", this.defaultLeaveMessage);
 
         JsonArray arr = new JsonArray();
         for (String blacklistedWorld : this.blacklistedWorlds)
