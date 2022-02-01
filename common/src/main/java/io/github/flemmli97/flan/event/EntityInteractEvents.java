@@ -197,7 +197,7 @@ public class EntityInteractEvents {
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
-            if (!(entity instanceof LivingEntity))
+            if (entity instanceof ArmorStand || !(entity instanceof LivingEntity))
                 return claim.canInteract(player, PermissionRegistry.BREAKNONLIVING, pos, message) ? InteractionResult.PASS : InteractionResult.FAIL;
             if (entity instanceof Player)
                 return claim.canInteract(player, PermissionRegistry.HURTPLAYER, pos, message) ? InteractionResult.PASS : InteractionResult.FAIL;
