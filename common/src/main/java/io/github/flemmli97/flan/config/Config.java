@@ -47,8 +47,7 @@ public class Config {
     public int claimDisplayTime = 1000;
     public int permissionLevel = 2;
 
-    public int sellPrice = -1;
-    public int buyPrice = -1;
+    public BuySellHandler buySellHandler = new BuySellHandler();
 
     public boolean lenientBlockEntityCheck;
     public List<String> breakBlockBlacklist = Lists.newArrayList(
@@ -167,8 +166,7 @@ public class Config {
             this.claimDisplayTime = ConfigHandler.fromJson(obj, "claimDisplayTime", this.claimDisplayTime);
             this.permissionLevel = ConfigHandler.fromJson(obj, "permissionLevel", this.permissionLevel);
 
-            this.sellPrice = ConfigHandler.fromJson(obj, "sellPrice", this.sellPrice);
-            this.buyPrice = ConfigHandler.fromJson(obj, "buyPrice", this.buyPrice);
+            this.buySellHandler.fromJson(ConfigHandler.fromJson(obj, "buySellHandler"));
 
             this.lenientBlockEntityCheck = ConfigHandler.fromJson(obj, "lenientBlockEntityCheck", this.lenientBlockEntityCheck);
             this.breakBlockBlacklist.clear();
@@ -262,8 +260,7 @@ public class Config {
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
         obj.addProperty("permissionLevel", this.permissionLevel);
 
-        obj.addProperty("sellPrice", this.sellPrice);
-        obj.addProperty("buyPrice", this.buyPrice);
+        obj.add("buySellHandler", this.buySellHandler.toJson());
 
         obj.addProperty("lenientBlockEntityCheck", this.lenientBlockEntityCheck);
         JsonArray blocksBreak = new JsonArray();

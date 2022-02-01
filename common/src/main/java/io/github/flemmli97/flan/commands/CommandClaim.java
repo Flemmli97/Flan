@@ -18,7 +18,6 @@ import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.ClaimMenuScreenHandler;
 import io.github.flemmli97.flan.gui.PersonalGroupScreenHandler;
-import io.github.flemmli97.flan.integration.currency.CommandCurrency;
 import io.github.flemmli97.flan.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.EnumEditMode;
@@ -84,9 +83,9 @@ public class CommandClaim {
                 .then(Commands.literal("giveClaimBlocks").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdAdminGive, true)).then(Commands.argument("players", GameProfileArgument.gameProfile())
                         .then(Commands.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::giveClaimBlocks))))
                 .then(Commands.literal("buyBlocks").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdBuy, false))
-                        .then(Commands.argument("amount", IntegerArgumentType.integer()).executes(CommandCurrency::buyClaimBlocks)))
+                        .then(Commands.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::buyClaimBlocks)))
                 .then(Commands.literal("sellBlocks").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdSell, false))
-                        .then(Commands.argument("amount", IntegerArgumentType.integer()).executes(CommandCurrency::sellClaimBlocks)))
+                        .then(Commands.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::sellClaimBlocks)))
                 .then(Commands.literal("claimMessage").then(Commands.argument("type", StringArgumentType.word()).suggests((ctx, b) -> SharedSuggestionProvider.suggest(new String[]{"enter", "leave"}, b))
                         .then(Commands.argument("title", StringArgumentType.word()).suggests((ctx, b) -> SharedSuggestionProvider.suggest(new String[]{"title", "subtitle"}, b))
                                 .then(Commands.literal("text").then(Commands.argument("component", ComponentArgument.textComponent()).executes(ctx -> CommandClaim.editClaimMessages(ctx, ComponentArgument.getComponent(ctx, "component")))))
@@ -800,5 +799,15 @@ public class CommandClaim {
             cmdFeed.append(new TextComponent(unf[1])).withStyle(ChatFormatting.GOLD);
         context.getSource().sendSuccess(cmdFeed, false);
         return Command.SINGLE_SUCCESS;
+    }
+
+    private static int sellClaimBlocks(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        boolean b = ConfigHandler.config.buySellHandler.sell(context.getSource().getPlayerOrException(), Math.max(0, IntegerArgumentType.getInteger(context, "amount")), m -> context.getSource().sendSuccess(m, false));
+        return b ? Command.SINGLE_SUCCESS : 0;
+    }
+
+    private static int buyClaimBlocks(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        boolean b = ConfigHandler.config.buySellHandler.buy(context.getSource().getPlayerOrException(), Math.max(0, IntegerArgumentType.getInteger(context, "amount")), m -> context.getSource().sendSuccess(m, false));
+        return b ? Command.SINGLE_SUCCESS : 0;
     }
 }

@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -152,8 +153,15 @@ public class LangManager {
         this.defaultTranslation.put("buyDisabled", "Claimblocks purchasing is disabled");
         this.defaultTranslation.put("sellFail", "Not enough claimblocks to sell");
         this.defaultTranslation.put("buyFail", "Not enough money");
+        this.defaultTranslation.put("buyFailItem", "Not enough items");
+        this.defaultTranslation.put("buyFailXP", "Not enough experience points");
         this.defaultTranslation.put("sellSuccess", "Sold %1$s claimblocks for %2$s");
+        this.defaultTranslation.put("sellSuccessItem", "Sold %1$s claimblocks for %3$s x%2$s");
+        this.defaultTranslation.put("sellSuccessXP", "Sold %1$s claimblocks for %2$s experience points");
         this.defaultTranslation.put("buySuccess", "Bought %1$s claimblocks for %2$s");
+        this.defaultTranslation.put("buySuccessItem", "Bought %1$s claimblocks with %2$s items");
+        this.defaultTranslation.put("buySuccessXP", "Bought %1$s claimblocks with %2$s experience points");
+
         this.defaultTranslation.put("currencyMissing", "Missing a supported currency mod");
 
         this.defaultTranslation.put("trappedRescue", "Rescuing. Don't move for 5 seconds");
@@ -214,8 +222,8 @@ public class LangManager {
         this.defaultTranslationArray.put("command.giveClaimBlocks", new String[]{"giveClaimBlocks <amount>", "Gives a player additional claim blocks."});
     }
 
-    private final Map<String, String> translation = new LinkedHashMap<>();
-    private final Map<String, String[]> translationArr = new LinkedHashMap<>();
+    private final Map<String, String> translation = new HashMap<>();
+    private final Map<String, String[]> translationArr = new HashMap<>();
 
     private final Path confDir;
 
@@ -260,20 +268,25 @@ public class LangManager {
                     FileReader reader = new FileReader(legacy);
                     JsonObject obj = GSON.fromJson(reader, JsonObject.class);
                     reader.close();
-                    translation = new LinkedHashMap<>();
-                    translationArr = new LinkedHashMap<>();
+                    Map<String, String> fromConf = new HashMap<>();
+                    Map<String, String[]> fromConfArr = new HashMap<>();
                     obj.entrySet().forEach(e -> {
                         if (e.getKey().equals("commands")) {
                             JsonObject commands = e.getValue().getAsJsonObject();
-                            commands.entrySet().forEach(c -> translationArr.put("command." + c.getKey(), GSON.fromJson(c.getValue(), String[].class)));
+                            commands.entrySet().forEach(c -> fromConfArr.put("command." + c.getKey(), GSON.fromJson(c.getValue(), String[].class)));
                         } else if (legacyPermissionGetter(e.getKey())) {
                             if (e.getValue().isJsonArray())
-                                translationArr.put(e.getKey(), GSON.fromJson(e.getValue(), String[].class));
+                                fromConfArr.put(e.getKey(), GSON.fromJson(e.getValue(), String[].class));
                             else
-                                translationArr.put(e.getKey(), new String[]{e.getValue().getAsString()});
+                                fromConfArr.put(e.getKey(), new String[]{e.getValue().getAsString()});
                         } else
-                            translation.put(e.getKey(), e.getValue().getAsString());
+                            fromConf.put(e.getKey(), e.getValue().getAsString());
                     });
+                    //To preserve order
+                    translation = new LinkedHashMap<>();
+                    translationArr = new LinkedHashMap<>();
+                    this.defaultTranslation.forEach((key, t)-> translation.put(key, fromConf.getOrDefault(key, t)));
+                    this.defaultTranslationArray.forEach((key, t)-> translationArr.put(key, fromConfArr.getOrDefault(key, t)));
                 } else {
                     translation = this.defaultTranslation;
                     translationArr = this.defaultTranslationArray;
@@ -311,9 +324,12 @@ public class LangManager {
             });
             //en_us is basically used as a default modifiable file
             if (lang.equals("en_us")) {
-                this.defaultTranslation.forEach(this.translation::putIfAbsent);
-                this.defaultTranslationArray.forEach(this.translationArr::putIfAbsent);
-                saveTo(this.confDir.resolve("en_us.json").toFile(), this.translation, this.translationArr);
+                //To preserve order
+                Map<String, String> ordered = new LinkedHashMap<>();
+                Map<String, String[]> orderedArr = new LinkedHashMap<>();
+                this.defaultTranslation.forEach((key, t)-> ordered.put(key, this.translation.getOrDefault(key, t)));
+                this.defaultTranslationArray.forEach((key, t)-> orderedArr.put(key, this.translationArr.getOrDefault(key, t)));
+                saveTo(this.confDir.resolve("en_us.json").toFile(), ordered, orderedArr);
             }
         } catch (IOException e) {
             if (lang.equals("en_us"))

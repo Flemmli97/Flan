@@ -14,6 +14,9 @@ Flan 1.7.0
 - defaultEnterMessage and defaultLeaveMessage:  
   Automatically sets the enter/leave message to this  
   The claims name is passed on to this so "Entering %s" -> "Entering <Claim>"
+- Rewritten buy/sell system.  
+  Its now possible to specify money, items or xp points as a "currency" value  
+  For more info see the https://github.com/Flemmli97/Flan/wiki/Config#buysell-handler
 
 Flan 1.6.9
 ======================
