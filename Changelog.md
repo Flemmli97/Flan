@@ -3,17 +3,17 @@ Flan 1.7.0
 - FAKEPLAYER permission for fake players
 - Ability to remove claim enter/leave messages.
   Simply use "$empty" instead to remove a message
-- Rewritten the language system so its not possible to specify
+- Rewritten the language system so its now possible to specify
   a language to use if a translation exist.  
-  PR for translations go under data/flan/lang
+  PR for translations go under "common/src/main/resources/data/flan/lang"
 - defaultClaimName config:  
   If not an empty string sets a claims name on creation to this  
   2 arguments are passed to this string:  
   The claims owner, and the amount of claims the player has  
-  Example: "%1$s's Claim #%2$s" would then result in the name "Player's Claim #x"  
+  Example: "%1$s's Claim #%2$s" would then e.g. result in the name "Player's Claim #1"  
 - defaultEnterMessage and defaultLeaveMessage:  
   Automatically sets the enter/leave message to this  
-  The claims name is passed on to this so "Entering %s" -> "Entering <Claim>"
+  The claim name is passed on to this so "Entering %s" -> "Entering <Claim>"
 - Rewritten buy/sell system.  
   Its now possible to specify money, items or xp points as a "currency" value  
   For more info see the https://github.com/Flemmli97/Flan/wiki/Config#buysell-handler
