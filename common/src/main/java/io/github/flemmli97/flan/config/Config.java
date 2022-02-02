@@ -48,6 +48,7 @@ public class Config {
     public int permissionLevel = 2;
 
     public BuySellHandler buySellHandler = new BuySellHandler();
+    public int maxBuyBlocks = -1;
 
     public boolean lenientBlockEntityCheck;
     public List<String> breakBlockBlacklist = Lists.newArrayList(
@@ -167,6 +168,7 @@ public class Config {
             this.permissionLevel = ConfigHandler.fromJson(obj, "permissionLevel", this.permissionLevel);
 
             this.buySellHandler.fromJson(ConfigHandler.fromJson(obj, "buySellHandler"));
+            this.maxBuyBlocks = ConfigHandler.fromJson(obj, "maxBuyBlocks", this.maxBuyBlocks);
 
             this.lenientBlockEntityCheck = ConfigHandler.fromJson(obj, "lenientBlockEntityCheck", this.lenientBlockEntityCheck);
             this.breakBlockBlacklist.clear();
@@ -261,6 +263,7 @@ public class Config {
         obj.addProperty("permissionLevel", this.permissionLevel);
 
         obj.add("buySellHandler", this.buySellHandler.toJson());
+        obj.addProperty("maxBuyBlocks", this.maxBuyBlocks);
 
         obj.addProperty("lenientBlockEntityCheck", this.lenientBlockEntityCheck);
         JsonArray blocksBreak = new JsonArray();

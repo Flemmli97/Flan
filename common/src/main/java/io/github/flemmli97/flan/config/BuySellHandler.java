@@ -37,6 +37,11 @@ public class BuySellHandler {
             message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyDisabled"), ChatFormatting.DARK_RED));
             return false;
         }
+        PlayerClaimData data = PlayerClaimData.get(player);
+        if(ConfigHandler.config.maxBuyBlocks >= 0 && data.getAdditionalClaims() + blocks > ConfigHandler.config.maxBuyBlocks) {
+            message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyLimit"), ChatFormatting.DARK_RED));
+            return false;
+        }
         switch (this.buyType) {
             case MONEY -> {
                 return CommandCurrency.buyClaimBlocks(player, blocks, this.buyAmount, message);
@@ -75,7 +80,6 @@ public class BuySellHandler {
                         break;
                     }
                 }
-                PlayerClaimData data = PlayerClaimData.get(player);
                 data.setAdditionalClaims(data.getAdditionalClaims() + blocks);
                 message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("buySuccessItem"), blocks, deduct)));
                 return true;
@@ -84,7 +88,6 @@ public class BuySellHandler {
                 int deduct = Mth.ceil(blocks * this.buyAmount);
                 if (deduct < totalXpPointsForLevel(player.experienceLevel) + player.experienceProgress * xpForLevel(player.experienceLevel + 1)) {
                     player.giveExperiencePoints(-deduct);
-                    PlayerClaimData data = PlayerClaimData.get(player);
                     data.setAdditionalClaims(data.getAdditionalClaims() + blocks);
                     message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("buySuccessXP"), blocks, deduct)));
                     return true;
@@ -114,8 +117,8 @@ public class BuySellHandler {
                 if (this.ingredient.getItems().length == 0) {
                     return false;
                 }
-                ItemStack stack = this.ingredient.getItems()[0];
                 int amount = Mth.floor(blocks * this.sellAmount);
+                ItemStack stack = this.ingredient.getItems()[0];
                 while (amount > 0) {
                     ItemStack toGive = stack.copy();
                     if (amount > 64) {

@@ -17,6 +17,10 @@ Flan 1.7.0
 - Rewritten buy/sell system.  
   Its now possible to specify money, items or xp points as a "currency" value  
   For more info see the https://github.com/Flemmli97/Flan/wiki/Config#buysell-handler
+- maxBuyBlocks config:
+  Specify the max amount of claim blocks a player can buy.  
+  giveClaimBlocks command bypasses this still
+  -1 = no limit
 
 Flan 1.6.9
 ======================
