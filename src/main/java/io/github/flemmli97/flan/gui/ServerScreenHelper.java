@@ -36,16 +36,16 @@ public class ServerScreenHelper {
         ItemStack stack = perm.getItem();
         stack.setCustomName(ServerScreenHelper.coloredGuiText(perm.id, Formatting.GOLD));
         List<Text> lore = new ArrayList<>();
-        for (String pdesc : perm.desc) {
+        for (String pdesc : ConfigHandler.langManager.getArray(perm.id + ".desc")) {
             Text trans = ServerScreenHelper.coloredGuiText(pdesc, Formatting.YELLOW);
             lore.add(trans);
         }
         Config.GlobalType global = ConfigHandler.config.getGlobal(claim.getWorld(), perm);
         if (!claim.isAdminClaim() && !global.canModify()) {
-            Text text = ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenUneditable, Formatting.DARK_RED);
+            Text text = ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenUneditable"), Formatting.DARK_RED);
             lore.add(text);
-            String permFlag = global.getValue() ? ConfigHandler.lang.screenTrue : ConfigHandler.lang.screenFalse;
-            Text text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? Formatting.GREEN : Formatting.RED);
+            String permFlag = global.getValue() ? ConfigHandler.langManager.get("screenTrue") : ConfigHandler.langManager.get("screenFalse");
+            Text text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.langManager.get("screenEnableText"), permFlag), permFlag.equals(ConfigHandler.langManager.get("screenTrue")) ? Formatting.GREEN : Formatting.RED);
             lore.add(text2);
         } else {
             String permFlag;
@@ -54,19 +54,19 @@ public class ServerScreenHelper {
                     permFlag = "" + (claim.permEnabled(perm) == 1);
                 else {
                     permFlag = switch (claim.permEnabled(perm)) {
-                        case -1 -> ConfigHandler.lang.screenDefault;
-                        case 1 -> ConfigHandler.lang.screenTrue;
-                        default -> ConfigHandler.lang.screenFalse;
+                        case -1 -> ConfigHandler.langManager.get("screenDefault");
+                        case 1 -> ConfigHandler.langManager.get("screenTrue");
+                        default -> ConfigHandler.langManager.get("screenFalse");
                     };
                 }
             } else {
                 permFlag = switch (claim.groupHasPerm(group, perm)) {
-                    case -1 -> ConfigHandler.lang.screenDefault;
-                    case 1 -> ConfigHandler.lang.screenTrue;
-                    default -> ConfigHandler.lang.screenFalse;
+                    case -1 -> ConfigHandler.langManager.get("screenDefault");
+                    case 1 -> ConfigHandler.langManager.get("screenTrue");
+                    default -> ConfigHandler.langManager.get("screenFalse");
                 };
             }
-            Text text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? Formatting.GREEN : Formatting.RED);
+            Text text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.langManager.get("screenEnableText"), permFlag), permFlag.equals(ConfigHandler.langManager.get("screenTrue")) ? Formatting.GREEN : Formatting.RED);
             lore.add(text);
         }
         addLore(stack, lore);
@@ -77,25 +77,25 @@ public class ServerScreenHelper {
         ItemStack stack = perm.getItem();
         stack.setCustomName(ServerScreenHelper.coloredGuiText(perm.id, Formatting.GOLD));
         NbtList lore = new NbtList();
-        for (String pdesc : perm.desc) {
+        for (String pdesc : ConfigHandler.langManager.getArray(perm.id + ".desc")) {
             Text trans = ServerScreenHelper.coloredGuiText(pdesc, Formatting.YELLOW);
             lore.add(NbtString.of(Text.Serializer.toJson(trans)));
         }
         Config.GlobalType global = ConfigHandler.config.getGlobal(player.getServerWorld(), perm);
         if (!global.canModify()) {
-            Text text = ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenUneditable, Formatting.DARK_RED);
+            Text text = ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenUneditable"), Formatting.DARK_RED);
             lore.add(NbtString.of(Text.Serializer.toJson(text)));
             String permFlag = String.valueOf(global.getValue());
-            Text text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? Formatting.GREEN : Formatting.RED);
+            Text text2 = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.langManager.get("screenEnableText"), permFlag), permFlag.equals(ConfigHandler.langManager.get("screenTrue")) ? Formatting.GREEN : Formatting.RED);
             lore.add(NbtString.of(Text.Serializer.toJson(text2)));
         } else {
             String permFlag;
             Map<ClaimPermission, Boolean> map = PlayerClaimData.get(player).playerDefaultGroups().getOrDefault(group, new HashMap<>());
             if (map.containsKey(perm))
-                permFlag = map.get(perm) ? ConfigHandler.lang.screenTrue : ConfigHandler.lang.screenFalse;
+                permFlag = map.get(perm) ? ConfigHandler.langManager.get("screenTrue") : ConfigHandler.langManager.get("screenFalse");
             else
-                permFlag = ConfigHandler.lang.screenDefault;
-            Text text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenEnableText, permFlag), permFlag.equals(ConfigHandler.lang.screenTrue) ? Formatting.GREEN : Formatting.RED);
+                permFlag = ConfigHandler.langManager.get("screenDefault");
+            Text text = ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.langManager.get("screenEnableText"), permFlag), permFlag.equals(ConfigHandler.langManager.get("screenTrue")) ? Formatting.GREEN : Formatting.RED);
             lore.add(NbtString.of(Text.Serializer.toJson(text)));
         }
         stack.getOrCreateSubTag("display").put("Lore", lore);

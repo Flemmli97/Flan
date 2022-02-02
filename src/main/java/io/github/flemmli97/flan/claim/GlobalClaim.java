@@ -21,7 +21,7 @@ public record GlobalClaim(ServerWorld world) implements IPermissionContainer {
             if (global.getValue())
                 return true;
             if (message)
-                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), Formatting.DARK_RED), true);
             return false;
         }
         return perm != PermissionRegistry.MOBSPAWN && perm != PermissionRegistry.ANIMALSPAWN;

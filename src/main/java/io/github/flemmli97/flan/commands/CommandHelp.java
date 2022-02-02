@@ -29,7 +29,7 @@ public class CommandHelp {
         int max = subCommands.size() / 8;
         if (page > max)
             page = max;
-        context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.helpHeader, page), Formatting.GOLD), false);
+        context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("helpHeader"), page), Formatting.GOLD), false);
         for (int i = 8 * page; i < 8 * (page + 1); i++)
             if (i < subCommands.size()) {
                 MutableText cmdText = PermHelper.simpleColoredText("- " + subCommands.get(i), Formatting.GRAY);
@@ -56,18 +56,18 @@ public class CommandHelp {
     }
 
     public static int helpCmd(CommandContext<ServerCommandSource> context, String command) {
-        String[] cmdHelp = ConfigHandler.lang.cmdLang.getCommandHelp(command);
-        context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.helpCmdHeader, Formatting.DARK_GREEN), false);
+        String[] cmdHelp = ConfigHandler.langManager.getArray("command." + command);
+        context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("helpCmdHeader"), Formatting.DARK_GREEN), false);
         for (int i = 0; i < cmdHelp.length; i++) {
             if (i == 0) {
-                context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.helpCmdSyntax, cmdHelp[i]), Formatting.GOLD), false);
+                context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("helpCmdSyntax"), cmdHelp[i]), Formatting.GOLD), false);
                 context.getSource().sendFeedback(PermHelper.simpleColoredText(""), false);
             } else {
                 context.getSource().sendFeedback(PermHelper.simpleColoredText(cmdHelp[i], Formatting.GOLD), false);
             }
         }
         if (command.equals("help")) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.wiki, Formatting.GOLD), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("wiki"), Formatting.GOLD), false);
             MutableText wiki = PermHelper.simpleColoredText("https://github.com/Flemmli97/Flan/wiki", Formatting.GREEN);
             wiki.setStyle(wiki.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/Flemmli97/Flan/wiki")));
             context.getSource().sendFeedback(wiki, false);

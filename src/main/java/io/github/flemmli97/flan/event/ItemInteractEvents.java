@@ -110,7 +110,7 @@ public class ItemInteractEvents {
             if (claim.canInteract(player, perm, placePos, false))
                 return ActionResult.PASS;
             else if (actualInClaim) {
-                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), Formatting.DARK_RED), true);
                 return ActionResult.FAIL;
             }
         }
@@ -120,7 +120,7 @@ public class ItemInteractEvents {
             }
             return ActionResult.PASS;
         } else if (actualInClaim) {
-            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), true);
+            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), Formatting.DARK_RED), true);
             BlockState other = context.getWorld().getBlockState(placePos.up());
             player.networkHandler.sendPacket(new BlockUpdateS2CPacket(placePos.up(), other));
             PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
@@ -149,16 +149,16 @@ public class ItemInteractEvents {
 
     public static void claimLandHandling(ServerPlayerEntity player, BlockPos target) {
         if (!PermissionNodeHandler.perm(player, PermissionNodeHandler.claimCreate, false)) {
-            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermission, Formatting.DARK_RED), true);
+            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), Formatting.DARK_RED), true);
             return;
         }
         if (ConfigHandler.config.worldWhitelist) {
             if (!cantClaimInWorld(player.getServerWorld())) {
-                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.landClaimDisabledWorld, Formatting.DARK_RED), false);
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("landClaimDisabledWorld"), Formatting.DARK_RED), false);
                 return;
             }
         } else if (cantClaimInWorld(player.getServerWorld())) {
-            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.landClaimDisabledWorld, Formatting.DARK_RED), false);
+            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("landClaimDisabledWorld"), Formatting.DARK_RED), false);
             return;
         }
         ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
@@ -175,9 +175,9 @@ public class ItemInteractEvents {
                         if (subClaim.isCorner(target)) {
                             data.setEditClaim(subClaim, player.getBlockPos().getY());
                             data.setEditingCorner(target);
-                            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.resizeClaim, Formatting.GOLD), false);
+                            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("resizeClaim"), Formatting.GOLD), false);
                         } else {
-                            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.cantClaimHere, Formatting.RED), false);
+                            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("cantClaimHere"), Formatting.RED), false);
                         }
                         data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                     } else {
@@ -186,7 +186,7 @@ public class ItemInteractEvents {
                                 Set<Claim> fl = claim.resizeSubclaim(data.currentEdit(), data.editingCorner(), target);
                                 if (!fl.isEmpty()) {
                                     fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.MAIN, player.getBlockPos().getY()));
-                                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
+                                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("conflictOther"), Formatting.RED), false);
                                 }
                                 data.setEditClaim(null, 0);
                                 data.setEditingCorner(null);
@@ -197,9 +197,9 @@ public class ItemInteractEvents {
                                 data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
                                 if (!fl.isEmpty()) {
                                     fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.CONFLICT, player.getBlockPos().getY()));
-                                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.conflictOther, Formatting.RED), false);
+                                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("conflictOther"), Formatting.RED), false);
                                 } else {
-                                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.subClaimCreateSuccess, Formatting.GOLD), false);
+                                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("subClaimCreateSuccess"), Formatting.GOLD), false);
                                 }
                                 data.setEditingCorner(null);
                             }
@@ -210,22 +210,22 @@ public class ItemInteractEvents {
                     if (claim.isCorner(target)) {
                         data.setEditClaim(claim, player.getBlockPos().getY());
                         data.setEditingCorner(target);
-                        player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.resizeClaim, Formatting.GOLD), false);
+                        player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("resizeClaim"), Formatting.GOLD), false);
                     } else if (data.currentEdit() != null) {
                         storage.resizeClaim(data.currentEdit(), data.editingCorner(), target, player);
                         data.setEditClaim(null, 0);
                         data.setEditingCorner(null);
                     } else {
                         data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
-                        player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.cantClaimHere, Formatting.RED), false);
+                        player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("cantClaimHere"), Formatting.RED), false);
                     }
                 }
             } else {
                 data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
-                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.cantClaimHere, Formatting.RED), false);
+                player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("cantClaimHere"), Formatting.RED), false);
             }
         } else if (data.getEditMode() == EnumEditMode.SUBCLAIM) {
-            player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.wrongMode, data.getEditMode()), Formatting.RED), false);
+            player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("wrongMode"), data.getEditMode()), Formatting.RED), false);
         } else {
             if (data.currentEdit() != null) {
                 storage.resizeClaim(data.currentEdit(), data.editingCorner(), target, player);
@@ -247,12 +247,12 @@ public class ItemInteractEvents {
         data.setClaimActionCooldown();
         if (claim != null) {
             String owner = claim.isAdminClaim() ? "<Admin>" : player.getServer().getUserCache().getByUuid(claim.getOwner()).map(GameProfile::getName).orElse("<UNKOWN>");
-            Text text = PermHelper.simpleColoredText(String.format(ConfigHandler.lang.inspectBlockOwner,
+            Text text = PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("inspectBlockOwner"),
                     owner,
                     target.getX(), target.getY(), target.getZ()), Formatting.GREEN);
             player.sendMessage(text, false);
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.getBlockPos().getY());
         } else
-            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.inspectNoClaim, Formatting.RED), false);
+            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("inspectNoClaim"), Formatting.RED), false);
     }
 }

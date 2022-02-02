@@ -19,17 +19,17 @@ public class CommandCurrency {
 
     public static int sellClaimBlocks(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (!Flan.gunpowder) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.gunpowderMissing, Formatting.DARK_RED), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("gunpowderMissing"), Formatting.DARK_RED), false);
             return 0;
         }
         if (ConfigHandler.config.sellPrice == -1) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.sellDisabled, Formatting.DARK_RED), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("sellDisabled"), Formatting.DARK_RED), false);
             return 0;
         }
         int amount = Math.max(0, IntegerArgumentType.getInteger(context, "amount"));
         PlayerClaimData data = PlayerClaimData.get(context.getSource().getPlayer());
         if (data.getAdditionalClaims() - Math.max(0, data.usedClaimBlocks() - data.getClaimBlocks()) < amount) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.sellFail, Formatting.DARK_RED), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("sellFail"), Formatting.DARK_RED), false);
             return 0;
         }
         StoredBalance bal = BalanceHandler.INSTANCE.getUser(context.getSource().getPlayer().getUuid());
@@ -37,17 +37,17 @@ public class CommandCurrency {
         bal.setBalance(bal.getBalance().add(price));
         BalanceHandler.INSTANCE.updateUser(bal);
         data.setAdditionalClaims(data.getAdditionalClaims() - amount);
-        context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.sellSuccess, amount, price), Formatting.GOLD), false);
+        context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("sellSuccess"), amount, price), Formatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 
     public static int buyClaimBlocks(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (!Flan.gunpowder) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.gunpowderMissing, Formatting.DARK_RED), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("gunpowderMissing"), Formatting.DARK_RED), false);
             return 0;
         }
         if (ConfigHandler.config.buyPrice == -1) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.buyDisabled, Formatting.DARK_RED), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyDisabled"), Formatting.DARK_RED), false);
             return 0;
         }
         StoredBalance bal = BalanceHandler.INSTANCE.getUser(context.getSource().getPlayer().getUuid());
@@ -58,10 +58,10 @@ public class CommandCurrency {
             data.setAdditionalClaims(data.getAdditionalClaims() + amount);
             bal.setBalance(bal.getBalance().subtract(price));
             BalanceHandler.INSTANCE.updateUser(bal);
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.buySuccess, amount, price), Formatting.GOLD), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("buySuccess"), amount, price), Formatting.GOLD), false);
             return Command.SINGLE_SUCCESS;
         }
-        context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.buyFail, Formatting.DARK_RED), false);
+        context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyFail"), Formatting.DARK_RED), false);
         return 0;
     }
 }

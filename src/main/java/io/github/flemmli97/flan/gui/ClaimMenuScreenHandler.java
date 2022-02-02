@@ -38,7 +38,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
             @Override
             public Text getDisplayName() {
-                return PermHelper.simpleColoredText(claim.parentClaim() != null ? ConfigHandler.lang.screenMenuSub : ConfigHandler.lang.screenMenu);
+                return PermHelper.simpleColoredText(claim.parentClaim() != null ? ConfigHandler.langManager.get("screenMenuSub") : ConfigHandler.langManager.get("screenMenu"));
             }
         };
         player.openHandledScreen(fac);
@@ -50,43 +50,43 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
             switch (i) {
                 case 0 -> {
                     ItemStack close = new ItemStack(Items.TNT);
-                    close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenClose, Formatting.DARK_RED));
+                    close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenClose"), Formatting.DARK_RED));
                     inv.updateStack(i, close);
                 }
                 case 2 -> {
                     ItemStack perm = new ItemStack(Items.BEACON);
-                    perm.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuGlobal, Formatting.GOLD));
+                    perm.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenMenuGlobal"), Formatting.GOLD));
                     if (player instanceof ServerPlayerEntity && !this.hasEditPerm(claim, (ServerPlayerEntity) player))
-                        ServerScreenHelper.addLore(perm, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, Formatting.DARK_RED));
+                        ServerScreenHelper.addLore(perm, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenNoPerm"), Formatting.DARK_RED));
                     inv.updateStack(i, perm);
                 }
                 case 3 -> {
                     ItemStack group = new ItemStack(Items.WRITABLE_BOOK);
-                    group.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuGroup, Formatting.GOLD));
+                    group.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenMenuGroup"), Formatting.GOLD));
                     if (player instanceof ServerPlayerEntity && !this.hasEditPerm(claim, (ServerPlayerEntity) player))
-                        ServerScreenHelper.addLore(group, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, Formatting.DARK_RED));
+                        ServerScreenHelper.addLore(group, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenNoPerm"), Formatting.DARK_RED));
                     inv.updateStack(i, group);
                 }
                 case 4 -> {
                     ItemStack potions = new ItemStack(Items.POTION);
-                    potions.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuPotion, Formatting.GOLD));
+                    potions.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenMenuPotion"), Formatting.GOLD));
                     if (player instanceof ServerPlayerEntity && !this.hasPerm(claim, (ServerPlayerEntity) player, PermissionRegistry.EDITPOTIONS))
-                        ServerScreenHelper.addLore(potions, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, Formatting.DARK_RED));
+                        ServerScreenHelper.addLore(potions, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenNoPerm"), Formatting.DARK_RED));
                     inv.updateStack(i, potions);
                 }
                 case 5 -> {
 
                     ItemStack sign = new ItemStack(Items.OAK_SIGN);
-                    sign.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuClaimText, Formatting.GOLD));
+                    sign.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenMenuClaimText"), Formatting.GOLD));
                     if (player instanceof ServerPlayerEntity && !this.hasPerm(claim, (ServerPlayerEntity) player, PermissionRegistry.EDITCLAIM))
-                        ServerScreenHelper.addLore(sign, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, Formatting.DARK_RED));
+                        ServerScreenHelper.addLore(sign, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenNoPerm"), Formatting.DARK_RED));
                     inv.updateStack(i, sign);
                 }
                 case 8 -> {
                     ItemStack delete = new ItemStack(Items.BARRIER);
-                    delete.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenMenuDelete, Formatting.RED));
+                    delete.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenMenuDelete"), Formatting.RED));
                     if (player instanceof ServerPlayerEntity && !this.hasPerm(claim, (ServerPlayerEntity) player, PermissionRegistry.EDITCLAIM))
-                        ServerScreenHelper.addLore(delete, ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNoPerm, Formatting.DARK_RED));
+                        ServerScreenHelper.addLore(delete, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenNoPerm"), Formatting.DARK_RED));
                     inv.updateStack(i, delete);
                 }
                 default -> inv.updateStack(i, ServerScreenHelper.emptyFiller());
@@ -146,7 +146,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
                             ClaimStorage storage = ClaimStorage.get(player.getServerWorld());
                             storage.deleteClaim(this.claim, true, PlayerClaimData.get(player).getEditMode(), player.getServerWorld());
                             player.closeHandledScreen();
-                            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.deleteClaim, Formatting.RED), false);
+                            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("deleteClaim"), Formatting.RED), false);
                             ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_PLACE, 1, 1f);
                         } else {
                             player.closeHandledScreen();

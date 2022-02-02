@@ -279,7 +279,7 @@ public class PlayerClaimData implements IPlayerData {
             this.claimBlockMessage = false;
         } else if (!this.claimBlockMessage) {
             this.claimBlockMessage = true;
-            this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.claimBlocksFormat,
+            this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBlocksFormat"),
                     this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks()), Formatting.GOLD), false);
         }
         this.actionCooldown--;
@@ -315,7 +315,7 @@ public class PlayerClaimData implements IPlayerData {
             } else if (this.player.getPos().squaredDistanceTo(this.trappedPos) > 0.15) {
                 this.trappedTick = -1;
                 this.trappedPos = null;
-                this.player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.trappedMove, Formatting.RED), false);
+                this.player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("trappedMove"), Formatting.RED), false);
             }
         }
         this.deathPickupTick--;
@@ -335,7 +335,7 @@ public class PlayerClaimData implements IPlayerData {
         this.defaultGroups.clear();
         this.defaultGroups.putAll(data.defaultGroups);
         if (data.setDeathItemOwner())
-            this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.unlockDropsCmd, "/flan unlockDrops"), Formatting.GOLD), false);
+            this.player.sendMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("unlockDropsCmd"), "/flan unlockDrops"), Formatting.GOLD), false);
     }
 
     public void updateScoreboard() {
@@ -484,7 +484,7 @@ public class PlayerClaimData implements IPlayerData {
         Flan.log("Reading grief prevention data");
         File griefPrevention = server.getSavePath(WorldSavePath.ROOT).resolve("plugins/GriefPreventionData/PlayerData").toFile();
         if (!griefPrevention.exists()) {
-            src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.cantFindData, griefPrevention.getAbsolutePath()), Formatting.DARK_RED), false);
+            src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("cantFindData"), griefPrevention.getAbsolutePath()), Formatting.DARK_RED), false);
             return false;
         }
         for (File f : griefPrevention.listFiles()) {
@@ -519,7 +519,7 @@ public class PlayerClaimData implements IPlayerData {
                     reader.close();
                 }
             } catch (Exception e) {
-                src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.errorFile, f.getName(), Formatting.RED)), false);
+                src.sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("errorFile"), f.getName(), Formatting.RED)), false);
             }
         }
         return true;
