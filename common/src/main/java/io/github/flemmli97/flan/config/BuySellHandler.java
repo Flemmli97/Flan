@@ -5,6 +5,7 @@ import com.google.gson.JsonParseException;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.integration.currency.CommandCurrency;
 import io.github.flemmli97.flan.player.PlayerClaimData;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -111,12 +112,13 @@ public class BuySellHandler {
             case MONEY:
                 return CommandCurrency.sellClaimBlocks(player, blocks, this.sellAmount, message);
             case ITEM:
+                IntList list = this.ingredient.getIds();
                 if (this.ingredient.isEmpty()) {
                     return false;
                 }
                 int amount = MathHelper.floor(blocks * this.sellAmount);
                 //HMMMM
-                ItemStack stack = RecipeFinder.getStackFromId(this.ingredient.getIds().getInt(0));
+                ItemStack stack = RecipeFinder.getStackFromId(list.getInt(0));
                 while (amount > 0) {
                     ItemStack toGive = stack.copy();
                     if (amount > 64) {
