@@ -1,9 +1,5 @@
 package io.github.flemmli97.flan.integration.currency.fabric;
 
-import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -11,56 +7,58 @@ import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.gunpowder.api.GunpowderMod;
 import io.github.gunpowder.api.module.currency.dataholders.StoredBalance;
 import io.github.gunpowder.api.module.currency.modelhandlers.BalanceHandler;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.math.BigDecimal;
+import java.util.function.Consumer;
 
 public class CommandCurrencyImpl {
 
-    public static int sellClaimBlocks(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        if (!Flan.gunpowder) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("currencyMissing"), Formatting.DARK_RED), false);
-            return 0;
+    public static boolean sellClaimBlocks(ServerPlayerEntity player, int blocks, float value, Consumer<Text> message) {
+        if (value == -1) {
+            message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("sellDisabled"), Formatting.DARK_RED));
+            return false;
         }
-        if (ConfigHandler.config.sellPrice == -1) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("sellDisabled"), Formatting.DARK_RED), false);
-            return 0;
+        if (Flan.gunpowder) {
+            PlayerClaimData data = PlayerClaimData.get(player);
+            if (data.getAdditionalClaims() - Math.max(0, data.usedClaimBlocks() - data.getClaimBlocks()) < blocks) {
+                message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("sellFail"), Formatting.DARK_RED));
+                return false;
+            }
+            StoredBalance bal = GunpowderMod.getInstance().getRegistry().getModelHandler(BalanceHandler.class).getUser(player.getUuid());
+            BigDecimal price = BigDecimal.valueOf(blocks * value);
+            bal.setBalance(bal.getBalance().add(price));
+            GunpowderMod.getInstance().getRegistry().getModelHandler(BalanceHandler.class).updateUser(bal);
+            data.setAdditionalClaims(data.getAdditionalClaims() - blocks);
+            message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("sellSuccess"), blocks, price), Formatting.GOLD));
+            return true;
         }
-        int amount = Math.max(0, IntegerArgumentType.getInteger(context, "amount"));
-        PlayerClaimData data = PlayerClaimData.get(context.getSource().getPlayer());
-        if (data.getAdditionalClaims() - Math.max(0, data.usedClaimBlocks() - data.getClaimBlocks()) < amount) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("sellFail"), Formatting.DARK_RED), false);
-            return 0;
-        }
-        StoredBalance bal = GunpowderMod.getInstance().getRegistry().getModelHandler(BalanceHandler.class).getUser(context.getSource().getPlayer().getUuid());
-        BigDecimal price = BigDecimal.valueOf(amount * ConfigHandler.config.sellPrice);
-        bal.setBalance(bal.getBalance().add(price));
-        data.setAdditionalClaims(data.getAdditionalClaims() - amount);
-        context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("sellSuccess"), amount, price), Formatting.GOLD), false);
-        return Command.SINGLE_SUCCESS;
+        message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("currencyMissing"), Formatting.DARK_RED));
+        return false;
     }
 
-    public static int buyClaimBlocks(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        if (!Flan.gunpowder) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("currencyMissing"), Formatting.DARK_RED), false);
-            return 0;
+    public static boolean buyClaimBlocks(ServerPlayerEntity player, int blocks, float value, Consumer<Text> message) {
+        if (value == -1) {
+            message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyDisabled"), Formatting.DARK_RED));
+            return false;
         }
-        if (ConfigHandler.config.buyPrice == -1) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyDisabled"), Formatting.DARK_RED), false);
-            return 0;
+        if (Flan.gunpowder) {
+            StoredBalance bal = GunpowderMod.getInstance().getRegistry().getModelHandler(BalanceHandler.class).getUser(player.getUuid());
+            BigDecimal price = BigDecimal.valueOf(Math.max(0, blocks * value));
+            if (bal.getBalance().compareTo(price) >= 0) {
+                PlayerClaimData data = PlayerClaimData.get(player);
+                data.setAdditionalClaims(data.getAdditionalClaims() + blocks);
+                bal.setBalance(bal.getBalance().subtract(price));
+                GunpowderMod.getInstance().getRegistry().getModelHandler(BalanceHandler.class).updateUser(bal);
+                message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("buySuccess"), blocks, price), Formatting.GOLD));
+                return true;
+            }
+            message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyFail"), Formatting.DARK_RED));
+            return false;
         }
-        StoredBalance bal = GunpowderMod.getInstance().getRegistry().getModelHandler(BalanceHandler.class).getUser(context.getSource().getPlayer().getUuid());
-        int amount = Math.max(0, IntegerArgumentType.getInteger(context, "amount"));
-        BigDecimal price = BigDecimal.valueOf(amount * ConfigHandler.config.buyPrice);
-        if (bal.getBalance().compareTo(price) >= 0) {
-            PlayerClaimData data = PlayerClaimData.get(context.getSource().getPlayer());
-            data.setAdditionalClaims(data.getAdditionalClaims() + amount);
-            bal.setBalance(bal.getBalance().subtract(price));
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("buySuccess"), amount, price), Formatting.GOLD), false);
-            return Command.SINGLE_SUCCESS;
-        }
-        context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyFail"), Formatting.DARK_RED), false);
-        return 0;
+        message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("currencyMissing"), Formatting.DARK_RED));
+        return false;
     }
 }

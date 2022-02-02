@@ -18,7 +18,6 @@ import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.ClaimMenuScreenHandler;
 import io.github.flemmli97.flan.gui.PersonalGroupScreenHandler;
-import io.github.flemmli97.flan.integration.currency.CommandCurrency;
 import io.github.flemmli97.flan.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.EnumEditMode;
@@ -84,9 +83,9 @@ public class CommandClaim {
                 .then(CommandManager.literal("giveClaimBlocks").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdAdminGive, true)).then(CommandManager.argument("players", GameProfileArgumentType.gameProfile())
                         .then(CommandManager.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::giveClaimBlocks))))
                 .then(CommandManager.literal("buyBlocks").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdBuy, false))
-                        .then(CommandManager.argument("amount", IntegerArgumentType.integer()).executes(CommandCurrency::buyClaimBlocks)))
+                        .then(CommandManager.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::buyClaimBlocks)))
                 .then(CommandManager.literal("sellBlocks").requires(src -> PermissionNodeHandler.perm(src, PermissionNodeHandler.cmdSell, false))
-                        .then(CommandManager.argument("amount", IntegerArgumentType.integer()).executes(CommandCurrency::sellClaimBlocks)))
+                        .then(CommandManager.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::sellClaimBlocks)))
                 .then(CommandManager.literal("claimMessage").then(CommandManager.argument("type", StringArgumentType.word()).suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"enter", "leave"}, b))
                         .then(CommandManager.argument("title", StringArgumentType.word()).suggests((ctx, b) -> CommandSource.suggestMatching(new String[]{"title", "subtitle"}, b))
                                 .then(CommandManager.literal("text").then(CommandManager.argument("component", TextArgumentType.text()).executes(ctx -> CommandClaim.editClaimMessages(ctx, TextArgumentType.getTextArgument(ctx, "component")))))
@@ -819,5 +818,15 @@ public class CommandClaim {
             cmdFeed.append(new LiteralText(unf[1])).formatted(Formatting.GOLD);
         context.getSource().sendFeedback(cmdFeed, false);
         return Command.SINGLE_SUCCESS;
+    }
+
+    private static int sellClaimBlocks(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        boolean b = ConfigHandler.config.buySellHandler.sell(context.getSource().getPlayer(), Math.max(0, IntegerArgumentType.getInteger(context, "amount")), m -> context.getSource().sendFeedback(m, false));
+        return b ? Command.SINGLE_SUCCESS : 0;
+    }
+
+    private static int buyClaimBlocks(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        boolean b = ConfigHandler.config.buySellHandler.buy(context.getSource().getPlayer(), Math.max(0, IntegerArgumentType.getInteger(context, "amount")), m -> context.getSource().sendFeedback(m, false));
+        return b ? Command.SINGLE_SUCCESS : 0;
     }
 }

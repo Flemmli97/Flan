@@ -21,6 +21,7 @@ import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -32,6 +33,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -78,6 +80,21 @@ public class Claim implements IPermissionContainer {
     public Claim(BlockPos pos1, BlockPos pos2, ServerPlayerEntity creator) {
         this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator.getUuid(), creator.getServerWorld(), PlayerClaimData.get(creator).playerDefaultGroups().isEmpty());
         PlayerClaimData.get(creator).playerDefaultGroups().forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0, true)));
+        Collection<Claim> all = ClaimStorage.get(creator.getServerWorld()).allClaimsFromPlayer(creator.getUuid());
+        String name = String.format(ConfigHandler.config.defaultClaimName, creator.getName(), all.size());
+        if (!name.isEmpty()) {
+            for (Claim claim : all) {
+                if (claim.claimName.equals(name)) {
+                    name = name + " #" + all.size();
+                    break;
+                }
+            }
+        }
+        this.claimName = name;
+        if (!ConfigHandler.config.defaultEnterMessage.isEmpty())
+            this.enterTitle = new LiteralText(String.format(ConfigHandler.config.defaultEnterMessage, this.claimName));
+        if (!ConfigHandler.config.defaultLeaveMessage.isEmpty())
+            this.leaveTitle = new LiteralText(String.format(ConfigHandler.config.defaultLeaveMessage, this.claimName));
     }
 
     public Claim(BlockPos pos1, BlockPos pos2, UUID creator, ServerWorld world) {
@@ -531,9 +548,9 @@ public class Claim implements IPermissionContainer {
     }
 
     public void setEnterTitle(Text title, Text sub) {
-        if(title != null && title.asString().equals("$empty"))
+        if (title != null && title.asString().equals("$empty"))
             title = null;
-        if(sub != null && sub.asString().equals("$empty"))
+        if (sub != null && sub.asString().equals("$empty"))
             sub = null;
         this.enterTitle = title;
         this.enterSubtitle = sub;
@@ -541,9 +558,9 @@ public class Claim implements IPermissionContainer {
     }
 
     public void setLeaveTitle(Text title, Text sub) {
-        if(title != null && title.asString().equals("$empty"))
+        if (title != null && title.asString().equals("$empty"))
             title = null;
-        if(sub != null && sub.asString().equals("$empty"))
+        if (sub != null && sub.asString().equals("$empty"))
             sub = null;
         this.leaveTitle = title;
         this.leaveSubtitle = sub;
@@ -599,15 +616,23 @@ public class Claim implements IPermissionContainer {
             String message = ConfigHandler.fromJson(obj, "EnterTitle", "");
             if (!message.isEmpty())
                 this.enterTitle = Text.Serializer.fromJson(message);
+            else
+                this.enterTitle = null;
             message = ConfigHandler.fromJson(obj, "EnterSubtitle", "");
             if (!message.isEmpty())
                 this.enterSubtitle = Text.Serializer.fromJson(message);
+            else
+                this.enterSubtitle = null;
             message = ConfigHandler.fromJson(obj, "LeaveTitle", "");
             if (!message.isEmpty())
                 this.leaveTitle = Text.Serializer.fromJson(message);
+            else
+                this.leaveTitle = null;
             message = ConfigHandler.fromJson(obj, "LeaveSubtitle", "");
             if (!message.isEmpty())
                 this.leaveSubtitle = Text.Serializer.fromJson(message);
+            else
+                this.leaveSubtitle = null;
             JsonObject potion = ConfigHandler.fromJson(obj, "Potions");
             potion.entrySet().forEach(e -> this.potions.put(CrossPlatformStuff.registryStatusEffects().getFromId(new Identifier(e.getKey())), e.getValue().getAsInt()));
             if (ConfigHandler.fromJson(obj, "AdminClaim", false))

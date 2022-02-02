@@ -34,6 +34,9 @@ public class Config {
     public int minClaimsize = 100;
     public int defaultClaimDepth = 10;
     public int maxClaims = -1;
+    public String defaultClaimName = "";
+    public String defaultEnterMessage = "";
+    public String defaultLeaveMessage = "";
 
     public String[] blacklistedWorlds = new String[0];
     public boolean worldWhitelist;
@@ -44,8 +47,8 @@ public class Config {
     public int claimDisplayTime = 1000;
     public int permissionLevel = 2;
 
-    public int sellPrice = -1;
-    public int buyPrice = -1;
+    public BuySellHandler buySellHandler = new BuySellHandler();
+    public int maxBuyBlocks = -1;
 
     public boolean lenientBlockEntityCheck;
     public List<String> breakBlockBlacklist = Lists.newArrayList(
@@ -147,6 +150,9 @@ public class Config {
             this.minClaimsize = ConfigHandler.fromJson(obj, "minClaimsize", this.minClaimsize);
             this.defaultClaimDepth = ConfigHandler.fromJson(obj, "defaultClaimDepth", this.defaultClaimDepth);
             this.maxClaims = ConfigHandler.fromJson(obj, "maxClaims", this.maxClaims);
+            this.defaultClaimName = ConfigHandler.fromJson(obj, "defaultClaimName", this.defaultClaimName);
+            this.defaultEnterMessage = ConfigHandler.fromJson(obj, "defaultEnterMessage", this.defaultEnterMessage);
+            this.defaultLeaveMessage = ConfigHandler.fromJson(obj, "defaultLeaveMessage", this.defaultLeaveMessage);
 
             JsonArray arr = ConfigHandler.arryFromJson(obj, "blacklistedWorlds");
             this.blacklistedWorlds = new String[arr.size()];
@@ -161,8 +167,8 @@ public class Config {
             this.claimDisplayTime = ConfigHandler.fromJson(obj, "claimDisplayTime", this.claimDisplayTime);
             this.permissionLevel = ConfigHandler.fromJson(obj, "permissionLevel", this.permissionLevel);
 
-            this.sellPrice = ConfigHandler.fromJson(obj, "sellPrice", this.sellPrice);
-            this.buyPrice = ConfigHandler.fromJson(obj, "buyPrice", this.buyPrice);
+            this.buySellHandler.fromJson(ConfigHandler.fromJson(obj, "buySellHandler"));
+            this.maxBuyBlocks = ConfigHandler.fromJson(obj, "maxBuyBlocks", this.maxBuyBlocks);
 
             this.lenientBlockEntityCheck = ConfigHandler.fromJson(obj, "lenientBlockEntityCheck", this.lenientBlockEntityCheck);
             this.breakBlockBlacklist.clear();
@@ -242,6 +248,9 @@ public class Config {
         obj.addProperty("minClaimsize", this.minClaimsize);
         obj.addProperty("defaultClaimDepth", this.defaultClaimDepth);
         obj.addProperty("maxClaims", this.maxClaims);
+        obj.addProperty("defaultClaimName", this.defaultClaimName);
+        obj.addProperty("defaultEnterMessage", this.defaultEnterMessage);
+        obj.addProperty("defaultLeaveMessage", this.defaultLeaveMessage);
 
         JsonArray arr = new JsonArray();
         for (String blacklistedWorld : this.blacklistedWorlds)
@@ -254,8 +263,8 @@ public class Config {
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
         obj.addProperty("permissionLevel", this.permissionLevel);
 
-        obj.addProperty("sellPrice", this.sellPrice);
-        obj.addProperty("buyPrice", this.buyPrice);
+        obj.add("buySellHandler", this.buySellHandler.toJson());
+        obj.addProperty("maxBuyBlocks", this.maxBuyBlocks);
 
         obj.addProperty("lenientBlockEntityCheck", this.lenientBlockEntityCheck);
         JsonArray blocksBreak = new JsonArray();

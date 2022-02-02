@@ -1,19 +1,20 @@
 package io.github.flemmli97.flan.integration.currency;
 
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+
+import java.util.function.Consumer;
 
 public class CommandCurrency {
 
     @ExpectPlatform
-    public static int sellClaimBlocks(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    public static boolean sellClaimBlocks(ServerPlayerEntity player, int blocks, float value, Consumer<Text> message) {
         throw new AssertionError();
     }
 
     @ExpectPlatform
-    public static int buyClaimBlocks(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    public static boolean buyClaimBlocks(ServerPlayerEntity player, int blocks, float value, Consumer<Text> message) {
         throw new AssertionError();
     }
 }
