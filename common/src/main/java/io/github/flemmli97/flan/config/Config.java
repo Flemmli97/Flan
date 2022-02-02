@@ -88,6 +88,8 @@ public class Config {
 
     public boolean log;
 
+    public String lang = "en_us";
+
     public int configVersion = 4;
     public int preConfigVersion;
 
@@ -138,6 +140,7 @@ public class Config {
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
             reader.close();
             this.preConfigVersion = ConfigHandler.fromJson(obj, "configVersion", 0);
+            this.lang = ConfigHandler.fromJson(obj, "lang", this.lang);
             this.startingBlocks = ConfigHandler.fromJson(obj, "startingBlocks", this.startingBlocks);
             this.maxClaimBlocks = ConfigHandler.fromJson(obj, "maxClaimBlocks", this.maxClaimBlocks);
             this.ticksForNextBlock = ConfigHandler.fromJson(obj, "ticksForNextBlock", this.ticksForNextBlock);
@@ -232,6 +235,7 @@ public class Config {
         JsonObject obj = new JsonObject();
         obj.addProperty("__comment", "For help with the config refer to https://github.com/Flemmli97/Flan/wiki/Config");
         obj.addProperty("configVersion", this.configVersion);
+        obj.addProperty("lang", this.lang);
         obj.addProperty("startingBlocks", this.startingBlocks);
         obj.addProperty("maxClaimBlocks", this.maxClaimBlocks);
         obj.addProperty("ticksForNextBlock", this.ticksForNextBlock);

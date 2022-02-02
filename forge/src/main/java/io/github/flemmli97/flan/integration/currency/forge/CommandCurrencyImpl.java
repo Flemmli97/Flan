@@ -19,33 +19,33 @@ public class CommandCurrencyImpl {
 
     public static int sellClaimBlocks(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (!Flan.diceMCMoneySign) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.currencyMissing, Formatting.DARK_RED), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("currencyMissing"), Formatting.DARK_RED), false);
             return 0;
         }
         if (ConfigHandler.config.sellPrice == -1) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.sellDisabled, Formatting.DARK_RED), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("sellDisabled"), Formatting.DARK_RED), false);
             return 0;
         }
         int amount = Math.max(0, IntegerArgumentType.getInteger(context, "amount"));
         PlayerClaimData data = PlayerClaimData.get(context.getSource().getPlayer());
         if (data.getAdditionalClaims() - Math.max(0, data.usedClaimBlocks() - data.getClaimBlocks()) < amount) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.sellFail, Formatting.DARK_RED), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("sellFail"), Formatting.DARK_RED), false);
             return 0;
         }
         double price = amount * ConfigHandler.config.sellPrice;
         MoneyWSD.get(context.getSource().getWorld()).changeBalance(MoneyMod.AcctTypes.PLAYER.key, context.getSource().getPlayer().getUuid(), price);
         data.setAdditionalClaims(data.getAdditionalClaims() - amount);
-        context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.sellSuccess, amount, price), Formatting.GOLD), false);
+        context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("sellSuccess"), amount, price), Formatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 
     public static int buyClaimBlocks(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (!Flan.diceMCMoneySign) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.currencyMissing, Formatting.DARK_RED), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("currencyMissing"), Formatting.DARK_RED), false);
             return 0;
         }
         if (ConfigHandler.config.buyPrice == -1) {
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.buyDisabled, Formatting.DARK_RED), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyDisabled"), Formatting.DARK_RED), false);
             return 0;
         }
         UUID uuid = context.getSource().getPlayer().getUuid();
@@ -57,10 +57,10 @@ public class CommandCurrencyImpl {
             PlayerClaimData data = PlayerClaimData.get(context.getSource().getPlayer());
             data.setAdditionalClaims(data.getAdditionalClaims() + amount);
             manager.changeBalance(MoneyMod.AcctTypes.PLAYER.key, uuid, -price);
-            context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.lang.buySuccess, amount, price), Formatting.GOLD), false);
+            context.getSource().sendFeedback(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("buySuccess"), amount, price), Formatting.GOLD), false);
             return Command.SINGLE_SUCCESS;
         }
-        context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.lang.buyFail, Formatting.DARK_RED), false);
+        context.getSource().sendFeedback(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyFail"), Formatting.DARK_RED), false);
         return 0;
     }
 }

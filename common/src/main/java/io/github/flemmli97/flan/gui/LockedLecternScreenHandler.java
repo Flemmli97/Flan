@@ -39,7 +39,7 @@ public class LockedLecternScreenHandler extends LecternScreenHandler {
     @Override
     public boolean onButtonClick(PlayerEntity player, int id) {
         if (id == 3) {
-            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.noPermissionSimple, Formatting.DARK_RED), false);
+            player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), Formatting.DARK_RED), false);
             return false;
         }
         return super.onButtonClick(player, id);

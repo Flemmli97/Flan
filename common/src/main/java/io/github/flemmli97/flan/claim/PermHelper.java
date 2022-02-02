@@ -31,7 +31,7 @@ public class PermHelper {
     }
 
     public static void noClaimMessage(ServerPlayerEntity player) {
-        player.sendMessage(new LiteralText(ConfigHandler.lang.noClaim).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)), false);
+        player.sendMessage(new LiteralText(ConfigHandler.langManager.get("noClaim")).setStyle(Style.EMPTY.withFormatting(Formatting.DARK_RED)), false);
     }
 
     public static Consumer<Optional<Boolean>> genericNoPermMessage(ServerPlayerEntity player) {
@@ -39,7 +39,7 @@ public class PermHelper {
             if (!b.isPresent())
                 PermHelper.noClaimMessage(player);
             else if (!b.get())
-                player.sendMessage(simpleColoredText(ConfigHandler.lang.noPermission, Formatting.DARK_RED), false);
+                player.sendMessage(simpleColoredText(ConfigHandler.langManager.get("noPermission"), Formatting.DARK_RED), false);
         });
     }
 

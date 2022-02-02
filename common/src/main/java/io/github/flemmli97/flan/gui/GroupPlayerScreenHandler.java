@@ -54,7 +54,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
 
             @Override
             public Text getDisplayName() {
-                return PermHelper.simpleColoredText(String.format(ConfigHandler.lang.screenGroupPlayers, group));
+                return PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("screenGroupPlayers"), group));
             }
         };
         player.openHandledScreen(fac);
@@ -67,15 +67,15 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
-                close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenBack, Formatting.DARK_RED));
+                close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenBack"), Formatting.DARK_RED));
                 inv.updateStack(i, close);
             } else if (i == 3) {
                 ItemStack stack = new ItemStack(Items.ANVIL);
-                stack.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenAdd, Formatting.DARK_GREEN));
+                stack.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenAdd"), Formatting.DARK_GREEN));
                 inv.updateStack(i, stack);
             } else if (i == 4) {
                 ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-                stack.setCustomName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenRemoveMode, this.removeMode ? ConfigHandler.lang.screenTrue : ConfigHandler.lang.screenFalse), Formatting.DARK_RED));
+                stack.setCustomName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.langManager.get("screenRemoveMode"), this.removeMode ? ConfigHandler.langManager.get("screenTrue") : ConfigHandler.langManager.get("screenFalse")), Formatting.DARK_RED));
                 inv.updateStack(i, stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 inv.updateStack(i, ServerScreenHelper.emptyFiller());
@@ -116,7 +116,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
                 if (fl)
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.BLOCK_ANVIL_USE, 1, 1f);
                 else {
-                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.lang.playerGroupAddFail, Formatting.RED), false);
+                    player.sendMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("playerGroupAddFail"), Formatting.RED), false);
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.ENTITY_VILLAGER_NO, 1, 1f);
                 }
             }, () -> {
@@ -130,7 +130,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
         if (index == 4) {
             this.removeMode = !this.removeMode;
             ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-            stack.setCustomName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.lang.screenRemoveMode, this.removeMode ? ConfigHandler.lang.screenTrue : ConfigHandler.lang.screenFalse), Formatting.DARK_RED));
+            stack.setCustomName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.langManager.get("screenRemoveMode"), this.removeMode ? ConfigHandler.langManager.get("screenTrue") : ConfigHandler.langManager.get("screenFalse")), Formatting.DARK_RED));
             slot.setStack(stack);
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;

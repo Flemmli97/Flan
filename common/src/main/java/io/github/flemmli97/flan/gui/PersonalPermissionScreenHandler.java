@@ -44,7 +44,7 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
 
             @Override
             public Text getDisplayName() {
-                return PermHelper.simpleColoredText(String.format(ConfigHandler.lang.screenPersonalPermissions, group));
+                return PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("screenPersonalPermissions"), group));
             }
         };
         player.openHandledScreen(fac);
@@ -61,15 +61,15 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
             int page = 0;
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
-                close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenBack, Formatting.DARK_RED));
+                close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenBack"), Formatting.DARK_RED));
                 inv.updateStack(i, close);
             } else if (page == 1 && i == 47) {
                 ItemStack close = new ItemStack(Items.ARROW);
-                close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenPrevious, Formatting.WHITE));
+                close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenPrevious"), Formatting.WHITE));
                 inv.updateStack(i, close);
             } else if (page == 0 && i == 51) {
                 ItemStack close = new ItemStack(Items.ARROW);
-                close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNext, Formatting.WHITE));
+                close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenNext"), Formatting.WHITE));
                 inv.updateStack(i, close);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 inv.updateStack(i, ServerScreenHelper.emptyFiller());
@@ -92,20 +92,20 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
-                close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenBack, Formatting.DARK_RED));
+                close.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenBack"), Formatting.DARK_RED));
                 this.slots.get(i).setStack(close);
             } else if (i == 47) {
                 ItemStack stack = ServerScreenHelper.emptyFiller();
                 if (this.page >= 1) {
                     stack = new ItemStack(Items.ARROW);
-                    stack.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenPrevious, Formatting.WHITE));
+                    stack.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenPrevious"), Formatting.WHITE));
                 }
                 this.slots.get(i).setStack(stack);
             } else if (i == 51) {
                 ItemStack stack = ServerScreenHelper.emptyFiller();
                 if (this.page < maxPages) {
                     stack = new ItemStack(Items.ARROW);
-                    stack.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.lang.screenNext, Formatting.WHITE));
+                    stack.setCustomName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenNext"), Formatting.WHITE));
                 }
                 this.slots.get(i).setStack(stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
