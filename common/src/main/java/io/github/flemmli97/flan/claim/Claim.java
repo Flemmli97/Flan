@@ -550,7 +550,7 @@ public class Claim implements IPermissionContainer {
         if (title != null && title.getContents().equals("$empty"))
             title = null;
         if (sub != null && sub.getContents().equals("$empty"))
-            title = null;
+            sub = null;
         this.enterTitle = title;
         this.enterSubtitle = sub;
         this.setDirty(true);
@@ -560,7 +560,7 @@ public class Claim implements IPermissionContainer {
         if (title != null && title.getContents().equals("$empty"))
             title = null;
         if (sub != null && sub.getContents().equals("$empty"))
-            title = null;
+            sub = null;
         this.leaveTitle = title;
         this.leaveSubtitle = sub;
         this.setDirty(true);

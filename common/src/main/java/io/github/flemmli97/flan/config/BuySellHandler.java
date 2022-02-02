@@ -114,7 +114,7 @@ public class BuySellHandler {
                 return CommandCurrency.sellClaimBlocks(player, blocks, this.sellAmount, message);
             }
             case ITEM -> {
-                if (this.ingredient.getItems().length == 0) {
+                if (this.ingredient.isEmpty()) {
                     return false;
                 }
                 int amount = Mth.floor(blocks * this.sellAmount);
