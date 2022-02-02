@@ -114,11 +114,12 @@ public class BuySellHandler {
                 return CommandCurrency.sellClaimBlocks(player, blocks, this.sellAmount, message);
             }
             case ITEM -> {
+                ItemStack[] stacks = this.ingredient.getItems();
                 if (this.ingredient.isEmpty()) {
                     return false;
                 }
                 int amount = Mth.floor(blocks * this.sellAmount);
-                ItemStack stack = this.ingredient.getItems()[0];
+                ItemStack stack = stacks[0];
                 while (amount > 0) {
                     ItemStack toGive = stack.copy();
                     if (amount > 64) {
