@@ -19,8 +19,7 @@ Flan 1.7.0
   For more info see the https://github.com/Flemmli97/Flan/wiki/Config#buysell-handler
 - maxBuyBlocks config:
   Specify the max amount of claim blocks a player can buy.  
-  giveClaimBlocks command bypasses this still
-  -1 = no limit
+  giveClaimBlocks command bypasses this still. -1 = no limit
 
 Flan 1.6.9
 ======================
