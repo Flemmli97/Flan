@@ -528,12 +528,20 @@ public class Claim implements IPermissionContainer {
     }
 
     public void setEnterTitle(Text title, Text sub) {
+        if(title != null && title.asString().equals("$empty"))
+            title = null;
+        if(sub != null && sub.asString().equals("$empty"))
+            sub = null;
         this.enterTitle = title;
         this.enterSubtitle = sub;
         this.setDirty(true);
     }
 
     public void setLeaveTitle(Text title, Text sub) {
+        if(title != null && title.asString().equals("$empty"))
+            title = null;
+        if(sub != null && sub.asString().equals("$empty"))
+            sub = null;
         this.leaveTitle = title;
         this.leaveSubtitle = sub;
         this.setDirty(true);
