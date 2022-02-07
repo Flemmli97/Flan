@@ -38,7 +38,7 @@ public class BuySellHandler {
             return false;
         }
         PlayerClaimData data = PlayerClaimData.get(player);
-        if(ConfigHandler.config.maxBuyBlocks >= 0 && data.getAdditionalClaims() + blocks > ConfigHandler.config.maxBuyBlocks) {
+        if (ConfigHandler.config.maxBuyBlocks >= 0 && data.getAdditionalClaims() + blocks > ConfigHandler.config.maxBuyBlocks) {
             message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyLimit"), ChatFormatting.DARK_RED));
             return false;
         }

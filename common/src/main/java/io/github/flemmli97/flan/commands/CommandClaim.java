@@ -35,6 +35,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -792,11 +793,7 @@ public class CommandClaim {
                 feedback = ConfigHandler.langManager.get("setLeaveMessage");
             }
         }
-        String[] unf = feedback.split("%s", 2);
-        MutableComponent cmdFeed = new TextComponent(unf[0]).withStyle(ChatFormatting.GOLD)
-                .append(text);
-        if (unf.length > 1)
-            cmdFeed.append(new TextComponent(unf[1])).withStyle(ChatFormatting.GOLD);
+        MutableComponent cmdFeed = new TranslatableComponent(feedback, text).withStyle(ChatFormatting.GOLD);
         context.getSource().sendSuccess(cmdFeed, false);
         return Command.SINGLE_SUCCESS;
     }
