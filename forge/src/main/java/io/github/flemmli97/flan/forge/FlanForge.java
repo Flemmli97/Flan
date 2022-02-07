@@ -25,7 +25,6 @@ public class FlanForge {
 
         IEventBus forge = MinecraftForge.EVENT_BUS;
         forge.addListener(WorldEventsForge::modifyExplosion);
-        forge.addListener(WorldEventsForge::pistonCanPush);
         forge.addListener(WorldEventsForge::preventMobSpawn);
         forge.addListener(ItemInteractEventsForge::useItem);
         forge.addListener(BlockInteractEventsForge::startBreakBlocks);

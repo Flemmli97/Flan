@@ -24,7 +24,8 @@
     "LightningFireEntityMixin",
     "BannedEntryAccessor",
     "MinecraftServerMixin",
-    "AbstractContainerAccessor"
+    "AbstractContainerAccessor",
+    "PistonMixin"
   ],
   "server": [
   ],
