@@ -285,8 +285,8 @@ public class LangManager {
                     //To preserve order
                     translation = new LinkedHashMap<>();
                     translationArr = new LinkedHashMap<>();
-                    this.defaultTranslation.forEach((key, t)-> translation.put(key, fromConf.getOrDefault(key, t)));
-                    this.defaultTranslationArray.forEach((key, t)-> translationArr.put(key, fromConfArr.getOrDefault(key, t)));
+                    this.defaultTranslation.forEach((key, t) -> translation.put(key, fromConf.getOrDefault(key, t)));
+                    this.defaultTranslationArray.forEach((key, t) -> translationArr.put(key, fromConfArr.getOrDefault(key, t)));
                 } else {
                     translation = this.defaultTranslation;
                     translationArr = this.defaultTranslationArray;
@@ -319,7 +319,7 @@ public class LangManager {
                 if (e.getValue().isJsonArray()) {
                     JsonArray arr = e.getValue().getAsJsonArray();
                     this.translationArr.put(e.getKey(), GSON.fromJson(arr, String[].class));
-                } else
+                } else if (e.getValue().isJsonPrimitive())
                     this.translation.put(e.getKey(), e.getValue().getAsString());
             });
             //en_us is basically used as a default modifiable file
@@ -327,8 +327,8 @@ public class LangManager {
                 //To preserve order
                 Map<String, String> ordered = new LinkedHashMap<>();
                 Map<String, String[]> orderedArr = new LinkedHashMap<>();
-                this.defaultTranslation.forEach((key, t)-> ordered.put(key, this.translation.getOrDefault(key, t)));
-                this.defaultTranslationArray.forEach((key, t)-> orderedArr.put(key, this.translationArr.getOrDefault(key, t)));
+                this.defaultTranslation.forEach((key, t) -> ordered.put(key, this.translation.getOrDefault(key, t)));
+                this.defaultTranslationArray.forEach((key, t) -> orderedArr.put(key, this.translationArr.getOrDefault(key, t)));
                 saveTo(this.confDir.resolve("en_us.json").toFile(), ordered, orderedArr);
             }
         } catch (IOException e) {
