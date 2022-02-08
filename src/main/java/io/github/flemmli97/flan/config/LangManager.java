@@ -319,7 +319,7 @@ public class LangManager {
                 if (e.getValue().isJsonArray()) {
                     JsonArray arr = e.getValue().getAsJsonArray();
                     this.translationArr.put(e.getKey(), GSON.fromJson(arr, String[].class));
-                } else
+                } else if (e.getValue().isJsonPrimitive())
                     this.translation.put(e.getKey(), e.getValue().getAsString());
             });
             //en_us is basically used as a default modifiable file

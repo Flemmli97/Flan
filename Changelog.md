@@ -1,3 +1,9 @@
+Flan 1.7.1
+======================
+- Fix non player explosions not doing damage to hostile/players
+  Most noticable when creeper do nothing in claims
+- Fix command feedback for enter/leave message
+
 Flan 1.7.0
 ======================
 - FAKEPLAYER permission for fake players

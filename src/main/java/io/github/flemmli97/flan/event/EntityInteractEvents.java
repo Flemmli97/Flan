@@ -181,7 +181,7 @@ public class EntityInteractEvents {
     public static boolean preventDamage(Entity entity, DamageSource source) {
         if (source.getAttacker() instanceof ServerPlayerEntity)
             return attackSimple((ServerPlayerEntity) source.getAttacker(), entity, true) != ActionResult.PASS;
-        else if (source.isExplosive() && !entity.world.isClient) {
+        else if (source.isExplosive() && !entity.world.isClient && !(entity instanceof ServerPlayerEntity || entity instanceof Monster)) {
             IPermissionContainer claim = ClaimStorage.get((ServerWorld) entity.world).getForPermissionCheck(entity.getBlockPos());
             return claim != null && !claim.canInteract(null, PermissionRegistry.EXPLOSIONS, entity.getBlockPos());
         }
