@@ -5,7 +5,6 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "ServerWorldMixin",
-    "PistonMixin",
     "SpawnHelperMixin",
     "ServerPlayNetworkHandlerMixin",
     "ProjectileMixin",

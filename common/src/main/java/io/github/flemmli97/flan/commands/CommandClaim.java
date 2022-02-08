@@ -36,6 +36,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -811,11 +812,7 @@ public class CommandClaim {
                 feedback = ConfigHandler.langManager.get("setLeaveMessage");
             }
         }
-        String[] unf = feedback.split("%s", 2);
-        MutableText cmdFeed = new LiteralText(unf[0]).formatted(Formatting.GOLD)
-                .append(text);
-        if (unf.length > 1)
-            cmdFeed.append(new LiteralText(unf[1])).formatted(Formatting.GOLD);
+        MutableText cmdFeed = new TranslatableText(feedback, text).formatted(Formatting.GOLD);
         context.getSource().sendFeedback(cmdFeed, false);
         return Command.SINGLE_SUCCESS;
     }

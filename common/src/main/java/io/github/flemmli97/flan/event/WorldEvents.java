@@ -30,7 +30,7 @@ public class WorldEvents {
     }
 
     public static boolean pistonCanPush(BlockState state, World world, BlockPos blockPos, Direction direction, Direction pistonDir) {
-        if (world.isClient || state.isAir())
+        if (world.isClient)
             return true;
         BlockPos dirPos = blockPos.offset(direction);
         ClaimStorage storage = ClaimStorage.get((ServerWorld) world);
@@ -42,7 +42,7 @@ public class WorldEvents {
             IPermissionContainer opp = storage.getForPermissionCheck(oppPoos);
             if (!from.equals(opp))
                 flag = from.canInteract(null, PermissionRegistry.PISTONBORDER, oppPoos);
-        } else
+        } else if (!state.isAir())
             flag = from.canInteract(null, PermissionRegistry.PISTONBORDER, blockPos) && to.canInteract(null, PermissionRegistry.PISTONBORDER, dirPos);
         if (!flag) {
             //Idk enough about piston behaviour to update more blocks when slime is involved.
