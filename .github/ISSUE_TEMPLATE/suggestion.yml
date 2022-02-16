@@ -1,0 +1,21 @@
+name: Suggestions
+description: Suggest features using this
+title: "[Feature Request]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If you have any suggestions or features you want to see in this mod use this template!
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggestions
+      description: What feature would you like to add?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solution
+      description: If you have a solution or implementation idea write it down here.
