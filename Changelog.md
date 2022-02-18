@@ -1,3 +1,7 @@
+Flan 1.7.2
+================
+- Internal changes
+
 Flan 1.7.1
 ======================
 - Fix non player explosions not doing damage to hostile/players
