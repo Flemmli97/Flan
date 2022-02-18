@@ -1,11 +1,15 @@
 package io.github.flemmli97.flan.forge;
 
 import io.github.flemmli97.flan.Flan;
-import io.github.flemmli97.flan.forgeevent.BlockInteractEventsForge;
-import io.github.flemmli97.flan.forgeevent.EntityInteractEventsForge;
-import io.github.flemmli97.flan.forgeevent.ItemInteractEventsForge;
-import io.github.flemmli97.flan.forgeevent.ServerEvents;
-import io.github.flemmli97.flan.forgeevent.WorldEventsForge;
+import io.github.flemmli97.flan.forge.forgeevent.BlockInteractEventsForge;
+import io.github.flemmli97.flan.forge.forgeevent.EntityInteractEventsForge;
+import io.github.flemmli97.flan.forge.forgeevent.ItemInteractEventsForge;
+import io.github.flemmli97.flan.forge.forgeevent.ServerEvents;
+import io.github.flemmli97.flan.forge.forgeevent.WorldEventsForge;
+import io.github.flemmli97.flan.forge.platform.ClaimPermissionCheckImpl;
+import io.github.flemmli97.flan.forge.platform.CrossPlatformStuffImpl;
+import io.github.flemmli97.flan.forge.platform.integration.currency.forge.CommandCurrencyImpl;
+import io.github.flemmli97.flan.forge.platform.integration.permissions.forge.PermissionNodeHandlerImpl;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -13,13 +17,16 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 
-//Moved from io.github.flemmli97.flan to here since module thingy with forge
 @Mod(FlanForge.MODID)
 public class FlanForge {
 
     public static final String MODID = "flan";
 
     public FlanForge() {
+        CrossPlatformStuffImpl.init();
+        ClaimPermissionCheckImpl.init();
+        CommandCurrencyImpl.init();
+        PermissionNodeHandlerImpl.init();
         Flan.ftbRanks = ModList.get().isLoaded("ftbranks");
         Flan.diceMCMoneySign = ModList.get().isLoaded("dicemcmm");
 

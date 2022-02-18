@@ -14,7 +14,7 @@ import io.github.flemmli97.flan.api.data.IPlayerData;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.integration.permissions.PermissionNodeHandler;
+import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.EnumEditMode;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
@@ -90,7 +90,7 @@ public class ClaimStorage implements IPermissionStorage {
                 player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("minClaimSize"), ConfigHandler.config.minClaimsize), ChatFormatting.RED), false);
                 return false;
             }
-            if (!data.isAdminIgnoreClaim() && ConfigHandler.config.maxClaims != -1 && !PermissionNodeHandler.permBelowEqVal(player, PermissionNodeHandler.permMaxClaims, this.playerClaimMap.getOrDefault(player.getUUID(), Sets.newHashSet()).size() + 1, ConfigHandler.config.maxClaims)) {
+            if (!data.isAdminIgnoreClaim() && ConfigHandler.config.maxClaims != -1 && !PermissionNodeHandler.instance().permBelowEqVal(player, PermissionNodeHandler.permMaxClaims, this.playerClaimMap.getOrDefault(player.getUUID(), Sets.newHashSet()).size() + 1, ConfigHandler.config.maxClaims)) {
                 player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("maxClaims"), ChatFormatting.RED), false);
                 return false;
             }

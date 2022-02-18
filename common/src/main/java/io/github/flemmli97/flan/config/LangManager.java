@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
+import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -229,7 +229,7 @@ public class LangManager {
 
     public LangManager() {
         this.loadDefault();
-        Path configDir = CrossPlatformStuff.configPath().resolve("flan").resolve("lang");
+        Path configDir = CrossPlatformStuff.instance().configPath().resolve("flan").resolve("lang");
         this.confDir = configDir;
         try {
             File dir = configDir.toFile();
@@ -261,7 +261,7 @@ public class LangManager {
             }
             File def = configDir.resolve("en_us.json").toFile();
             if (!def.exists()) {
-                File legacy = CrossPlatformStuff.configPath().resolve("flan").resolve("flan_lang.json").toFile();
+                File legacy = CrossPlatformStuff.instance().configPath().resolve("flan").resolve("flan_lang.json").toFile();
                 Map<String, String> translation;
                 Map<String, String[]> translationArr;
                 if (legacy.exists()) {

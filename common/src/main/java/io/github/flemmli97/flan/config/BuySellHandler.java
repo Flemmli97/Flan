@@ -3,7 +3,7 @@ package io.github.flemmli97.flan.config;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import io.github.flemmli97.flan.claim.PermHelper;
-import io.github.flemmli97.flan.integration.currency.CommandCurrency;
+import io.github.flemmli97.flan.platform.integration.currency.CommandCurrency;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -44,7 +44,7 @@ public class BuySellHandler {
         }
         switch (this.buyType) {
             case MONEY -> {
-                return CommandCurrency.buyClaimBlocks(player, blocks, this.buyAmount, message);
+                return CommandCurrency.instance().buyClaimBlocks(player, blocks, this.buyAmount, message);
             }
             case ITEM -> {
                 int deduct = Mth.ceil(blocks * this.buyAmount);
@@ -111,7 +111,7 @@ public class BuySellHandler {
         }
         switch (this.sellType) {
             case MONEY -> {
-                return CommandCurrency.sellClaimBlocks(player, blocks, this.sellAmount, message);
+                return CommandCurrency.instance().sellClaimBlocks(player, blocks, this.sellAmount, message);
             }
             case ITEM -> {
                 ItemStack[] stacks = this.ingredient.getItems();

@@ -1,6 +1,5 @@
 package io.github.flemmli97.flan.event;
 
-import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
@@ -10,6 +9,7 @@ import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.mixin.IHungerAccessor;
 import io.github.flemmli97.flan.mixin.IPersistentProjectileVars;
+import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import io.github.flemmli97.flan.player.IOwnedItem;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.player.TeleportUtils;
@@ -105,7 +105,7 @@ public class EntityInteractEvents {
     }
 
     public static boolean canInteract(Entity entity) {
-        ResourceLocation id = CrossPlatformStuff.registryEntities().getIDFrom(entity.getType());
+        ResourceLocation id = CrossPlatformStuff.instance().registryEntities().getIDFrom(entity.getType());
         return ConfigHandler.config.ignoredEntityTypes.contains(id.getNamespace())
                 || ConfigHandler.config.ignoredEntityTypes.contains(id.toString())
                 || entity.getTags().stream().anyMatch(ConfigHandler.config.entityTagIgnore::contains);

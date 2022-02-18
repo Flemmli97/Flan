@@ -1,6 +1,5 @@
 package io.github.flemmli97.flan.event;
 
-import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
@@ -8,6 +7,7 @@ import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.LockedLecternScreenHandler;
+import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.core.BlockPos;
@@ -47,7 +47,7 @@ public class BlockInteractEvents {
         ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
-            ResourceLocation id = CrossPlatformStuff.registryBlocks().getIDFrom(state.getBlock());
+            ResourceLocation id = CrossPlatformStuff.instance().registryBlocks().getIDFrom(state.getBlock());
             if (contains(id, world.getBlockEntity(pos), ConfigHandler.config.breakBlockBlacklist, ConfigHandler.config.breakBETagBlacklist))
                 return true;
             if (!claim.canInteract(player, PermissionRegistry.BREAK, pos, true)) {
@@ -75,7 +75,7 @@ public class BlockInteractEvents {
         IPermissionContainer claim = storage.getForPermissionCheck(hitResult.getBlockPos());
         if (claim != null) {
             BlockState state = world.getBlockState(hitResult.getBlockPos());
-            ResourceLocation id = CrossPlatformStuff.registryBlocks().getIDFrom(state.getBlock());
+            ResourceLocation id = CrossPlatformStuff.instance().registryBlocks().getIDFrom(state.getBlock());
             BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
             if (contains(id, blockEntity, ConfigHandler.config.interactBlockBlacklist, ConfigHandler.config.interactBETagBlacklist))
                 return InteractionResult.PASS;
@@ -107,7 +107,7 @@ public class BlockInteractEvents {
                         LockedLecternScreenHandler.create(player, (LecternBlockEntity) blockEntity);
                     return InteractionResult.FAIL;
                 }
-                if (!ConfigHandler.config.lenientBlockEntityCheck || CrossPlatformStuff.isInventoryTile(blockEntity)) {
+                if (!ConfigHandler.config.lenientBlockEntityCheck || CrossPlatformStuff.instance().isInventoryTile(blockEntity)) {
                     if (claim.canInteract(player, PermissionRegistry.OPENCONTAINER, hitResult.getBlockPos(), true))
                         return InteractionResult.PASS;
                     PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
@@ -129,7 +129,7 @@ public class BlockInteractEvents {
             return true;
         if (blockEntity != null && !tagList.isEmpty()) {
             CompoundTag nbt = blockEntity.saveWithoutMetadata();
-            return tagList.stream().anyMatch(tag -> CrossPlatformStuff.blockDataContains(nbt, tag));
+            return tagList.stream().anyMatch(tag -> CrossPlatformStuff.instance().blockDataContains(nbt, tag));
         }
         return false;
     }

@@ -3,10 +3,10 @@ package io.github.flemmli97.flan.config;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.github.flemmli97.flan.CrossPlatformStuff;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
+import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -124,7 +124,7 @@ public class Config {
     })));
 
     public Config(MinecraftServer server) {
-        File configDir = CrossPlatformStuff.configPath().resolve("flan").toFile();
+        File configDir = CrossPlatformStuff.instance().configPath().resolve("flan").toFile();
         try {
             if (!configDir.exists())
                 configDir.mkdirs();
@@ -162,9 +162,9 @@ public class Config {
             this.worldWhitelist = ConfigHandler.fromJson(obj, "worldWhitelist", this.worldWhitelist);
 
             if (obj.has("claimingItem"))
-                this.claimingItem = CrossPlatformStuff.registryItems().getFromId(new ResourceLocation((obj.get("claimingItem").getAsString())));
+                this.claimingItem = CrossPlatformStuff.instance().registryItems().getFromId(new ResourceLocation((obj.get("claimingItem").getAsString())));
             if (obj.has("inspectionItem"))
-                this.inspectionItem = CrossPlatformStuff.registryItems().getFromId(new ResourceLocation((obj.get("inspectionItem").getAsString())));
+                this.inspectionItem = CrossPlatformStuff.instance().registryItems().getFromId(new ResourceLocation((obj.get("inspectionItem").getAsString())));
             this.claimDisplayTime = ConfigHandler.fromJson(obj, "claimDisplayTime", this.claimDisplayTime);
             this.permissionLevel = ConfigHandler.fromJson(obj, "permissionLevel", this.permissionLevel);
 
@@ -259,8 +259,8 @@ public class Config {
         obj.add("blacklistedWorlds", arr);
         obj.addProperty("worldWhitelist", this.worldWhitelist);
 
-        obj.addProperty("claimingItem", CrossPlatformStuff.registryItems().getIDFrom(this.claimingItem).toString());
-        obj.addProperty("inspectionItem", CrossPlatformStuff.registryItems().getIDFrom(this.inspectionItem).toString());
+        obj.addProperty("claimingItem", CrossPlatformStuff.instance().registryItems().getIDFrom(this.claimingItem).toString());
+        obj.addProperty("inspectionItem", CrossPlatformStuff.instance().registryItems().getIDFrom(this.inspectionItem).toString());
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
         obj.addProperty("permissionLevel", this.permissionLevel);
 

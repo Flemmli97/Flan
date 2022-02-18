@@ -14,7 +14,7 @@ import io.github.flemmli97.flan.claim.ParticleIndicators;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.EntityInteractEvents;
-import io.github.flemmli97.flan.integration.permissions.PermissionNodeHandler;
+import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -105,7 +105,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     private boolean canIncrease(int blocks) {
-        return PermissionNodeHandler.permBelowEqVal(this.player, PermissionNodeHandler.permClaimBlocks, blocks, ConfigHandler.config.maxClaimBlocks);
+        return PermissionNodeHandler.instance().permBelowEqVal(this.player, PermissionNodeHandler.permClaimBlocks, blocks, ConfigHandler.config.maxClaimBlocks);
     }
 
     @Override
