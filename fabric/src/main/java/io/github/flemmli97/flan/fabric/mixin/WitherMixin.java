@@ -16,7 +16,7 @@ public abstract class WitherMixin {
 
     @Inject(method = "customServerAiStep", at = @At(value = "HEAD"))
     private void preventClaimDmg(CallbackInfo info) {
-        if (!EntityInteractEvents.witherCanDestroy((WitherBoss) (Object) this))
+        if (this.destroyBlocksTick > 0 && !EntityInteractEvents.witherCanDestroy((WitherBoss) (Object) this))
             this.destroyBlocksTick = -1;
     }
 }

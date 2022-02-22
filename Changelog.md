@@ -1,6 +1,7 @@
 Flan 1.7.2
 ================
 - Internal changes
+- Fabric: Fix Clumps incompability with xp permission
 
 Flan 1.7.1
 ======================
