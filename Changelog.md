@@ -1,3 +1,7 @@
+Flan 1.7.2
+================
+- Fabric: Fix Clumps incompability with xp permission
+
 Flan 1.7.1
 ======================
 - Fix non player explosions not doing damage to hostile/players
