@@ -78,7 +78,7 @@ public class EntityInteractEventsForge {
      * EntityInteractEvents.canSnowGolemInteract
      */
     public static void mobGriefing(EntityMobGriefingEvent event) {
-        if (event.getEntity() instanceof WitherBoss && EntityInteractEvents.witherCanDestroy((WitherBoss) event.getEntity())) {
+        if (event.getEntity() instanceof WitherBoss && !EntityInteractEvents.witherCanDestroy((WitherBoss) event.getEntity())) {
             event.setResult(Event.Result.DENY);
         }
         if (event.getEntity() instanceof SnowGolem && !EntityInteractEvents.canSnowGolemInteract((SnowGolem) event.getEntity())) {

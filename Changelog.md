@@ -1,6 +1,7 @@
 Flan 1.7.3
 ================
 - Internal changes
+- Forge: Fix wither ignoring claims
 
 Flan 1.7.2
 ================
