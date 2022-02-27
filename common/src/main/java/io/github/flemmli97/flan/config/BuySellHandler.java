@@ -44,7 +44,7 @@ public class BuySellHandler {
         }
         switch (this.buyType) {
             case MONEY -> {
-                return CommandCurrency.instance().buyClaimBlocks(player, blocks, this.buyAmount, message);
+                return CommandCurrency.INSTANCE.buyClaimBlocks(player, blocks, this.buyAmount, message);
             }
             case ITEM -> {
                 int deduct = Mth.ceil(blocks * this.buyAmount);
@@ -111,7 +111,7 @@ public class BuySellHandler {
         }
         switch (this.sellType) {
             case MONEY -> {
-                return CommandCurrency.instance().sellClaimBlocks(player, blocks, this.sellAmount, message);
+                return CommandCurrency.INSTANCE.sellClaimBlocks(player, blocks, this.sellAmount, message);
             }
             case ITEM -> {
                 ItemStack[] stacks = this.ingredient.getItems();

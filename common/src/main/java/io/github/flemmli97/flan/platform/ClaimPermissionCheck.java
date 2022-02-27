@@ -1,17 +1,16 @@
 package io.github.flemmli97.flan.platform;
 
+import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 
-public abstract class ClaimPermissionCheck {
+public interface ClaimPermissionCheck {
 
-    protected static ClaimPermissionCheck INSTANCE;
+    ClaimPermissionCheck INSTANCE = Flan.getPlatformInstance(ClaimPermissionCheck.class,
+            "io.github.flemmli97.flan.fabric.platform.ClaimPermissionCheckImpl",
+            "io.github.flemmli97.flan.forge.platform.ClaimPermissionCheckImpl");
 
-    public static ClaimPermissionCheck instance() {
-        return INSTANCE;
-    }
-
-    public abstract InteractionResult check(ServerPlayer player, ClaimPermission permission, BlockPos pos);
+    InteractionResult check(ServerPlayer player, ClaimPermission permission, BlockPos pos);
 }

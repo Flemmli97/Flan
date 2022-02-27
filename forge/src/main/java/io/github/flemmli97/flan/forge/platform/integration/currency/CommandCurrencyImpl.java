@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.forge.platform.integration.currency.forge;
+package io.github.flemmli97.flan.forge.platform.integration.currency;
 
 import dicemc.money.MoneyMod;
 import dicemc.money.storage.MoneyWSD;
@@ -14,11 +14,7 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class CommandCurrencyImpl extends CommandCurrency {
-
-    public static void init() {
-        INSTANCE = new CommandCurrencyImpl();
-    }
+public class CommandCurrencyImpl implements CommandCurrency {
 
     @Override
     public boolean sellClaimBlocks(ServerPlayer player, int blocks, float value, Consumer<Component> message) {

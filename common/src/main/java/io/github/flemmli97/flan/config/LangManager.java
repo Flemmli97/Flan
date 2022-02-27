@@ -229,7 +229,7 @@ public class LangManager {
 
     public LangManager() {
         this.loadDefault();
-        Path configDir = CrossPlatformStuff.instance().configPath().resolve("flan").resolve("lang");
+        Path configDir = CrossPlatformStuff.INSTANCE.configPath().resolve("flan").resolve("lang");
         this.confDir = configDir;
         try {
             File dir = configDir.toFile();
@@ -261,7 +261,7 @@ public class LangManager {
             }
             File def = configDir.resolve("en_us.json").toFile();
             if (!def.exists()) {
-                File legacy = CrossPlatformStuff.instance().configPath().resolve("flan").resolve("flan_lang.json").toFile();
+                File legacy = CrossPlatformStuff.INSTANCE.configPath().resolve("flan").resolve("flan_lang.json").toFile();
                 Map<String, String> translation;
                 Map<String, String[]> translationArr;
                 if (legacy.exists()) {

@@ -8,10 +8,6 @@ import io.github.flemmli97.flan.event.EntityInteractEvents;
 import io.github.flemmli97.flan.event.ItemInteractEvents;
 import io.github.flemmli97.flan.event.PlayerEvents;
 import io.github.flemmli97.flan.event.WorldEvents;
-import io.github.flemmli97.flan.fabric.platform.ClaimPermissionCheckImpl;
-import io.github.flemmli97.flan.fabric.platform.CrossPlatformStuffImpl;
-import io.github.flemmli97.flan.fabric.platform.integration.currency.fabric.CommandCurrencyImpl;
-import io.github.flemmli97.flan.fabric.platform.integration.permissions.fabric.PermissionNodeHandlerImpl;
 import io.github.flemmli97.flan.fabric.platform.integration.playerability.PlayerAbilityEvents;
 import io.github.flemmli97.flan.player.PlayerDataHandler;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
@@ -44,10 +40,6 @@ public class FlanFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        CrossPlatformStuffImpl.init();
-        ClaimPermissionCheckImpl.init();
-        CommandCurrencyImpl.init();
-        PermissionNodeHandlerImpl.init();
         PlayerBlockBreakEvents.BEFORE.register(BlockInteractEvents::breakBlocks);
         AttackBlockCallback.EVENT.register(BlockInteractEvents::startBreakBlocks);
         UseBlockCallback.EVENT.addPhaseOrdering(EventPhase, Event.DEFAULT_PHASE);

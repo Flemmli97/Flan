@@ -56,10 +56,10 @@ public class ObjectToPermissionMap {
     public static void reload(MinecraftServer server) {
         blockToPermission.clear();
         itemToPermission.clear();
-        for (Block block : CrossPlatformStuff.instance().registryBlocks().getIterator()) {
+        for (Block block : CrossPlatformStuff.INSTANCE.registryBlocks().getIterator()) {
             blockPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(block)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> blockToPermission.put(block, sub.get()));
         }
-        for (Item item : CrossPlatformStuff.instance().registryItems().getIterator()) {
+        for (Item item : CrossPlatformStuff.INSTANCE.registryItems().getIterator()) {
             itemPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(item)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> itemToPermission.put(item, sub.get()));
         }
         for (String s : ConfigHandler.config.itemPermission) {
@@ -77,9 +77,9 @@ public class ObjectToPermissionMap {
                 }
             } else {
                 if (remove)
-                    itemToPermission.remove(CrossPlatformStuff.instance().registryItems().getFromId(new ResourceLocation(sub[0])));
+                    itemToPermission.remove(CrossPlatformStuff.INSTANCE.registryItems().getFromId(new ResourceLocation(sub[0])));
                 else
-                    itemToPermission.put(CrossPlatformStuff.instance().registryItems().getFromId(new ResourceLocation(sub[0])), PermissionRegistry.get(sub[1]));
+                    itemToPermission.put(CrossPlatformStuff.INSTANCE.registryItems().getFromId(new ResourceLocation(sub[0])), PermissionRegistry.get(sub[1]));
             }
         }
         for (String s : ConfigHandler.config.blockPermission) {
@@ -96,9 +96,9 @@ public class ObjectToPermissionMap {
                     });
             } else {
                 if (remove)
-                    blockToPermission.remove(CrossPlatformStuff.instance().registryBlocks().getFromId(new ResourceLocation(sub[0])));
+                    blockToPermission.remove(CrossPlatformStuff.INSTANCE.registryBlocks().getFromId(new ResourceLocation(sub[0])));
                 else
-                    blockToPermission.put(CrossPlatformStuff.instance().registryBlocks().getFromId(new ResourceLocation(sub[0])), PermissionRegistry.get(sub[1]));
+                    blockToPermission.put(CrossPlatformStuff.INSTANCE.registryBlocks().getFromId(new ResourceLocation(sub[0])), PermissionRegistry.get(sub[1]));
             }
         }
     }

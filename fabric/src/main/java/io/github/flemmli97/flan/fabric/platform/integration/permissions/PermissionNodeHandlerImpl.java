@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.fabric.platform.integration.permissions.fabric;
+package io.github.flemmli97.flan.fabric.platform.integration.permissions;
 
 import dev.ftb.mods.ftbranks.api.FTBRanksAPI;
 import io.github.flemmli97.flan.Flan;
@@ -8,11 +8,7 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 
-public class PermissionNodeHandlerImpl extends PermissionNodeHandler {
-
-    public static void init() {
-        INSTANCE = new PermissionNodeHandlerImpl();
-    }
+public class PermissionNodeHandlerImpl implements PermissionNodeHandler {
 
     @Override
     public boolean perm(CommandSourceStack src, String perm, boolean adminCmd) {

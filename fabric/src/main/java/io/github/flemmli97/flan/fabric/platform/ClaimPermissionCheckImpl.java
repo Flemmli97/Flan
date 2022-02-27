@@ -7,11 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 
-public class ClaimPermissionCheckImpl extends ClaimPermissionCheck {
-
-    public static void init() {
-        INSTANCE = new ClaimPermissionCheckImpl();
-    }
+public class ClaimPermissionCheckImpl implements ClaimPermissionCheck {
 
     @Override
     public InteractionResult check(ServerPlayer player, ClaimPermission permission, BlockPos pos) {

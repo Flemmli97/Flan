@@ -105,7 +105,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     private boolean canIncrease(int blocks) {
-        return PermissionNodeHandler.instance().permBelowEqVal(this.player, PermissionNodeHandler.permClaimBlocks, blocks, ConfigHandler.config.maxClaimBlocks);
+        return PermissionNodeHandler.INSTANCE.permBelowEqVal(this.player, PermissionNodeHandler.permClaimBlocks, blocks, ConfigHandler.config.maxClaimBlocks);
     }
 
     @Override

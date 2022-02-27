@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.forge.platform.integration.permissions.forge;
+package io.github.flemmli97.flan.forge.platform.integration.permissions;
 
 import dev.ftb.mods.ftbranks.api.FTBRanksAPI;
 import io.github.flemmli97.flan.Flan;
@@ -7,11 +7,7 @@ import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeH
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 
-public class PermissionNodeHandlerImpl extends PermissionNodeHandler {
-
-    public static void init() {
-        INSTANCE = new PermissionNodeHandlerImpl();
-    }
+public class PermissionNodeHandlerImpl implements PermissionNodeHandler {
 
     @Override
     public boolean perm(CommandSourceStack src, String perm, boolean adminCmd) {

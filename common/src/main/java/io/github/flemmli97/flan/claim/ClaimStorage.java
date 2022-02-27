@@ -90,7 +90,7 @@ public class ClaimStorage implements IPermissionStorage {
                 player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("minClaimSize"), ConfigHandler.config.minClaimsize), ChatFormatting.RED), false);
                 return false;
             }
-            if (!data.isAdminIgnoreClaim() && ConfigHandler.config.maxClaims != -1 && !PermissionNodeHandler.instance().permBelowEqVal(player, PermissionNodeHandler.permMaxClaims, this.playerClaimMap.getOrDefault(player.getUUID(), Sets.newHashSet()).size() + 1, ConfigHandler.config.maxClaims)) {
+            if (!data.isAdminIgnoreClaim() && ConfigHandler.config.maxClaims != -1 && !PermissionNodeHandler.INSTANCE.permBelowEqVal(player, PermissionNodeHandler.permMaxClaims, this.playerClaimMap.getOrDefault(player.getUUID(), Sets.newHashSet()).size() + 1, ConfigHandler.config.maxClaims)) {
                 player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("maxClaims"), ChatFormatting.RED), false);
                 return false;
             }

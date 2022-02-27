@@ -148,7 +148,7 @@ public class ItemInteractEvents {
     }
 
     public static void claimLandHandling(ServerPlayer player, BlockPos target) {
-        if (!PermissionNodeHandler.instance().perm(player, PermissionNodeHandler.claimCreate, false)) {
+        if (!PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.claimCreate, false)) {
             player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), true);
             return;
         }

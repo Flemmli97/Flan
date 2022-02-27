@@ -268,7 +268,7 @@ public class Claim implements IPermissionContainer {
                 perm = PermissionRegistry.FAKEPLAYER;
             }
         }
-        InteractionResult res = ClaimPermissionCheck.instance().check(player, perm, pos);
+        InteractionResult res = ClaimPermissionCheck.INSTANCE.check(player, perm, pos);
         if (res != InteractionResult.PASS)
             return res != InteractionResult.FAIL;
         if (perm != null) {
@@ -634,7 +634,7 @@ public class Claim implements IPermissionContainer {
             else
                 this.leaveSubtitle = null;
             JsonObject potion = ConfigHandler.fromJson(obj, "Potions");
-            potion.entrySet().forEach(e -> this.potions.put(CrossPlatformStuff.instance().registryStatusEffects().getFromId(new ResourceLocation(e.getKey())), e.getValue().getAsInt()));
+            potion.entrySet().forEach(e -> this.potions.put(CrossPlatformStuff.INSTANCE.registryStatusEffects().getFromId(new ResourceLocation(e.getKey())), e.getValue().getAsInt()));
             if (ConfigHandler.fromJson(obj, "AdminClaim", false))
                 this.owner = null;
             else
@@ -704,7 +704,7 @@ public class Claim implements IPermissionContainer {
         obj.addProperty("LeaveTitle", this.leaveTitle == null ? "" : Component.Serializer.toJson(this.leaveTitle));
         obj.addProperty("LeaveSubtitle", this.leaveSubtitle == null ? "" : Component.Serializer.toJson(this.leaveSubtitle));
         JsonObject potions = new JsonObject();
-        this.potions.forEach((effect, amp) -> potions.addProperty(CrossPlatformStuff.instance().registryStatusEffects().getIDFrom(effect).toString(), amp));
+        this.potions.forEach((effect, amp) -> potions.addProperty(CrossPlatformStuff.INSTANCE.registryStatusEffects().getIDFrom(effect).toString(), amp));
         obj.add("Potions", potions);
         if (this.parent != null)
             obj.addProperty("Parent", this.parent.toString());

@@ -1,5 +1,6 @@
 package io.github.flemmli97.flan.platform;
 
+import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.SimpleRegistryWrapper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffect;
@@ -10,25 +11,23 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.nio.file.Path;
 
-public abstract class CrossPlatformStuff {
+public interface CrossPlatformStuff {
 
-    protected static CrossPlatformStuff INSTANCE;
+    CrossPlatformStuff INSTANCE = Flan.getPlatformInstance(CrossPlatformStuff.class,
+            "io.github.flemmli97.flan.fabric.platform.CrossPlatformStuffImpl",
+            "io.github.flemmli97.flan.forge.platform.CrossPlatformStuffImpl");
 
-    public static CrossPlatformStuff instance() {
-        return INSTANCE;
-    }
+    Path configPath();
 
-    public abstract Path configPath();
+    SimpleRegistryWrapper<MobEffect> registryStatusEffects();
 
-    public abstract SimpleRegistryWrapper<MobEffect> registryStatusEffects();
+    SimpleRegistryWrapper<Block> registryBlocks();
 
-    public abstract SimpleRegistryWrapper<Block> registryBlocks();
+    SimpleRegistryWrapper<Item> registryItems();
 
-    public abstract SimpleRegistryWrapper<Item> registryItems();
+    SimpleRegistryWrapper<EntityType<?>> registryEntities();
 
-    public abstract SimpleRegistryWrapper<EntityType<?>> registryEntities();
+    boolean isInventoryTile(BlockEntity blockEntity);
 
-    public abstract boolean isInventoryTile(BlockEntity blockEntity);
-
-    public abstract boolean blockDataContains(CompoundTag nbt, String tag);
+    boolean blockDataContains(CompoundTag nbt, String tag);
 }

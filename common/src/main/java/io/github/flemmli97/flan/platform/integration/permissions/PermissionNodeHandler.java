@@ -1,64 +1,63 @@
 package io.github.flemmli97.flan.platform.integration.permissions;
 
+import io.github.flemmli97.flan.Flan;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 
-public abstract class PermissionNodeHandler {
+public interface PermissionNodeHandler {
 
-    public static final String cmdReload = "flan.command.reload";
-    public static final String cmdGriefPrevention = "flan.command.read.griefprevention";
+    String cmdReload = "flan.command.reload";
+    String cmdGriefPrevention = "flan.command.read.griefprevention";
 
-    public static final String claimCreate = "flan.claim.create";
+    String claimCreate = "flan.claim.create";
 
-    public static final String cmdMenu = "flan.command.menu";
-    public static final String cmdTrapped = "flan.command.trapped";
-    public static final String cmdPGroup = "flan.command.personal";
-    public static final String cmdInfo = "flan.command.info";
-    public static final String cmdTransfer = "flan.command.transfer";
+    String cmdMenu = "flan.command.menu";
+    String cmdTrapped = "flan.command.trapped";
+    String cmdPGroup = "flan.command.personal";
+    String cmdInfo = "flan.command.info";
+    String cmdTransfer = "flan.command.transfer";
 
-    public static final String cmdDelete = "flan.command.delete";
-    public static final String cmdDeleteAll = "flan.command.delete.all";
-    public static final String cmdDeleteSub = "flan.command.delete.sub";
-    public static final String cmdDeleteSubAll = "flan.command.delete.sub.all";
+    String cmdDelete = "flan.command.delete";
+    String cmdDeleteAll = "flan.command.delete.all";
+    String cmdDeleteSub = "flan.command.delete.sub";
+    String cmdDeleteSubAll = "flan.command.delete.sub.all";
 
-    public static final String cmdList = "flan.command.list";
-    public static final String cmdListAll = "flan.command.list.all";
+    String cmdList = "flan.command.list";
+    String cmdListAll = "flan.command.list.all";
 
-    public static final String cmdClaimMode = "flan.command.claim.mode";
-    public static final String cmdAdminMode = "flan.command.admin.mode";
-    public static final String cmdAdminSet = "flan.command.admin.claim";
-    public static final String cmdAdminList = "flan.command.admin.list";
-    public static final String cmdAdminDelete = "flan.command.admin.delete";
-    public static final String cmdAdminGive = "flan.command.admin.give";
+    String cmdClaimMode = "flan.command.claim.mode";
+    String cmdAdminMode = "flan.command.admin.mode";
+    String cmdAdminSet = "flan.command.admin.claim";
+    String cmdAdminList = "flan.command.admin.list";
+    String cmdAdminDelete = "flan.command.admin.delete";
+    String cmdAdminGive = "flan.command.admin.give";
 
-    public static final String cmdGroup = "flan.command.group";
-    public static final String cmdPermission = "flan.command.permission";
+    String cmdGroup = "flan.command.group";
+    String cmdPermission = "flan.command.permission";
 
-    public static final String cmdSell = "flan.command.buy";
-    public static final String cmdBuy = "flan.command.sell";
+    String cmdSell = "flan.command.buy";
+    String cmdBuy = "flan.command.sell";
 
-    public static final String cmdUnlockAll = "flan.command.unlock.all";
-    public static final String cmdName = "flan.command.name";
+    String cmdUnlockAll = "flan.command.unlock.all";
+    String cmdName = "flan.command.name";
 
-    public static final String cmdHome = "flan.command.home";
-    public static final String cmdTeleport = "flan.command.teleport";
+    String cmdHome = "flan.command.home";
+    String cmdTeleport = "flan.command.teleport";
 
-    public static final String permClaimBlocks = "flan.claim.blocks.max";
-    public static final String permMaxClaims = "flan.claims.amount";
+    String permClaimBlocks = "flan.claim.blocks.max";
+    String permMaxClaims = "flan.claims.amount";
 
-    protected static PermissionNodeHandler INSTANCE;
+    PermissionNodeHandler INSTANCE = Flan.getPlatformInstance(PermissionNodeHandler.class,
+            "io.github.flemmli97.flan.fabric.platform.integration.permissions.PermissionNodeHandlerImpl",
+            "io.github.flemmli97.flan.forge.platform.integration.permissions.PermissionNodeHandlerImpl");
 
-    public static PermissionNodeHandler instance() {
-        return INSTANCE;
+    default boolean perm(CommandSourceStack src, String perm) {
+        return this.perm(src, perm, false);
     }
 
-    public boolean perm(CommandSourceStack src, String perm) {
-        return perm(src, perm, false);
-    }
+    boolean perm(CommandSourceStack src, String perm, boolean adminCmd);
 
-    public abstract boolean perm(CommandSourceStack src, String perm, boolean adminCmd);
+    boolean perm(ServerPlayer src, String perm, boolean adminCmd);
 
-    public abstract boolean perm(ServerPlayer src, String perm, boolean adminCmd);
-
-    public abstract boolean permBelowEqVal(ServerPlayer src, String perm, int val, int fallback);
+    boolean permBelowEqVal(ServerPlayer src, String perm, int val, int fallback);
 }

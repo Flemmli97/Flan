@@ -17,11 +17,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.nio.file.Path;
 
-public class CrossPlatformStuffImpl extends CrossPlatformStuff {
-
-    public static void init() {
-        INSTANCE = new CrossPlatformStuffImpl();
-    }
+public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public Path configPath() {

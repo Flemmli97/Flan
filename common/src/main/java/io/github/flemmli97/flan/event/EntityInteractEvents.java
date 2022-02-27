@@ -105,7 +105,7 @@ public class EntityInteractEvents {
     }
 
     public static boolean canInteract(Entity entity) {
-        ResourceLocation id = CrossPlatformStuff.instance().registryEntities().getIDFrom(entity.getType());
+        ResourceLocation id = CrossPlatformStuff.INSTANCE.registryEntities().getIDFrom(entity.getType());
         return ConfigHandler.config.ignoredEntityTypes.contains(id.getNamespace())
                 || ConfigHandler.config.ignoredEntityTypes.contains(id.toString())
                 || entity.getTags().stream().anyMatch(ConfigHandler.config.entityTagIgnore::contains);

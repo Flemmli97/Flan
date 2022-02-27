@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.fabric.platform.integration.currency.fabric;
+package io.github.flemmli97.flan.fabric.platform.integration.currency;
 
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.PermHelper;
@@ -14,11 +14,7 @@ import net.minecraft.server.level.ServerPlayer;
 import java.math.BigDecimal;
 import java.util.function.Consumer;
 
-public class CommandCurrencyImpl extends CommandCurrency {
-
-    public static void init() {
-        INSTANCE = new CommandCurrencyImpl();
-    }
+public class CommandCurrencyImpl implements CommandCurrency {
 
     @Override
     public boolean sellClaimBlocks(ServerPlayer player, int blocks, float value, Consumer<Component> message) {
