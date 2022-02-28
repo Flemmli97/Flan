@@ -1,3 +1,7 @@
+Flan 1.7.3
+================
+- Forge: Fix wither ignoring claims
+
 Flan 1.7.2
 ================
 - Fabric: Fix Clumps incompability with xp permission
