@@ -58,7 +58,7 @@ dependencies {
 
     modImplementation "me.lucko:fabric-permissions-api:${rootProject.fabric_permissions_api}"
 
-    modRuntimeOnly "curse.maven:gunpowder-350123:3344786"
+    modCompileOnly "curse.maven:gunpowder-350123:3344786"
     modCompileOnly("curse.maven:gunpowdercurrency-402041:3343135") {
         exclude group: "com.google.guava", module:"failureaccess"
     }
