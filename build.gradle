@@ -79,7 +79,7 @@ def changelog(int versions) {
         def changelog = ""
         def match = 0
         file("Changelog.md").eachLine {
-            if (it.matches("${project.project_name} ([0-9].[0-9].[0-9])"))
+            if (it.matches("${project.project_name} ([0-9].([0-9]*).([0-9]*))"))
                 match++
             if (match <= versions) {
                 changelog += it + "\n"
