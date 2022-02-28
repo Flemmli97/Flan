@@ -41,6 +41,10 @@ repositories {
         name = "FTB"
         url = "https://maven.saps.dev/minecraft"
     }
+    maven {
+        name = "CurseMaven"
+        url "https://www.cursemaven.com"
+    }
 }
 
 dependencies {
@@ -54,7 +58,8 @@ dependencies {
 
     modImplementation "me.lucko:fabric-permissions-api:${rootProject.fabric_permissions_api}"
 
-    modCompileOnly("io.github.gunpowder:gunpowder-currency:${rootProject.gunpowder_currency_version}") {
+    // Rip currency on their maven and prob rip currency all together
+    modCompileOnly("curse.maven:gunpowdercurrency-402041:3584557") {
         exclude group: "com.google.guava", module:"failureaccess"
     }
 
