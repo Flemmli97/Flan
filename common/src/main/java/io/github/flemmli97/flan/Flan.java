@@ -2,7 +2,6 @@ package io.github.flemmli97.flan;
 
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.platform.ClaimPermissionCheck;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,20 +39,20 @@ public class Flan {
 
     @SuppressWarnings("unchecked")
     public static <T> T getPlatformInstance(Class<T> abstractClss, String... impls) {
-        if(impls == null || impls.length == 0)
+        if (impls == null || impls.length == 0)
             throw new IllegalStateException("Couldn't create an instance of " + abstractClss + ". No implementations provided!");
         Class<?> clss = null;
         int i = 0;
-        while(clss == null && i < impls.length) {
+        while (clss == null && i < impls.length) {
             try {
                 clss = Class.forName(impls[i]);
             } catch (ClassNotFoundException ignored) {
             }
             i++;
         }
-        if(clss == null)
+        if (clss == null)
             Flan.logger.fatal("No Implementation of " + abstractClss + " found with given paths " + Arrays.toString(impls));
-        if (clss != null && abstractClss.isAssignableFrom(clss)) {
+        else if (abstractClss.isAssignableFrom(clss)) {
             try {
                 Constructor<T> constructor = (Constructor<T>) clss.getDeclaredConstructor();
                 return constructor.newInstance();

@@ -1,12 +1,12 @@
 package io.github.flemmli97.flan.api.permission;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.tags.SerializationTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.item.Item;
@@ -39,6 +39,7 @@ import net.minecraft.world.level.block.TurtleEggBlock;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -66,15 +67,15 @@ public class ObjectToPermissionMap {
             String[] sub = s.split("-");
             boolean remove = sub[1].equals("NONE");
             if (s.startsWith("@")) {
-                Tag<Item> t = SerializationTags.getInstance().getOrEmpty(Registry.ITEM_REGISTRY).getTag(new ResourceLocation(sub[0].substring(1)));
-                if (t != null) {
-                    t.getValues().forEach(i -> {
-                        if (remove)
-                            itemToPermission.remove(i);
-                        else
-                            itemToPermission.put(i, PermissionRegistry.get(sub[1]));
-                    });
-                }
+                ResourceLocation res = new ResourceLocation(sub[0].substring(1));
+                Optional<HolderSet.Named<Item>> t = Registry.ITEM.getTags().filter(p -> p.getFirst().location().equals(res))
+                        .map(Pair::getSecond).findFirst();
+                t.ifPresent(holders -> holders.forEach(i -> {
+                    if (remove)
+                        itemToPermission.remove(i.value());
+                    else
+                        itemToPermission.put(i.value(), PermissionRegistry.get(sub[1]));
+                }));
             } else {
                 if (remove)
                     itemToPermission.remove(CrossPlatformStuff.INSTANCE.registryItems().getFromId(new ResourceLocation(sub[0])));
@@ -86,14 +87,15 @@ public class ObjectToPermissionMap {
             String[] sub = s.split("-");
             boolean remove = sub[1].equals("NONE");
             if (s.startsWith("@")) {
-                Tag<Block> t = SerializationTags.getInstance().getOrEmpty(Registry.BLOCK_REGISTRY).getTag(new ResourceLocation(sub[0].substring(1)));
-                if (t != null)
-                    t.getValues().forEach(i -> {
-                        if (remove)
-                            blockToPermission.remove(i);
-                        else
-                            blockToPermission.put(i, PermissionRegistry.get(sub[1]));
-                    });
+                ResourceLocation res = new ResourceLocation(sub[0].substring(1));
+                Optional<HolderSet.Named<Block>> t = Registry.BLOCK.getTags().filter(p -> p.getFirst().location().equals(res))
+                        .map(Pair::getSecond).findFirst();
+                t.ifPresent(holders -> holders.forEach(i -> {
+                    if (remove)
+                        blockToPermission.remove(i.value());
+                    else
+                        blockToPermission.put(i.value(), PermissionRegistry.get(sub[1]));
+                }));
             } else {
                 if (remove)
                     blockToPermission.remove(CrossPlatformStuff.INSTANCE.registryBlocks().getFromId(new ResourceLocation(sub[0])));
