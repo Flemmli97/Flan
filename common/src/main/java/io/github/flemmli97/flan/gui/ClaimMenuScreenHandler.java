@@ -130,7 +130,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                 break;
             case 5:
-                if (this.hasPerm(this.claim, player, PermissionRegistry.EDITCLAIM)) {
+                if (this.hasPerm(this.claim, player, PermissionRegistry.CLAIMMESSAGE)) {
                     player.closeContainer();
                     player.getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.claim));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);

@@ -770,7 +770,7 @@ public class CommandClaim {
             ((MutableComponent) text).setStyle(style);
         }
         ServerPlayer player = context.getSource().getPlayerOrException();
-        Claim claim = PermHelper.checkReturn(player, PermissionRegistry.EDITPERMS, PermHelper.genericNoPermMessage(player));
+        Claim claim = PermHelper.checkReturn(player, PermissionRegistry.CLAIMMESSAGE, PermHelper.genericNoPermMessage(player));
         if (claim == null)
             return 0;
         boolean sub = StringArgumentType.getString(context, "title").equals("subtitle");

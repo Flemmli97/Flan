@@ -3,9 +3,11 @@ package io.github.flemmli97.flan.api;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.data.IPermissionStorage;
 import io.github.flemmli97.flan.api.data.IPlayerData;
+import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
 import io.github.flemmli97.flan.player.PlayerClaimData;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,6 +15,13 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.UUID;
 
 public class ClaimHandler {
+
+    /**
+     * Check if a player do an interaction at the given position
+     */
+    public static boolean canInteract(ServerPlayer player, BlockPos pos, ClaimPermission permission) {
+        return ClaimStorage.get(player.getLevel()).getClaimAt(pos).canInteract(player, permission, pos);
+    }
 
     /**
      * Get the permission storage for the world to check for permissions.
