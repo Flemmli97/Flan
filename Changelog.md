@@ -1,6 +1,6 @@
 Flan 1.7.5
 ================
-- Fix a type in the default lang file
+- Fix a typo in the default lang file
 - Add CLAIMMESSAGE permission for specifically editing the  
   enter/leave message of a claim
 
