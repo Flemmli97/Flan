@@ -52,10 +52,13 @@ public class Config {
 
     public boolean lenientBlockEntityCheck;
     public List<String> breakBlockBlacklist = Lists.newArrayList(
-            "universal_graves:grave"
+            "universal_graves:grave",
+            "yigd:grave"
     );
     public List<String> interactBlockBlacklist = Lists.newArrayList(
-            "universal_graves:grave"
+            "universal_graves:grave",
+            "yigd:grave",
+            "waystones"
     );
 
     public List<String> breakBETagBlacklist = Lists.newArrayList(
