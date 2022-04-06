@@ -1,3 +1,7 @@
+Flan 1.7.6
+================
+- Fix delete command using wrong permission node
+
 Flan 1.7.5
 ================
 - Fix a typo in the default lang file
