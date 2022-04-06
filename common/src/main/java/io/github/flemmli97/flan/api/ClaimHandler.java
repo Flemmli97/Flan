@@ -17,7 +17,7 @@ import java.util.UUID;
 public class ClaimHandler {
 
     /**
-     * Check if a player do an interaction at the given position
+     * Check if a player can do an interaction at the given position
      */
     public static boolean canInteract(ServerPlayer player, BlockPos pos, ClaimPermission permission) {
         return ClaimStorage.get(player.getLevel()).getClaimAt(pos).canInteract(player, permission, pos);
