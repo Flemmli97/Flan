@@ -10,7 +10,9 @@ import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod(FlanForge.MODID)
@@ -19,6 +21,7 @@ public class FlanForge {
     public static final String MODID = "flan";
 
     public FlanForge() {
+        ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> "*", (s1, s2) -> true));
         Flan.ftbRanks = ModList.get().isLoaded("ftbranks");
         Flan.diceMCMoneySign = ModList.get().isLoaded("dicemcmm");
 
