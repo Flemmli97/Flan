@@ -57,6 +57,7 @@ public class FlanFabric implements ModInitializer {
         Flan.gunpowder = FabricLoader.getInstance().isModLoaded("gunpowder-currency");
         Flan.playerAbilityLib = FabricLoader.getInstance().isModLoaded("playerabilitylib");
         Flan.ftbRanks = FabricLoader.getInstance().isModLoaded("ftbranks");
+        Flan.octoEconomy = FabricLoader.getInstance().isModLoaded("octo-economy-api");
         if (Flan.playerAbilityLib)
             PlayerAbilityEvents.register();
         ClaimCriterias.init();

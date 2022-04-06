@@ -1,5 +1,8 @@
 package io.github.flemmli97.flan.fabric.platform.integration.currency;
 
+import com.epherical.octoecon.OctoEconomy;
+import com.epherical.octoecon.api.Currency;
+import com.epherical.octoecon.api.user.UniqueUser;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -9,12 +12,15 @@ import io.github.gunpowder.entities.StoredBalance;
 import io.github.gunpowder.modelhandlers.BalanceHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.math.BigDecimal;
 import java.util.function.Consumer;
 
 public class CommandCurrencyImpl implements CommandCurrency {
+
+    private static final ResourceLocation eightyEconomyCurrencyName = new ResourceLocation("eights_economy", "dollars");
 
     @Override
     public boolean sellClaimBlocks(ServerPlayer player, int blocks, float value, Consumer<Component> message) {
@@ -36,6 +42,24 @@ public class CommandCurrencyImpl implements CommandCurrency {
             message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("sellSuccess"), blocks, price), ChatFormatting.GOLD));
             return true;
         }
+        if (Flan.octoEconomy) {
+            PlayerClaimData data = PlayerClaimData.get(player);
+            if (data.getAdditionalClaims() - Math.max(0, data.usedClaimBlocks() - data.getClaimBlocks()) < blocks) {
+                message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("sellFail"), ChatFormatting.DARK_RED));
+                return false;
+            }
+            Currency currency = OctoEconomy.getInstance().getCurrentEconomy().getCurrency(eightyEconomyCurrencyName);
+            if (currency == null) {
+                message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("currencyMissing"), ChatFormatting.DARK_RED));
+                return false;
+            }
+            UniqueUser user = OctoEconomy.getInstance().getCurrentEconomy()
+                    .getOrCreatePlayerAccount(player.getUUID());
+            double price = blocks * value;
+            user.depositMoney(currency, price, "flan.claimblocks.sell");
+            data.setAdditionalClaims(data.getAdditionalClaims() - blocks);
+            message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("sellSuccess"), blocks, price), ChatFormatting.GOLD));
+        }
         message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("currencyMissing"), ChatFormatting.DARK_RED));
         return false;
     }
@@ -54,6 +78,25 @@ public class CommandCurrencyImpl implements CommandCurrency {
                 data.setAdditionalClaims(data.getAdditionalClaims() + blocks);
                 bal.setBalance(bal.getBalance().subtract(price));
                 BalanceHandler.INSTANCE.updateUser(bal);
+                message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("buySuccess"), blocks, price), ChatFormatting.GOLD));
+                return true;
+            }
+            message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyFail"), ChatFormatting.DARK_RED));
+            return false;
+        }
+        if (Flan.octoEconomy) {
+            Currency currency = OctoEconomy.getInstance().getCurrentEconomy().getCurrency(eightyEconomyCurrencyName);
+            if (currency == null) {
+                message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("currencyMissing"), ChatFormatting.DARK_RED));
+                return false;
+            }
+            UniqueUser user = OctoEconomy.getInstance().getCurrentEconomy()
+                    .getOrCreatePlayerAccount(player.getUUID());
+            double price = Math.max(0, blocks * value);
+            if (user.getBalance(currency) >= price) {
+                PlayerClaimData data = PlayerClaimData.get(player);
+                data.setAdditionalClaims(data.getAdditionalClaims() + blocks);
+                user.withdrawMoney(currency, price, "flan.claimblocks.buy");
                 message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("buySuccess"), blocks, price), ChatFormatting.GOLD));
                 return true;
             }

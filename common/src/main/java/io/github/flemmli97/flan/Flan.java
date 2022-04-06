@@ -15,7 +15,7 @@ public class Flan {
 
     public static final Logger logger = LogManager.getLogger("flan");
 
-    public static boolean permissionAPI, gunpowder, playerAbilityLib, ftbRanks, diceMCMoneySign;
+    public static boolean permissionAPI, gunpowder, playerAbilityLib, ftbRanks, diceMCMoneySign, octoEconomy;
 
     public static final DateTimeFormatter onlineTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 

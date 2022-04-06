@@ -45,6 +45,7 @@ repositories {
         name = "CurseMaven"
         url "https://www.cursemaven.com"
     }
+    maven { url = "https://jitpack.io" }
 }
 
 dependencies {
@@ -62,11 +63,14 @@ dependencies {
     modCompileOnly("curse.maven:gunpowdercurrency-402041:3584557") {
         exclude group: "com.google.guava", module:"failureaccess"
     }
+    modImplementation "com.github.ExcessiveAmountsOfZombies:OctoEconomyApi:5137175b1c"
+    modRuntimeOnly "curse.maven:gunpowdercurrency-559967:3590217"
 
     //modImplementation "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
     modCompileOnly "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
 
     modCompileOnly("dev.ftb.mods:ftb-ranks-fabric:${rootProject.ftb_ranks}")
+
 }
 
 processResources {
