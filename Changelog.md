@@ -2,6 +2,7 @@ Flan 1.7.6
 ================
 - Fix delete command using wrong permission node
 - Fabric: Support for EightsEconomyP
+- Add waystones and yigd graves to default ignored block list
 
 Flan 1.7.5
 ================
