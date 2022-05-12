@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.JukeboxBlock;
 import net.minecraft.world.level.block.LeverBlock;
+import net.minecraft.world.level.block.MossBlock;
 import net.minecraft.world.level.block.NetherPortalBlock;
 import net.minecraft.world.level.block.NoteBlock;
 import net.minecraft.world.level.block.RedStoneWireBlock;
@@ -136,24 +137,25 @@ public class ObjectToPermissionMap {
     }
 
     static {
-        registerBlockPredicateMap((block) -> block instanceof AnvilBlock, () -> PermissionRegistry.ANVIL);
-        registerBlockPredicateMap((block) -> block instanceof BedBlock, () -> PermissionRegistry.BED);
-        registerBlockPredicateMap((block) -> block instanceof BeaconBlock, () -> PermissionRegistry.BEACON);
-        registerBlockPredicateMap((block) -> block instanceof DoorBlock, () -> PermissionRegistry.DOOR);
-        registerBlockPredicateMap((block) -> block instanceof FenceGateBlock, () -> PermissionRegistry.FENCEGATE);
-        registerBlockPredicateMap((block) -> block instanceof TrapDoorBlock, () -> PermissionRegistry.TRAPDOOR);
-        registerBlockPredicateMap((block) -> block instanceof LeverBlock || block instanceof ButtonBlock, () -> PermissionRegistry.BUTTONLEVER);
-        registerBlockPredicateMap((block) -> block instanceof NoteBlock, () -> PermissionRegistry.NOTEBLOCK);
-        registerBlockPredicateMap((block) -> block instanceof DiodeBlock || block instanceof RedStoneWireBlock || block instanceof DaylightDetectorBlock, () -> PermissionRegistry.REDSTONE);
-        registerBlockPredicateMap((block) -> block instanceof JukeboxBlock, () -> PermissionRegistry.JUKEBOX);
-        registerBlockPredicateMap((block) -> block instanceof BasePressurePlateBlock, () -> PermissionRegistry.PRESSUREPLATE);
-        registerBlockPredicateMap((block) -> block instanceof NetherPortalBlock, () -> PermissionRegistry.PORTAL);
-        registerBlockPredicateMap((block) -> block instanceof TurtleEggBlock || block instanceof FarmBlock, () -> PermissionRegistry.TRAMPLE);
-        registerBlockPredicateMap((block) -> block instanceof TargetBlock, () -> PermissionRegistry.TARGETBLOCK);
-        registerBlockPredicateMap((block) -> block instanceof BellBlock || block instanceof CampfireBlock
+        registerBlockPredicateMap(block -> block instanceof AnvilBlock, () -> PermissionRegistry.ANVIL);
+        registerBlockPredicateMap(block -> block instanceof BedBlock, () -> PermissionRegistry.BED);
+        registerBlockPredicateMap(block -> block instanceof BeaconBlock, () -> PermissionRegistry.BEACON);
+        registerBlockPredicateMap(block -> block instanceof DoorBlock, () -> PermissionRegistry.DOOR);
+        registerBlockPredicateMap(block -> block instanceof FenceGateBlock, () -> PermissionRegistry.FENCEGATE);
+        registerBlockPredicateMap(block -> block instanceof TrapDoorBlock, () -> PermissionRegistry.TRAPDOOR);
+        registerBlockPredicateMap(block -> block instanceof LeverBlock || block instanceof ButtonBlock, () -> PermissionRegistry.BUTTONLEVER);
+        registerBlockPredicateMap(block -> block instanceof NoteBlock, () -> PermissionRegistry.NOTEBLOCK);
+        registerBlockPredicateMap(block -> block instanceof DiodeBlock || block instanceof RedStoneWireBlock || block instanceof DaylightDetectorBlock, () -> PermissionRegistry.REDSTONE);
+        registerBlockPredicateMap(block -> block instanceof JukeboxBlock, () -> PermissionRegistry.JUKEBOX);
+        registerBlockPredicateMap(block -> block instanceof BasePressurePlateBlock, () -> PermissionRegistry.PRESSUREPLATE);
+        registerBlockPredicateMap(block -> block instanceof NetherPortalBlock, () -> PermissionRegistry.PORTAL);
+        registerBlockPredicateMap(block -> block instanceof TurtleEggBlock || block instanceof FarmBlock, () -> PermissionRegistry.TRAMPLE);
+        registerBlockPredicateMap(block -> block instanceof TargetBlock, () -> PermissionRegistry.TARGETBLOCK);
+        registerBlockPredicateMap(block -> block instanceof BellBlock || block instanceof CampfireBlock
                 || block instanceof TntBlock || block instanceof ChorusFlowerBlock, () -> PermissionRegistry.PROJECTILES);
-        registerBlockPredicateMap((block) -> block instanceof EnderChestBlock, () -> PermissionRegistry.ENDERCHEST);
-        registerBlockPredicateMap((block) -> block instanceof EnchantmentTableBlock, () -> PermissionRegistry.ENCHANTMENTTABLE);
+        registerBlockPredicateMap(block -> block instanceof EnderChestBlock, () -> PermissionRegistry.ENDERCHEST);
+        registerBlockPredicateMap(block -> block instanceof EnchantmentTableBlock, () -> PermissionRegistry.ENCHANTMENTTABLE);
+        registerBlockPredicateMap(block -> block instanceof MossBlock, () -> PermissionRegistry.PLACE);
 
         registerItemPredicateMap(item -> item instanceof EnderpearlItem, () -> PermissionRegistry.ENDERPEARL);
         registerItemPredicateMap(item -> item instanceof BucketItem, () -> PermissionRegistry.BUCKET);

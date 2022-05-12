@@ -25,6 +25,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
@@ -223,6 +224,37 @@ public class ClaimStorage implements IPermissionStorage {
         if (claim != null)
             return claim;
         return this.globalClaim;
+    }
+
+    public boolean canInteract(BlockPos pos, int radius, ServerPlayer player, ClaimPermission perm, boolean message) {
+        ChunkPos c = new ChunkPos(new BlockPos(pos.getX() - radius, pos.getY(), pos.getZ() - radius));
+        List<Claim> affected = new ArrayList<>();
+        for (int x = 0; SectionPos.sectionToBlockCoord(c.x + x) <= pos.getX() + radius; x++) {
+            for (int z = 0; SectionPos.sectionToBlockCoord(c.z + z) <= pos.getZ() + radius; z++) {
+                List<Claim> list = this.claims.get(ChunkPos.asLong(c.x + x, c.z + z));
+                if (list != null)
+                    affected.addAll(this.claims.get(ChunkPos.asLong(c.x + x, c.z + z)));
+            }
+        }
+        Claim last = null;
+        for (BlockPos ipos : BlockPos.betweenClosed(pos.getX() - radius, pos.getY(), pos.getZ() - radius,
+                pos.getX() + radius, pos.getY(), pos.getZ() + radius)) {
+            if (last != null) {
+                if (last.insideClaim(ipos)) {
+                    if (!last.canInteract(player, perm, ipos, message))
+                        return false;
+                    continue;
+                } else last = null;
+            }
+            for (Claim claim : affected) {
+                if (claim.insideClaim(ipos)) {
+                    last = claim;
+                    if (!claim.canInteract(player, perm, ipos, message))
+                        return false;
+                }
+            }
+        }
+        return true;
     }
 
     public Claim getFromUUID(UUID uuid) {

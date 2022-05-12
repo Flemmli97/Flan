@@ -25,7 +25,8 @@
     "BannedEntryAccessor",
     "MinecraftServerMixin",
     "AbstractContainerAccessor",
-    "PistonMixin"
+    "PistonMixin",
+    "MossBlockCheckMixin"
   ],
   "server": [
   ],

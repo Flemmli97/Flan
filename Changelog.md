@@ -1,3 +1,7 @@
+Flan 1.7.7
+================
+- Prevent moss bonemealing if too close to a claim without permission
+
 Flan 1.7.6
 ================
 - Fix delete command using wrong permission node
