@@ -1,6 +1,9 @@
 Flan 1.7.7
 ================
 - Prevent moss/grassblock/nylium bonemealing if too close to a claim without permission
+- Make subclaims inherit some data of the parent claim upon creation.  
+  E.g. player groups or set group permissions
+- Better description when editing enter/leave text
 
 Flan 1.7.6
 ================

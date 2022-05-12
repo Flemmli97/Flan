@@ -21,6 +21,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
@@ -59,33 +61,45 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                 case 2 -> {
                     ItemStack stack = new ItemStack(Items.OAK_SIGN);
                     stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenEnterText"), ChatFormatting.GOLD));
-                    ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenDelete"), ChatFormatting.DARK_RED));
+                    List<Component> lore = new ArrayList<>();
+                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenTextJson"), ChatFormatting.GOLD));
+                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenDelete"), ChatFormatting.DARK_RED));
                     if (claim.enterTitle != null)
-                        ServerScreenHelper.addLore(stack, claim.enterTitle);
+                        lore.add(claim.enterTitle);
+                    ServerScreenHelper.addLore(stack, lore);
                     inv.updateStack(i, stack);
                 }
                 case 3 -> {
                     ItemStack stack2 = new ItemStack(Items.OAK_SIGN);
                     stack2.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenEnterSubText"), ChatFormatting.GOLD));
-                    ServerScreenHelper.addLore(stack2, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenDelete"), ChatFormatting.DARK_RED));
+                    List<Component> lore = new ArrayList<>();
+                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenTextJson"), ChatFormatting.GOLD));
+                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenDelete"), ChatFormatting.DARK_RED));
                     if (claim.enterSubtitle != null)
-                        ServerScreenHelper.addLore(stack2, claim.enterSubtitle);
+                        lore.add(claim.enterSubtitle);
+                    ServerScreenHelper.addLore(stack2, lore);
                     inv.updateStack(i, stack2);
                 }
                 case 4 -> {
                     ItemStack stack3 = new ItemStack(Items.OAK_SIGN);
                     stack3.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenLeaveText"), ChatFormatting.GOLD));
-                    ServerScreenHelper.addLore(stack3, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenDelete"), ChatFormatting.DARK_RED));
+                    List<Component> lore = new ArrayList<>();
+                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenTextJson"), ChatFormatting.GOLD));
+                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenDelete"), ChatFormatting.DARK_RED));
                     if (claim.leaveTitle != null)
-                        ServerScreenHelper.addLore(stack3, claim.leaveTitle);
+                        lore.add(claim.leaveTitle);
+                    ServerScreenHelper.addLore(stack3, lore);
                     inv.updateStack(i, stack3);
                 }
                 case 5 -> {
                     ItemStack stack4 = new ItemStack(Items.OAK_SIGN);
                     stack4.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenLeaveSubText"), ChatFormatting.GOLD));
-                    ServerScreenHelper.addLore(stack4, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenDelete"), ChatFormatting.DARK_RED));
+                    List<Component> lore = new ArrayList<>();
+                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenTextJson"), ChatFormatting.GOLD));
+                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenDelete"), ChatFormatting.DARK_RED));
                     if (claim.leaveSubtitle != null)
-                        ServerScreenHelper.addLore(stack4, claim.leaveSubtitle);
+                        lore.add(claim.leaveSubtitle);
+                    ServerScreenHelper.addLore(stack4, lore);
                     inv.updateStack(i, stack4);
                 }
                 default -> inv.updateStack(i, ServerScreenHelper.emptyFiller());

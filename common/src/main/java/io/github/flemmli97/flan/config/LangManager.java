@@ -142,10 +142,11 @@ public class LangManager {
         this.defaultTranslation.put("screenPotions", "Claim Potions");
         this.defaultTranslation.put("screenTitleEditor", "Claim messages");
         this.defaultTranslation.put("screenTitleEditorSub", "Subclaim messages");
-        this.defaultTranslation.put("screenEnterText", "Edit title text on enter. (Right-Click to use JSON text. See MC Wiki for that)");
-        this.defaultTranslation.put("screenEnterSubText", "Edit subtitle text on enter. (Right-Click to use JSON text. See MC Wiki for that)");
-        this.defaultTranslation.put("screenLeaveText", "Edit title text on leave. (Right-Click to use JSON text. See MC Wiki for that)");
-        this.defaultTranslation.put("screenLeaveSubText", "Edit subtitle text on leave. (Right-Click to use JSON text. See MC Wiki for that)");
+        this.defaultTranslation.put("screenTextJson", "Right-Click to use JSON text. See MC Wiki for that.");
+        this.defaultTranslation.put("screenEnterText", "Edit title text on enter.");
+        this.defaultTranslation.put("screenEnterSubText", "Edit subtitle text on enter.");
+        this.defaultTranslation.put("screenLeaveText", "Edit title text on leave.");
+        this.defaultTranslation.put("screenLeaveSubText", "Edit subtitle text on leave.");
         this.defaultTranslation.put("screenDelete", "Use \"$empty\" to delete the message");
 
         this.defaultTranslation.put("chatClaimTextEdit", "[Click for command]");
