@@ -7,6 +7,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.item.Item;
@@ -29,7 +30,6 @@ import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.JukeboxBlock;
 import net.minecraft.world.level.block.LeverBlock;
-import net.minecraft.world.level.block.MossBlock;
 import net.minecraft.world.level.block.NetherPortalBlock;
 import net.minecraft.world.level.block.NoteBlock;
 import net.minecraft.world.level.block.RedStoneWireBlock;
@@ -155,12 +155,12 @@ public class ObjectToPermissionMap {
                 || block instanceof TntBlock || block instanceof ChorusFlowerBlock, () -> PermissionRegistry.PROJECTILES);
         registerBlockPredicateMap(block -> block instanceof EnderChestBlock, () -> PermissionRegistry.ENDERCHEST);
         registerBlockPredicateMap(block -> block instanceof EnchantmentTableBlock, () -> PermissionRegistry.ENCHANTMENTTABLE);
-        registerBlockPredicateMap(block -> block instanceof MossBlock, () -> PermissionRegistry.PLACE);
 
         registerItemPredicateMap(item -> item instanceof EnderpearlItem, () -> PermissionRegistry.ENDERPEARL);
         registerItemPredicateMap(item -> item instanceof BucketItem, () -> PermissionRegistry.BUCKET);
         registerItemPredicateMap(item -> item == Items.END_CRYSTAL, () -> PermissionRegistry.ENDCRYSTALPLACE);
         registerItemPredicateMap(item -> item == Items.CHORUS_FRUIT, () -> PermissionRegistry.CHORUSFRUIT);
         registerItemPredicateMap(item -> item == Items.LILY_PAD, () -> PermissionRegistry.PLACE);
+        registerItemPredicateMap(item -> item instanceof BoneMealItem, () -> PermissionRegistry.PLACE);
     }
 }

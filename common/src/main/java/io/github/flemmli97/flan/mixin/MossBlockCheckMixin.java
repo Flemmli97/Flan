@@ -14,7 +14,7 @@ public class MossBlockCheckMixin {
 
     @Inject(method = "useOn", at = @At("HEAD"), cancellable = true)
     private void check(UseOnContext context, CallbackInfoReturnable<InteractionResult> info) {
-        if (PlayerEvents.mossBonemeal(context)) {
+        if (PlayerEvents.growBonemeal(context)) {
             info.setReturnValue(InteractionResult.PASS);
             info.cancel();
         }
