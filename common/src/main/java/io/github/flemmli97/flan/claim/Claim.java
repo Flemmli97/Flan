@@ -361,6 +361,9 @@ public class Claim implements IPermissionContainer {
     }
 
     public Set<Claim> tryCreateSubClaim(BlockPos pos1, BlockPos pos2) {
+        //No sub sub claims
+        if (this.parentClaim() != null)
+            return Set.of(this.parentClaim());
         Claim sub = new Claim(pos1, new BlockPos(pos2.getX(), 0, pos2.getZ()), this.owner, this.world);
         sub.setClaimID(this.generateUUID());
         Set<Claim> conflicts = new HashSet<>();
@@ -372,6 +375,13 @@ public class Claim implements IPermissionContainer {
             sub.parent = this.claimID;
             sub.parentClaim = this;
             this.subClaims.add(sub);
+            //Copy parent claims perms
+            sub.permissions.clear();
+            sub.permissions.putAll(this.permissions);
+            sub.playersGroups.clear();
+            sub.playersGroups.putAll(this.playersGroups);
+            sub.potions.clear();
+            sub.potions.putAll(this.potions);
             this.setDirty(true);
         }
         return conflicts;
