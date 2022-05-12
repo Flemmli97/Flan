@@ -310,27 +310,49 @@ public class EntityInteractEvents {
         ClaimStorage storage = ClaimStorage.get(player.getLevel());
         if (currentClaim != null) {
             if (!currentClaim.intersects(player.getBoundingBox())) {
-                Claim claim = storage.getClaimAt(rounded);
-                cons.accept(claim);
+                boolean isSub = currentClaim.parentClaim() != null;
+                Claim claim = isSub ? storage.getClaimAt(rounded) : currentClaim.parentClaim();
                 if (claim == null)
                     currentClaim.displayLeaveTitle(player);
-                else
-                    claim.displayEnterTitle(player);
+                else {
+                    Claim sub = claim.getSubClaim(rounded);
+                    boolean display = true;
+                    if (sub != null)
+                        claim = sub;
+                    else {
+                        display = currentClaim.enterTitle != null;
+                        if (claim.enterTitle == null)
+                            currentClaim.displayLeaveTitle(player);
+                    }
+                    if (display)
+                        claim.displayEnterTitle(player);
+                }
+                cons.accept(claim);
             } else {
+                if (currentClaim.parentClaim() == null) {
+                    Claim sub = currentClaim.getSubClaim(rounded);
+                    if (sub != null) {
+                        currentClaim = sub;
+                        currentClaim.displayEnterTitle(player);
+                        cons.accept(currentClaim);
+                    }
+                }
                 if (!player.isSpectator()) {
                     BlockPos.MutableBlockPos bPos = rounded.mutable();
-                    if (!currentClaim.canInteract(player, PermissionRegistry.CANSTAY, bPos, true)) {
-                        Claim sub = currentClaim.getSubClaim(bPos);
-                        Vec3 tp = TeleportUtils.getTeleportPos(player, pos, storage, sub != null ? sub.getDimensions() : currentClaim.getDimensions(), true, bPos, (claim, nPos) -> claim.canInteract(player, PermissionRegistry.CANSTAY, nPos, false));
+                    boolean isSub = currentClaim.parentClaim() != null;
+                    Claim mainClaim = isSub ? currentClaim.parentClaim() : currentClaim;
+                    if (!mainClaim.canInteract(player, PermissionRegistry.CANSTAY, bPos, true)) {
+                        Claim sub = isSub ? currentClaim : null;
+                        Vec3 tp = TeleportUtils.getTeleportPos(player, pos, storage, sub != null ? sub.getDimensions() : mainClaim.getDimensions(), true, bPos, (claim, nPos) -> claim.canInteract(player, PermissionRegistry.CANSTAY, nPos, false));
                         if (player.isPassenger())
                             player.stopRiding();
                         player.teleportToWithTicket(tp.x(), tp.y(), tp.z());
                     }
-                    if (player.getAbilities().flying && !player.isCreative() && !currentClaim.canInteract(player, PermissionRegistry.FLIGHT, rounded, true)) {
+                    if (player.getAbilities().flying && !player.isCreative() && !mainClaim.canInteract(player, PermissionRegistry.FLIGHT, rounded, true)) {
                         player.getAbilities().flying = false;
                         player.connection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
                     }
-                    if (player.getFoodData().getSaturationLevel() < 2 && currentClaim.canInteract(player, PermissionRegistry.NOHUNGER, bPos, false)) {
+                    if (player.getFoodData().getSaturationLevel() < 2 && mainClaim.canInteract(player, PermissionRegistry.NOHUNGER, bPos, false)) {
                         ((IHungerAccessor) player.getFoodData()).setSaturation(2);
                     }
                     currentClaim.applyEffects(player);
@@ -338,9 +360,12 @@ public class EntityInteractEvents {
             }
         } else if (player.tickCount % 3 == 0) {
             Claim claim = storage.getClaimAt(rounded);
-            cons.accept(claim);
+            Claim sub = claim != null ? claim.getSubClaim(rounded) : null;
+            if (sub != null)
+                claim = sub;
             if (claim != null)
                 claim.displayEnterTitle(player);
+            cons.accept(claim);
         }
     }
 
