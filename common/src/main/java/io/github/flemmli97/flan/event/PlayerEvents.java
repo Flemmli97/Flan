@@ -45,10 +45,10 @@ public class PlayerEvents {
             BlockPos.MutableBlockPos pos = context.getClickedPos().mutable();
             ClaimPermission perm = ObjectToPermissionMap.getFromItem(context.getItemInHand().getItem());
             /**
-             * Like {@link ItemInteractEvents#onItemUseBlock}.
+             * {@link ItemInteractEvents#onItemUseBlock} handles this case already.
              * Sadly need to check again. In case its used in a claim. Less expensive than aoe check
              */
-            if (ClaimStorage.get(serverPlayer.getLevel()).getForPermissionCheck(pos).canInteract(serverPlayer, perm, pos, false))
+            if (!ClaimStorage.get(serverPlayer.getLevel()).getForPermissionCheck(pos).canInteract(serverPlayer, perm, pos, false))
                 return false;
             int range = 0;
             if (state.getBlock() instanceof MossBlock) {
