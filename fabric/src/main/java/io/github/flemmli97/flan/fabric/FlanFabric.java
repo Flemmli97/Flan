@@ -9,6 +9,7 @@ import io.github.flemmli97.flan.event.ItemInteractEvents;
 import io.github.flemmli97.flan.event.PlayerEvents;
 import io.github.flemmli97.flan.event.WorldEvents;
 import io.github.flemmli97.flan.fabric.platform.integration.playerability.PlayerAbilityEvents;
+import io.github.flemmli97.flan.platform.integration.dynmap.DynmapIntegration;
 import io.github.flemmli97.flan.player.PlayerDataHandler;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.fabricmc.api.ModInitializer;
@@ -60,6 +61,8 @@ public class FlanFabric implements ModInitializer {
         Flan.octoEconomy = FabricLoader.getInstance().isModLoaded("octo-economy-api");
         if (Flan.playerAbilityLib)
             PlayerAbilityEvents.register();
+        if (FabricLoader.getInstance().isModLoaded("dynmap"))
+            DynmapIntegration.reg();
         ClaimCriterias.init();
     }
 

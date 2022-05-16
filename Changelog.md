@@ -1,3 +1,7 @@
+Flan 1.7.8
+================
+- Add dynmap support for claims
+
 Flan 1.7.7
 ================
 - Prevent moss/grassblock/nylium bonemealing if too close to a claim without permission

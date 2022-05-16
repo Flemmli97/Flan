@@ -14,6 +14,7 @@ import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.ClaimPermissionCheck;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
+import io.github.flemmli97.flan.platform.integration.dynmap.DynmapCalls;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
@@ -164,6 +165,7 @@ public class Claim implements IPermissionContainer {
     public void setClaimName(String name) {
         this.claimName = name;
         this.setDirty(true);
+        DynmapCalls.changeClaimName(this);
     }
 
     public UUID getOwner() {

@@ -6,12 +6,21 @@ configurations {
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
 }
 
+repositories {
+    maven {
+        name = "CurseMaven"
+        url "https://www.cursemaven.com"
+    }
+}
+
 dependencies {
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader
     modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
     implementation group: 'org.yaml', name: 'snakeyaml', version: '1.25'
     shadowCommon group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+
+    modImplementation dynmap_fabric
 }
 
 architectury {
