@@ -1,3 +1,7 @@
+Flan 1.7.9
+================
+- Move pickup check to a better place. Should fix some mod compat issues
+
 Flan 1.7.8
 ================
 - Add dynmap support for claims

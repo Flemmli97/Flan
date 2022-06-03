@@ -1,5 +1,6 @@
 package io.github.flemmli97.flan.mixin;
 
+import io.github.flemmli97.flan.event.EntityInteractEvents;
 import io.github.flemmli97.flan.player.IOwnedItem;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.nbt.CompoundTag;
@@ -39,6 +40,13 @@ public abstract class ItemEntityMixin implements IOwnedItem {
         this.flanPlayerOrigin = player.getUUID();
         if (player instanceof ServerPlayer && PlayerClaimData.get((ServerPlayer) player).setDeathItemOwner())
             this.flanDeathPlayerOrigin = this.flanPlayerOrigin;
+    }
+
+    @Inject(method = "playerTouch", at = @At(value = "HEAD"), cancellable = true)
+    private void pickup(Player player, CallbackInfo info) {
+        if (!EntityInteractEvents.canCollideWith(player, (ItemEntity) (Object) this)) {
+            info.cancel();
+        }
     }
 
     @Override
