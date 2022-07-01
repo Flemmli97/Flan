@@ -147,20 +147,29 @@ public class ItemInteractEvents {
         return false;
     }
 
+    public static boolean canClaimWorld(ServerLevel world, ServerPlayer player) {
+        PlayerClaimData data = PlayerClaimData.get(player);
+        if (data.isAdminIgnoreClaim())
+            return true;
+        if (ConfigHandler.config.worldWhitelist) {
+            if (!cantClaimInWorld(player.getLevel())) {
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("landClaimDisabledWorld"), ChatFormatting.DARK_RED), false);
+                return false;
+            }
+        } else if (cantClaimInWorld(player.getLevel())) {
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("landClaimDisabledWorld"), ChatFormatting.DARK_RED), false);
+            return false;
+        }
+        return true;
+    }
+
     public static void claimLandHandling(ServerPlayer player, BlockPos target) {
         if (!PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.claimCreate, false)) {
             player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), true);
             return;
         }
-        if (ConfigHandler.config.worldWhitelist) {
-            if (!cantClaimInWorld(player.getLevel())) {
-                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("landClaimDisabledWorld"), ChatFormatting.DARK_RED), false);
-                return;
-            }
-        } else if (cantClaimInWorld(player.getLevel())) {
-            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("landClaimDisabledWorld"), ChatFormatting.DARK_RED), false);
+        if (!canClaimWorld(player.getLevel(), player))
             return;
-        }
         ClaimStorage storage = ClaimStorage.get(player.getLevel());
         Claim claim = storage.getClaimAt(target.offset(0, 255, 0));
         PlayerClaimData data = PlayerClaimData.get(player);

@@ -16,6 +16,7 @@ import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.event.ItemInteractEvents;
 import io.github.flemmli97.flan.gui.ClaimMenuScreenHandler;
 import io.github.flemmli97.flan.gui.PersonalGroupScreenHandler;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
@@ -144,6 +145,8 @@ public class CommandClaim {
 
     private static int addClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
+        if (!ItemInteractEvents.canClaimWorld(player.getLevel(), player))
+            return 0;
         ClaimStorage storage = ClaimStorage.get(player.getLevel());
         BlockPos from = BlockPosArgument.getLoadedBlockPos(context, "from");
         BlockPos to = BlockPosArgument.getLoadedBlockPos(context, "to");
@@ -161,6 +164,8 @@ public class CommandClaim {
 
     private static int addClaimRect(CommandContext<CommandSourceStack> context, int x, int z) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
+        if (!ItemInteractEvents.canClaimWorld(player.getLevel(), player))
+            return 0;
         ClaimStorage storage = ClaimStorage.get(player.getLevel());
         boolean evenX = x % 2 == 0;
         boolean evenZ = z % 2 == 0;
