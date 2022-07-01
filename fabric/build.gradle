@@ -60,11 +60,11 @@ dependencies {
     modImplementation "me.lucko:fabric-permissions-api:${rootProject.fabric_permissions_api}"
 
     // Rip currency on their maven and prob rip currency all together
-    modCompileOnly("curse.maven:gunpowdercurrency-402041:3584557") {
+    modCompileOnly(gunpowder_currency) {
         exclude group: "com.google.guava", module:"failureaccess"
     }
-    modImplementation "com.github.ExcessiveAmountsOfZombies:OctoEconomyApi:5137175b1c"
-    modRuntimeOnly "curse.maven:gunpowdercurrency-559967:3590217"
+    modImplementation octo_economy_api
+    modRuntimeOnly eights_economy
 
     //modImplementation "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
     modCompileOnly "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
