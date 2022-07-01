@@ -64,7 +64,7 @@ dependencies {
         exclude group: "com.google.guava", module:"failureaccess"
     }*/
     modImplementation octo_economy_api
-    modRuntimeOnly eights_economy
+    //modRuntimeOnly eights_economy
 
     //modImplementation "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
     modCompileOnly "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
