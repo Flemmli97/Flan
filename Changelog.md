@@ -4,6 +4,7 @@ Flan 1.7.10
   Stops unlock cmd message when keep inventory is on
 - Fix addClaim cmd bypassing world blacklist
 - Make admin mode ignore world blacklist
+- Make claim info message look nicer
 
 Flan 1.7.9
 ================

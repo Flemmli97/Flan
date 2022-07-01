@@ -20,7 +20,9 @@ import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -803,9 +805,9 @@ public class Claim implements IPermissionContainer {
         }
         if (perms) {
             if (infoType == InfoType.ALL || infoType == InfoType.GLOBAL)
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimInfoPerms"), this.globalPerm), ChatFormatting.RED));
+                l.add(fromPermissionMap("claimInfoPerms", this.globalPerm));
             if (infoType == InfoType.ALL || infoType == InfoType.GROUP) {
-                l.add(PermHelper.simpleColoredText(ConfigHandler.langManager.get("claimGroupInfoHeader"), ChatFormatting.RED));
+                l.add(PermHelper.simpleColoredText(ConfigHandler.langManager.get("claimGroupInfoHeader"), ChatFormatting.GOLD));
                 Map<String, List<String>> nameToGroup = new HashMap<>();
                 for (Map.Entry<UUID, String> e : this.playersGroups.entrySet()) {
                     player.getServer().getProfileCache().get(e.getKey()).ifPresent(pgroup ->
@@ -817,14 +819,28 @@ public class Claim implements IPermissionContainer {
                     );
                 }
                 for (Map.Entry<String, Map<ClaimPermission, Boolean>> e : this.permissions.entrySet()) {
-                    l.add(PermHelper.simpleColoredText(String.format("  %s:", e.getKey()), ChatFormatting.DARK_RED));
-                    l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimGroupPerms"), e.getValue()), ChatFormatting.RED));
+                    l.add(PermHelper.simpleColoredText(String.format("  %s:", e.getKey()), ChatFormatting.YELLOW));
+                    l.add(fromPermissionMap("claimGroupPerms", e.getValue()));
                     l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimGroupPlayers"), nameToGroup.getOrDefault(e.getKey(), new ArrayList<>())), ChatFormatting.RED));
                 }
             }
         }
         l.add(PermHelper.simpleColoredText("=============================================", ChatFormatting.GREEN));
         return l;
+    }
+
+    private static Component fromPermissionMap(String lang, Map<ClaimPermission, Boolean> map) {
+        MutableComponent mapComp = new TextComponent("[").withStyle(ChatFormatting.GRAY);
+        int i = 0;
+        for (Map.Entry<ClaimPermission, Boolean> entry : map.entrySet()) {
+            MutableComponent pComp = new TextComponent((i != 0 ? ", " : "") + entry.getKey().id + "=").withStyle(ChatFormatting.GRAY);
+            pComp.append(new TextComponent(entry.getValue().toString()).withStyle(entry.getValue() ? ChatFormatting.GREEN : ChatFormatting.RED));
+            mapComp.append(pComp);
+            i++;
+        }
+        mapComp.append("]");
+        MutableComponent component = new TranslatableComponent(ConfigHandler.langManager.get(lang), mapComp).withStyle(ChatFormatting.DARK_BLUE);
+        return component;
     }
 
     public enum InfoType {
