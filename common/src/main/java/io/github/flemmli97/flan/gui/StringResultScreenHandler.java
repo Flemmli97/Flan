@@ -79,7 +79,7 @@ public class StringResultScreenHandler extends AnvilMenu {
         if (i == 0)
             this.ret.run();
         else if (i == 2) {
-            String s = slot.getItem().hasCustomHoverName() ? slot.getItem().getHoverName().getContents() : "";
+            String s = slot.getItem().hasCustomHoverName() ? slot.getItem().getHoverName().getString() : "";
             if (!s.isEmpty() && !s.equals(ConfigHandler.langManager.get("stringScreenReturn"))) {
                 this.cons.accept(s);
             }
@@ -96,7 +96,7 @@ public class StringResultScreenHandler extends AnvilMenu {
             this.ret.run();
         else if (index == 2) {
             Slot slot = this.slots.get(index);
-            String s = slot.getItem().hasCustomHoverName() ? slot.getItem().getHoverName().getContents() : "";
+            String s = slot.getItem().hasCustomHoverName() ? slot.getItem().getHoverName().getString() : "";
             if (!s.isEmpty() && !s.equals(ConfigHandler.langManager.get("stringScreenReturn")))
                 this.cons.accept(s);
             ((ServerPlayer) player).connection.send(new ClientboundSetExperiencePacket(player.experienceProgress, player.totalExperience, player.experienceLevel));

@@ -11,7 +11,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -104,11 +103,11 @@ public class ServerScreenHelper {
 
     public static void playSongToPlayer(ServerPlayer player, SoundEvent event, float vol, float pitch) {
         player.connection.send(
-                new ClientboundSoundPacket(event, SoundSource.PLAYERS, player.position().x, player.position().y, player.position().z, vol, pitch));
+                new ClientboundSoundPacket(event, SoundSource.PLAYERS, player.position().x, player.position().y, player.position().z, vol, pitch, player.level.getRandom().nextLong()));
     }
 
     public static Component coloredGuiText(String text, ChatFormatting... formattings) {
-        return new TextComponent(text).setStyle(Style.EMPTY.withItalic(false).applyFormats(formattings));
+        return Component.literal(text).setStyle(Style.EMPTY.withItalic(false).applyFormats(formattings));
     }
 
     public static void addLore(ItemStack stack, Component text) {

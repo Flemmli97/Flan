@@ -8,7 +8,6 @@ import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -139,7 +138,7 @@ public class BuySellHandler {
                     }
                 }
                 data.setAdditionalClaims(data.getAdditionalClaims() - blocks);
-                message.accept(new TranslatableComponent(ConfigHandler.langManager.get("sellSuccessItem"), blocks, amount, new TranslatableComponent(stack.getDescriptionId()).withStyle(ChatFormatting.AQUA)));
+                message.accept(Component.translatable(ConfigHandler.langManager.get("sellSuccessItem"), blocks, amount, Component.translatable(stack.getDescriptionId()).withStyle(ChatFormatting.AQUA)));
                 return true;
             }
             case XP -> {

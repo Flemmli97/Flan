@@ -141,7 +141,7 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
         }
         ItemStack stack = slot.getItem();
-        String name = stack.getHoverName().getContents();
+        String name = stack.getHoverName().getString();
         ClaimPermission perm;
         try {
             perm = PermissionRegistry.get(name);

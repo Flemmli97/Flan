@@ -8,7 +8,7 @@ import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -82,7 +82,7 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 if (id < potions.size()) {
                     MobEffect effect = key.get(id);
                     ItemStack effectStack = new ItemStack(Items.POTION);
-                    TranslatableComponent txt = new TranslatableComponent(effect.getDescriptionId());
+                    MutableComponent txt = Component.translatable(effect.getDescriptionId());
                     Collection<MobEffectInstance> inst = Collections.singleton(new MobEffectInstance(effect, 0, potions.get(effect)));
                     effectStack.getOrCreateTag().putString("FlanEffect", CrossPlatformStuff.INSTANCE.registryStatusEffects().getIDFrom(effect).toString());
                     effectStack.getTag().putInt("CustomPotionColor", PotionUtils.getColor(inst));

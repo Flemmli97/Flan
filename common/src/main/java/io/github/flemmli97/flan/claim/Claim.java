@@ -21,8 +21,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -98,9 +96,9 @@ public class Claim implements IPermissionContainer {
         }
         this.claimName = name;
         if (!ConfigHandler.config.defaultEnterMessage.isEmpty())
-            this.enterTitle = new TextComponent(String.format(ConfigHandler.config.defaultEnterMessage, this.claimName));
+            this.enterTitle = Component.literal(String.format(ConfigHandler.config.defaultEnterMessage, this.claimName));
         if (!ConfigHandler.config.defaultLeaveMessage.isEmpty())
-            this.leaveTitle = new TextComponent(String.format(ConfigHandler.config.defaultLeaveMessage, this.claimName));
+            this.leaveTitle = Component.literal(String.format(ConfigHandler.config.defaultLeaveMessage, this.claimName));
     }
 
     public Claim(BlockPos pos1, BlockPos pos2, UUID creator, ServerLevel world) {
@@ -830,16 +828,16 @@ public class Claim implements IPermissionContainer {
     }
 
     private static Component fromPermissionMap(String lang, Map<ClaimPermission, Boolean> map) {
-        MutableComponent mapComp = new TextComponent("[").withStyle(ChatFormatting.GRAY);
+        MutableComponent mapComp = Component.literal("[").withStyle(ChatFormatting.GRAY);
         int i = 0;
         for (Map.Entry<ClaimPermission, Boolean> entry : map.entrySet()) {
-            MutableComponent pComp = new TextComponent((i != 0 ? ", " : "") + entry.getKey().id + "=").withStyle(ChatFormatting.GRAY);
-            pComp.append(new TextComponent(entry.getValue().toString()).withStyle(entry.getValue() ? ChatFormatting.GREEN : ChatFormatting.RED));
+            MutableComponent pComp = Component.literal((i != 0 ? ", " : "") + entry.getKey().id + "=").withStyle(ChatFormatting.GRAY);
+            pComp.append(Component.literal(entry.getValue().toString()).withStyle(entry.getValue() ? ChatFormatting.GREEN : ChatFormatting.RED));
             mapComp.append(pComp);
             i++;
         }
         mapComp.append("]");
-        MutableComponent component = new TranslatableComponent(ConfigHandler.langManager.get(lang), mapComp).withStyle(ChatFormatting.DARK_BLUE);
+        MutableComponent component = Component.translatable(ConfigHandler.langManager.get(lang), mapComp).withStyle(ChatFormatting.DARK_BLUE);
         return component;
     }
 

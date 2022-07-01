@@ -9,8 +9,8 @@ import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.MenuProvider;
@@ -132,7 +132,7 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                 if (clickType == 0) {
                     player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
                         player.closeContainer();
-                        finalCons.accept(new TextComponent(s).withStyle(Style.EMPTY.withItalic(false).applyFormat(ChatFormatting.WHITE)));
+                        finalCons.accept(Component.literal(s).withStyle(Style.EMPTY.withItalic(false).applyFormat(ChatFormatting.WHITE)));
                         player.getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.claim));
                         ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
                     }, () -> {
@@ -141,7 +141,7 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                         ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                     }));
                 } else {
-                    TextComponent text = new TextComponent(ConfigHandler.langManager.get("chatClaimTextEdit"));
+                    MutableComponent text = Component.literal(ConfigHandler.langManager.get("chatClaimTextEdit"));
                     String command = "/flan claimMessage" + (index == 2 || index == 3 ? " enter" : " leave")
                             + (index == 2 || index == 4 ? " title" : " subtitle") + " text ";
                     text.withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)));

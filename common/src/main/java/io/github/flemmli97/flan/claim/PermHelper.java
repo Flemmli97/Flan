@@ -4,9 +4,9 @@ import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Optional;
@@ -31,7 +31,7 @@ public class PermHelper {
     }
 
     public static void noClaimMessage(ServerPlayer player) {
-        player.displayClientMessage(new TextComponent(ConfigHandler.langManager.get("noClaim")).setStyle(Style.EMPTY.applyFormat(ChatFormatting.DARK_RED)), false);
+        player.displayClientMessage(Component.literal(ConfigHandler.langManager.get("noClaim")).setStyle(Style.EMPTY.applyFormat(ChatFormatting.DARK_RED)), false);
     }
 
     public static Consumer<Optional<Boolean>> genericNoPermMessage(ServerPlayer player) {
@@ -44,6 +44,6 @@ public class PermHelper {
     }
 
     public static MutableComponent simpleColoredText(String text, ChatFormatting... formatting) {
-        return new TextComponent(text).setStyle(formatting != null ? Style.EMPTY.applyFormats(formatting) : Style.EMPTY);
+        return Component.literal(text).setStyle(formatting != null ? Style.EMPTY.applyFormats(formatting) : Style.EMPTY);
     }
 }

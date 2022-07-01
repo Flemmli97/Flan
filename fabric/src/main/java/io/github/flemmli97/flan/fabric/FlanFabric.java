@@ -13,7 +13,7 @@ import io.github.flemmli97.flan.platform.integration.dynmap.DynmapIntegration;
 import io.github.flemmli97.flan.player.PlayerDataHandler;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -25,6 +25,7 @@ import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.commands.Commands;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -52,7 +53,7 @@ public class FlanFabric implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(FlanFabric::serverFinishLoad);
         ServerTickEvents.START_SERVER_TICK.register(WorldEvents::serverTick);
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PlayerEvents.onLogout(handler.player));
-        CommandRegistrationCallback.EVENT.register(CommandClaim::register);
+        CommandRegistrationCallback.EVENT.register((dispatcher, reg, env) -> CommandClaim.register(dispatcher, env == Commands.CommandSelection.DEDICATED));
 
         Flan.permissionAPI = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
         Flan.gunpowder = FabricLoader.getInstance().isModLoaded("gunpowder-currency");

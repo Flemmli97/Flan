@@ -113,7 +113,7 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler<Claim> {
         }
         ItemStack stack = slot.getItem();
         if (!stack.isEmpty()) {
-            String name = stack.getHoverName().getContents();
+            String name = stack.getHoverName().getString();
             if (this.removeMode) {
                 this.claim.removePermGroup(player, name);
                 slot.set(ItemStack.EMPTY);

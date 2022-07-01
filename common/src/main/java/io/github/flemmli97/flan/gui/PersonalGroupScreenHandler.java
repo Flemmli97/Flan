@@ -113,7 +113,7 @@ public class PersonalGroupScreenHandler extends ServerOnlyScreenHandler<Object> 
         }
         ItemStack stack = slot.getItem();
         if (!stack.isEmpty()) {
-            String name = stack.getHoverName().getContents();
+            String name = stack.getHoverName().getString();
             if (this.removeMode) {
                 PlayerClaimData.get(player).playerDefaultGroups().remove(name);
                 slot.set(ItemStack.EMPTY);

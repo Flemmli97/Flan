@@ -8,14 +8,11 @@ import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.integration.currency.CommandCurrency;
 import io.github.flemmli97.flan.player.PlayerClaimData;
-import io.github.gunpowder.entities.StoredBalance;
-import io.github.gunpowder.modelhandlers.BalanceHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.math.BigDecimal;
 import java.util.function.Consumer;
 
 public class CommandCurrencyImpl implements CommandCurrency {
@@ -29,7 +26,7 @@ public class CommandCurrencyImpl implements CommandCurrency {
             return false;
         }
         if (Flan.gunpowder) {
-            PlayerClaimData data = PlayerClaimData.get(player);
+            /*PlayerClaimData data = PlayerClaimData.get(player);
             if (data.getAdditionalClaims() - Math.max(0, data.usedClaimBlocks() - data.getClaimBlocks()) < blocks) {
                 message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("sellFail"), ChatFormatting.DARK_RED));
                 return false;
@@ -40,7 +37,8 @@ public class CommandCurrencyImpl implements CommandCurrency {
             BalanceHandler.INSTANCE.updateUser(bal);
             data.setAdditionalClaims(data.getAdditionalClaims() - blocks);
             message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("sellSuccess"), blocks, price), ChatFormatting.GOLD));
-            return true;
+            return true;*/
+            return false;
         }
         if (Flan.octoEconomy) {
             PlayerClaimData data = PlayerClaimData.get(player);
@@ -71,7 +69,7 @@ public class CommandCurrencyImpl implements CommandCurrency {
             return false;
         }
         if (Flan.gunpowder) {
-            StoredBalance bal = BalanceHandler.INSTANCE.getUser(player.getUUID());
+            /*StoredBalance bal = BalanceHandler.INSTANCE.getUser(player.getUUID());
             BigDecimal price = BigDecimal.valueOf(Math.max(0, blocks * value));
             if (bal.getBalance().compareTo(price) >= 0) {
                 PlayerClaimData data = PlayerClaimData.get(player);
@@ -81,7 +79,7 @@ public class CommandCurrencyImpl implements CommandCurrency {
                 message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("buySuccess"), blocks, price), ChatFormatting.GOLD));
                 return true;
             }
-            message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyFail"), ChatFormatting.DARK_RED));
+            message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyFail"), ChatFormatting.DARK_RED));*/
             return false;
         }
         if (Flan.octoEconomy) {

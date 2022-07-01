@@ -35,8 +35,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -640,7 +638,6 @@ public class CommandClaim {
     private static int editGlobalPerm(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         int mode = switch (StringArgumentType.getString(context, "toggle")) {
             case "true" -> 1;
-            case "false" -> 0;
             case "default" -> -1;
             default -> 0;
         };
@@ -650,7 +647,6 @@ public class CommandClaim {
     private static int editGroupPerm(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         int mode = switch (StringArgumentType.getString(context, "toggle")) {
             case "true" -> 1;
-            case "false" -> 0;
             case "default" -> -1;
             default -> 0;
         };
@@ -700,7 +696,6 @@ public class CommandClaim {
         String group = StringArgumentType.getString(context, "group");
         int mode = switch (StringArgumentType.getString(context, "toggle")) {
             case "true" -> 1;
-            case "false" -> 0;
             case "default" -> -1;
             default -> 0;
         };
@@ -762,7 +757,7 @@ public class CommandClaim {
     }
 
     public static int editClaimMessages(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        return editClaimMessages(context, new TextComponent(StringArgumentType.getString(context, "message")));
+        return editClaimMessages(context, Component.literal(StringArgumentType.getString(context, "message")));
     }
 
     public static int editClaimMessages(CommandContext<CommandSourceStack> context, Component text) throws CommandSyntaxException {
@@ -798,7 +793,7 @@ public class CommandClaim {
                 feedback = ConfigHandler.langManager.get("setLeaveMessage");
             }
         }
-        MutableComponent cmdFeed = new TranslatableComponent(feedback, text).withStyle(ChatFormatting.GOLD);
+        MutableComponent cmdFeed = Component.translatable(feedback, text).withStyle(ChatFormatting.GOLD);
         context.getSource().sendSuccess(cmdFeed, false);
         return Command.SINGLE_SUCCESS;
     }
