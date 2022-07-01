@@ -23,6 +23,7 @@ import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -341,8 +342,11 @@ public class PlayerClaimData implements IPlayerData {
         this.additionalClaimBlocks = data.additionalClaimBlocks;
         this.defaultGroups.clear();
         this.defaultGroups.putAll(data.defaultGroups);
-        if (data.setDeathItemOwner())
-            this.player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("unlockDropsCmd"), "/flan unlockDrops"), ChatFormatting.GOLD), false);
+        if (data.setDeathItemOwner()) {
+            String msg = ConfigHandler.langManager.get("unlockDropsCmd");
+            if (!msg.isEmpty())
+                this.player.displayClientMessage(PermHelper.simpleColoredText(String.format(msg, "/flan unlockDrops"), ChatFormatting.GOLD), false);
+        }
     }
 
     public void updateScoreboard() {
@@ -383,7 +387,8 @@ public class PlayerClaimData implements IPlayerData {
         if (this.calculateShouldDrop) {
             BlockPos rounded = TeleportUtils.roundedBlockPos(this.player.position().add(0, this.player.getStandingEyeHeight(this.player.getPose(), this.player.getDimensions(this.player.getPose())), 0));
             this.shouldProtectDrop = ClaimStorage.get(this.player.getLevel()).getForPermissionCheck(rounded)
-                    .canInteract(this.player, PermissionRegistry.LOCKITEMS, rounded);
+                    .canInteract(this.player, PermissionRegistry.LOCKITEMS, rounded)
+                    && !this.player.getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
             this.calculateShouldDrop = false;
         }
         return this.shouldProtectDrop;

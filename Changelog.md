@@ -1,3 +1,8 @@
+Flan 1.7.10
+================
+- Check for keep inventory when deciding if drops should be locked or not  
+  Stops unlock cmd message when keep inventory is on
+
 Flan 1.7.9
 ================
 - Move pickup check to a better place. Should fix some mod compat issues
