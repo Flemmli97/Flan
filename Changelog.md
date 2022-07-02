@@ -5,6 +5,7 @@ Flan 1.7.10
 - Fix addClaim cmd bypassing world blacklist
 - Make admin mode ignore world blacklist
 - Make claim info message look nicer
+- Update to 1.19
 
 Flan 1.7.9
 ================
