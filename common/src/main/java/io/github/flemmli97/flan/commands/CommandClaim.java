@@ -9,7 +9,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.data.IPlayerData;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
@@ -747,7 +746,6 @@ public class CommandClaim {
 
         Direction facing = player.getDirection();
 
-        Boolean maxCorner = null;
         Tuple<BlockPos, BlockPos> cornerPair = switch (facing) {
             case SOUTH -> new Tuple<>(new BlockPos(X, y, Z), new BlockPos(X, y, Z + amount));
             case EAST -> new Tuple<>(new BlockPos(X, y, Z), new BlockPos(X + amount, y, Z));
@@ -755,8 +753,6 @@ public class CommandClaim {
             case WEST -> new Tuple<>(new BlockPos(x, y, z), new BlockPos(x - amount, y, z));
             default -> throw new IllegalStateException("Unexpected value: " + facing);
         };
-
-        Flan.logger.info("Original {} New {}", cornerPair.getA(), cornerPair.getB());
 
         return storage.resizeClaim(claim, cornerPair.getA(), cornerPair.getB(), player) ? Command.SINGLE_SUCCESS : 0;
     }
