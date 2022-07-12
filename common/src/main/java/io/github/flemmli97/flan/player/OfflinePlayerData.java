@@ -84,6 +84,11 @@ public class OfflinePlayerData implements IPlayerData {
     }
 
     @Override
+    public int remainingClaimBlocks() {
+        return this.getClaimBlocks() + this.getAdditionalClaims() - this.usedClaimBlocks();
+    }
+
+    @Override
     public void setAdditionalClaims(int amount) {
         this.additionalClaimBlocks = amount;
         try {
