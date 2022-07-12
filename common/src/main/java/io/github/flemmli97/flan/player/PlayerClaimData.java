@@ -134,6 +134,11 @@ public class PlayerClaimData implements IPlayerData {
         return this.calculateUsedClaimBlocks();
     }
 
+    @Override
+    public int remainingClaimBlocks() {
+        return this.getClaimBlocks() + this.getAdditionalClaims() - this.usedClaimBlocks();
+    }
+
     /**
      * To prevent double processing. most notably when right clicking on a block and the block doesnt do anything ->
      * block onUse -> item use. Might be a better way but for now this. But also handles having
@@ -286,7 +291,7 @@ public class PlayerClaimData implements IPlayerData {
         } else if (!this.claimBlockMessage) {
             this.claimBlockMessage = true;
             this.player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBlocksFormat"),
-                    this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks()), ChatFormatting.GOLD), false);
+                    this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks(), this.remainingClaimBlocks()), ChatFormatting.GOLD), false);
         }
         this.actionCooldown--;
         if (--this.trappedTick >= 0) {

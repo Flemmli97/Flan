@@ -10,6 +10,8 @@ public interface IPlayerData {
 
     int usedClaimBlocks();
 
+    int remainingClaimBlocks();
+
     void setAdditionalClaims(int amount);
 
     default boolean canUseClaimBlocks(int amount) {
