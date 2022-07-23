@@ -782,8 +782,8 @@ public class Claim implements IPermissionContainer {
 
     public String formattedClaim() {
         if (this.claimName.isEmpty())
-            return String.format("[x=%d,z=%d] - [x=%d,z=%d]", this.minX, this.minZ, this.maxX, this.maxZ);
-        return String.format("%s:[x=%d,z=%d] - [x=%d,z=%d]", this.claimName, this.minX, this.minZ, this.maxX, this.maxZ);
+            return String.format("[x=%d,z=%d] - [x=%d,z=%d] = %d blocks", this.minX, this.minZ, this.maxX, this.maxZ, this.getPlane());
+        return String.format("%s:[x=%d,z=%d] - [x=%d,z=%d] = %d blocks", this.claimName, this.minX, this.minZ, this.maxX, this.maxZ, this.getPlane());
     }
 
     public List<Component> infoString(ServerPlayer player, InfoType infoType) {

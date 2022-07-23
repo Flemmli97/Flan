@@ -291,6 +291,7 @@ public class PlayerClaimData implements IPlayerData {
             this.claimBlockMessage = true;
             this.player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBlocksFormat"),
                     this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks(), this.remainingClaimBlocks()), ChatFormatting.GOLD), false);
+            this.addDisplayClaim(currentClaim, EnumDisplayType.MAIN, player.blockPosition().getY());
         }
         this.actionCooldown--;
         if (--this.trappedTick >= 0) {
