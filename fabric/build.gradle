@@ -65,6 +65,7 @@ dependencies {
     }*/
     modImplementation octo_economy_api
     //modRuntimeOnly eights_economy
+    modImplementation diamond_economy
 
     //modImplementation "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
     modCompileOnly "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"

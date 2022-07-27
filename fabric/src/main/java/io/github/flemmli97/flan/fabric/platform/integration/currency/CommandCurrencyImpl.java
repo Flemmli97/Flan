@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.fabric.platform.integration.currency;
 import com.epherical.octoecon.OctoEconomy;
 import com.epherical.octoecon.api.Currency;
 import com.epherical.octoecon.api.user.UniqueUser;
+import com.gmail.sneakdevs.diamondeconomy.DiamondUtils;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -58,6 +59,17 @@ public class CommandCurrencyImpl implements CommandCurrency {
             data.setAdditionalClaims(data.getAdditionalClaims() - blocks);
             message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("sellSuccess"), blocks, price), ChatFormatting.GOLD));
         }
+        if (Flan.diamondCurrency) {
+            PlayerClaimData data = PlayerClaimData.get(player);
+            if (data.getAdditionalClaims() - Math.max(0, data.usedClaimBlocks() - data.getClaimBlocks()) < blocks) {
+                message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("sellFail"), ChatFormatting.DARK_RED));
+                return false;
+            }
+            double price = blocks * value;
+            DiamondUtils.getDatabaseManager().changeBalance(player.getUUID().toString(), (int) price);
+            data.setAdditionalClaims(data.getAdditionalClaims() - blocks);
+            message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("sellSuccess"), blocks, price), ChatFormatting.GOLD));
+        }
         message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("currencyMissing"), ChatFormatting.DARK_RED));
         return false;
     }
@@ -95,6 +107,18 @@ public class CommandCurrencyImpl implements CommandCurrency {
                 PlayerClaimData data = PlayerClaimData.get(player);
                 data.setAdditionalClaims(data.getAdditionalClaims() + blocks);
                 user.withdrawMoney(currency, price, "flan.claimblocks.buy");
+                message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("buySuccess"), blocks, price), ChatFormatting.GOLD));
+                return true;
+            }
+            message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyFail"), ChatFormatting.DARK_RED));
+            return false;
+        }
+        if (Flan.diamondCurrency) {
+            double price = Math.max(0, blocks * value);
+            if (DiamondUtils.getDatabaseManager().getBalanceFromUUID(player.getUUID().toString()) >= price) {
+                PlayerClaimData data = PlayerClaimData.get(player);
+                data.setAdditionalClaims(data.getAdditionalClaims() + blocks);
+                DiamondUtils.getDatabaseManager().changeBalance(player.getUUID().toString(), -(int) price);
                 message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("buySuccess"), blocks, price), ChatFormatting.GOLD));
                 return true;
             }
