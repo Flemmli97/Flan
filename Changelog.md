@@ -5,6 +5,11 @@ Flan 1.8.0
   /flan expand <x>
   tries expanding the claim by x blocks into the direction the player is looking
 - Display remaining claim blocks at various messages #170
+- Increase night vision potion in claims so it stops flickering
+- Diamon economy integration
+- New permissions:  
+  PLAYERMOBSPAWN: Permission for affected players to spawn mobs with interactions. E.g. wardens, or endermites with enderpearls  
+  SCULK: Permission for sculk sensors. Shriekers which spawn warden are handled under PLAYERMOBSPAWN
 
 Flan 1.7.10
 ================
