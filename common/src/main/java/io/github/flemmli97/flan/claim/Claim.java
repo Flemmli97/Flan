@@ -30,6 +30,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
@@ -552,7 +553,7 @@ public class Claim implements IPermissionContainer {
 
     public void applyEffects(ServerPlayer player) {
         if (player.level.getGameTime() % 80 == 0)
-            this.potions.forEach((effect, amp) -> player.forceAddEffect(new MobEffectInstance(effect, 200, amp - 1, true, false), null));
+            this.potions.forEach((effect, amp) -> player.forceAddEffect(new MobEffectInstance(effect, effect == MobEffects.NIGHT_VISION ? 400 : 200, amp - 1, true, false), null));
     }
 
     public BlockPos getHomePos() {
@@ -560,9 +561,9 @@ public class Claim implements IPermissionContainer {
     }
 
     public void setEnterTitle(Component title, Component sub) {
-        if (title != null && title.getContents().equals("$empty"))
+        if (title != null && title.getString().equals("$empty"))
             title = null;
-        if (sub != null && sub.getContents().equals("$empty"))
+        if (sub != null && sub.getString().equals("$empty"))
             sub = null;
         this.enterTitle = title;
         this.enterSubtitle = sub;
@@ -570,9 +571,9 @@ public class Claim implements IPermissionContainer {
     }
 
     public void setLeaveTitle(Component title, Component sub) {
-        if (title != null && title.getContents().equals("$empty"))
+        if (title != null && title.getString().equals("$empty"))
             title = null;
-        if (sub != null && sub.getContents().equals("$empty"))
+        if (sub != null && sub.getString().equals("$empty"))
             sub = null;
         this.leaveTitle = title;
         this.leaveSubtitle = sub;
