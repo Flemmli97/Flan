@@ -32,6 +32,7 @@ import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -40,6 +41,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
@@ -58,6 +60,8 @@ public class CommandClaim {
                         .then(Commands.argument("from", BlockPosArgument.blockPos()).then(Commands.argument("to", BlockPosArgument.blockPos()).executes(CommandClaim::addClaim)))
                         .then(Commands.literal("all").executes(CommandClaim::addClaimAll))
                         .then(Commands.literal("rect").then(Commands.argument("x", IntegerArgumentType.integer()).then(Commands.argument("z", IntegerArgumentType.integer()).executes(ctx -> CommandClaim.addClaimRect(ctx, IntegerArgumentType.getInteger(ctx, "x"), IntegerArgumentType.getInteger(ctx, "z")))))))
+                .then(Commands.literal("expand").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.claimCreate))
+                        .then(Commands.argument("distance", IntegerArgumentType.integer()).executes(CommandClaim::expandClaim)))
                 .then(Commands.literal("menu").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdMenu)).executes(CommandClaim::openMenu))
                 .then(Commands.literal("setHome").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdHome)).executes(CommandClaim::setClaimHome))
                 .then(Commands.literal("trapped").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdTrapped)).executes(CommandClaim::trapped))
@@ -728,6 +732,34 @@ public class CommandClaim {
         claim.setHomePos(player.blockPosition());
         context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("setHome"), player.blockPosition().getX(), player.blockPosition().getY(), player.blockPosition().getZ()), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
+    }
+
+    private static int expandClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        Claim claim = PermHelper.checkReturn(player, PermissionRegistry.EDITCLAIM, PermHelper.genericNoPermMessage(player));
+        if (claim == null)
+            return 0;
+
+        ClaimStorage storage = ClaimStorage.get(player.getLevel());
+        int amount = IntegerArgumentType.getInteger(context, "distance");
+        int[] dims = claim.getDimensions();
+        int x = dims[0];
+        int X = dims[1];
+        int z = dims[2];
+        int Z = dims[3];
+        int y = dims[4];
+
+        Direction facing = player.getDirection();
+
+        Tuple<BlockPos, BlockPos> cornerPair = switch (facing) {
+            case SOUTH -> new Tuple<>(new BlockPos(X, y, Z), new BlockPos(X, y, Z + amount));
+            case EAST -> new Tuple<>(new BlockPos(X, y, Z), new BlockPos(X + amount, y, Z));
+            case NORTH -> new Tuple<>(new BlockPos(x, y, z), new BlockPos(x, y, z - amount));
+            case WEST -> new Tuple<>(new BlockPos(x, y, z), new BlockPos(x - amount, y, z));
+            default -> throw new IllegalStateException("Unexpected value: " + facing);
+        };
+
+        return storage.resizeClaim(claim, cornerPair.getA(), cornerPair.getB(), player) ? Command.SINGLE_SUCCESS : 0;
     }
 
     public static int teleport(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
