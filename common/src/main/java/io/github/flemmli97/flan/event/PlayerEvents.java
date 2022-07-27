@@ -2,6 +2,7 @@ package io.github.flemmli97.flan.event;
 
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
+import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -12,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.data.worldgen.features.CaveFeatures;
 import net.minecraft.data.worldgen.features.NetherFeatures;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Blocks;
@@ -75,5 +77,21 @@ public class PlayerEvents {
             }
         }
         return false;
+    }
+
+    public static float canSpawnFromPlayer(Entity entity, float old) {
+        BlockPos pos;
+        if (entity instanceof ServerPlayer player &&
+                !ClaimStorage.get(player.getLevel()).getForPermissionCheck(pos = player.blockPosition()).canInteract(player, PermissionRegistry.PLAYERMOBSPAWN, pos, false))
+            return -1;
+        return old;
+    }
+
+    public static boolean canWardenSpawnTrigger(BlockPos pos, ServerPlayer player) {
+        return ClaimStorage.get(player.getLevel()).getForPermissionCheck(pos).canInteract(player, PermissionRegistry.PLAYERMOBSPAWN, pos, false);
+    }
+
+    public static boolean canSculkTrigger(BlockPos pos, ServerPlayer player) {
+        return ClaimStorage.get(player.getLevel()).getForPermissionCheck(pos).canInteract(player, PermissionRegistry.SCULK, pos, false);
     }
 }
