@@ -125,8 +125,7 @@ public class PlayerClaimData implements IPlayerData {
     public boolean canUseClaimBlocks(int amount) {
         if (ConfigHandler.config.maxClaimBlocks == -1)
             return true;
-        int usedClaimsBlocks = this.usedClaimBlocks();
-        return usedClaimsBlocks + amount <= this.claimBlocks + this.additionalClaimBlocks;
+        return amount <= this.remainingClaimBlocks();
     }
 
     @Override

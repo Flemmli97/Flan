@@ -41,7 +41,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public SimpleRegistryWrapper<EntityType<?>> registryEntities() {
-        return new ForgeRegistryWrapper<>(ForgeRegistries.ENTITIES);
+        return new ForgeRegistryWrapper<>(ForgeRegistries.ENTITY_TYPES);
     }
 
     @Override

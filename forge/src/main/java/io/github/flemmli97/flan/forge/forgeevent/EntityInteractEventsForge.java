@@ -20,7 +20,7 @@ import net.minecraftforge.eventbus.api.Event;
 public class EntityInteractEventsForge {
 
     public static void attackEntity(AttackEntityEvent event) {
-        InteractionResult result = EntityInteractEvents.attackSimple(event.getPlayer(), event.getTarget(), true);
+        InteractionResult result = EntityInteractEvents.attackSimple(event.getEntity(), event.getTarget(), true);
         if (result == InteractionResult.FAIL) {
             event.setCanceled(true);
         }
@@ -28,7 +28,7 @@ public class EntityInteractEventsForge {
 
     public static void useAtEntity(PlayerInteractEvent.EntityInteractSpecific event) {
         Entity target = event.getTarget();
-        InteractionResult result = EntityInteractEvents.useAtEntity(event.getPlayer(), event.getWorld(), event.getHand(), target,
+        InteractionResult result = EntityInteractEvents.useAtEntity(event.getEntity(), event.getLevel(), event.getHand(), target,
                 new EntityHitResult(target, event.getLocalPos().add(target.getX(), target.getY(), target.getZ())));
         if (result != InteractionResult.PASS) {
             event.setCancellationResult(result);
@@ -37,7 +37,7 @@ public class EntityInteractEventsForge {
     }
 
     public static void useEntity(PlayerInteractEvent.EntityInteract event) {
-        InteractionResult result = EntityInteractEvents.useEntity(event.getPlayer(), event.getWorld(), event.getHand(), event.getTarget());
+        InteractionResult result = EntityInteractEvents.useEntity(event.getEntity(), event.getLevel(), event.getHand(), event.getTarget());
         if (result != InteractionResult.PASS) {
             event.setCancellationResult(result);
             event.setCanceled(true);
@@ -61,13 +61,13 @@ public class EntityInteractEventsForge {
     }
 
     public static void xpAbsorb(PlayerXpEvent.PickupXp event) {
-        boolean prevent = EntityInteractEvents.xpAbsorb(event.getPlayer());
+        boolean prevent = EntityInteractEvents.xpAbsorb(event.getEntity());
         if (prevent)
             event.setCanceled(true);
     }
 
     public static void canDropItem(ItemTossEvent event) {
-        boolean canDrop = EntityInteractEvents.canDropItem(event.getPlayer(), event.getEntityItem().getItem());
+        boolean canDrop = EntityInteractEvents.canDropItem(event.getPlayer(), event.getEntity().getItem());
         if (!canDrop) {
             event.setCanceled(true);
         }

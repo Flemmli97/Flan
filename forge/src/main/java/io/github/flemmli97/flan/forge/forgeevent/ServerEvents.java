@@ -29,19 +29,19 @@ public class ServerEvents {
     }
 
     public static void savePlayer(PlayerEvent.SaveToFile event) {
-        PlayerEvents.saveClaimData(event.getPlayer());
+        PlayerEvents.saveClaimData(event.getEntity());
     }
 
     public static void readPlayer(PlayerEvent.LoadFromFile event) {
-        PlayerEvents.readClaimData(event.getPlayer());
+        PlayerEvents.readClaimData(event.getEntity());
     }
 
     public static void disconnect(PlayerEvent.PlayerLoggedOutEvent event) {
-        PlayerEvents.onLogout(event.getPlayer());
+        PlayerEvents.onLogout(event.getEntity());
     }
 
-    public static void serverTick(TickEvent.WorldTickEvent event) {
-        if (event.phase == TickEvent.Phase.START && event.world.getServer() != null && event.world.dimension() == Level.OVERWORLD)
-            LogoutTracker.getInstance(event.world.getServer()).tick();
+    public static void serverTick(TickEvent.LevelTickEvent event) {
+        if (event.phase == TickEvent.Phase.START && event.level.getServer() != null && event.level.dimension() == Level.OVERWORLD)
+            LogoutTracker.getInstance(event.level.getServer()).tick();
     }
 }

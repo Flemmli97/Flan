@@ -9,7 +9,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 public class ItemInteractEventsForge {
 
     public static void useItem(PlayerInteractEvent.RightClickItem event) {
-        InteractionResultHolder<ItemStack> result = ItemInteractEvents.useItem(event.getPlayer(), event.getWorld(), event.getHand());
+        InteractionResultHolder<ItemStack> result = ItemInteractEvents.useItem(event.getEntity(), event.getLevel(), event.getHand());
         if (result.getResult() != InteractionResult.PASS) {
             event.setCanceled(true);
             event.setCancellationResult(result.getResult());

@@ -1,3 +1,11 @@
+Flan 1.8.0
+================
+- Update to forge 41.1.0
+- New command #167:  
+  /flan expand <x>
+  tries expanding the claim by x blocks into the direction the player is looking
+- Display remaining claim blocks at various messages #170
+
 Flan 1.7.10
 ================
 - Check for keep inventory when deciding if drops should be locked or not  

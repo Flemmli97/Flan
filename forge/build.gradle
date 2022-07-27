@@ -40,7 +40,7 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
     modCompileOnly("dev.ftb.mods:ftb-ranks-forge:${ftb_ranks}")
-    modImplementation(dicemcmm)
+    modCompileOnly(dicemcmm)
 }
 
 processResources {
