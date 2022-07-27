@@ -107,7 +107,7 @@ public class ClaimStorage implements IPermissionStorage {
             data.updateScoreboard();
             player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("claimCreateSuccess"), ChatFormatting.GOLD), false);
             player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBlocksFormat"),
-                    data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks()), ChatFormatting.GOLD), false);
+                    data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks(), data.remainingClaimBlocks()), ChatFormatting.GOLD), false);
             return true;
         }
         PlayerClaimData data = PlayerClaimData.get(player);
@@ -202,7 +202,7 @@ public class ClaimStorage implements IPermissionStorage {
                 ((PlayerClaimData) newData).updateScoreboard();
             player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("resizeSuccess"), ChatFormatting.GOLD), false);
             player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBlocksFormat"),
-                    newData.getClaimBlocks(), newData.getAdditionalClaims(), newData.usedClaimBlocks()), ChatFormatting.GOLD), false);
+                    newData.getClaimBlocks(), newData.getAdditionalClaims(), newData.usedClaimBlocks(), data.remainingClaimBlocks()), ChatFormatting.GOLD), false);
             return true;
         }
         player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("notEnoughBlocks"), ChatFormatting.RED), false);
