@@ -444,11 +444,11 @@ public class CommandClaim {
             if (player != null) {
                 PlayerClaimData data = PlayerClaimData.get(player);
                 context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBlocksFormat"),
-                        data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks()), ChatFormatting.GOLD), false);
+                        data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks(), data.remainingClaimBlocks()), ChatFormatting.GOLD), false);
             } else {
                 OfflinePlayerData data = new OfflinePlayerData(server, of);
                 context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBlocksFormat"),
-                        data.claimBlocks, data.getAdditionalClaims(), data.usedClaimBlocks()), ChatFormatting.GOLD), false);
+                        data.claimBlocks, data.getAdditionalClaims(), data.usedClaimBlocks(), data.remainingClaimBlocks()), ChatFormatting.GOLD), false);
             }
         }
         context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("listClaims"), ChatFormatting.GOLD), false);
