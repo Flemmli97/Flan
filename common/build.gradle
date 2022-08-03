@@ -28,6 +28,7 @@ architectury {
 }
 
 shadowJar {
+    relocate "org.yaml.snakeyaml", "${rootProject.maven_group}.flan.shadow.org.yaml.snakeyaml"
     configurations = [project.configurations.shadowCommon]
 }
 
