@@ -1,3 +1,12 @@
+Flan 1.8.1
+================
+- Relocating shaded libs. Should solve some lib problems.  
+  Note: If a mod crashed before cause of this also report the problem to the other mod  
+  since this only occurs more than one mod messed it up
+- Fabric: Permission api v2 support.  
+  Things like "flan.claim.blocks.max" nodes are now usable
+- Ignoring hostile mobs during interaction check
+
 Flan 1.8.0
 ================
 - New command #167:  
