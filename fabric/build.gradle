@@ -65,12 +65,12 @@ dependencies {
     }*/
     modImplementation octo_economy_api
     //modRuntimeOnly eights_economy
-    modImplementation diamond_economy
+    modCompileOnly diamond_economy
 
     //modImplementation "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
     modCompileOnly "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
 
-    modCompileOnly("dev.ftb.mods:ftb-ranks-fabric:${rootProject.ftb_ranks}")
+    modCompileOnly "dev.ftb.mods:ftb-ranks-fabric:${rootProject.ftb_ranks}"
 
 }
 

@@ -39,8 +39,8 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
-    modCompileOnly("dev.ftb.mods:ftb-ranks-forge:${ftb_ranks}")
-    modCompileOnly(dicemcmm)
+    modCompileOnly "dev.ftb.mods:ftb-ranks-forge:${ftb_ranks}"
+    modCompileOnly dicemcmm
 }
 
 processResources {
