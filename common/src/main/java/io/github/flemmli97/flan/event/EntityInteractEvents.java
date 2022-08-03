@@ -28,6 +28,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
@@ -65,6 +66,8 @@ public class EntityInteractEvents {
     public static InteractionResult useAtEntity(Player player, Level world, InteractionHand hand, Entity entity, /* Nullable */ EntityHitResult hitResult) {
         if (!(player instanceof ServerPlayer) || player.isSpectator() || canInteract(entity))
             return InteractionResult.PASS;
+        if(entity instanceof Enemy)
+            return InteractionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
@@ -73,12 +76,16 @@ public class EntityInteractEvents {
                 if (!claim.canInteract((ServerPlayer) player, PermissionRegistry.ARMORSTAND, pos, true))
                     return InteractionResult.FAIL;
             }
+            if(entity instanceof Mob)
+                return claim.canInteract((ServerPlayer) player, PermissionRegistry.ANIMALINTERACT, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
         }
         return InteractionResult.PASS;
     }
 
     public static InteractionResult useEntity(Player p, Level world, InteractionHand hand, Entity entity) {
         if (!(p instanceof ServerPlayer player) || p.isSpectator() || canInteract(entity))
+            return InteractionResult.PASS;
+        if(entity instanceof Enemy)
             return InteractionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
         BlockPos pos = entity.blockPosition();
