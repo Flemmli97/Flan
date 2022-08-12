@@ -4,7 +4,6 @@ import dev.ftb.mods.ftbranks.api.FTBRanksAPI;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
-import me.lucko.fabric.api.permissions.v0.Options;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,10 +38,6 @@ public class PermissionNodeHandlerImpl implements PermissionNodeHandler {
 
     @Override
     public boolean permBelowEqVal(ServerPlayer src, String perm, int val, int fallback) {
-        if (Flan.permissionAPI) {
-            int max = Options.get(src, perm, fallback, Integer::parseInt);
-            return val <= max;
-        }
         if (Flan.ftbRanks) {
             int max = FTBRanksAPI.getPermissionValue(src, perm).asInteger().orElse(fallback);
             return val <= max;

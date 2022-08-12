@@ -1,3 +1,7 @@
+Flan 1.8.1b
+================
+- Revert permission api v2 support cause its not on 1.18
+
 Flan 1.8.1
 ================
 - Relocating shaded libs. Should solve some lib problems.  
