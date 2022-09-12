@@ -1,3 +1,7 @@
+Flan 1.8.1.1
+================
+- Check for version of fabric permission api
+
 Flan 1.8.1
 ================
 - Relocating shaded libs. Should solve some lib problems.  
