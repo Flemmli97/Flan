@@ -79,7 +79,7 @@ def changelog(int versions) {
         def changelog = ""
         def match = 0
         file("Changelog.md").eachLine {
-            if (it.matches("${project.project_name} ([0-9].([0-9]*).([0-9]*))"))
+            if (it.matches("${project.project_name} [0-9]\\.[0-9]+\\.[0-9]+(\\.[0-9]*)?"))
                 match++
             if (match <= versions) {
                 changelog += it + "\n"
@@ -156,11 +156,8 @@ curseforge {
     }
 }
 
-tasks.getByName("curseforge").doLast {
+def discordNotif(fabric, forge) {
     try {
-        def fileIDFabric = tasks.getByName("curseforge${project.curse_id_fabric}").property('mainArtifact').fileID
-        def fileIDForge = tasks.getByName("curseforge${project.curse_id_forge}").property('mainArtifact').fileID
-
         def webhook = new Webhook(findProperty('discordHook'), "${project.project_name} Upload")
 
         def message = new Message()
@@ -170,8 +167,15 @@ tasks.getByName("curseforge").doLast {
         message.setAvatarUrl("https://cdn.discordapp.com/avatars/680540027255652407/e4b7a058b24843ae13389a9a3cc3ae8c.png?size=128")
 
         def embed = new Embed()
-        embed.addField('Get the fabric version here (When it is accepted)', "${project.findProperty('curse_page_fabric')}/files/${fileIDFabric}", false)
-        embed.addField('Get the forge version here (When it is accepted)', "${project.findProperty('curse_page_forge')}/files/${fileIDForge}", false)
+
+        if(fabric) {
+            def fileIDFabric = tasks.getByName("curseforge${project.curse_id_fabric}").property('mainArtifact').fileID
+            embed.addField('Get the fabric version here (When it is accepted)', "${project.findProperty('curse_page_fabric')}/files/${fileIDFabric}", false)
+        }
+        if(forge) {
+            def fileIDForge = tasks.getByName("curseforge${project.curse_id_forge}").property('mainArtifact').fileID
+            embed.addField('Get the forge version here (When it is accepted)', "${project.findProperty('curse_page_forge')}/files/${fileIDForge}", false)
+        }
         def changelog = discordChangelog()
         if (changelog.size() == 1)
             embed.addField('Change Log', "```md\n${changelog.get(0) ?: 'Unavailable :('}```", false)
@@ -190,10 +194,36 @@ tasks.getByName("curseforge").doLast {
     }
 }
 
+tasks.getByName("curseforge").doLast {
+    discordNotif(true, true)
+}
+
 task buildUploadAll(group: "publishing") {
     dependsOn cleanAll, buildAll, publishAll, tasks.getByName("curseforge")
     buildAll.mustRunAfter cleanAll
     tasks.findByName("curseforge").mustRunAfter publishAll
+}
+
+afterEvaluate {
+    task buildUploadFabric(group: "publishing") {
+        dependsOn cleanAll, ":fabric:build", ":fabric:publish", "curseforge${curse_id_fabric}"
+        project("fabric").build.mustRunAfter cleanAll
+        project("fabric").publish.mustRunAfter ":fabric:build"
+        tasks.findByName("curseforge${curse_id_fabric}").mustRunAfter ":fabric:publish"
+        tasks.findByName("curseforge${curse_id_fabric}").doLast {
+            discordNotif(true, false)
+        }
+    }
+
+    task buildUploadForge(group: "publishing") {
+        dependsOn cleanAll, ":forge:build", ":forge:publish", "curseforge${curse_id_forge}"
+        project("forge").build.mustRunAfter cleanAll
+        project("forge").publish.mustRunAfter ":forge:build"
+        tasks.findByName("curseforge${curse_id_forge}").mustRunAfter ":forge:publish"
+        tasks.findByName("curseforge${curse_id_forge}").doLast {
+            discordNotif(false, true)
+        }
+    }
 }
 
 tasks.getByName("curseforge").dependsOn buildAll
