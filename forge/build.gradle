@@ -61,7 +61,6 @@ shadowJar {
 remapJar {
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    classifier "forge"
 }
 
 jar {
@@ -72,7 +71,7 @@ sourcesJar {
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
     from commonSources.archiveFile.map { zipTree(it) }
-    classifier "forge-sources"
+    classifier "sources"
 }
 
 components.java {
@@ -106,7 +105,7 @@ publishing {
             }
             artifact(remapApiJar)
             artifactId project.archives_base_name
-            version project.version
+            version project.version + "-forge"
         }
     }
 
