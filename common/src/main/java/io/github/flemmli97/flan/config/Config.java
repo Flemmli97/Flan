@@ -45,6 +45,7 @@ public class Config {
     public Item inspectionItem = Items.STICK;
 
     public int claimDisplayTime = 1000;
+    public boolean claimDisplayActionBar = false;
     public int permissionLevel = 2;
 
     public BuySellHandler buySellHandler = new BuySellHandler();
