@@ -22,6 +22,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -582,19 +583,20 @@ public class Claim implements IPermissionContainer {
         this.setDirty(true);
     }
 
-    private void displayTitleMessage(ServerPlayer player, Component title, @Nullable Component subtitle) {
+    private void displayTitleMessage(ServerPlayer player, @Nullable Component title, @Nullable Component subtitle) {
+        if (title == null) return;
         if (ConfigHandler.config.claimDisplayActionBar) {
             if (subtitle != null) {
-                MutableComponent message = this.enterTitle.copy().append(" - ").append(this.enterSubtitle);
+                MutableComponent message = title.copy().append(Component.literal(" | ").setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE))).append(subtitle);
                 player.sendSystemMessage(message, ChatType.GAME_INFO);
                 return;
             }
-            player.sendSystemMessage(this.enterTitle, ChatType.GAME_INFO);
+            player.sendSystemMessage(title, ChatType.GAME_INFO);
             return;
         }
-        player.connection.send(new ClientboundSetTitleTextPacket(this.enterTitle));
+        player.connection.send(new ClientboundSetTitleTextPacket(title));
         if (subtitle != null) {
-            player.connection.send(new ClientboundSetSubtitleTextPacket(this.enterSubtitle));
+            player.connection.send(new ClientboundSetSubtitleTextPacket(subtitle));
         }
     }
 
