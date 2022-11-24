@@ -6,7 +6,7 @@ import io.github.flemmli97.flan.forge.forgeevent.EntityInteractEventsForge;
 import io.github.flemmli97.flan.forge.forgeevent.ItemInteractEventsForge;
 import io.github.flemmli97.flan.forge.forgeevent.ServerEvents;
 import io.github.flemmli97.flan.forge.forgeevent.WorldEventsForge;
-import io.github.flemmli97.flan.platform.integration.dynmap.DynmapIntegration;
+import io.github.flemmli97.flan.platform.integration.webmap.DynmapIntegration;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
