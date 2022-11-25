@@ -99,14 +99,16 @@ publishing {
         mavenJava(MavenPublication) {
             // add all the jars that should be included when publishing to maven
             artifact(remapJar) {
+                classifier null
                 builtBy remapJar
             }
             artifact(sourcesJar) {
+                classifier "sources"
                 builtBy remapSourcesJar
             }
             artifact(remapApiJar)
             artifactId project.archives_base_name
-            version project.version
+            version project.version + "-forge"
         }
     }
 
