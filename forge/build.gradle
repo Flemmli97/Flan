@@ -61,6 +61,7 @@ shadowJar {
 remapJar {
     input.set shadowJar.archiveFile
     dependsOn shadowJar
+    classifier "forge"
 }
 
 jar {
@@ -71,7 +72,7 @@ sourcesJar {
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
     from commonSources.archiveFile.map { zipTree(it) }
-    classifier "sources"
+    classifier "forge-sources"
 }
 
 components.java {
@@ -98,9 +99,11 @@ publishing {
         mavenJava(MavenPublication) {
             // add all the jars that should be included when publishing to maven
             artifact(remapJar) {
+                classifier null
                 builtBy remapJar
             }
             artifact(sourcesJar) {
+                classifier "sources"
                 builtBy remapSourcesJar
             }
             artifact(remapApiJar)
