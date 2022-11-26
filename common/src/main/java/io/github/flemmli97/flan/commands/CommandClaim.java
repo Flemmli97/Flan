@@ -807,7 +807,11 @@ public class CommandClaim {
             ((MutableComponent) text).setStyle(style);
         }
         ServerPlayer player = context.getSource().getPlayerOrException();
-        Claim claim = PermHelper.checkReturn(player, PermissionRegistry.CLAIMMESSAGE, PermHelper.genericNoPermMessage(player));
+        PlayerClaimData data = PlayerClaimData.get(player);
+        Claim rootClaim = PermHelper.checkReturn(player, PermissionRegistry.CLAIMMESSAGE, PermHelper.genericNoPermMessage(player));
+        if (rootClaim == null)
+            return 0;
+        Claim claim = data.getEditMode() == EnumEditMode.SUBCLAIM ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
         if (claim == null)
             return 0;
         boolean sub = StringArgumentType.getString(context, "title").equals("subtitle");
