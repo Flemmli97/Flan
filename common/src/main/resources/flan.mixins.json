@@ -18,7 +18,6 @@
     "ItemEntityMixin",
     "EndermanPickupMixin",
     "EndermanPlaceMixin",
-    "IItemAccessor",
     "IHungerAccessor",
     "FrostWalkerMixin",
     "LightningFireEntityMixin",
