@@ -1,3 +1,16 @@
+Flan 1.8.2
+================
+- Some QOL changes
+- Add claimblock cap permission "flan.claim.blocks.cap":  
+  Claimblocks will still increase but are not usable until cap is increased or lifted
+- Add support for bluemap mod
+- Add config to display claim enter/leave messages as action bars instead of titles
+- Fix record items not usable even with jukebox permission true
+- Admin mode can transfer claims regardless of owner
+- Add support for various other claiming mods: goml reserved, ftbchunks and also minecolonies
+  You will not be able to claim over areas claimed by those mods.
+  Can be disabled in the config
+
 Flan 1.8.1.1
 ================
 - Check for version of fabric permission api
