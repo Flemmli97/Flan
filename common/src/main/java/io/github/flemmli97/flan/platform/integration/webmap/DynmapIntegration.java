@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.platform.integration.dynmap;
+package io.github.flemmli97.flan.platform.integration.webmap;
 
 import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.claim.Claim;
@@ -23,7 +23,7 @@ public class DynmapIntegration {
             public void apiEnabled(DynmapCommonAPI dynmapCommonAPI) {
                 MarkerAPI markerAPI = dynmapCommonAPI.getMarkerAPI();
                 markerSet = markerAPI.createMarkerSet(markerID, markerLabel, dynmapCommonAPI.getMarkerAPI().getMarkerIcons(), false);
-                DynmapCalls.dynmapLoaded = true;
+                WebmapCalls.dynmapLoaded = true;
             }
         });
     }

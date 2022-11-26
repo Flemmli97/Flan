@@ -14,14 +14,17 @@ import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.ClaimPermissionCheck;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
-import io.github.flemmli97.flan.platform.integration.dynmap.DynmapCalls;
+import io.github.flemmli97.flan.platform.integration.webmap.WebmapCalls;
 import io.github.flemmli97.flan.player.DisplayBox;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
@@ -38,6 +41,7 @@ import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -169,7 +173,7 @@ public class Claim implements IPermissionContainer {
     public void setClaimName(String name) {
         this.claimName = name;
         this.setDirty(true);
-        DynmapCalls.changeClaimName(this);
+        WebmapCalls.changeClaimName(this);
     }
 
     public UUID getOwner() {
@@ -583,20 +587,29 @@ public class Claim implements IPermissionContainer {
         this.setDirty(true);
     }
 
-    public void displayEnterTitle(ServerPlayer player) {
-        if (this.enterTitle != null) {
-            player.connection.send(new ClientboundSetTitleTextPacket(this.enterTitle));
-            if (this.enterSubtitle != null)
-                player.connection.send(new ClientboundSetSubtitleTextPacket(this.enterSubtitle));
+    private void displayTitleMessage(ServerPlayer player, @Nullable Component title, @Nullable Component subtitle) {
+        if (title == null) return;
+        if (ConfigHandler.config.claimDisplayActionBar) {
+            if (subtitle != null) {
+                MutableComponent message = title.copy().append(new TextComponent(" | ").setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE))).append(subtitle);
+                player.sendMessage(message, ChatType.GAME_INFO, Util.NIL_UUID);
+                return;
+            }
+            player.sendMessage(title, ChatType.GAME_INFO, Util.NIL_UUID);
+            return;
+        }
+        player.connection.send(new ClientboundSetTitleTextPacket(title));
+        if (subtitle != null) {
+            player.connection.send(new ClientboundSetSubtitleTextPacket(subtitle));
         }
     }
 
+    public void displayEnterTitle(ServerPlayer player) {
+        displayTitleMessage(player, this.enterTitle, this.enterSubtitle);
+    }
+
     public void displayLeaveTitle(ServerPlayer player) {
-        if (this.leaveTitle != null) {
-            player.connection.send(new ClientboundSetTitleTextPacket(this.leaveTitle));
-            if (this.leaveSubtitle != null)
-                player.connection.send(new ClientboundSetSubtitleTextPacket(this.leaveSubtitle));
-        }
+        displayTitleMessage(player, this.leaveTitle, this.leaveSubtitle);
     }
 
     /**
