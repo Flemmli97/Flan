@@ -4,11 +4,13 @@ import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ParticleIndicators;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 
@@ -21,22 +23,26 @@ public class ClaimDisplay {
 
     private int displayTime;
     private final int height;
-    private final Claim toDisplay;
+    private final DisplayBox display;
     public final EnumDisplayType type;
-    private int[][] poss;
+    private int[][] corners;
 
     private int[][] middlePoss;
 
-    private int[] prevDims;
+    private DisplayBox.Box prevDims;
 
     private final DustParticleOptions corner, middle;
 
     public ClaimDisplay(Claim claim, EnumDisplayType type, int y) {
-        this.toDisplay = claim;
+        this(claim.display(), claim.getWorld(), type, y);
+    }
+
+    public ClaimDisplay(DisplayBox display, Level level, EnumDisplayType type, int y) {
+        this.display = display;
         this.displayTime = ConfigHandler.config.claimDisplayTime;
-        this.prevDims = claim.getDimensions();
+        this.prevDims = display.box();
         this.type = type;
-        this.height = Math.max(1 + claim.getWorld().getMinBuildHeight(), y);
+        this.height = Math.max(1 + level.getMinBuildHeight(), y);
         switch (type) {
             case SUB -> {
                 this.corner = ParticleIndicators.SUBCLAIMCORNER;
@@ -59,18 +65,18 @@ public class ClaimDisplay {
 
     public boolean display(ServerPlayer player, boolean remove) {
         if (--this.displayTime % 2 == 0)
-            return this.toDisplay.isRemoved();
-        int[] dims = this.toDisplay.getDimensions();
-        if (this.poss == null || this.changed(dims)) {
-            this.middlePoss = calculateDisplayPos(player.getLevel(), dims, this.height);
-            this.poss = new int[][]{
-                    getPosFrom(player.getLevel(), dims[0], dims[2], this.height),
-                    getPosFrom(player.getLevel(), dims[1], dims[2], this.height),
-                    getPosFrom(player.getLevel(), dims[0], dims[3], this.height),
-                    getPosFrom(player.getLevel(), dims[1], dims[3], this.height),
+            return this.display.isRemoved();
+        DisplayBox.Box dims = this.display.box();
+        if (this.corners == null || this.changed(dims)) {
+            this.middlePoss = calculateDisplayPos(player.getLevel(), dims, this.height, this.display.excludedSides());
+            this.corners = new int[][]{
+                    getPosFrom(player.getLevel(), dims.minX(), dims.minZ(), this.height),
+                    getPosFrom(player.getLevel(), dims.maxX(), dims.minZ(), this.height),
+                    getPosFrom(player.getLevel(), dims.minX(), dims.maxZ(), this.height),
+                    getPosFrom(player.getLevel(), dims.maxX(), dims.maxZ(), this.height),
             };
         }
-        for (int[] pos : this.poss) {
+        for (int[] pos : this.corners) {
             if (pos[1] != pos[2])
                 player.connection.send(new ClientboundLevelParticlesPacket(this.corner, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
             player.connection.send(new ClientboundLevelParticlesPacket(this.corner, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
@@ -82,34 +88,34 @@ public class ClaimDisplay {
                 player.connection.send(new ClientboundLevelParticlesPacket(this.middle, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
             }
         this.prevDims = dims;
-        return this.toDisplay.isRemoved() || (remove && this.displayTime < 0);
+        return this.display.isRemoved() || (remove && this.displayTime < 0);
     }
 
-    private boolean changed(int[] dims) {
-        for (int i = 0; i < dims.length; i++)
-            if (dims[i] != this.prevDims[i])
-                return true;
-        return false;
+    private boolean changed(DisplayBox.Box dims) {
+        return !this.prevDims.equals(dims);
     }
 
-    public static int[][] calculateDisplayPos(ServerLevel world, int[] from, int height) {
+    public static int[][] calculateDisplayPos(ServerLevel world, DisplayBox.Box from, int height, Set<Direction> exclude) {
         List<int[]> l = new ArrayList<>();
         Set<Integer> xs = new HashSet<>();
-        addEvenly(from[0], from[1], 10, xs);
-        xs.add(from[0] + 1);
-        xs.add(from[1] - 1);
+        addEvenly(from.minX(), from.maxX(), 10, xs);
+        xs.add(from.minX() + 1);
+        xs.add(from.maxX() - 1);
         Set<Integer> zs = new HashSet<>();
-        addEvenly(from[2], from[3], 10, zs);
-        zs.add(from[2] + 1);
-        zs.add(from[3] - 1);
+        addEvenly(from.minZ(), from.maxZ(), 10, zs);
+        zs.add(from.minZ() + 1);
+        zs.add(from.maxZ() - 1);
         for (int x : xs) {
-            l.add(getPosFrom(world, x, from[2], height));
-            l.add(getPosFrom(world, x, from[3], height));
-
+            if (!exclude.contains(Direction.NORTH))
+                l.add(getPosFrom(world, x, from.minZ(), height));
+            if (!exclude.contains(Direction.SOUTH))
+                l.add(getPosFrom(world, x, from.maxZ(), height));
         }
         for (int z : zs) {
-            l.add(getPosFrom(world, from[0], z, height));
-            l.add(getPosFrom(world, from[1], z, height));
+            if (!exclude.contains(Direction.WEST))
+                l.add(getPosFrom(world, from.minX(), z, height));
+            if (!exclude.contains(Direction.EAST))
+                l.add(getPosFrom(world, from.maxX(), z, height));
         }
 
         return l.toArray(new int[0][]);
@@ -186,7 +192,7 @@ public class ClaimDisplay {
 
     @Override
     public int hashCode() {
-        return this.toDisplay.hashCode();
+        return this.display.hashCode();
     }
 
     @Override
@@ -194,7 +200,7 @@ public class ClaimDisplay {
         if (this == obj)
             return true;
         if (obj instanceof ClaimDisplay)
-            return this.toDisplay.equals(((ClaimDisplay) obj).toDisplay);
+            return this.display.equals(((ClaimDisplay) obj).display);
         return false;
     }
 }

@@ -172,6 +172,11 @@ public class PlayerClaimData implements IPlayerData {
         }
     }
 
+    public void addDisplayClaim(DisplayBox display, EnumDisplayType type, int height) {
+        if (!display.isRemoved())
+            this.displayToAdd.add(new ClaimDisplay(display, this.player.getLevel(), type, height));
+    }
+
     public EnumEditMode getEditMode() {
         return this.mode;
     }

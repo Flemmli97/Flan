@@ -11,8 +11,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.nio.file.Path;
@@ -46,7 +46,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public boolean isInventoryTile(BlockEntity blockEntity) {
-        return blockEntity instanceof Container || blockEntity instanceof WorldlyContainerHolder || blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent();
+        return blockEntity instanceof Container || blockEntity instanceof WorldlyContainerHolder || blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent();
     }
 
     @Override

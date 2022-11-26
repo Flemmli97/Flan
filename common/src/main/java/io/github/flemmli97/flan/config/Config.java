@@ -100,6 +100,10 @@ public class Config {
     public int configVersion = 4;
     public int preConfigVersion;
 
+    public boolean ftbChunksCheck = true;
+    public boolean gomlReservedCheck = true;
+    public boolean mineColoniesCheck = true;
+
     public Map<String, Map<ClaimPermission, Boolean>> defaultGroups = createHashMap(map -> {
         map.put("Co-Owner", createLinkedHashMap(perms -> PermissionRegistry.getPerms().forEach(p -> perms.put(p, true))));
         map.put("Visitor", createLinkedHashMap(perms -> {
@@ -170,6 +174,10 @@ public class Config {
                 this.inspectionItem = CrossPlatformStuff.INSTANCE.registryItems().getFromId(new ResourceLocation((obj.get("inspectionItem").getAsString())));
             this.claimDisplayTime = ConfigHandler.fromJson(obj, "claimDisplayTime", this.claimDisplayTime);
             this.permissionLevel = ConfigHandler.fromJson(obj, "permissionLevel", this.permissionLevel);
+
+            this.ftbChunksCheck = ConfigHandler.fromJson(obj, "ftbChunksCheck", this.ftbChunksCheck);
+            this.gomlReservedCheck = ConfigHandler.fromJson(obj, "gomlReservedCheck", this.gomlReservedCheck);
+            this.mineColoniesCheck = ConfigHandler.fromJson(obj, "mineColoniesCheck", this.mineColoniesCheck);
 
             this.buySellHandler.fromJson(ConfigHandler.fromJson(obj, "buySellHandler"));
             this.maxBuyBlocks = ConfigHandler.fromJson(obj, "maxBuyBlocks", this.maxBuyBlocks);
@@ -266,6 +274,10 @@ public class Config {
         obj.addProperty("inspectionItem", CrossPlatformStuff.INSTANCE.registryItems().getIDFrom(this.inspectionItem).toString());
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
         obj.addProperty("permissionLevel", this.permissionLevel);
+
+        obj.addProperty("ftbChunksCheck", this.ftbChunksCheck);
+        obj.addProperty("gomlReservedCheck", this.gomlReservedCheck);
+        obj.addProperty("mineColoniesCheck", this.mineColoniesCheck);
 
         obj.add("buySellHandler", this.buySellHandler.toJson());
         obj.addProperty("maxBuyBlocks", this.maxBuyBlocks);

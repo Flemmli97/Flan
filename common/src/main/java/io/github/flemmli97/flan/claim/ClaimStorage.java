@@ -14,8 +14,10 @@ import io.github.flemmli97.flan.api.data.IPlayerData;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.platform.integration.claiming.OtherClaimingModCheck;
 import io.github.flemmli97.flan.platform.integration.dynmap.DynmapCalls;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
+import io.github.flemmli97.flan.player.DisplayBox;
 import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.EnumEditMode;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
@@ -85,7 +87,7 @@ public class ClaimStorage implements IPermissionStorage {
 
     public boolean createClaim(BlockPos pos1, BlockPos pos2, ServerPlayer player) {
         Claim claim = new Claim(pos1.below(ConfigHandler.config.defaultClaimDepth), pos2.below(ConfigHandler.config.defaultClaimDepth), player);
-        Set<Claim> conflicts = this.conflicts(claim, null);
+        Set<DisplayBox> conflicts = this.conflicts(claim, null);
         if (conflicts.isEmpty()) {
             PlayerClaimData data = PlayerClaimData.get(player);
             if (claim.getPlane() < ConfigHandler.config.minClaimsize) {
@@ -116,8 +118,8 @@ public class ClaimStorage implements IPermissionStorage {
         return false;
     }
 
-    private Set<Claim> conflicts(Claim claim, Claim except) {
-        Set<Claim> conflicted = new HashSet<>();
+    private Set<DisplayBox> conflicts(Claim claim, Claim except) {
+        Set<DisplayBox> conflicted = new HashSet<>();
         int[] chunks = getChunkPos(claim);
         for (int x = chunks[0]; x <= chunks[1]; x++)
             for (int z = chunks[2]; z <= chunks[3]; z++) {
@@ -125,10 +127,12 @@ public class ClaimStorage implements IPermissionStorage {
                 if (claims != null)
                     for (Claim other : claims) {
                         if (claim.intersects(other) && !other.equals(except)) {
-                            conflicted.add(other);
+                            conflicted.add(other.display());
                         }
                     }
             }
+        if (!claim.isAdminClaim())
+            OtherClaimingModCheck.INSTANCE.findConflicts(claim, conflicted);
         return conflicted;
     }
 
@@ -178,7 +182,7 @@ public class ClaimStorage implements IPermissionStorage {
             player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("minClaimSize"), ConfigHandler.config.minClaimsize), ChatFormatting.RED), false);
             return false;
         }
-        Set<Claim> conflicts = this.conflicts(newClaim, claim);
+        Set<DisplayBox> conflicts = this.conflicts(newClaim, claim);
         if (!conflicts.isEmpty()) {
             conflicts.forEach(conf -> PlayerClaimData.get(player).addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.blockPosition().getY()));
             player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("conflictOther"), ChatFormatting.RED), false);
@@ -456,16 +460,16 @@ public class ClaimStorage implements IPermissionStorage {
                             parentClaim.getB().addSubClaimGriefprevention(parseFromYaml(childF, yml, server, perms).getB());
                     }
                     ClaimStorage storage = ClaimStorage.get(parentClaim.getA());
-                    Set<Claim> conflicts = storage.conflicts(parentClaim.getB(), null);
+                    Set<DisplayBox> conflicts = storage.conflicts(parentClaim.getB(), null);
                     if (conflicts.isEmpty()) {
                         parentClaim.getB().setClaimID(storage.generateUUID());
                         storage.addClaim(parentClaim.getB());
                     } else {
                         src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("readConflict"), parent.getName(), conflicts), ChatFormatting.DARK_RED), false);
-                        for (Claim claim : conflicts) {
-                            int[] dim = claim.getDimensions();
-                            MutableComponent text = PermHelper.simpleColoredText(String.format("@[x=%d;z=%d]", dim[0], dim[2]), ChatFormatting.RED);
-                            text.setStyle(text.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + dim[0] + " ~ " + dim[2])).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.coordinates.tooltip"))));
+                        for (DisplayBox claim : conflicts) {
+                            DisplayBox.Box dim = claim.box();
+                            MutableComponent text = PermHelper.simpleColoredText(String.format("@[x=%d;z=%d]", dim.minX(), dim.minZ()), ChatFormatting.RED);
+                            text.setStyle(text.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + dim.minX() + " ~ " + dim.minZ())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.coordinates.tooltip"))));
                             src.sendSuccess(text, false);
                         }
                     }

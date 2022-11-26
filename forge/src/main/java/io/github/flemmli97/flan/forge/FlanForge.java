@@ -25,6 +25,8 @@ public class FlanForge {
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> "*", (s1, s2) -> true));
         Flan.ftbRanks = ModList.get().isLoaded("ftbranks");
         Flan.diceMCMoneySign = ModList.get().isLoaded("dicemcmm");
+        Flan.ftbChunks = ModList.get().isLoaded("ftbchunks");
+        Flan.mineColonies = ModList.get().isLoaded("minecolonies");
 
         IEventBus forge = MinecraftForge.EVENT_BUS;
         forge.addListener(WorldEventsForge::modifyExplosion);

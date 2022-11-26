@@ -46,6 +46,12 @@ repositories {
         url "https://www.cursemaven.com"
     }
     maven { url = "https://jitpack.io" }
+    maven {
+        url = "https://maven.jamieswhiteshirt.com/libs-release/"
+        content {
+            includeGroup 'com.jamieswhiteshirt'
+        }
+    }
 }
 
 dependencies {
@@ -59,19 +65,19 @@ dependencies {
 
     modImplementation "me.lucko:fabric-permissions-api:${rootProject.fabric_permissions_api}"
 
-    // Rip currency on their maven and prob rip currency all together
-    /*modCompileOnly(gunpowder_currency) {
-        exclude group: "com.google.guava", module:"failureaccess"
-    }*/
     modImplementation octo_economy_api
-    //modRuntimeOnly eights_economy
     modCompileOnly diamond_economy
 
-    //modImplementation "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
     modCompileOnly "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
 
     modCompileOnly "dev.ftb.mods:ftb-ranks-fabric:${rootProject.ftb_ranks}"
 
+    modRuntimeOnly "dev.ftb.mods:ftb-chunks-fabric:${rootProject.ftb_chunks}"
+
+    modRuntimeOnly "dev.ftb.mods:ftb-chunks-fabric:${rootProject.ftb_chunks}"
+    //CompileOnly cause too many dependency
+    modCompileOnly goml_reserved
+    modCompileOnly include("com.jamieswhiteshirt:rtree-3i-lite-fabric:0.3.0")
 }
 
 processResources {

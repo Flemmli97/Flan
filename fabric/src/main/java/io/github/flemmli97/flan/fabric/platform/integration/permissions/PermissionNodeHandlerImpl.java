@@ -38,7 +38,6 @@ public class PermissionNodeHandlerImpl implements PermissionNodeHandler {
     }
 
 
-
     @Override
     public boolean permBelowEqVal(ServerPlayer src, String perm, int val, int fallback) {
         if (Flan.permissionAPI) {
