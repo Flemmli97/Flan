@@ -281,7 +281,7 @@ public class ClaimStorage implements IPermissionStorage {
     }
 
     public boolean transferOwner(Claim claim, ServerPlayer player, UUID newOwner) {
-        if (!player.getUUID().equals(claim.getOwner()))
+        if (!PlayerClaimData.get(player).isAdminIgnoreClaim() && !player.getUUID().equals(claim.getOwner()))
             return false;
         this.playerClaimMap.merge(claim.getOwner(), new HashSet<>(), (old, val) -> {
             old.remove(claim);
