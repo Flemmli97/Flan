@@ -7,10 +7,12 @@ configurations {
 }
 
 repositories {
+    maven { url 'https://jitpack.io' }
     maven {
         name = "CurseMaven"
         url "https://www.cursemaven.com"
     }
+
 }
 
 dependencies {
@@ -21,6 +23,7 @@ dependencies {
     shadowCommon group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
     modImplementation dynmap_fabric
+    implementation 'com.github.BlueMap-Minecraft:BlueMapAPI:v2.2.1'
 }
 
 architectury {
