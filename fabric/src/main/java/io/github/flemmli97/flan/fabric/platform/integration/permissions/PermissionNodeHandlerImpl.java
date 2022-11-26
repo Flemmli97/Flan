@@ -44,4 +44,12 @@ public class PermissionNodeHandlerImpl implements PermissionNodeHandler {
         }
         return val <= fallback;
     }
+
+    @Override
+    public int permVal(ServerPlayer src, String perm, int fallback) {
+        if (Flan.ftbRanks) {
+            return FTBRanksAPI.getPermissionValue(src, perm).asInteger().orElse(fallback);
+        }
+        return fallback;
+    }
 }

@@ -66,7 +66,7 @@ public class EntityInteractEvents {
     public static InteractionResult useAtEntity(Player player, Level world, InteractionHand hand, Entity entity, /* Nullable */ EntityHitResult hitResult) {
         if (!(player instanceof ServerPlayer) || player.isSpectator() || canInteract(entity))
             return InteractionResult.PASS;
-        if(entity instanceof Enemy)
+        if (entity instanceof Enemy)
             return InteractionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
         BlockPos pos = entity.blockPosition();
@@ -76,7 +76,7 @@ public class EntityInteractEvents {
                 if (!claim.canInteract((ServerPlayer) player, PermissionRegistry.ARMORSTAND, pos, true))
                     return InteractionResult.FAIL;
             }
-            if(entity instanceof Mob)
+            if (entity instanceof Mob)
                 return claim.canInteract((ServerPlayer) player, PermissionRegistry.ANIMALINTERACT, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
         }
         return InteractionResult.PASS;
@@ -85,7 +85,7 @@ public class EntityInteractEvents {
     public static InteractionResult useEntity(Player p, Level world, InteractionHand hand, Entity entity) {
         if (!(p instanceof ServerPlayer player) || p.isSpectator() || canInteract(entity))
             return InteractionResult.PASS;
-        if(entity instanceof Enemy)
+        if (entity instanceof Enemy)
             return InteractionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
         BlockPos pos = entity.blockPosition();
