@@ -31,6 +31,10 @@ repositories {
         name = "CurseMaven"
         url "https://www.cursemaven.com"
     }
+    maven {
+        name = "minecolonies"
+        url "https://ldtteam.jfrog.io/ldtteam/modding/"
+    }
 }
 
 dependencies {
@@ -41,6 +45,10 @@ dependencies {
 
     modCompileOnly "dev.ftb.mods:ftb-ranks-forge:${ftb_ranks}"
     modCompileOnly dicemcmm
+
+    modRuntimeOnly "dev.ftb.mods:ftb-chunks-forge:${rootProject.ftb_chunks}"
+    //CompileOnly cause dependencies
+    modCompileOnly "com.ldtteam:minecolonies:${rootProject.minecolonies}"
 }
 
 processResources {

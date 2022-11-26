@@ -59,6 +59,10 @@ public class FlanFabric implements ModInitializer {
         Flan.playerAbilityLib = FabricLoader.getInstance().isModLoaded("playerabilitylib");
         Flan.ftbRanks = FabricLoader.getInstance().isModLoaded("ftbranks");
         Flan.octoEconomy = FabricLoader.getInstance().isModLoaded("octo-economy-api");
+        Flan.diamondCurrency = FabricLoader.getInstance().isModLoaded("diamondeconomy");
+        Flan.ftbChunks = FabricLoader.getInstance().isModLoaded("ftbchunks");
+        Flan.gomlServer = FabricLoader.getInstance().isModLoaded("goml");
+
         if (Flan.playerAbilityLib)
             PlayerAbilityEvents.register();
         if (FabricLoader.getInstance().isModLoaded("dynmap"))

@@ -15,6 +15,7 @@ import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.ClaimPermissionCheck;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import io.github.flemmli97.flan.platform.integration.dynmap.DynmapCalls;
+import io.github.flemmli97.flan.player.DisplayBox;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
@@ -842,6 +843,10 @@ public class Claim implements IPermissionContainer {
         mapComp.append("]");
         MutableComponent component = new TranslatableComponent(ConfigHandler.langManager.get(lang), mapComp).withStyle(ChatFormatting.DARK_BLUE);
         return component;
+    }
+
+    public DisplayBox display() {
+        return new DisplayBox(() -> new DisplayBox.Box(this.minX, this.minY, this.minZ, this.maxX, this.world.getMaxBuildHeight(), this.maxZ), this::isRemoved);
     }
 
     public enum InfoType {

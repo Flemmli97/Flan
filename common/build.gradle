@@ -8,6 +8,10 @@ configurations {
 
 repositories {
     maven {
+        name = "FTB"
+        url = "https://maven.saps.dev/minecraft"
+    }
+    maven {
         name = "CurseMaven"
         url "https://www.cursemaven.com"
     }
@@ -21,6 +25,8 @@ dependencies {
     shadowCommon group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
     modImplementation dynmap_fabric
+
+    modImplementation "dev.ftb.mods:ftb-chunks:${rootProject.ftb_chunks}"
 }
 
 architectury {
