@@ -10,7 +10,6 @@ import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.mixin.IItemAccessor;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.EnumEditMode;
@@ -22,6 +21,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -37,6 +37,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Set;
 
@@ -65,7 +66,7 @@ public class ItemInteractEvents {
 
         ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
         BlockPos pos = player.blockPosition();
-        BlockHitResult hitResult = IItemAccessor.getRaycast(world, player, ClipContext.Fluid.SOURCE_ONLY);
+        BlockHitResult hitResult = getPlayerHitResult(world, player, ClipContext.Fluid.SOURCE_ONLY);
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             pos = new BlockPlaceContext(player, hand, stack, hitResult).getClickedPos();
         }
@@ -263,5 +264,22 @@ public class ItemInteractEvents {
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
         } else
             player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("inspectNoClaim"), ChatFormatting.RED), false);
+    }
+
+    /**
+     * From {@link Item#getPlayerPOVHitResult}
+     */
+    protected static BlockHitResult getPlayerHitResult(Level level, Player player, ClipContext.Fluid fluidMode) {
+        float xRot = player.getXRot();
+        float yRot = player.getYRot();
+        Vec3 eye = player.getEyePosition();
+        float h = Mth.cos(-yRot * Mth.DEG_TO_RAD - Mth.PI);
+        float i = Mth.sin(-yRot * Mth.DEG_TO_RAD - Mth.PI);
+        float j = -Mth.cos(-xRot * Mth.DEG_TO_RAD);
+        float k = Mth.sin(-xRot * Mth.DEG_TO_RAD);
+        float l = i * j;
+        float n = h * j;
+        Vec3 vec32 = eye.add(l * 5.0D, k * 5.0D, n * 5.0D);
+        return level.clip(new ClipContext(eye, vec32, net.minecraft.world.level.ClipContext.Block.OUTLINE, fluidMode, player));
     }
 }
