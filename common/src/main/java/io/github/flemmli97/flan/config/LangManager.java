@@ -39,7 +39,7 @@ public class LangManager {
         this.defaultTranslation.put("noClaim", "There is no claim here.");
         this.defaultTranslation.put("inspectBlockOwner", "This is %1$s's claim");
         this.defaultTranslation.put("inspectNoClaim", "Nobody owns this block");
-        this.defaultTranslation.put("claimBlocksFormat", "Claim Blocks: %1$d + (Bonus) %2$d); Used: %3$d; Remaining %4$d");
+        this.defaultTranslation.put("claimBlocksFormat", "Claim Blocks: %1$d + (Bonus) %2$d); Used: %3$d; Remaining: %4$d");
         this.defaultTranslation.put("listClaims", "Listing all claims:");
         this.defaultTranslation.put("listAdminClaims", "Listing all admin-claims in %1$s:");
         this.defaultTranslation.put("onlyOnePlayer", "Only one player can be used as argument");
