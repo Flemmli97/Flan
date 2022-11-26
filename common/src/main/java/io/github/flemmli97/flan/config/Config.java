@@ -45,6 +45,7 @@ public class Config {
     public Item inspectionItem = Items.STICK;
 
     public int claimDisplayTime = 1000;
+    public boolean claimDisplayActionBar = false;
     public int permissionLevel = 2;
 
     public BuySellHandler buySellHandler = new BuySellHandler();
@@ -169,6 +170,7 @@ public class Config {
             if (obj.has("inspectionItem"))
                 this.inspectionItem = CrossPlatformStuff.INSTANCE.registryItems().getFromId(new ResourceLocation((obj.get("inspectionItem").getAsString())));
             this.claimDisplayTime = ConfigHandler.fromJson(obj, "claimDisplayTime", this.claimDisplayTime);
+            this.claimDisplayActionBar = ConfigHandler.fromJson(obj, "claimDisplayActionBar", this.claimDisplayActionBar);
             this.permissionLevel = ConfigHandler.fromJson(obj, "permissionLevel", this.permissionLevel);
 
             this.buySellHandler.fromJson(ConfigHandler.fromJson(obj, "buySellHandler"));
@@ -265,6 +267,7 @@ public class Config {
         obj.addProperty("claimingItem", CrossPlatformStuff.INSTANCE.registryItems().getIDFrom(this.claimingItem).toString());
         obj.addProperty("inspectionItem", CrossPlatformStuff.INSTANCE.registryItems().getIDFrom(this.inspectionItem).toString());
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
+        obj.addProperty("claimDisplayActionBar", this.claimDisplayActionBar);
         obj.addProperty("permissionLevel", this.permissionLevel);
 
         obj.add("buySellHandler", this.buySellHandler.toJson());
