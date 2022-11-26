@@ -88,7 +88,7 @@ public class PlayerClaimData implements IPlayerData {
 
     @Override
     public int getClaimBlocks() {
-        return this.claimBlocks;
+        return Math.min(this.claimBlocks, PermissionNodeHandler.INSTANCE.permVal(this.player, PermissionNodeHandler.permClaimBlocksCap, this.claimBlocks));
     }
 
     public void setClaimBlocks(int amount) {

@@ -46,6 +46,7 @@ public interface PermissionNodeHandler {
 
     String permClaimBlocks = "flan.claim.blocks.max";
     String permMaxClaims = "flan.claims.amount";
+    String permClaimBlocksCap = "flan.claim.blocks.cap";
 
     PermissionNodeHandler INSTANCE = Flan.getPlatformInstance(PermissionNodeHandler.class,
             "io.github.flemmli97.flan.fabric.platform.integration.permissions.PermissionNodeHandlerImpl",
@@ -60,4 +61,6 @@ public interface PermissionNodeHandler {
     boolean perm(ServerPlayer src, String perm, boolean adminCmd);
 
     boolean permBelowEqVal(ServerPlayer src, String perm, int val, int fallback);
+
+    int permVal(ServerPlayer src, String perm, int fallback);
 }

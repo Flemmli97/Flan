@@ -37,6 +37,8 @@ public class PermissionNodeHandlerImpl implements PermissionNodeHandler {
         return !adminCmd || src.hasPermissions(ConfigHandler.config.permissionLevel);
     }
 
+
+
     @Override
     public boolean permBelowEqVal(ServerPlayer src, String perm, int val, int fallback) {
         if (Flan.permissionAPI) {
@@ -48,5 +50,16 @@ public class PermissionNodeHandlerImpl implements PermissionNodeHandler {
             return val <= max;
         }
         return val <= fallback;
+    }
+
+    @Override
+    public int permVal(ServerPlayer src, String perm, int fallback) {
+        if (Flan.permissionAPI) {
+            return Options.get(src, perm, fallback, Integer::parseInt);
+        }
+        if (Flan.ftbRanks) {
+            return FTBRanksAPI.getPermissionValue(src, perm).asInteger().orElse(fallback);
+        }
+        return fallback;
     }
 }
