@@ -14,10 +14,8 @@ import io.github.flemmli97.flan.api.data.IPlayerData;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.platform.integration.claiming.OtherClaimingModCheck;
 import io.github.flemmli97.flan.platform.integration.dynmap.DynmapCalls;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
-import io.github.flemmli97.flan.player.DisplayBox;
 import io.github.flemmli97.flan.player.EnumDisplayType;
 import io.github.flemmli97.flan.player.EnumEditMode;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
@@ -159,7 +157,7 @@ public class ClaimStorage implements IPermissionStorage {
             claim.remove();
             claim.getOwnerPlayer().ifPresent(o -> PlayerClaimData.get(o).updateScoreboard());
         }
-        DynmapCalls.removeMarker(claim);
+        WebmapCalls.removeMarker(claim);
         return this.claimUUIDMap.remove(claim.getClaimID()) != null;
     }
 
@@ -281,7 +279,7 @@ public class ClaimStorage implements IPermissionStorage {
             old.add(claim);
             return old;
         });
-        DynmapCalls.addClaimMarker(claim);
+        WebmapCalls.addClaimMarker(claim);
     }
 
     public boolean transferOwner(Claim claim, ServerPlayer player, UUID newOwner) {
@@ -299,7 +297,7 @@ public class ClaimStorage implements IPermissionStorage {
             return old;
         });
         this.dirty.add(claim.getOwner());
-        DynmapCalls.changeClaimOwner(claim);
+        WebmapCalls.changeClaimOwner(claim);
         return true;
     }
 
@@ -309,6 +307,10 @@ public class ClaimStorage implements IPermissionStorage {
 
     public Collection<Claim> getAdminClaims() {
         return ImmutableSet.copyOf(this.playerClaimMap.get(null));
+    }
+
+    public Map<UUID, Set<Claim>> getClaims() {
+        return this.playerClaimMap;
     }
 
     public static int[] getChunkPos(Claim claim) {

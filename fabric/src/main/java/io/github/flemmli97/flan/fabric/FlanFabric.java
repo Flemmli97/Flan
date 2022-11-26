@@ -9,7 +9,8 @@ import io.github.flemmli97.flan.event.ItemInteractEvents;
 import io.github.flemmli97.flan.event.PlayerEvents;
 import io.github.flemmli97.flan.event.WorldEvents;
 import io.github.flemmli97.flan.fabric.platform.integration.playerability.PlayerAbilityEvents;
-import io.github.flemmli97.flan.platform.integration.dynmap.DynmapIntegration;
+import io.github.flemmli97.flan.platform.integration.webmap.BluemapIntegration;
+import io.github.flemmli97.flan.platform.integration.webmap.DynmapIntegration;
 import io.github.flemmli97.flan.player.PlayerDataHandler;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.fabricmc.api.ModInitializer;
@@ -76,6 +77,8 @@ public class FlanFabric implements ModInitializer {
     public static void serverLoad(MinecraftServer server) {
         Flan.lockRegistry(server);
         ConfigHandler.serverLoad(server);
+        if (FabricLoader.getInstance().isModLoaded("bluemap"))
+            BluemapIntegration.reg(server);
     }
 
     public static void serverFinishLoad(MinecraftServer server) {
