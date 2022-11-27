@@ -10,6 +10,7 @@ Flan 1.8.2
 - Add support for various other claiming mods: goml reserved, ftbchunks and also minecolonies
   You will not be able to claim over areas claimed by those mods.
   Can be disabled in the config
+- Allow subclaim title to be set via command
 
 Flan 1.8.1.1
 ================
