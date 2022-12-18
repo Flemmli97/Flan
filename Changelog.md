@@ -1,3 +1,7 @@
+Flan 1.8.3
+================
+- Fix claim display keep getting added for same claim causing lots of particles
+
 Flan 1.8.2
 ================
 - Some QOL changes

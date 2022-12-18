@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.player;
+package io.github.flemmli97.flan.player.display;
 
 import net.minecraft.core.Direction;
 
@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 public class DisplayBox {
 
     private final Box box;
-    private final Supplier<Box> boxSup;
     private final Supplier<Boolean> removed;
 
     private final EnumSet<Direction> excludedSides = EnumSet.noneOf(Direction.class);
@@ -21,7 +20,6 @@ public class DisplayBox {
 
     public DisplayBox(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, Supplier<Boolean> removed, Direction... exclude) {
         this.box = new Box(minX, minY, minZ, Math.max(minX + 1, maxX), maxY, Math.max(minZ + 1, maxZ));
-        this.boxSup = null;
         this.removed = removed;
         this.excludedSides.addAll(Arrays.asList(exclude));
     }
@@ -29,9 +27,8 @@ public class DisplayBox {
     /**
      * For claims with dynamic size (atm only from this mod)
      */
-    public DisplayBox(Supplier<Box> sup, Supplier<Boolean> removed, Direction... exclude) {
-        this.box = sup.get();
-        this.boxSup = sup;
+    public DisplayBox(Box box, Supplier<Boolean> removed, Direction... exclude) {
+        this.box = box;
         this.removed = removed;
         this.excludedSides.addAll(Arrays.asList(exclude));
     }
@@ -41,13 +38,26 @@ public class DisplayBox {
     }
 
     public Box box() {
-        if (this.boxSup != null)
-            return this.boxSup.get();
         return this.box;
     }
 
     public Set<Direction> excludedSides() {
         return this.excludedSides;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.box.hashCode();
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (obj instanceof DisplayBox other)
+            return this.box.equals(other.box);
+        return false;
     }
 
     public record Box(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {

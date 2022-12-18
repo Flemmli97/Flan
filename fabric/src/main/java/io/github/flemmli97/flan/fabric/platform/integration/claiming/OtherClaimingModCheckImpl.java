@@ -7,7 +7,7 @@ import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.integration.claiming.FTBChunks;
 import io.github.flemmli97.flan.platform.integration.claiming.OtherClaimingModCheck;
-import io.github.flemmli97.flan.player.DisplayBox;
+import io.github.flemmli97.flan.player.display.DisplayBox;
 
 import java.util.Set;
 

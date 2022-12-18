@@ -15,9 +15,10 @@ import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.ClaimPermissionCheck;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import io.github.flemmli97.flan.platform.integration.webmap.WebmapCalls;
-import io.github.flemmli97.flan.player.DisplayBox;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerClaimData;
+import io.github.flemmli97.flan.player.display.ClaimDisplayBox;
+import io.github.flemmli97.flan.player.display.DisplayBox;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -855,7 +856,7 @@ public class Claim implements IPermissionContainer {
     }
 
     public DisplayBox display() {
-        return new DisplayBox(() -> new DisplayBox.Box(this.minX, this.minY, this.minZ, this.maxX, this.world.getMaxBuildHeight(), this.maxZ), this::isRemoved);
+        return new ClaimDisplayBox(this, () -> new DisplayBox.Box(this.minX, this.minY, this.minZ, this.maxX, this.world.getMaxBuildHeight(), this.maxZ), this::isRemoved);
     }
 
     public enum InfoType {

@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.player;
+package io.github.flemmli97.flan.player.display;
 
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ParticleIndicators;
