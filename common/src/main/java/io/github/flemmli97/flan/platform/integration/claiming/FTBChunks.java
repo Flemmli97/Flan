@@ -8,7 +8,7 @@ import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.player.DisplayBox;
+import io.github.flemmli97.flan.player.display.DisplayBox;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 

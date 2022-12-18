@@ -9,7 +9,7 @@ import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.integration.claiming.FTBChunks;
 import io.github.flemmli97.flan.platform.integration.claiming.OtherClaimingModCheck;
-import io.github.flemmli97.flan.player.DisplayBox;
+import io.github.flemmli97.flan.player.display.DisplayBox;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
