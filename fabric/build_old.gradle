@@ -1,28 +1,22 @@
 plugins {
-    id 'idea'
-    id 'fabric-loom' version '1.0-SNAPSHOT'
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "com.github.johnrengelman.shadow" version "7.1.0"
 }
 
-loom {
-    runs {
-        client {
-            vmArgs "-Dmixin.debug.export=true"
-        }
-    }
-    mixin {
-        useLegacyMixinAp = false
-    }
+architectury {
+    platformSetupLoomIde()
+    fabric()
 }
 
 configurations {
+    common
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-    compileClasspath.extendsFrom modImplementation
-    runtimeClasspath.extendsFrom modImplementation
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentFabric.extendsFrom common
 }
 
 repositories {
+    mavenCentral()
     maven {
         name = 'Fabric-Permission-API'
         url 'https://oss.sonatype.org/content/repositories/snapshots'
@@ -61,16 +55,13 @@ repositories {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.layered() {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${minecraft_version}:${rootProject.parchment_version}@zip")
-    }
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
-    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
 
-    implementation project(path: ":common", configuration: "namedElements")
+    // Fabric API. This is technically optional, but you probably want it anyway.
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
+
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
     modImplementation "me.lucko:fabric-permissions-api:${rootProject.fabric_permissions_api}"
 
@@ -93,18 +84,22 @@ dependencies {
 }
 
 processResources {
-    from project(":common").sourceSets.main.resources
-    def ver = project.version.replace("-${project.name}", "")
-    inputs.property "version", ver
+    inputs.property "version", project.version
 
     filesMatching("fabric.mod.json") {
-        expand "version": ver, "homepage": curse_page_fabric, "fabric_version": fabric_version, "mcversion": minecraft_version
+        expand "version": project.version
     }
-    exclude '.cache/**'
 }
 
-tasks.withType(JavaCompile) {
-    source(project(":common").sourceSets.main.allSource)
+shadowJar {
+    configurations = [project.configurations.shadowCommon]
+    classifier "dev-shadow"
+}
+
+remapJar {
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    classifier "fabric"
 }
 
 jar {
@@ -115,6 +110,7 @@ sourcesJar {
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
     from commonSources.archiveFile.map { zipTree(it) }
+    classifier "fabric-sources"
 }
 
 components.java {
@@ -123,24 +119,41 @@ components.java {
     }
 }
 
-fullRebuild {
-    dependsOn project(":common").fullRebuild
+task apiJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set "fabric-api-source"
+    from project(":common").sourceSets.main.output + sourceSets.main.output
+    include "io/github/flemmli97/flan/api/**"
+    include "fabric.mod_api.json" //Include this so it gets remapped as a dependency
+    rename("fabric.mod_api.json", "fabric.mod.json")
+}
+
+task remapApiJar(type: net.fabricmc.loom.task.RemapJarTask) {
+    archiveClassifier.set "fabric-api"
+    input.set apiJar.archiveFile
+    addNestedDependencies = false
+    dependsOn apiJar
+    from sourceSets.main.output
+    /* Putting it here doesnt seem to work...
+    include "fabric.mod_api.json" //Include this so it gets remapped as a dependency
+    rename("fabric.mod_api.json", "fabric.mod.json")
+    */
 }
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            // add all the jars that should be included when publishing to maven
             artifact(remapJar) {
+                classifier null
                 builtBy remapJar
             }
-            artifact(remapSourcesJar) {
+            artifact(sourcesJar) {
+                classifier "sources"
                 builtBy remapSourcesJar
             }
-            artifact(javadocJar) {
-                builtBy javadocJar
-            }
-            artifactId project.modid
-            version project.version
+            artifact(remapApiJar)
+            artifactId project.archives_base_name
+            version project.version + "-fabric"
         }
     }
 
@@ -153,32 +166,6 @@ publishing {
                 password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
                 //password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
             }
-        }
-    }
-}
-
-curseforge {
-    apiKey = findProperty('curseApiToken') ?: 0
-    project {
-        id = "${curse_id_fabric}"
-        "${project.curse_versions}".split(', ').each {
-            addGameVersion "${it}"
-        }
-        addGameVersion "Fabric"
-        mainArtifact(remapJar) {
-            def txt = rootProject.changelog(1).replace("\n-", "\n\n- ")
-            txt = txt + "\n\n" + "For past versions see: ${project.full_changelog}"
-            changelog = txt
-            changelogType = "markdown"
-            releaseType = 'release'
-        }
-        relations {
-            "${project.curse_dep_fabric}".split(', ').each {
-                requiredDependency "${it}"
-            }
-        }
-        afterEvaluate {
-            uploadTask.dependsOn("remapJar")
         }
     }
 }

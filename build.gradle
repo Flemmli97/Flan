@@ -1,78 +1,83 @@
 buildscript {
-    dependencies {
-        classpath group: 'com.diluv.schoomp', name: 'Schoomp', version: '1.1.0'
+    repositories {
+        mavenCentral()
     }
-}
-
-plugins {
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "0.11.0-SNAPSHOT" apply false
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
-}
-
-import com.diluv.schoomp.Webhook
-import com.diluv.schoomp.message.Message
-import com.diluv.schoomp.message.embed.Embed
-
-architectury {
-    minecraft = rootProject.minecraft_version
+    dependencies {
+        classpath group: 'com.diluv.schoomp', name: 'Schoomp', version: '1.2.6'
+    }
 }
 
 subprojects {
-    apply plugin: "dev.architectury.loom"
 
-    loom {
-        silentMojangMappingsLicense()
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+
+    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+    java.withSourcesJar()
+    java.withJavadocJar()
+
+    archivesBaseName = rootProject.modid
+    version = project.minecraft_version + "-" + rootProject.mod_version + "-" + project.name
+    group = rootProject.maven_group
+
+    jar {
+        from(rootProject.file("LICENSE"))
+        manifest {
+            attributes([
+                    'Specification-Title'     : rootProject.name,
+                    'Specification-Vendor'    : "Flemmli97",
+                    'Specification-Version'   : project.jar.archiveVersion,
+                    'Implementation-Title'    : rootProject.name + "-" + project.name,
+                    'Implementation-Version'  : project.jar.archiveVersion,
+                    'Implementation-Vendor'   : "Flemmli97",
+                    'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+            ])
+        }
     }
 
     repositories {
-        maven { url = 'https://maven.parchmentmc.org' }
-    }
-
-    dependencies {
-        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        mappings loom.layered() {
-            officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-${rootProject.parchment_version}@zip")
+        mavenLocal()
+        mavenCentral()
+        maven {
+            name = 'Sponge / Mixin'
+            url = 'https://repo.spongepowered.org/repository/maven-public/'
         }
+        maven {
+            name = 'BlameJared Maven (CrT / Bookshelf)'
+            url = 'https://maven.blamejared.com'
+        }
+        maven { url "https://maven.architectury.dev/" }
+    }
+
+    tasks.withType(GenerateModuleMetadata) {
+        enabled = false
+    }
+
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+
+    task cleanBuild(group: "build") {
+        dependsOn clean
+    }
+
+    task fullRebuild(group: "build") {
+        dependsOn cleanBuild, build
+        compileJava.mustRunAfter cleanBuild
+    }
+
+    task buildAndPublish(group: "publishing") {
+        dependsOn fullRebuild, publish
+        publish.mustRunAfter fullRebuild
+    }
+
+    task buildAndPublishLocal(group: "publishing") {
+        dependsOn fullRebuild, publishToMavenLocal
+        publishToMavenLocal.mustRunAfter fullRebuild
     }
 }
 
-allprojects {
-    apply plugin: "java"
-    apply plugin: "architectury-plugin"
-    apply plugin: "maven-publish"
-
-    archivesBaseName = rootProject.archives_base_name
-    version = project.minecraft_version + "-" + rootProject.mod_version
-    group = rootProject.maven_group
-
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-        options.release = 17
-    }
-
-    java {
-        withSourcesJar()
-    }
-}
-
-task buildAll {
-    dependsOn(":fabric:build")
-    dependsOn(":forge:build")
-}
-
-task cleanAll {
-    dependsOn clean
-    dependsOn(":common:clean")
-    dependsOn(":fabric:clean")
-    dependsOn(":forge:clean")
-}
-
-task publishAll {
-    dependsOn(":fabric:publish")
-    dependsOn(":forge:publish")
-}
+def singleUpload = true
 
 def changelog(int versions) {
     try {
@@ -113,48 +118,9 @@ def discordChangelog() {
     return res
 }
 
-curseforge {
-    apiKey = findProperty('curseApiToken') ?: 0
-
-    project {
-        id = "${curse_id_fabric}"
-        "${project.curse_versions}".split(', ').each {
-            addGameVersion "${it}"
-        }
-        addGameVersion "Fabric"
-        mainArtifact(project(":fabric").tasks.getByName('remapJar')) {
-            def txt = changelog(1).replace("\n-", "\n\n- ")
-            txt = txt + "\n\n" + "For past versions see: ${project.full_changelog}"
-            changelog = txt
-            changelogType = "markdown"
-            releaseType = 'release'
-        }
-        relations {
-            "${project.curse_dep_fabric}".split(', ').each {
-                requiredDependency "${it}"
-            }
-        }
-    }
-    project {
-        id = "${curse_id_forge}"
-        "${project.curse_versions}".split(', ').each {
-            addGameVersion "${it}"
-        }
-        addGameVersion "Forge"
-        mainArtifact(project(":forge").tasks.getByName('remapJar')) {
-            def txt = changelog(1).replace("\n-", "\n\n- ")
-            txt = txt + "\n\n" + "For past versions see: ${project.full_changelog}"
-            changelog = txt
-            changelogType = "markdown"
-            releaseType = 'release'
-        }
-        /*relations {
-            "${project.curse_dep_forge}".split(', ').each {
-                requiredDependency "${it}"
-            }
-        }*/
-    }
-}
+import com.diluv.schoomp.Webhook
+import com.diluv.schoomp.message.Message
+import com.diluv.schoomp.message.embed.Embed
 
 def discordNotif(fabric, forge) {
     try {
@@ -163,18 +129,18 @@ def discordNotif(fabric, forge) {
         def message = new Message()
         def version = project.curse_versions.split(', ')[0]
         message.setUsername("Curseforge Release")
-        message.setContent("<@&${project.discord_role}> ${project.project_name} ${project.mod_version} for Minecraft ${version} has been released!")
+        message.setContent("${project.project_name} ${project.mod_version} for Minecraft ${version} has been released!")
         message.setAvatarUrl("https://cdn.discordapp.com/avatars/680540027255652407/e4b7a058b24843ae13389a9a3cc3ae8c.png?size=128")
 
         def embed = new Embed()
 
-        if(fabric) {
-            def fileIDFabric = tasks.getByName("curseforge${project.curse_id_fabric}").property('mainArtifact').fileID
-            embed.addField('Get the fabric version here (When it is accepted)', "${project.findProperty('curse_page_fabric')}/files/${fileIDFabric}", false)
+        if (fabric) {
+            def fileIDfabric = project("fabric").tasks.getByName("curseforge${project.curse_id_fabric}").property('mainArtifact').fileID
+            embed.addField('Get the fabric version here (When it is accepted)', "${project.findProperty('curse_page_fabric')}/files/${fileIDfabric}", false)
         }
-        if(forge) {
-            def fileIDForge = tasks.getByName("curseforge${project.curse_id_forge}").property('mainArtifact').fileID
-            embed.addField('Get the forge version here (When it is accepted)', "${project.findProperty('curse_page_forge')}/files/${fileIDForge}", false)
+        if (forge) {
+            def fileIDforge = project("forge").tasks.getByName("curseforge${project.curse_id_forge}").property('mainArtifact').fileID
+            embed.addField('Get the forge version here (When it is accepted)', "${project.findProperty('curse_page_forge')}/files/${fileIDforge}", false)
         }
         def changelog = discordChangelog()
         if (changelog.size() == 1)
@@ -188,43 +154,41 @@ def discordNotif(fabric, forge) {
 
         webhook.sendMessage(message)
     }
-
     catch (IOException e) {
         println 'Failed to push to the Discord webhook.'
     }
 }
 
-tasks.getByName("curseforge").doLast {
-    discordNotif(true, true)
-}
-
-task buildUploadAll(group: "publishing") {
-    dependsOn cleanAll, buildAll, publishAll, tasks.getByName("curseforge")
-    buildAll.mustRunAfter cleanAll
-    tasks.findByName("curseforge").mustRunAfter publishAll
-}
-
-afterEvaluate {
-    task buildUploadFabric(group: "publishing") {
-        dependsOn cleanAll, ":fabric:build", ":fabric:publish", "curseforge${curse_id_fabric}"
-        project("fabric").build.mustRunAfter cleanAll
-        project("fabric").publish.mustRunAfter ":fabric:build"
-        tasks.findByName("curseforge${curse_id_fabric}").mustRunAfter ":fabric:publish"
-        doLast {
+//Uploading fabric only
+task buildUploadFabric(group: "publishing") {
+    dependsOn project("fabric").buildAndPublish, ":fabric:curseforge"
+    doLast {
+        if(singleUpload)
             discordNotif(true, false)
-        }
-    }
-
-    task buildUploadForge(group: "publishing") {
-        dependsOn cleanAll, ":forge:build", ":forge:publish", "curseforge${curse_id_forge}"
-        project("forge").build.mustRunAfter cleanAll
-        project("forge").publish.mustRunAfter ":forge:build"
-        tasks.findByName("curseforge${curse_id_forge}").mustRunAfter ":forge:publish"
-        doLast {
-            discordNotif(false, true)
-        }
     }
 }
 
-tasks.getByName("curseforge").dependsOn buildAll
-publishAll.dependsOn buildAll
+//Uploading forge only
+task buildUploadForge(group: "publishing") {
+    dependsOn project("forge").buildAndPublish, ":forge:curseforge"
+    doLast {
+        if(singleUpload)
+            discordNotif(false, true)
+    }
+}
+
+//Use if uploading multiple files at same time to prevent double notifications
+task setMultiUpload {
+    doFirst {
+        singleUpload = false
+    }
+}
+
+task buildAndUpload(group: "publishing") {
+    dependsOn setMultiUpload, project("common").buildAndPublish, buildUploadFabric, buildUploadForge
+    buildUploadFabric.mustRunAfter setMultiUpload
+    buildUploadForge.mustRunAfter setMultiUpload
+    doLast {
+        discordNotif(true, true)
+    }
+}

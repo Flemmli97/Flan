@@ -1,6 +1,6 @@
 {
     "pack": {
-        "description": "Flan resources",
+        "description": "${mod} resources",
         "pack_format": 9
     }
 }

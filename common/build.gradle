@@ -1,5 +1,18 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.0"
+    //Using loom here so we can apply parchment
+    id 'fabric-loom' version '1.0-SNAPSHOT'
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+loom {
+    mixin {
+        useLegacyMixinAp = false
+    }
+}
+
+//Dont remap jar
+tasks.withType(net.fabricmc.loom.task.AbstractRemapJarTask).each {
+    it.targetNamespace = "named"
 }
 
 configurations {
@@ -7,6 +20,10 @@ configurations {
 }
 
 repositories {
+    maven {
+        name = 'ParchmentMC'
+        url = 'https://maven.parchmentmc.org'
+    }
     maven { url 'https://jitpack.io' }
     maven {
         name = "FTB"
@@ -19,9 +36,17 @@ repositories {
 }
 
 dependencies {
-    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
-    // Do NOT use other classes from fabric loader
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.layered() {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${minecraft_version}:${rootProject.parchment_version}@zip")
+    }
+    //Here to shut up the missing annotation errors. Do not use!
+    compileOnly "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
+    compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
+    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+
     implementation group: 'org.yaml', name: 'snakeyaml', version: '1.25'
     shadowCommon group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
@@ -31,41 +56,62 @@ dependencies {
     implementation 'com.github.BlueMap-Minecraft:BlueMapAPI:v2.2.1'
 }
 
-architectury {
-    common()
+sourceSets.main.resources {
+    srcDir "src/generated/resources"
+}
+
+processResources {
+    filesMatching("pack.mcmeta") {
+        expand "mod": rootProject.name
+    }
+    exclude '.cache/**'
 }
 
 shadowJar {
     relocate "org.yaml.snakeyaml", "${rootProject.maven_group}.flan.shadow.org.yaml.snakeyaml"
     configurations = [project.configurations.shadowCommon]
+    classifier "shadow"
 }
 
-// Use the shadow jar instead of normal jar to shadow yaml lib properly into fabric builds
-transformProductionFabric {
+jar {
     dependsOn shadowJar
-    input.set shadowJar.archiveFile
 }
 
-// Use the shadow jar instead of normal jar to shadow yaml lib properly into forge builds
-transformProductionForge {
-    dependsOn shadowJar
-    input.set shadowJar.archiveFile
+remapJar {
+    inputFile.set shadowJar.archiveFile
+}
+
+sourcesJar {
+    from(rootProject.file("LICENSE"))
 }
 
 publishing {
     publications {
-        mavenCommon(MavenPublication) {
-            artifactId = rootProject.archives_base_name
-            // add all the jars that should be included when publishing to maven
-            artifact remapJar
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
+        mavenJava(MavenPublication) {
+            artifact(jar) {
+                classifier null
+                builtBy jar
             }
+            artifact(sourcesJar) {
+                builtBy sourcesJar
+            }
+            artifact(javadocJar) {
+                builtBy javadocJar
+            }
+            artifactId project.modid
+            version project.version
         }
     }
 
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
-        // Add repositories to publish to here.
+        maven {
+            url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
+            //url "https://maven.pkg.github.com/flemmli97/<>"
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER")
+                password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
+                //password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
+            }
+        }
     }
 }

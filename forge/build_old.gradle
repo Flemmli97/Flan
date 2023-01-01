@@ -1,0 +1,134 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "7.1.0"
+}
+
+architectury {
+    platformSetupLoomIde()
+    forge()
+}
+
+loom {
+    forge {
+        mixinConfigs = ["flan.mixins.json", "flan.forge.mixins.json"]
+    }
+}
+
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "FTB"
+        url = "https://maven.saps.dev/minecraft"
+    }
+    maven {
+        name = "CurseMaven"
+        url "https://www.cursemaven.com"
+    }
+    maven {
+        name = "minecolonies"
+        url "https://ldtteam.jfrog.io/ldtteam/modding/"
+    }
+}
+
+dependencies {
+    forge "net.minecraftforge:forge:${rootProject.forge_version}"
+
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+
+    modCompileOnly "dev.ftb.mods:ftb-ranks-forge:${ftb_ranks}"
+    modCompileOnly dicemcmm
+
+    modRuntimeOnly "dev.ftb.mods:ftb-chunks-forge:${rootProject.ftb_chunks}"
+    //CompileOnly cause dependencies
+    modCompileOnly "com.ldtteam:minecolonies:${rootProject.minecolonies}"
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
+    }
+}
+
+shadowJar {
+    exclude "fabric.mod.json"
+
+    configurations = [project.configurations.shadowCommon]
+    classifier "dev-shadow"
+}
+
+remapJar {
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    classifier "forge"
+}
+
+jar {
+    classifier "dev"
+}
+
+sourcesJar {
+    def commonSources = project(":common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+    classifier "forge-sources"
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
+
+task apiJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set "forge-api-source"
+    from project(":common").sourceSets.main.output + sourceSets.main.output
+    include "io/github/flemmli97/flan/api/**"
+}
+
+task remapApiJar(type: net.fabricmc.loom.task.RemapJarTask) {
+    archiveClassifier.set "forge-api"
+    input.set apiJar.archiveFile
+    addNestedDependencies = false
+    dependsOn apiJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            // add all the jars that should be included when publishing to maven
+            artifact(remapJar) {
+                classifier null
+                builtBy remapJar
+            }
+            artifact(sourcesJar) {
+                classifier "sources"
+                builtBy remapSourcesJar
+            }
+            artifact(remapApiJar)
+            artifactId project.archives_base_name
+            version project.version + "-forge"
+        }
+    }
+
+    repositories {
+        maven {
+            url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
+            //url "https://maven.pkg.github.com/flemmli97/<>"
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER")
+                password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
+                //password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
+            }
+        }
+    }
+}

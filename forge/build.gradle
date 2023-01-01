@@ -1,24 +1,69 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.0"
+    id 'eclipse'
+    id 'net.minecraftforge.gradle' version '5.1.+'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
-architectury {
-    platformSetupLoomIde()
-    forge()
-}
+minecraft {
+    mappings channel: 'parchment', version: parchment_version + "-" + minecraft_version
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    runs {
+        client {
+            arg "-mixin.config=" + modid + ".mixins.json"
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            jvmArgs "-Dmixin.debug.export=true"
+            mods {
+                modClientRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
 
-loom {
-    forge {
-        mixinConfigs = ["flan.mixins.json", "flan.forge.mixins.json"]
+        server {
+            arg "-mixin.config=" + modid + ".mixins.json"
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            jvmArgs "-Dmixin.debug.export=true"
+            mods {
+                modServerRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+
+        data {
+            arg "-mixin.config=" + modid + ".mixins.json"
+            args '--mod', modid, '--all', '--output', project(":common").file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modDataRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
     }
 }
 
-configurations {
-    common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentForge.extendsFrom common
+repositories {
+    maven {
+        name = "FTB"
+        url = "https://maven.saps.dev/minecraft"
+    }
+    maven {
+        name = "CurseMaven"
+        url "https://www.cursemaven.com"
+    }
+    maven {
+        name = "minecolonies"
+        url "https://ldtteam.jfrog.io/ldtteam/modding/"
+    }
 }
 
 repositories {
@@ -38,85 +83,79 @@ repositories {
 }
 
 dependencies {
-    forge "net.minecraftforge:forge:${rootProject.forge_version}"
+    minecraft "net.minecraftforge:forge:${forge_version}"
+    implementation project(path: ":common", configuration: "namedElements")
 
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+    compileOnly fg.deobf("dev.ftb.mods:ftb-ranks-forge:${ftb_ranks}")
+    compileOnly fg.deobf(dicemcmm)
 
-    modCompileOnly "dev.ftb.mods:ftb-ranks-forge:${ftb_ranks}"
-    modCompileOnly dicemcmm
-
-    modRuntimeOnly "dev.ftb.mods:ftb-chunks-forge:${rootProject.ftb_chunks}"
+    runtimeOnly fg.deobf("dev.ftb.mods:ftb-chunks-forge:${rootProject.ftb_chunks}")
     //CompileOnly cause dependencies
-    modCompileOnly "com.ldtteam:minecolonies:${rootProject.minecolonies}"
+    compileOnly fg.deobf("com.ldtteam:minecolonies:${rootProject.minecolonies}")
 }
 
 processResources {
-    inputs.property "version", project.version
+    from project(":common").sourceSets.main.resources
+    def ver = project.version.replace("-${project.name}", "")
+    inputs.property "version", ver
+
+    exclude "*.accesswidener"
 
     filesMatching("META-INF/mods.toml") {
-        expand "version": project.version
+        expand "version": ver, "homepage": curse_page_fabric, "mcversion": minecraft_version
     }
 }
 
-shadowJar {
-    exclude "fabric.mod.json"
-
-    configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
-}
-
-remapJar {
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    classifier "forge"
+tasks.withType(JavaCompile) {
+    source(project(":common").sourceSets.main.allSource)
 }
 
 jar {
-    classifier "dev"
+    manifest {
+        attributes("MixinConfigs": "${modid}.mixins.json")
+    }
 }
+
+jar.finalizedBy('reobfJar')
 
 sourcesJar {
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
     from commonSources.archiveFile.map { zipTree(it) }
-    classifier "forge-sources"
 }
 
-components.java {
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-        skip()
+cleanBuild {
+    doFirst {
+        delete file('build/classes')
+        delete file('build/libs')
+        delete file('build/resources')
+        delete file('build/tmp')
     }
 }
 
-task apiJar(type: Jar, dependsOn: classes) {
-    archiveClassifier.set "forge-api-source"
-    from project(":common").sourceSets.main.output + sourceSets.main.output
-    include "io/github/flemmli97/flan/api/**"
+project.afterEvaluate {
+    cleanBuild.dependsOn -= clean
 }
 
-task remapApiJar(type: net.fabricmc.loom.task.RemapJarTask) {
-    archiveClassifier.set "forge-api"
-    input.set apiJar.archiveFile
-    addNestedDependencies = false
-    dependsOn apiJar
+fullRebuild {
+    dependsOn project(":common").fullRebuild
 }
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                classifier null
-                builtBy remapJar
+            artifact(jar) {
+                builtBy jar
             }
             artifact(sourcesJar) {
-                classifier "sources"
-                builtBy remapSourcesJar
+                builtBy sourcesJar
             }
-            artifact(remapApiJar)
-            artifactId project.archives_base_name
-            version project.version + "-forge"
+            artifact(javadocJar) {
+                builtBy javadocJar
+            }
+            artifactId project.archivesBaseName
+            version project.version
         }
     }
 
@@ -129,6 +168,32 @@ publishing {
                 password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
                 //password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
             }
+        }
+    }
+}
+
+curseforge {
+    apiKey = findProperty('curseApiToken') ?: 0
+    project {
+        id = "${curse_id_forge}"
+        "${project.curse_versions}".split(', ').each {
+            addGameVersion "${it}"
+        }
+        addGameVersion "Forge"
+        mainArtifact(jar) {
+            def txt = rootProject.changelog(1).replace("\n-", "\n\n- ")
+            txt = txt + "\n\n" + "For past versions see: ${project.full_changelog}"
+            changelog = txt
+            changelogType = "markdown"
+            releaseType = 'release'
+        }
+        /*relations {
+            "${project.curse_dep_forge}".split(', ').each {
+                requiredDependency "${it}"
+            }
+        }*/
+        afterEvaluate {
+            uploadTask.dependsOn("jar")
         }
     }
 }
