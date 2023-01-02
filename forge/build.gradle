@@ -51,6 +51,10 @@ minecraft {
     }
 }
 
+configurations {
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+}
+
 repositories {
     maven {
         name = "FTB"
@@ -80,6 +84,7 @@ repositories {
         name = "minecolonies"
         url "https://ldtteam.jfrog.io/ldtteam/modding/"
     }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -95,7 +100,6 @@ dependencies {
 }
 
 processResources {
-    from project(":common").sourceSets.main.resources
     def ver = project.version.replace("-${project.name}", "")
     inputs.property "version", ver
 
@@ -106,17 +110,27 @@ processResources {
     }
 }
 
-tasks.withType(JavaCompile) {
-    source(project(":common").sourceSets.main.allSource)
-}
-
 jar {
     manifest {
         attributes("MixinConfigs": "${modid}.mixins.json")
     }
 }
 
-jar.finalizedBy('reobfJar')
+//Get the output of the common jars instead of adding it the compile classpaths
+shadowJar {
+    from files(project(":common").shadowJar.archiveFile.collect {i->
+        zipTree(i)
+    })
+    configurations = [project.configurations.shadowCommon]
+    dependsOn project(":common").shadowJar
+    classifier null
+}
+
+reobf {
+    shadowJar {}
+}
+tasks.build.dependsOn reobfShadowJar
+jar.finalizedBy('reobfShadowJar')
 
 sourcesJar {
     def commonSources = project(":common").sourcesJar
@@ -144,16 +158,9 @@ fullRebuild {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(jar) {
-                builtBy jar
-            }
-            artifact(sourcesJar) {
-                builtBy sourcesJar
-            }
-            artifact(javadocJar) {
-                builtBy javadocJar
-            }
+            artifact jar
+            artifact sourcesJar
+            artifact javadocJar
             artifactId project.archivesBaseName
             version project.version
         }

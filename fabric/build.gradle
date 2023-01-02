@@ -18,8 +18,6 @@ loom {
 
 configurations {
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-    compileClasspath.extendsFrom modImplementation
-    runtimeClasspath.extendsFrom modImplementation
 }
 
 repositories {
@@ -70,7 +68,7 @@ dependencies {
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
-    implementation project(path: ":common", configuration: "namedElements")
+    implementation project(path: ":common")
 
     modImplementation "me.lucko:fabric-permissions-api:${rootProject.fabric_permissions_api}"
 
@@ -93,7 +91,6 @@ dependencies {
 }
 
 processResources {
-    from project(":common").sourceSets.main.resources
     def ver = project.version.replace("-${project.name}", "")
     inputs.property "version", ver
 
@@ -101,10 +98,6 @@ processResources {
         expand "version": ver, "homepage": curse_page_fabric, "fabric_version": fabric_version, "mcversion": minecraft_version
     }
     exclude '.cache/**'
-}
-
-tasks.withType(JavaCompile) {
-    source(project(":common").sourceSets.main.allSource)
 }
 
 jar {
@@ -117,10 +110,22 @@ sourcesJar {
     from commonSources.archiveFile.map { zipTree(it) }
 }
 
-components.java {
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-        skip()
-    }
+jar {
+    dependsOn project(":common").jar
+}
+
+//Get the output of the common jars instead of adding it the compile classpaths
+shadowJar {
+    from files(project(":common").shadowJar.archiveFile.collect {i->
+        zipTree(i)
+    })
+    configurations = [project.configurations.shadowCommon]
+    dependsOn project(":common").shadowJar
+    classifier "shadow"
+}
+
+remapJar {
+    inputFile.set shadowJar.archiveFile
 }
 
 fullRebuild {
@@ -130,15 +135,9 @@ fullRebuild {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            artifact(remapSourcesJar) {
-                builtBy remapSourcesJar
-            }
-            artifact(javadocJar) {
-                builtBy javadocJar
-            }
+            artifact remapJar
+            artifact remapSourcesJar
+            artifact javadocJar
             artifactId project.modid
             version project.version
         }

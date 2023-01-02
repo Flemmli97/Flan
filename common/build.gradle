@@ -10,7 +10,7 @@ loom {
     }
 }
 
-//Dont remap jar
+//We remap from named to named -> basically no remapping
 tasks.withType(net.fabricmc.loom.task.AbstractRemapJarTask).each {
     it.targetNamespace = "named"
 }
@@ -52,7 +52,8 @@ dependencies {
 
     modImplementation dynmap_fabric
 
-    modImplementation "dev.ftb.mods:ftb-chunks:${rootProject.ftb_chunks}"
+    //Use fabric version so loom remaps
+    modImplementation "dev.ftb.mods:ftb-chunks-fabric:${rootProject.ftb_chunks}"
     implementation 'com.github.BlueMap-Minecraft:BlueMapAPI:v2.2.1'
 }
 
@@ -88,16 +89,9 @@ sourcesJar {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact(jar) {
-                classifier null
-                builtBy jar
-            }
-            artifact(sourcesJar) {
-                builtBy sourcesJar
-            }
-            artifact(javadocJar) {
-                builtBy javadocJar
-            }
+            artifact remapJar
+            artifact sourcesJar
+            artifact javadocJar
             artifactId project.modid
             version project.version
         }

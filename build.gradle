@@ -46,7 +46,10 @@ subprojects {
             name = 'BlameJared Maven (CrT / Bookshelf)'
             url = 'https://maven.blamejared.com'
         }
-        maven { url "https://maven.architectury.dev/" }
+        maven {
+            name = "Architectury"
+            url "https://maven.architectury.dev/"
+        }
     }
 
     tasks.withType(GenerateModuleMetadata) {
