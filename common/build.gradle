@@ -1,13 +1,14 @@
 plugins {
     //Using loom here so we can apply parchment
     id 'fabric-loom' version '1.0-SNAPSHOT'
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 loom {
     mixin {
         useLegacyMixinAp = false
     }
+    //accessWidenerPath.set file("src/main/resources/${modid}.accesswidener")
 }
 
 //We remap from named to named -> basically no remapping
@@ -16,7 +17,7 @@ tasks.withType(net.fabricmc.loom.task.AbstractRemapJarTask).each {
 }
 
 configurations {
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    shade // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
 }
 
 repositories {
@@ -48,7 +49,7 @@ dependencies {
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
     implementation group: 'org.yaml', name: 'snakeyaml', version: '1.25'
-    shadowCommon group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+    shade group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
     modImplementation dynmap_fabric
 
@@ -70,8 +71,8 @@ processResources {
 
 shadowJar {
     relocate "org.yaml.snakeyaml", "${rootProject.maven_group}.flan.shadow.org.yaml.snakeyaml"
-    configurations = [project.configurations.shadowCommon]
-    classifier "shadow"
+    configurations = [project.configurations.shade]
+    classifier "dev-shadow"
 }
 
 jar {

@@ -3,7 +3,7 @@ plugins {
     id 'net.minecraftforge.gradle' version '5.1.+'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 minecraft {
@@ -52,7 +52,7 @@ minecraft {
 }
 
 configurations {
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    shade // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
 }
 
 repositories {
@@ -121,7 +121,7 @@ shadowJar {
     from files(project(":common").shadowJar.archiveFile.collect {i->
         zipTree(i)
     })
-    configurations = [project.configurations.shadowCommon]
+    configurations = [project.configurations.shade]
     dependsOn project(":common").shadowJar
     classifier null
 }
