@@ -1,5 +1,6 @@
 package io.github.flemmli97.flan.player;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -449,7 +450,9 @@ public class PlayerClaimData implements IPlayerData {
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
             reader.close();
             Flan.debug("Read following json data {} from file {}", obj, file.getFileName());
-            this.claimBlocks = obj.get("ClaimBlocks").getAsInt();
+            JsonElement claimBlockEl = obj.get("ClaimBlocks");
+            if (claimBlockEl.isJsonPrimitive())
+                this.claimBlocks = claimBlockEl.getAsInt();
             this.additionalClaimBlocks = obj.get("AdditionalBlocks").getAsInt();
             JsonObject defP = ConfigHandler.fromJson(obj, "DefaultGroups");
             defP.entrySet().forEach(e -> {
