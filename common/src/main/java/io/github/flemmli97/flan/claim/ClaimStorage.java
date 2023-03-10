@@ -233,6 +233,8 @@ public class ClaimStorage implements IPermissionStorage {
     }
 
     public boolean canInteract(BlockPos pos, int radius, ServerPlayer player, ClaimPermission perm, boolean message) {
+        boolean realPlayer = player != null && player.getClass().equals(ServerPlayer.class);
+        message = message && realPlayer;
         ChunkPos c = new ChunkPos(new BlockPos(pos.getX() - radius, pos.getY(), pos.getZ() - radius));
         List<Claim> affected = new ArrayList<>();
         for (int x = 0; SectionPos.sectionToBlockCoord(c.x + x) <= pos.getX() + radius; x++) {
@@ -247,16 +249,22 @@ public class ClaimStorage implements IPermissionStorage {
                 pos.getX() + radius, pos.getY(), pos.getZ() + radius)) {
             if (last != null) {
                 if (last.insideClaim(ipos)) {
-                    if (!last.canInteract(player, perm, ipos, message))
+                    if (!last.canInteract(player, perm, ipos, false)) {
+                        if (message)
+                            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionTooClose"), ChatFormatting.DARK_RED), true);
                         return false;
+                    }
                     continue;
                 } else last = null;
             }
             for (Claim claim : affected) {
                 if (claim.insideClaim(ipos)) {
                     last = claim;
-                    if (!claim.canInteract(player, perm, ipos, message))
+                    if (!claim.canInteract(player, perm, ipos, message)) {
+                        if (message)
+                            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionTooClose"), ChatFormatting.DARK_RED), true);
                         return false;
+                    }
                 }
             }
         }

@@ -25,7 +25,8 @@
     "MinecraftServerMixin",
     "AbstractContainerAccessor",
     "PistonMixin",
-    "MossBlockCheckMixin"
+    "MossBlockCheckMixin",
+    "DragonEggBlockMixin"
   ],
   "server": [
   ],

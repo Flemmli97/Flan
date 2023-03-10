@@ -50,6 +50,7 @@ public class LangManager {
 
         this.defaultTranslation.put("noPermission", "You don't have the required permissions to do that here!");
         this.defaultTranslation.put("noPermissionSimple", "Sorry you can't do that here!");
+        this.defaultTranslation.put("noPermissionTooClose", "Sorry you are too close to a claim to do that here!");
         this.defaultTranslation.put("tooCloseClaim", "You are too close to a protected area to do that!");
 
         this.defaultTranslation.put("configReload", "Configs reloaded");
