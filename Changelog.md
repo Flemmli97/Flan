@@ -4,6 +4,7 @@ Flan 1.8.4
 - Add lang key support for some things (like group name). Makes it possible to change their color
 - Prevent dragon egg interaction near claims without permissions
 - Fix invalid player data when editing offline player data
+- Make owned allays not able to pickup locked items or if claim disables pickup items in general
 
 Flan 1.8.3
 ================
