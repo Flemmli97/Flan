@@ -29,7 +29,8 @@
     "EnderMitePearlCheck",
     "SculkSensorMixin",
     "SculkShriekerMixin",
-    "DragonEggBlockMixin"
+    "DragonEggBlockMixin",
+    "AllayMixin"
   ],
   "server": [
   ],
