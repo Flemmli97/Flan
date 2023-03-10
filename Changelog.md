@@ -1,3 +1,10 @@
+Flan 1.8.4
+================
+- Fix /flan group ignoring subclaim mode
+- Add lang key support for some things (like group name). Makes it possible to change their color
+- Prevent dragon egg interaction near claims without permissions
+- Fix invalid player data when editing offline player data
+
 Flan 1.8.3
 ================
 - Fix claim display keep getting added for same claim causing lots of particles
