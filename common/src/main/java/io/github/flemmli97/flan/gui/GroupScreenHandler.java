@@ -68,7 +68,7 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 int id = (i % 9) + row * 7 - 1;
                 if (id < groups.size()) {
                     ItemStack group = new ItemStack(Items.PAPER);
-                    group.setHoverName(ServerScreenHelper.coloredGuiText(groups.get(id), ChatFormatting.DARK_BLUE));
+                    group.setHoverName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.langManager.get("screenGroupName"), groups.get(id)), ChatFormatting.DARK_BLUE));
                     inv.updateStack(i, group);
                 }
             }
