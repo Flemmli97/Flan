@@ -135,11 +135,13 @@ public class LangManager {
         this.defaultTranslation.put("screenGroupPlayers", "%1$s-Players");
         this.defaultTranslation.put("screenRemoveMode", "Remove Mode: %1$s");
         this.defaultTranslation.put("screenGlobalPerms", "Global-Permissions");
+        this.defaultTranslation.put("screenGroupName", "%s");
         this.defaultTranslation.put("screenGroups", "Claim-Groups");
         this.defaultTranslation.put("screenGroupPerms", "%1$s-Permissions");
         this.defaultTranslation.put("screenPersonalGroups", "Personal-Groups");
         this.defaultTranslation.put("screenPersonalPermissions", "Personal Permissions for %1$s");
         this.defaultTranslation.put("screenPotions", "Claim Potions");
+        this.defaultTranslation.put("screenPotionText", "%s");
         this.defaultTranslation.put("screenTitleEditor", "Claim messages");
         this.defaultTranslation.put("screenTitleEditorSub", "Subclaim messages");
         this.defaultTranslation.put("screenTextJson", "Right-Click to use JSON text. See MC Wiki for that.");
