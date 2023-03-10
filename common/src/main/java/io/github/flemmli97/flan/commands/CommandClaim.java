@@ -582,11 +582,16 @@ public class CommandClaim {
             PermHelper.noClaimMessage(player);
             return 0;
         }
+        if (PlayerClaimData.get(player).getEditMode() == EnumEditMode.SUBCLAIM) {
+            Claim sub = claim.getSubClaim(player.blockPosition());
+            if (sub != null)
+                claim = sub;
+        }
         if (remove) {
             if (claim.removePermGroup(player, group))
                 player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("groupRemove"), group), ChatFormatting.GOLD), false);
             else {
-                PermHelper.genericNoPermMessage(player);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), false);
                 return 0;
             }
         } else {
@@ -596,7 +601,7 @@ public class CommandClaim {
             } else if (claim.editPerms(player, group, PermissionRegistry.EDITPERMS, -1))
                 player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("groupAdd"), group), ChatFormatting.GOLD), false);
             else {
-                PermHelper.genericNoPermMessage(player);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), false);
                 return 0;
             }
         }
@@ -625,8 +630,13 @@ public class CommandClaim {
             PermHelper.noClaimMessage(player);
             return 0;
         }
+        if (PlayerClaimData.get(player).getEditMode() == EnumEditMode.SUBCLAIM) {
+            Claim sub = claim.getSubClaim(player.blockPosition());
+            if (sub != null)
+                claim = sub;
+        }
         if (!claim.canInteract(player, PermissionRegistry.EDITPERMS, player.blockPosition())) {
-            PermHelper.genericNoPermMessage(player);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), false);
             return 0;
         }
         List<String> modified = new ArrayList<>();
