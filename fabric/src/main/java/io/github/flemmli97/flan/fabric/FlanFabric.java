@@ -1,6 +1,7 @@
 package io.github.flemmli97.flan.fabric;
 
 import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.api.fabric.ItemUseBlockFlags;
 import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.BlockInteractEvents;
@@ -93,6 +94,8 @@ public class FlanFabric implements ModInitializer {
                 return res;
             flags.stopCanUseBlocks(res == InteractionResult.FAIL);
             flags.stopCanUseItems(ItemInteractEvents.onItemUseBlock(new UseOnContext(p, hand, hitResult)) == InteractionResult.FAIL);
+            if (!flags.allowUseBlocks() && !flags.allowUseItems())
+                return InteractionResult.FAIL;
         }
         return InteractionResult.PASS;
     }

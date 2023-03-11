@@ -1,6 +1,6 @@
 package io.github.flemmli97.flan.fabric.mixin;
 
-import io.github.flemmli97.flan.fabric.ItemUseBlockFlags;
+import io.github.flemmli97.flan.api.fabric.ItemUseBlockFlags;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.InteractionHand;
@@ -46,5 +46,15 @@ public abstract class ServerPlayerGameModeMixin implements ItemUseBlockFlags {
     @Override
     public void stopCanUseItems(boolean flag) {
         this.stopInteractItemBlock = flag;
+    }
+
+    @Override
+    public boolean allowUseBlocks() {
+        return !this.stopInteractBlock;
+    }
+
+    @Override
+    public boolean allowUseItems() {
+        return !this.stopInteractItemBlock;
     }
 }
