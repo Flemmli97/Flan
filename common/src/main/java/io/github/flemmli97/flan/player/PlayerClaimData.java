@@ -23,6 +23,10 @@ import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -80,6 +84,10 @@ public class PlayerClaimData implements IPlayerData {
     private final Map<String, Map<ClaimPermission, Boolean>> defaultGroups = new HashMap<>();
 
     private boolean shouldProtectDrop, calculateShouldDrop = true;
+
+    private final Map<UUID, Map<UUID, Long>> fakePlayerNotif = new HashMap<>();
+
+    private boolean fakePlayerNotification = true;
 
     public PlayerClaimData(ServerPlayer player) {
         this.player = player;
@@ -300,7 +308,7 @@ public class PlayerClaimData implements IPlayerData {
             this.claimBlockMessage = true;
             this.player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBlocksFormat"),
                     this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks(), this.remainingClaimBlocks()), ChatFormatting.GOLD), false);
-            this.addDisplayClaim(currentClaim, EnumDisplayType.MAIN, player.blockPosition().getY());
+            this.addDisplayClaim(currentClaim, EnumDisplayType.MAIN, this.player.blockPosition().getY());
         }
         this.actionCooldown--;
         if (--this.trappedTick >= 0) {
@@ -408,6 +416,40 @@ public class PlayerClaimData implements IPlayerData {
         return this.shouldProtectDrop;
     }
 
+    public void setFakePlayerNotif(boolean on) {
+        this.fakePlayerNotification = on;
+    }
+
+    public boolean hasFakePlayerNotificationOn() {
+        return this.fakePlayerNotification;
+    }
+
+    public void notifyFakePlayerInteraction(ServerPlayer fakePlayer, BlockPos pos, Claim claim) {
+        if (!this.fakePlayerNotification)
+            return;
+        Map<UUID, Long> map = this.fakePlayerNotif.computeIfAbsent(claim.getClaimID(), o -> new HashMap<>());
+        Long last = map.get(fakePlayer.getUUID());
+        if (last == null || this.player.getLevel().getGameTime() - 1200 > last) {
+            Component claimMsg = Component.literal(String.format(ConfigHandler.langManager.get("fakePlayerNotification1"), claim.getWorld().dimension().location().toString(), pos)).withStyle(ChatFormatting.DARK_RED);
+            this.player.sendSystemMessage(claimMsg);
+            String cmdStr = String.format("/flan fakePlayer add %s", fakePlayer.getUUID().toString());
+            Component cmd = Component.literal(ConfigHandler.langManager.get("clickableComponent"))
+                    .withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)
+                            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, cmdStr))
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(cmdStr))));
+            Component msg = Component.translatable(ConfigHandler.langManager.get("fakePlayerNotification2"), cmd);
+            this.player.sendSystemMessage(msg);
+            cmdStr = "/flan fakePlayer";
+            cmd = Component.literal(ConfigHandler.langManager.get("clickableComponent"))
+                    .withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)
+                            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, cmdStr))
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(cmdStr))));
+            msg = Component.translatable(ConfigHandler.langManager.get("fakePlayerNotification3"), cmd);
+            this.player.sendSystemMessage(msg);
+            map.put(fakePlayer.getUUID(), this.player.getLevel().getGameTime());
+        }
+    }
+
     public void save(MinecraftServer server) {
         Flan.log("Saving player data for player {} with uuid {}", this.player.getName(), this.player.getUUID());
         Path dir = ConfigHandler.getPlayerSavePath(server);
@@ -429,6 +471,7 @@ public class PlayerClaimData implements IPlayerData {
                 defPerm.add(key, perm);
             });
             obj.add("DefaultGroups", defPerm);
+            obj.addProperty("FakePlayerNotification", this.fakePlayerNotification);
 
             JsonWriter jsonWriter = ConfigHandler.GSON.newJsonWriter(Files.newBufferedWriter(file, StandardCharsets.UTF_8));
             ConfigHandler.GSON.toJson(obj, jsonWriter);
@@ -466,6 +509,7 @@ public class PlayerClaimData implements IPlayerData {
                     });
                 }
             });
+            this.fakePlayerNotification = ConfigHandler.fromJson(obj, "FakePlayerNotification", true);
             updateScoreFor(this.player, ClaimCriterias.AMOUNT, this.claimBlocks + this.additionalClaimBlocks);
             this.updateClaimScores();
         } catch (IOException e) {

@@ -68,6 +68,9 @@ public class LangManager {
         this.defaultTranslation.put("groupAdd", "Added group %1$s");
         this.defaultTranslation.put("groupRemove", "Removed group %1$s");
         this.defaultTranslation.put("groupExist", "Group already exist");
+        this.defaultTranslation.put("uuidFakeAdd", "Added fakeplayer with uuid %1$s to the claim");
+        this.defaultTranslation.put("uuidFakeRemove", "Removed fakeplayer with uuid %1$s from the claim");
+        this.defaultTranslation.put("uuidFakeModifyNo", "Fakeplayer with given uuid is already added");
         this.defaultTranslation.put("playerModify", "Modified permission group for following players to %1$s: %2$s");
         this.defaultTranslation.put("playerModifyNo", "Couldn't set permission group for the players. Probably cause they already belong to a group");
         this.defaultTranslation.put("playerGroupAddFail", "Couldn't add that player to the group either cause the player " +
@@ -97,6 +100,12 @@ public class LangManager {
         this.defaultTranslation.put("errorFile", "Error reading file %1$s");
         this.defaultTranslation.put("readConflict", "%1$s conflicts with existing claims. Not added to world! Conflicts:");
         this.defaultTranslation.put("giveClaimBlocks", "Gave following players %2$d claimblocks: %1$s");
+
+        this.defaultTranslation.put("fakePlayerNotification1", "A fakeplayer tried to interact with your claim at %1$s in %2$s.");
+        this.defaultTranslation.put("fakePlayerNotification2", "Click %s while standing in your claim to add the fakeplayer to the claim.");
+        this.defaultTranslation.put("clickableComponent", "here");
+        this.defaultTranslation.put("fakePlayerNotification3", "Click %s to disable this notification.");
+        this.defaultTranslation.put("fakePlayerNotification", "FakePlayer notification set to %s");
 
         this.defaultTranslation.put("claimBasicInfo", "Owner: %1$s, from: [x=%2$d,z=%3$d] to [x=%4$d,z=%5$d]); Subclaim-amount: %6$d");
         this.defaultTranslation.put("claimBasicInfoNamed", "Claim: %7$s, Owner: %1$s, from: [x=%2$d,z=%3$d] to [x=%4$d,z=%5$d]); Subclaim-amount: %6$d");
@@ -129,6 +138,7 @@ public class LangManager {
         this.defaultTranslation.put("screenMenuGroup", "Edit Permissiongroups");
         this.defaultTranslation.put("screenMenuPotion", "Edit Potioneffects");
         this.defaultTranslation.put("screenMenuClaimText", "Edit Enter/Leave Text");
+        this.defaultTranslation.put("screenMenuFakePlayers", "Fake Players");
         this.defaultTranslation.put("screenMenuDelete", "Delete Claim");
         this.defaultTranslation.put("screenConfirm", "Confirm");
         this.defaultTranslation.put("screenYes", "Yes");
@@ -141,6 +151,7 @@ public class LangManager {
         this.defaultTranslation.put("screenGroupPerms", "%1$s-Permissions");
         this.defaultTranslation.put("screenPersonalGroups", "Personal-Groups");
         this.defaultTranslation.put("screenPersonalPermissions", "Personal Permissions for %1$s");
+        this.defaultTranslation.put("screenFakePlayerNameUUID", "%s");
         this.defaultTranslation.put("screenPotions", "Claim Potions");
         this.defaultTranslation.put("screenPotionText", "%s");
         this.defaultTranslation.put("screenTitleEditor", "Claim messages");
