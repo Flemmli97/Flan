@@ -49,6 +49,9 @@ dependencies {
     modRuntimeOnly "dev.ftb.mods:ftb-chunks-forge:${rootProject.ftb_chunks}"
     //CompileOnly cause dependencies
     modCompileOnly "com.ldtteam:minecolonies:${rootProject.minecolonies}"
+
+    //For testing fakeplayers
+    modRuntimeOnly cyclic
 }
 
 processResources {

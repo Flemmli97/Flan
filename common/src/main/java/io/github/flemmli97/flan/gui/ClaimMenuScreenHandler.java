@@ -81,6 +81,13 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
                         ServerScreenHelper.addLore(sign, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenNoPerm"), ChatFormatting.DARK_RED));
                     inv.updateStack(i, sign);
                 }
+                case 6 -> {
+                    ItemStack head = new ItemStack(Items.ZOMBIE_HEAD);
+                    head.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenMenuFakePlayers"), ChatFormatting.GOLD));
+                    if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, PermissionRegistry.EDITPERMS))
+                        ServerScreenHelper.addLore(head, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenNoPerm"), ChatFormatting.DARK_RED));
+                    inv.updateStack(i, head);
+                }
                 case 8 -> {
                     ItemStack delete = new ItemStack(Items.BARRIER);
                     delete.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenMenuDelete"), ChatFormatting.RED));
@@ -95,7 +102,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
     @Override
     protected boolean isRightSlot(int slot) {
-        return slot == 0 || slot == 2 || slot == 3 || slot == 4 || slot == 5 || slot == 8;
+        return slot == 0 || slot == 2 || slot == 3 || slot == 4 || slot == 5 || slot == 6 || slot == 8;
     }
 
     @Override
@@ -133,6 +140,14 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 if (this.hasPerm(this.claim, player, PermissionRegistry.CLAIMMESSAGE)) {
                     player.closeContainer();
                     player.getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.claim));
+                    ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
+                } else
+                    ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
+                break;
+            case 6:
+                if (this.hasPerm(this.claim, player, PermissionRegistry.EDITPERMS)) {
+                    player.closeContainer();
+                    player.getServer().execute(() -> FakePlayerScreenHandler.open(player, this.claim));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
