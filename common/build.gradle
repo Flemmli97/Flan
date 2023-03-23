@@ -54,18 +54,30 @@ transformProductionForge {
 
 publishing {
     publications {
-        mavenCommon(MavenPublication) {
-            artifactId = rootProject.archives_base_name
+        mavenJava(MavenPublication) {
             // add all the jars that should be included when publishing to maven
-            artifact remapJar
+            artifact(jar) {
+                classifier null
+                builtBy jar
+            }
             artifact(sourcesJar) {
+                classifier "sources"
                 builtBy remapSourcesJar
             }
+            artifactId project.archives_base_name
+            version project.version + "-common"
         }
     }
 
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
-        // Add repositories to publish to here.
+        maven {
+            url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
+            //url "https://maven.pkg.github.com/flemmli97/<>"
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER")
+                password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
+                //password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
+            }
+        }
     }
 }
