@@ -9,6 +9,7 @@ import io.github.flemmli97.flan.event.EntityInteractEvents;
 import io.github.flemmli97.flan.event.ItemInteractEvents;
 import io.github.flemmli97.flan.event.PlayerEvents;
 import io.github.flemmli97.flan.event.WorldEvents;
+import io.github.flemmli97.flan.fabric.integration.HarvestWithEase;
 import io.github.flemmli97.flan.fabric.platform.integration.playerability.PlayerAbilityEvents;
 import io.github.flemmli97.flan.platform.integration.webmap.BluemapIntegration;
 import io.github.flemmli97.flan.platform.integration.webmap.DynmapIntegration;
@@ -69,6 +70,8 @@ public class FlanFabric implements ModInitializer {
             PlayerAbilityEvents.register();
         if (FabricLoader.getInstance().isModLoaded("dynmap"))
             DynmapIntegration.reg();
+        if (FabricLoader.getInstance().isModLoaded("harvestwithease"))
+            HarvestWithEase.init();
         ClaimCriterias.init();
     }
 
