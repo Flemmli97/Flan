@@ -78,6 +78,8 @@ dependencies {
     //CompileOnly cause too many dependency
     modCompileOnly goml_reserved
     modCompileOnly include("com.jamieswhiteshirt:rtree-3i-lite-fabric:0.3.0")
+
+    modCompileOnly harvest_with_ease_fabric
 }
 
 processResources {
