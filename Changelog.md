@@ -1,3 +1,7 @@
+Flan 1.8.4.1
+================
+- Fabric: Add harvest with ease compat
+
 Flan 1.8.4
 ================
 - Fix /flan group ignoring subclaim mode
