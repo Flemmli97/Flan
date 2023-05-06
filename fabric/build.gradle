@@ -148,7 +148,10 @@ publishing {
                 classifier "sources"
                 builtBy remapSourcesJar
             }
-            artifact(remapApiJar)
+            artifact(remapApiJar) {
+                classifier "api"
+                builtBy remapApiJar
+            }
             artifactId project.archives_base_name
             version project.version + "-fabric"
         }
