@@ -4,7 +4,7 @@ import io.github.flemmli97.flan.SimpleRegistryWrapper;
 import io.github.flemmli97.flan.fabric.FabricRegistryWrapper;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainerHolder;
@@ -25,22 +25,22 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public SimpleRegistryWrapper<MobEffect> registryStatusEffects() {
-        return new FabricRegistryWrapper<>(BuiltInRegistries.MOB_EFFECT);
+        return new FabricRegistryWrapper<>(Registry.MOB_EFFECT);
     }
 
     @Override
     public SimpleRegistryWrapper<Block> registryBlocks() {
-        return new FabricRegistryWrapper<>(BuiltInRegistries.BLOCK);
+        return new FabricRegistryWrapper<>(Registry.BLOCK);
     }
 
     @Override
     public SimpleRegistryWrapper<Item> registryItems() {
-        return new FabricRegistryWrapper<>(BuiltInRegistries.ITEM);
+        return new FabricRegistryWrapper<>(Registry.ITEM);
     }
 
     @Override
     public SimpleRegistryWrapper<EntityType<?>> registryEntities() {
-        return new FabricRegistryWrapper<>(BuiltInRegistries.ENTITY_TYPE);
+        return new FabricRegistryWrapper<>(Registry.ENTITY_TYPE);
     }
 
     @Override

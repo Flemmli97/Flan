@@ -1,7 +1,7 @@
 package io.github.flemmli97.flan.claim;
 
+import com.mojang.math.Vector3f;
 import net.minecraft.core.particles.DustParticleOptions;
-import org.joml.Vector3f;
 
 public class ParticleIndicators {
 

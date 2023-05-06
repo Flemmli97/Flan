@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.BoneMealItem;
@@ -70,7 +70,7 @@ public class ObjectToPermissionMap {
             boolean remove = sub[1].equals("NONE");
             if (s.startsWith("@")) {
                 ResourceLocation res = new ResourceLocation(sub[0].substring(1));
-                Optional<HolderSet.Named<Item>> t = BuiltInRegistries.ITEM.getTags().filter(p -> p.getFirst().location().equals(res))
+                Optional<HolderSet.Named<Item>> t = Registry.ITEM.getTags().filter(p -> p.getFirst().location().equals(res))
                         .map(Pair::getSecond).findFirst();
                 t.ifPresent(holders -> holders.forEach(i -> {
                     if (remove)
@@ -90,7 +90,7 @@ public class ObjectToPermissionMap {
             boolean remove = sub[1].equals("NONE");
             if (s.startsWith("@")) {
                 ResourceLocation res = new ResourceLocation(sub[0].substring(1));
-                Optional<HolderSet.Named<Block>> t = BuiltInRegistries.BLOCK.getTags().filter(p -> p.getFirst().location().equals(res))
+                Optional<HolderSet.Named<Block>> t = Registry.BLOCK.getTags().filter(p -> p.getFirst().location().equals(res))
                         .map(Pair::getSecond).findFirst();
                 t.ifPresent(holders -> holders.forEach(i -> {
                     if (remove)

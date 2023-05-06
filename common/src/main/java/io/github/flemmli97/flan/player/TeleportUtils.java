@@ -15,7 +15,7 @@ import java.util.function.BiFunction;
 public class TeleportUtils {
 
     public static BlockPos roundedBlockPos(Vec3 pos) {
-        return BlockPos.containing(pos);
+        return new BlockPos(pos);
     }
 
     public static Vec3 getTeleportPos(ServerPlayer player, Vec3 playerPos, ClaimStorage storage, int[] dim, BlockPos.MutableBlockPos bPos, BiFunction<Claim, BlockPos, Boolean> check) {

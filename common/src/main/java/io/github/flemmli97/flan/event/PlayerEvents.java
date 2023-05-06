@@ -10,11 +10,8 @@ import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.CaveFeatures;
 import net.minecraft.data.worldgen.features.NetherFeatures;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -23,8 +20,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.GrassBlock;
 import net.minecraft.world.level.block.MossBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.NetherForestVegetationConfig;
 import net.minecraft.world.level.levelgen.feature.configurations.TwistingVinesConfig;
 import net.minecraft.world.level.levelgen.feature.configurations.VegetationPatchConfiguration;
@@ -58,33 +53,22 @@ public class PlayerEvents {
             if (!ClaimStorage.get(serverPlayer.getLevel()).getForPermissionCheck(pos).canInteract(serverPlayer, perm, pos, false))
                 return false;
             int range = 0;
-            Registry<ConfiguredFeature<?, ?>> registry = serverPlayer.level.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE);
             if (state.getBlock() instanceof MossBlock) {
-                VegetationPatchConfiguration cfg = featureRange(registry, CaveFeatures.MOSS_PATCH_BONEMEAL, VegetationPatchConfiguration.class);
-                if (cfg != null) {
-                    range = cfg.xzRadius.getMaxValue() + 1;
-                    pos.set(pos.getX(), pos.getY() + cfg.verticalRange + 1, pos.getZ());
-                }
+                VegetationPatchConfiguration cfg = CaveFeatures.MOSS_PATCH_BONEMEAL.value().config();
+                range = cfg.xzRadius.getMaxValue() + 1;
+                pos.set(pos.getX(), pos.getY() + cfg.verticalRange + 1, pos.getZ());
             } else if (state.getBlock() instanceof GrassBlock) {
                 range = 4;
             } else if (state.is(Blocks.CRIMSON_NYLIUM)) {
-                NetherForestVegetationConfig cfg = featureRange(registry, NetherFeatures.CRIMSON_FOREST_VEGETATION_BONEMEAL, NetherForestVegetationConfig.class);
-                if (cfg != null) {
-                    range = cfg.spreadWidth;
-                    pos.set(pos.getX(), pos.getY() + cfg.spreadHeight + 1, pos.getZ());
-                }
+                NetherForestVegetationConfig cfg = NetherFeatures.CRIMSON_FOREST_VEGETATION_BONEMEAL.value().config();
+                range = cfg.spreadWidth;
+                pos.set(pos.getX(), pos.getY() + cfg.spreadHeight + 1, pos.getZ());
             } else if (state.is(Blocks.WARPED_NYLIUM)) {
-                NetherForestVegetationConfig cfg = featureRange(registry, NetherFeatures.WARPED_FOREST_VEGETATION_BONEMEAL, NetherForestVegetationConfig.class);
-                NetherForestVegetationConfig cfg2 = featureRange(registry, NetherFeatures.NETHER_SPROUTS_BONEMEAL, NetherForestVegetationConfig.class);
-                TwistingVinesConfig cfg3 = featureRange(registry, NetherFeatures.TWISTING_VINES_BONEMEAL, TwistingVinesConfig.class);
-                int w1 = cfg == null ? 0 : cfg.spreadWidth;
-                int w2 = cfg2 == null ? 0 : cfg2.spreadWidth;
-                int w3 = cfg3 == null ? 0 : cfg3.spreadWidth();
-                int h1 = cfg == null ? 0 : cfg.spreadHeight;
-                int h2 = cfg2 == null ? 0 : cfg2.spreadHeight;
-                int h3 = cfg3 == null ? 0 : cfg3.spreadHeight();
-                range = Math.max(Math.max(w1, w2), w3);
-                int y = Math.max(Math.max(h1, h2), h3);
+                NetherForestVegetationConfig cfg = NetherFeatures.WARPED_FOREST_VEGETATION_BONEMEAL.value().config();
+                NetherForestVegetationConfig cfg2 = NetherFeatures.NETHER_SPROUTS_BONEMEAL.value().config();
+                TwistingVinesConfig cfg3 = NetherFeatures.TWISTING_VINES_BONEMEAL.value().config();
+                range = Math.max(Math.max(cfg.spreadWidth, cfg2.spreadWidth), cfg3.spreadWidth());
+                int y = Math.max(Math.max(cfg.spreadHeight, cfg2.spreadHeight), cfg3.spreadHeight());
                 pos.set(pos.getX(), pos.getY() + y + 1, pos.getZ());
             }
             if (range > 0 && perm != null && !ClaimStorage.get(serverPlayer.getLevel()).canInteract(pos, range, serverPlayer, perm, false)) {
@@ -109,14 +93,5 @@ public class PlayerEvents {
 
     public static boolean canSculkTrigger(BlockPos pos, ServerPlayer player) {
         return ClaimStorage.get(player.getLevel()).getForPermissionCheck(pos).canInteract(player, PermissionRegistry.SCULK, pos, false);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends FeatureConfiguration> T featureRange(Registry<ConfiguredFeature<?, ?>> registry, ResourceKey<ConfiguredFeature<?, ?>> key, Class<T> clss) {
-        return registry.getHolder(key).map(r -> {
-            if (clss.isInstance(r.value().config()))
-                return (T) r.value().config();
-            return null;
-        }).orElse(null);
     }
 }

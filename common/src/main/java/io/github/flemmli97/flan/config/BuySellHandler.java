@@ -133,7 +133,7 @@ public class BuySellHandler {
                         ItemEntity itemEntity = player.drop(toGive, false);
                         if (itemEntity != null) {
                             itemEntity.setNoPickUpDelay();
-                            itemEntity.setTarget(player.getUUID());
+                            itemEntity.setOwner(player.getUUID());
                         }
                     }
                 }
