@@ -145,7 +145,7 @@ public class BlockInteractEvents {
             if (owner instanceof ServerPlayer)
                 player = (ServerPlayer) owner;
         } else if (entity instanceof ItemEntity) {
-            Entity owner = ((ServerLevel) world).getEntity(((ItemEntity) entity).getThrower());
+            Entity owner = ((ItemEntity) entity).getOwner();
             if (owner instanceof ServerPlayer)
                 player = (ServerPlayer) owner;
         }
@@ -209,7 +209,7 @@ public class BlockInteractEvents {
                 return !claim.canInteract((ServerPlayer) owner, PermissionRegistry.TRAMPLE, pos, true);
             }
         } else if (entity instanceof ItemEntity) {
-            Entity owner = serverWorld.getEntity(((ItemEntity) entity).getThrower());
+            Entity owner = ((ItemEntity) entity).getOwner();
             if (owner instanceof ServerPlayer) {
                 ClaimStorage storage = ClaimStorage.get(serverWorld);
                 IPermissionContainer claim = storage.getForPermissionCheck(pos);

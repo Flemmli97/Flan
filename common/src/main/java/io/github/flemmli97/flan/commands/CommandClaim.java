@@ -497,7 +497,7 @@ public class CommandClaim {
     private static int adminDelete(CommandContext<CommandSourceStack> context) {
         CommandSourceStack src = context.getSource();
         ClaimStorage storage = ClaimStorage.get(src.getLevel());
-        Claim claim = storage.getClaimAt(new BlockPos(src.getPosition()));
+        Claim claim = storage.getClaimAt(BlockPos.containing(src.getPosition()));
         if (claim == null) {
             src.sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noClaim"), ChatFormatting.RED), false);
             return 0;

@@ -1,6 +1,9 @@
 Flan 1.8.4.1
 ================
-- Fabric: Add harvest with ease compat
+- Update to 1.19.4
+<i>
+    - Fabric: Add harvest with ease compat
+    </i>
 
 Flan 1.8.4
 ================

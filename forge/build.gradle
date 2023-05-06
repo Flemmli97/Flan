@@ -46,7 +46,7 @@ dependencies {
     modCompileOnly "dev.ftb.mods:ftb-ranks-forge:${ftb_ranks}"
     modCompileOnly dicemcmm
 
-    modRuntimeOnly "dev.ftb.mods:ftb-chunks-forge:${rootProject.ftb_chunks}"
+    //modRuntimeOnly "dev.ftb.mods:ftb-chunks-forge:${rootProject.ftb_chunks}"
     //CompileOnly cause dependencies
     modCompileOnly "com.ldtteam:minecolonies:${rootProject.minecolonies}"
 }

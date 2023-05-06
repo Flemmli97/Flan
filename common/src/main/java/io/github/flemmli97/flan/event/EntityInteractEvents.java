@@ -22,6 +22,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -188,7 +189,7 @@ public class EntityInteractEvents {
     public static boolean preventDamage(Entity entity, DamageSource source) {
         if (source.getEntity() instanceof ServerPlayer)
             return attackSimple((ServerPlayer) source.getEntity(), entity, true) != InteractionResult.PASS;
-        else if (source.isExplosion() && !entity.level.isClientSide && !(entity instanceof ServerPlayer || entity instanceof Enemy)) {
+        else if (source.is(DamageTypeTags.IS_EXPLOSION) && !entity.level.isClientSide && !(entity instanceof ServerPlayer || entity instanceof Enemy)) {
             IPermissionContainer claim = ClaimStorage.get((ServerLevel) entity.level).getForPermissionCheck(entity.blockPosition());
             return claim != null && !claim.canInteract(null, PermissionRegistry.EXPLOSIONS, entity.blockPosition());
         }

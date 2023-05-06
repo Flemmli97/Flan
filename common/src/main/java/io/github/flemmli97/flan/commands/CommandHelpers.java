@@ -47,7 +47,7 @@ public class CommandHelpers {
 
     public static CompletableFuture<Suggestions> permSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder build, boolean group) {
         ServerLevel world = context.getSource().getLevel();
-        Claim claim = ClaimStorage.get(world).getClaimAt(new BlockPos(context.getSource().getPosition()));
+        Claim claim = ClaimStorage.get(world).getClaimAt(BlockPos.containing(context.getSource().getPosition()));
         boolean admin = claim != null && claim.isAdminClaim();
         List<String> allowedPerms = new ArrayList<>();
         for (ClaimPermission perm : PermissionRegistry.getPerms()) {
