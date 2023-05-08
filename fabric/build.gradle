@@ -15,6 +15,14 @@ configurations {
     developmentFabric.extendsFrom common
 }
 
+loom {
+    runs {
+        client {
+            vmArgs "-Dmixin.debug.export=true"
+        }
+    }
+}
+
 repositories {
     mavenCentral()
     maven {

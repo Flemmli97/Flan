@@ -1,3 +1,7 @@
+Flan 1.8.4.2
+================
+- Fabric: Fix mixin crash
+
 Flan 1.8.4.1
 ================
 - Update to 1.19.4
