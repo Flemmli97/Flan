@@ -1,3 +1,7 @@
+Flan 1.8.4.3
+================
+- Update forge version to 45.0.59
+
 Flan 1.8.4.2
 ================
 - Fabric: Fix mixin crash
