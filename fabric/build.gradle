@@ -93,7 +93,8 @@ processResources {
 
     filesMatching("fabric.mod.json") {
         expand "version": project.version, "homepage": curse_page_fabric, 
-                "mcversion": minecraft_version, "fabric_version": fabric_version    }
+                "mcversion": minecraft_version, "fabric_version": fabric_version
+    }
 }
 
 shadowJar {
