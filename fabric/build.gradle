@@ -92,7 +92,7 @@ processResources {
     inputs.property "version", project.version
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand "version": project.version, "homepage": curse_page_fabric, "mcversion": minecraft_version, "fabric_version": fabric_version
     }
 }
 

@@ -8,7 +8,7 @@
     "Flemmli97"
   ],
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/flan",
+    "homepage": "${homepage}",
     "issues": "https://github.com/Flemmli97/Flan/issues",
     "sources": "https://github.com/Flemmli97/Flan"
   },
@@ -25,7 +25,7 @@
     "flan.fabric.mixins.json"
   ],
   "depends": {
-    "fabric": ">=0.57.0",
-    "minecraft": ">=1.19.4"
+    "fabric": ">=${fabric_version}",
+    "minecraft": ">=${mcversion}"
   }
 }
