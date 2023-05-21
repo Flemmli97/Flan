@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-    forge "net.minecraftforge:forge:${rootProject.forge_version}"
+    forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
@@ -57,8 +57,9 @@ dependencies {
 processResources {
     inputs.property "version", project.version
 
+    def loader_version = (forge_version =~ /([0-9]+)\.([0-9]+)\.([0-9]+)/)[0][1]
     filesMatching("META-INF/mods.toml") {
-        expand "version": project.version
+        expand "version": project.version, "loader_version": loader_version, "homepage": curse_page_forge, "mcversion": minecraft_version, "forge_version": forge_version
     }
 }
 
