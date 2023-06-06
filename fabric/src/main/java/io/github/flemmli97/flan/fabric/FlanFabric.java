@@ -1,6 +1,7 @@
 package io.github.flemmli97.flan.fabric;
 
 import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.api.fabric.ItemUseBlockFlags;
 import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.BlockInteractEvents;
@@ -8,6 +9,7 @@ import io.github.flemmli97.flan.event.EntityInteractEvents;
 import io.github.flemmli97.flan.event.ItemInteractEvents;
 import io.github.flemmli97.flan.event.PlayerEvents;
 import io.github.flemmli97.flan.event.WorldEvents;
+import io.github.flemmli97.flan.fabric.integration.HarvestWithEase;
 import io.github.flemmli97.flan.fabric.platform.integration.playerability.PlayerAbilityEvents;
 import io.github.flemmli97.flan.platform.integration.webmap.BluemapIntegration;
 import io.github.flemmli97.flan.platform.integration.webmap.DynmapIntegration;
@@ -71,6 +73,8 @@ public class FlanFabric implements ModInitializer {
             PlayerAbilityEvents.register();
         if (FabricLoader.getInstance().isModLoaded("dynmap"))
             DynmapIntegration.reg();
+        if (FabricLoader.getInstance().isModLoaded("harvestwithease"))
+            HarvestWithEase.init();
         ClaimCriterias.init();
     }
 
@@ -93,6 +97,8 @@ public class FlanFabric implements ModInitializer {
                 return res;
             flags.stopCanUseBlocks(res == InteractionResult.FAIL);
             flags.stopCanUseItems(ItemInteractEvents.onItemUseBlock(new UseOnContext(p, hand, hitResult)) == InteractionResult.FAIL);
+            if (!flags.allowUseBlocks() && !flags.allowUseItems())
+                return InteractionResult.FAIL;
         }
         return InteractionResult.PASS;
     }

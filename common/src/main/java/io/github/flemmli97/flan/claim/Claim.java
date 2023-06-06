@@ -65,6 +65,8 @@ public class Claim implements IPermissionContainer {
 
     private final Map<UUID, String> playersGroups = new HashMap<>();
 
+    private final Set<UUID> fakePlayers = new HashSet<>();
+
     private final List<Claim> subClaims = new ArrayList<>();
 
     private UUID parent;
@@ -271,6 +273,8 @@ public class Claim implements IPermissionContainer {
         if (player != null && !realPlayer) {
             //Some mods use the actual user/placer/owner whatever of the fakeplayer. E.g. ComputerCraft
             //For those mods we dont pass them as fake players
+            if (this.fakePlayers.contains(player.getUUID()))
+                return true;
             if (!player.getUUID().equals(this.owner) && !this.playersGroups.containsKey(player.getUUID())) {
                 perm = PermissionRegistry.FAKEPLAYER;
             }
@@ -284,6 +288,8 @@ public class Claim implements IPermissionContainer {
                 if (flag == ClaimPermission.PermissionFlag.NO) {
                     if (message)
                         player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), ChatFormatting.DARK_RED), true);
+                    if (perm == PermissionRegistry.FAKEPLAYER)
+                        this.getOwnerPlayer().ifPresent(p -> PlayerClaimData.get(p).notifyFakePlayerInteraction(player, pos, this));
                     return false;
                 }
                 return true;
@@ -296,6 +302,8 @@ public class Claim implements IPermissionContainer {
                     return true;
                 if (message)
                     player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), ChatFormatting.DARK_RED), true);
+                if (perm == PermissionRegistry.FAKEPLAYER)
+                    this.getOwnerPlayer().ifPresent(p -> PlayerClaimData.get(p).notifyFakePlayerInteraction(player, pos, this));
                 return false;
             }
             if (ConfigHandler.config.offlineProtectActivation != -1 && (LogoutTracker.getInstance(this.world.getServer()).justLoggedOut(this.getOwner()) || this.getOwnerPlayer().isPresent())) {
@@ -312,6 +320,8 @@ public class Claim implements IPermissionContainer {
                 return true;
             if (message)
                 player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), ChatFormatting.DARK_RED), true);
+            if (perm == PermissionRegistry.FAKEPLAYER)
+                this.getOwnerPlayer().ifPresent(p -> PlayerClaimData.get(p).notifyFakePlayerInteraction(player, pos, this));
             return false;
         }
         if (this.isAdminIgnore(player) || player.getUUID().equals(this.owner))
@@ -329,6 +339,8 @@ public class Claim implements IPermissionContainer {
                     return true;
                 if (message)
                     player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), ChatFormatting.DARK_RED), true);
+                if (perm == PermissionRegistry.FAKEPLAYER)
+                    this.getOwnerPlayer().ifPresent(p -> PlayerClaimData.get(p).notifyFakePlayerInteraction(player, pos, this));
                 return false;
             }
         }
@@ -336,6 +348,8 @@ public class Claim implements IPermissionContainer {
             return true;
         if (message)
             player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), ChatFormatting.DARK_RED), true);
+        if (perm == PermissionRegistry.FAKEPLAYER)
+            this.getOwnerPlayer().ifPresent(p -> PlayerClaimData.get(p).notifyFakePlayerInteraction(player, pos, this));
         return false;
     }
 
@@ -450,6 +464,12 @@ public class Claim implements IPermissionContainer {
         return false;
     }
 
+    public boolean modifyFakePlayerUUID(UUID uuid, boolean remove) {
+        if (remove)
+            return this.fakePlayers.remove(uuid);
+        return this.fakePlayers.add(uuid);
+    }
+
     public List<String> playersFromGroup(MinecraftServer server, String group) {
         List<UUID> l = new ArrayList<>();
         this.playersGroups.forEach((uuid, g) -> {
@@ -460,6 +480,10 @@ public class Claim implements IPermissionContainer {
         l.forEach(uuid -> server.getProfileCache().get(uuid).ifPresent(prof -> names.add(prof.getName())));
         names.sort(null);
         return names;
+    }
+
+    public List<String> getAllowedFakePlayerUUID() {
+        return this.fakePlayers.stream().map(UUID::toString).toList();
     }
 
     public boolean editGlobalPerms(ServerPlayer player, ClaimPermission toggle, int mode) {
@@ -602,11 +626,11 @@ public class Claim implements IPermissionContainer {
     }
 
     public void displayEnterTitle(ServerPlayer player) {
-        displayTitleMessage(player, this.enterTitle, this.enterSubtitle);
+        this.displayTitleMessage(player, this.enterTitle, this.enterSubtitle);
     }
 
     public void displayLeaveTitle(ServerPlayer player) {
-        displayTitleMessage(player, this.leaveTitle, this.leaveSubtitle);
+        this.displayTitleMessage(player, this.leaveTitle, this.leaveSubtitle);
     }
 
     /**
@@ -705,6 +729,13 @@ public class Claim implements IPermissionContainer {
                     .forEach(key -> this.playersGroups.put(UUID.fromString(key.getKey()), key.getValue().getAsString()));
             ConfigHandler.arryFromJson(obj, "SubClaims")
                     .forEach(sub -> this.subClaims.add(Claim.fromJson(sub.getAsJsonObject(), this.owner, this.world)));
+            ConfigHandler.arryFromJson(obj, "FakePlayers")
+                    .forEach(e -> {
+                        try {
+                            this.fakePlayers.add(UUID.fromString(e.getAsString()));
+                        } catch (IllegalArgumentException ignored) {
+                        }
+                    });
         } catch (Exception e) {
             throw new IllegalStateException("Error reading claim data for claim " + uuid);
         }
@@ -767,6 +798,11 @@ public class Claim implements IPermissionContainer {
             this.subClaims.forEach(p -> list.add(p.toJson(new JsonObject())));
             obj.add("SubClaims", list);
         }
+        if (!this.fakePlayers.isEmpty()) {
+            JsonArray list = new JsonArray();
+            this.fakePlayers.forEach(uuid -> list.add(uuid.toString()));
+            obj.add("FakePlayers", list);
+        }
         return obj;
     }
 
@@ -791,6 +827,12 @@ public class Claim implements IPermissionContainer {
     @Override
     public String toString() {
         return String.format("Claim:[ID=%s, Owner=%s, from: [x=%d,z=%d], to: [x=%d,z=%d]", this.claimID != null ? this.claimID.toString() : "null", this.owner != null ? this.owner.toString() : "Admin", this.minX, this.minZ, this.maxX, this.maxZ);
+    }
+
+    public String nameAndPosition() {
+        if (this.claimName.isEmpty())
+            return String.format("[x=%d,z=%d]-[x=%d,z=%d]", this.minX, this.minZ, this.maxX, this.maxZ);
+        return String.format("%s:[x=%d,z=%d]-[x=%d,z=%d]", this.claimName, this.minX, this.minZ, this.maxX, this.maxZ);
     }
 
     public String formattedClaim() {

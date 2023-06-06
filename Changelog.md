@@ -1,3 +1,22 @@
+Flan 1.8.4.1
+================
+- Fabric: Add harvest with ease compat
+
+Flan 1.8.4
+================
+- Fix /flan group ignoring subclaim mode
+- Add lang key support for some things (like group name). Makes it possible to change their color
+- Prevent dragon egg interaction near claims without permissions
+- Fix invalid player data when editing offline player data
+- Make owned allays not able to pickup locked items or if claim disables pickup items in general
+- Add special list for handling fake players in claim. 
+  Instead of adding fakeplayers to permission groups you can add fake players to this list instead.
+  Command is: /flan fakePlayer <add|remove> uuid
+  Note: Some mods dont have a fixed uuid for fake players meaning the uuid changes each server restart.
+        This means you need to reconfig it every restart for those mods.
+        Report it to them to have them make it persistent.
+- Also add notification when fakeplayers cannot perform their action in a claim
+
 Flan 1.8.3
 ================
 - Fix claim display keep getting added for same claim causing lots of particles

@@ -86,7 +86,9 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
                     Collection<MobEffectInstance> inst = Collections.singleton(new MobEffectInstance(effect, 0, potions.get(effect)));
                     effectStack.getOrCreateTag().putString("FlanEffect", CrossPlatformStuff.INSTANCE.registryStatusEffects().getIDFrom(effect).toString());
                     effectStack.getTag().putInt("CustomPotionColor", PotionUtils.getColor(inst));
-                    effectStack.setHoverName(txt.setStyle(txt.getStyle().withItalic(false).applyFormat(ChatFormatting.DARK_BLUE)).append(ServerScreenHelper.coloredGuiText("-" + potions.get(effect), ChatFormatting.DARK_BLUE)));
+                    txt.append(Component.literal("-" + potions.get(effect)));
+                    Component comp = Component.translatable(ConfigHandler.langManager.get("screenPotionText"), txt).setStyle(txt.getStyle().withItalic(false).applyFormat(ChatFormatting.DARK_BLUE));
+                    effectStack.setHoverName(comp);
                     inv.updateStack(i, effectStack);
                 }
             }

@@ -28,7 +28,9 @@
     "MossBlockCheckMixin",
     "EnderMitePearlCheck",
     "SculkSensorMixin",
-    "SculkShriekerMixin"
+    "SculkShriekerMixin",
+    "DragonEggBlockMixin",
+    "AllayMixin"
   ],
   "server": [
   ],

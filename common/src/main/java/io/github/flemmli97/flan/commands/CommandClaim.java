@@ -30,6 +30,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.GameProfileArgument;
+import net.minecraft.commands.arguments.UuidArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -105,15 +106,29 @@ public class CommandClaim {
                                 .then(Commands.literal("remove").then(Commands.argument("group", StringArgumentType.word()).suggests(CommandHelpers::groupSuggestion)
                                         .then(Commands.argument("players", GameProfileArgument.gameProfile()).suggests((context, build) -> {
                                             ServerPlayer player = context.getSource().getPlayerOrException();
+                                            String group = StringArgumentType.getString(context, "group");
                                             List<String> list = new ArrayList<>();
                                             CommandSourceStack src = context.getSource();
                                             ClaimStorage storage = ClaimStorage.get(src.getLevel());
                                             Claim claim = storage.getClaimAt(src.getPlayerOrException().blockPosition());
                                             if (claim != null && claim.canInteract(src.getPlayerOrException(), PermissionRegistry.EDITPERMS, src.getPlayerOrException().blockPosition())) {
-                                                list = claim.playersFromGroup(player.getServer(), "");
+                                                list = claim.playersFromGroup(player.getServer(), group);
                                             }
                                             return SharedSuggestionProvider.suggest(list, build);
                                         }).executes(CommandClaim::removePlayer))))))
+                .then(Commands.literal("fakePlayer").executes(CommandClaim::toggleFakePlayer)
+                        .then(Commands.literal("add").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdFakePlayer, true)).then(Commands.argument("uuid", UuidArgument.uuid()).executes(CommandClaim::addFakePlayer)))
+                        .then(Commands.literal("remove").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdFakePlayer, true))
+                                .then(Commands.argument("uuid", UuidArgument.uuid()).suggests((context, build) -> {
+                                    List<String> list = new ArrayList<>();
+                                    CommandSourceStack src = context.getSource();
+                                    ClaimStorage storage = ClaimStorage.get(src.getLevel());
+                                    Claim claim = storage.getClaimAt(src.getPlayerOrException().blockPosition());
+                                    if (claim != null && claim.canInteract(src.getPlayerOrException(), PermissionRegistry.EDITPERMS, src.getPlayerOrException().blockPosition())) {
+                                        list = claim.getAllowedFakePlayerUUID();
+                                    }
+                                    return SharedSuggestionProvider.suggest(list, build);
+                                }).executes(CommandClaim::removeFakePlayer))))
                 .then(Commands.literal("teleport").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdTeleport))
                         .then(Commands.literal("self").then(Commands.argument("claim", StringArgumentType.string()).suggests((ctx, b) -> CommandHelpers.claimSuggestions(ctx, b, ctx.getSource().getPlayerOrException().getUUID()))
                                 .executes(CommandClaim::teleport)))
@@ -580,11 +595,16 @@ public class CommandClaim {
             PermHelper.noClaimMessage(player);
             return 0;
         }
+        if (PlayerClaimData.get(player).getEditMode() == EnumEditMode.SUBCLAIM) {
+            Claim sub = claim.getSubClaim(player.blockPosition());
+            if (sub != null)
+                claim = sub;
+        }
         if (remove) {
             if (claim.removePermGroup(player, group))
                 player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("groupRemove"), group), ChatFormatting.GOLD), false);
             else {
-                PermHelper.genericNoPermMessage(player);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), false);
                 return 0;
             }
         } else {
@@ -594,7 +614,7 @@ public class CommandClaim {
             } else if (claim.editPerms(player, group, PermissionRegistry.EDITPERMS, -1))
                 player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("groupAdd"), group), ChatFormatting.GOLD), false);
             else {
-                PermHelper.genericNoPermMessage(player);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), false);
                 return 0;
             }
         }
@@ -623,8 +643,13 @@ public class CommandClaim {
             PermHelper.noClaimMessage(player);
             return 0;
         }
+        if (PlayerClaimData.get(player).getEditMode() == EnumEditMode.SUBCLAIM) {
+            Claim sub = claim.getSubClaim(player.blockPosition());
+            if (sub != null)
+                claim = sub;
+        }
         if (!claim.canInteract(player, PermissionRegistry.EDITPERMS, player.blockPosition())) {
-            PermHelper.genericNoPermMessage(player);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), false);
             return 0;
         }
         List<String> modified = new ArrayList<>();
@@ -635,8 +660,53 @@ public class CommandClaim {
         if (!modified.isEmpty())
             player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("playerModify"), group, modified), ChatFormatting.GOLD), false);
         else
-            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("playerModifyNo"), group, modified), ChatFormatting.RED), false);
-        return Command.SINGLE_SUCCESS;
+            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("playerModifyNo"), group), ChatFormatting.RED), false);
+        return modified.size();
+    }
+
+    private static int toggleFakePlayer(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        PlayerClaimData data = PlayerClaimData.get(player);
+        data.setFakePlayerNotif(!data.hasFakePlayerNotificationOn());
+        player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("fakePlayerNotification"), data.hasFakePlayerNotificationOn()), ChatFormatting.GOLD), false);
+        return 1;
+    }
+
+    private static int addFakePlayer(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        return modifyFakePlayer(context, false);
+    }
+
+    private static int removeFakePlayer(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        return modifyFakePlayer(context, true);
+    }
+
+    private static int modifyFakePlayer(CommandContext<CommandSourceStack> context, boolean remove) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        ClaimStorage storage = ClaimStorage.get(player.getLevel());
+        Claim claim = storage.getClaimAt(player.blockPosition());
+        if (claim == null) {
+            PermHelper.noClaimMessage(player);
+            return 0;
+        }
+        if (PlayerClaimData.get(player).getEditMode() == EnumEditMode.SUBCLAIM) {
+            Claim sub = claim.getSubClaim(player.blockPosition());
+            if (sub != null)
+                claim = sub;
+        }
+        if (!claim.canInteract(player, PermissionRegistry.EDITPERMS, player.blockPosition())) {
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), false);
+            return 0;
+        }
+        UUID uuid = UuidArgument.getUuid(context, "uuid");
+        if (claim.modifyFakePlayerUUID(uuid, remove)) {
+            if (!remove)
+                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("uuidFakeAdd"), uuid), ChatFormatting.GOLD), false);
+            else
+                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("uuidFakeRemove"), uuid), ChatFormatting.GOLD), false);
+            return 1;
+        }
+        player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("uuidFakeModifyNo"), ChatFormatting.RED), false);
+        return 0;
     }
 
     private static int editGlobalPerm(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -669,6 +739,11 @@ public class CommandClaim {
         if (claim == null) {
             PermHelper.noClaimMessage(player);
             return 0;
+        }
+        if (PlayerClaimData.get(player).getEditMode() == EnumEditMode.SUBCLAIM) {
+            Claim sub = claim.getSubClaim(player.blockPosition());
+            if (sub != null)
+                claim = sub;
         }
         if (!claim.canInteract(player, PermissionRegistry.EDITPERMS, player.blockPosition())) {
             player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), false);
