@@ -1,0 +1,467 @@
+{
+  "noClaim": "这里没有领地",
+  "inspectBlockOwner": "这是 %1$s 的领地",
+  "inspectNoClaim": "没有玩家拥有这个格子",
+  "claimBlocksFormat": "领地内格子: %1$d + (额外) %2$d); 已使用: %3$d; 剩余: %4$d",
+  "listClaims": "列出所有领地:",
+  "listAdminClaims": "在 %1$s 内列出所有管理员领地:",
+  "onlyOnePlayer": "只能使用一个玩家作为参数",
+  "ownerTransferSuccess": "现在新领地的所有者: %1$s",
+  "ownerTransferFail": "只有领地的所有者才可转让领地",
+  "ownerTransferNoBlocks": "新的领地所有者没有足够的领地格子",
+  "ownerTransferNoBlocksAdmin": "您可以通过切换到管理员模式来禁用它",
+  "noPermission": "您没有权限在这里做这件事！",
+  "noPermissionSimple": "抱歉，您不能在这里做这件事！",
+  "noPermissionTooClose": "对不起，这里离领地太近了！",
+  "tooCloseClaim": "这里距离一个受保护的区域太近了！",
+  "configReload": "已重新加载插件配置",
+  "cantClaimHere": "抱歉，您不能将这里设为领地",
+  "minClaimSize": "领地太小了。 最小的领地大小为 %d",
+  "maxClaims": "到达领地数量最大值",
+  "landClaimDisabledWorld": "本世界中禁用了领地功能",
+  "editMode": "编辑模式设置为 %1$s",
+  "notEnoughBlocks": "没有足够的领地格子",
+  "conflictOther": "此领地将覆盖其它的领地",
+  "wrongMode": "错误的领地模式。 您现在处于 %1$s 模式",
+  "stringScreenReturn": "点击手中的纸来返回",
+  "groupAdd": "已添加组 %1$s",
+  "groupRemove": "已删除组 %1$s",
+  "groupExist": "这个组已经存在了",
+  "uuidFakeAdd": "在领地中添加了 uuid %1$s 的假人",
+  "uuidFakeRemove": "从领地中删除了 uuid 为 %1$s 的假人",
+  "uuidFakeModifyNo": "已经添加了具有uuid的假人",
+  "playerModify": "修改了以下玩家的权限组 %1$s: %2$s",
+  "playerModifyNo": "无法修改这些玩家的权限组。 可能是因为玩家已经在一个组中所导致的",
+  "playerGroupAddFail": "无法将该玩家添加到组中，原因可能是该玩家已在组中，或者找不到与该名称所匹配的玩家",
+  "resizeClaim": "正在重新设定领地大小",
+  "resizeSuccess": "已重新设定领地大小",
+  "claimCreateSuccess": "创建一个新领地",
+  "subClaimCreateSuccess": "创建一个新的副领地",
+  "deleteClaim": "领地已删除",
+  "deleteAllClaimConfirm": "您确定要删除您所有的领地吗？请重新输入来确认",
+  "deleteAllClaim": "所有领地已删除",
+  "deleteClaimError": "您不能在这里删除这个领地",
+  "deleteSubClaim": "副领地已删除",
+  "deleteSubClaimAll": "所有主领地下的副领地已删除",
+  "noSuchPerm": "没有足够的权限 %1$s",
+  "editPerm": "%1$s 现在设定为 %2$s",
+  "editPermGroup": "%1$s 对于 %2$s 现在设定为 %3$s",
+  "editPersonalGroup": "在 %2$s 组中的默认权限 %1$s 现在设定为 %3$s",
+  "adminMode": "管理员模式 (领地除外) 设定为: %1$s",
+  "adminDeleteAll": "已删除以下玩家的所有领地: %1$s",
+  "setAdminClaim": "在这些领地中的管理员领地现在为: %1$s",
+  "readGriefpreventionData": "在GriefPrevention插件中读取数据",
+  "readGriefpreventionClaimDataSuccess": "成功读取领地数据",
+  "readGriefpreventionPlayerDataSuccess": "成功读取玩家数据",
+  "cantFindData": "在 %1$s 中没有Griefprevention插件数据",
+  "errorFile": "读取文件错误 %1$s",
+  "readConflict": "%1$s 与现有的领地冲突。无法添加到世界中！冲突的领地为:",
+  "giveClaimBlocks": "给予以下玩家 %2$d 领地方块: %1$s",
+  "fakePlayerNotification1": "一个假人曾试图在%2$s中以%1$s与您的领地进行交互",
+  "fakePlayerNotification2": "站在领地中单击%s，将假人添加到领地中",
+  "clickableComponent": "这里",
+  "fakePlayerNotification3": "Click %s to disable this notification.",
+  "fakePlayerNotification": "FakePlayer notification set to %s",
+  "claimBasicInfo": "领地所有者: %1$s, 从: [x=%2$d,z=%3$d] 到 [x=%4$d,z=%5$d]); 副领地数量: %6$d",
+  "claimBasicInfoNamed": "领地: %7$s, 所有者: %1$s, 从: [x=%2$d,z=%3$d] 到 [x=%4$d,z=%5$d]); 副领地数量: %6$d",
+  "claimSubHeader": "==副领地信息==",
+  "claimBasicInfoSub": "领地所有者: %1$s, 从: [x=%2$d,z=%3$d] 到 [x=%4$d,z=%5$d]",
+  "claimBasicInfoSubNamed": "领地: %6$s, 所有者: %1$s, 从: [x=%2$d,z=%3$d] 到 [x=%4$d,z=%5$d]",
+  "claimInfoPerms": "权限: %1$s",
+  "claimGroupInfoHeader": "组: ",
+  "claimGroupPerms": "    权限: %1$s",
+  "claimGroupPlayers": "    组中的玩家: %1$s",
+  "helpHeader": "可用的二级指令为 (页数 %d):",
+  "helpCmdHeader": "====================",
+  "helpCmdSyntax": "语法: %1$s",
+  "screenEnableText": "是否启用: %1$s",
+  "screenUneditable": "不可编辑！",
+  "screenClose": "关闭",
+  "screenNext": "下一页",
+  "screenPrevious": "上一页",
+  "screenAdd": "添加",
+  "screenBack": "返回",
+  "screenNoPerm": "没有权限",
+  "screenFalse": "禁用",
+  "screenTrue": "启用",
+  "screenDefault": "默认",
+  "screenMenu": "领地菜单",
+  "screenMenuSub": "副领地菜单",
+  "screenMenuGlobal": "编辑全局权限",
+  "screenMenuGroup": "编辑权限组",
+  "screenMenuPotion": "编辑进入领地时玩家的附加效果",
+  "screenMenuClaimText": "编辑 进入/离开 领地时的提示文字",
+  "screenMenuFakePlayers": "假人",
+  "screenMenuDelete": "删除领地",
+  "screenConfirm": "确认",
+  "screenYes": "是",
+  "screenNo": "否",
+  "screenGroupPlayers": "%1$s-玩家",
+  "screenRemoveMode": "已删除模式: %1$s",
+  "screenGlobalPerms": "全局权限",
+  "screenGroupName": "%s",
+  "screenGroups": "领地组",
+  "screenGroupPerms": "%1$s-权限",
+  "screenPersonalGroups": "个人组",
+  "screenPersonalPermissions": "%1$s 的个人组",
+  "screenFakePlayerNameUUID": "%s",
+  "screenPotions": "领地附加效果",
+  "screenPotionText": "%s",
+  "screenTitleEditor": "领地文字",
+  "screenTitleEditorSub": "副领地文字",
+  "screenTextJson": "点击鼠标右键来使用 JSON 文本。 不会的话去 Minecraft Wiki 搜索一下",
+  "screenEnterText": "编辑进入领地时的主提示文本",
+  "screenEnterSubText": "编辑进入领地时的副示文本",
+  "screenLeaveText": "编辑离开领地时的主提示文本",
+  "screenLeaveSubText": "编辑进入领地时的副提示文本",
+  "screenDelete": "请使用 \"$empty\" 来删除文本",
+  "chatClaimTextEdit": "[点击鼠标右键来使用命令]",
+  "sellDisabled": "出售领地方块现在是禁用状态",
+  "buyDisabled": "购买领地方块现在是禁用状态",
+  "sellFail": "没有足够的领地格子来出售",
+  "buyFail": "没有足够的钱",
+  "buyFailItem": "没有足够的物品",
+  "buyFailXP": "没有足够的经验值",
+  "sellSuccess": "以 %2$s 个货币出售了 %1$s 个领地中的格子",
+  "sellSuccessItem": "以 %3$s x%2$s 这个物品出售了 %1$s 个领地中的格子",
+  "sellSuccessXP": "以 %2$s 点经验出售了 %1$s 个领地中的格子",
+  "buySuccess": "以 %2$s 个货币购买了 %1$s 个领地中的格子",
+  "buySuccessItem": "以 %2$s 这个物品购买了 %1$s 个领地中的格子",
+  "buySuccessXP": "以 %2$s 点经验购买了 %1$s 个领地中的格子",
+  "currencyMissing": "缺少支持的货币模组",
+  "trappedRescue": "正在救援. 请在原地待5秒钟",
+  "trappedFail": "没有必要在救援中时再次执行救援",
+  "trappedMove": "您移动了. 正在拒绝传送",
+  "unlockDropsCmd": "您的掉落物品现在已被保护。 请使用 %1$s 为其他玩家解锁这些物品",
+  "unlockDrops": "您的掉落物品在 %1$s ticks内被解锁了",
+  "unlockDropsMulti": "已为 %1$s 解锁掉落物品",
+  "claimNameSet": "领地名称现在设定为 %1$s",
+  "claimNameUsed": "这个领地的所有者已经有了与其名字相同的领地",
+  "claimNameUsedSub": "这片领地的某一副领地已使用了这个名字",
+  "setHome": "家园领地已设置到 [x=%1$s,y=%2$s,z=%3$s]",
+  "teleportHome": "正在传送到家。请不要在5秒内移动",
+  "teleportHomeFail": "已经在传送",
+  "setEnterMessage": "将进入领地时的标题文本设置为 %1$s",
+  "setEnterSubMessage": "将进入领地时的副标题文本设置为 %1$s",
+  "setLeaveMessage": "将离开领地时的标题文本设置为 %1$s",
+  "setLeaveSubMessage": "将离开领地时的副标题文本设置为 %1$s",
+  "wiki": "另请参阅Wiki:",
+  "EDITCLAIM.desc": [
+    "给予编辑 (例如重新设定大小、删除等) 领地的权限"
+  ],
+"EDITPERMS.desc": [
+    "给予修改领地权限的权限"
+  ],
+  "EDITPOTIONS.desc": [
+    "给予修改领地内附加效果的权限"
+  ],
+  "BREAK.desc": [
+    "给予领地内破坏方块的权限"
+  ],
+  "PLACE.desc": [
+    "给予领地内放置方块的权限"
+  ],
+  "OPENCONTAINER.desc": [
+    "打开容器的权限",
+    "(例如箱子、熔炉等)"
+  ],
+  "INTERACTBLOCK.desc": [
+    "方块互动通用权限",
+    "应对于 OPENCONTAINER",
+    "使在 OPENCONTAINER 中不被检查的的方块的变为可使用状态"
+  ],
+  "ANVIL.desc": [
+    "使用铁砧的权限"
+  ],
+  "BED.desc": [
+    "使用床的权限"
+  ],
+  "BEACON.desc": [
+    "使用信标的权限"
+  ],
+  "DOOR.desc": [
+    "使用门的权限"
+  ],
+  "FENCEGATE.desc": [
+    "使用活板门的权限"
+  ],
+  "TRAPDOOR.desc": [
+    "使用拌线钩的权限"
+  ],
+  "BUTTONLEVER.desc": [
+    "触发拉杆和按钮的权限"
+  ],
+  "PRESSUREPLATE.desc": [
+    "触发压力板的权限"
+  ],
+  "NOTEBLOCK.desc": [
+    "改变音符盒音调/音色的权限"
+  ],
+  "REDSTONE.desc": [
+    "改变红石组成部分的权限"
+  ],
+  "JUKEBOX.desc": [
+    "插入/拿出 音乐唱片的权限"
+  ],
+  "ENDERCHEST.desc": [
+    "使用末影箱的权限"
+  ],
+  "ENCHANTMENT.desc": [
+    "使用附魔台的权限"
+  ],
+  "ITEMFRAMEROTATE.desc": [
+    "改变物品展示框内物品角度的权限"
+  ],
+  "LECTERNTAKE.desc": [
+    "改变讲台上所放置的书的权限"
+  ],
+  "ENDCRYSTALPLACE.desc": [
+    "放置末影水晶的权限"
+  ],
+  "TARGETBLOCK.desc": [
+    "触发标靶方块的权限"
+  ],
+  "PROJECTILES.desc": [
+    "投射物权限",
+    "互动方块 (例如用箭去射按钮)"
+  ],
+  "TRAMPLE.desc": [
+    "可被踩坏方块的权限",
+    "(例如耕地、海龟蛋)"
+  ],
+  "FROSTWALKER.desc": [
+    "冰霜行者附魔效果的权限"
+  ],
+  "PORTAL.desc": [
+    "使用下届传送门的权限"
+  ],
+  "RAID.desc": [
+    "在领地内触发村庄突袭的权限",
+    "不会阻止在领地外面发生的村庄突袭"
+  ],
+  "BOAT.desc": [
+    "坐入船的权限"
+  ],
+  "MINECART.desc": [
+    "坐入矿车的权限"
+  ],
+  "BUCKET.desc": [
+    "使用铁桶舀取液体的权限"
+  ],
+  "ENDERPEARL.desc": [
+    "使用末影珍珠的权限"
+  ],
+  "CHORUSFRUIT.desc": [
+    "食用紫影果的权限"
+  ],
+  "ANIMALINTERACT.desc": [
+    "与动物互动的权限",
+    "(例如给羊剪羊毛)"
+  ],
+  "HURTANIMAL.desc": [
+    "伤害动物的权限"
+  ],
+  "XP.desc": [
+    "吸取经验球的权限"
+  ],
+  "TRADING.desc": [
+    "与村民进行交易的权限"
+  ],
+  "ARMORSTAND.desc": [
+    "与盔甲架互动的权限"
+  ],
+  "BREAKNONLIVING.desc": [
+    "破坏如矿车、盔甲架等实体的权限"
+  ],
+  "DROP.desc": [
+    "允许丢弃物品"
+  ],
+  "PICKUP.desc": [
+    "允许捡起物品"
+  ],
+  "FLIGHT.desc": [
+    "允许非创造模式状态下的飞行"
+  ],
+  "CANSTAY.desc": [
+    "允许玩家进入您的领地"
+  ],
+  "TELEPORT.desc": [
+    "允许玩家传送到您的领地家的传送点"
+  ],
+  "NOHUNGER.desc": [
+    "禁用减少肌饿值"
+  ],
+  "CLAIMMESSAGE.desc": [
+    "修改 进入/离开 领地时的提示文本的权限"
+  ],
+  "PLAYERMOBSPAWN.desc": [
+    "实体受玩家所影响的权限",
+    "例如潜声守卫或末影螨"
+  ],
+  "SCULK.desc": [
+    "潜声传感器受玩家所影响的权限",
+    "潜声传感器在 PLAYERMOBSPAWN 下被处理"
+  ],
+  "HURTPLAYER.desc": [
+    "伤害玩家的权限"
+  ],
+  "EXPLOSIONS.desc": [
+    "允许在领地内爆炸"
+  ],
+  "WITHER.desc": [
+    "允许凋灵在领地内破坏方块"
+  ],
+  "ENDERMAN.desc": [
+    "允许末影人在领地内捡起/放置方块"
+  ],
+  "SNOWGOLEM.desc": [
+    "允许雪傀儡在脚下生成雪地毯"
+  ],
+  "FIRESPREAD.desc": [
+    "允许在领地内发生火焰扩散"
+  ],
+  "WATERBORDER.desc": [
+    "允许液体穿过领地边界"
+  ],
+  "PISTONBORDER.desc": [
+    "允许活塞推出/拉进领地边界"
+  ],
+  "MOBSPAWN.desc": [
+    "阻止在领地内生成敌对生物"
+  ],
+  "ANIMALSPAWN.desc": [
+    "阻止在领地内生成其他生物"
+  ],
+  "LIGHTNING.desc": [
+    "允许照明方块影响领地内的方块",
+    "例如在火焰上放置方块",
+    "或影响动物 (不包括生物)"
+  ],
+  "LOCKITEMS.desc": [
+    "在玩家死亡后是否锁定物品"
+  ],
+  "FAKEPLAYER.desc": [
+    "允许假人领地中互动",
+    "一些装有mod的假人会拥有用户的uuid",
+    "对于那些mod来说，这个权限是没有必要的"
+  ],
+  "command.help": [
+    "help <page> | (cmd <command>)",
+    "显示给定命令的所有可用命令或信息"
+  ],
+  "command.menu": [
+    "menu",
+    "当您处于领地中时，可使用领地菜单的权限"
+  ],
+  "command.claimInfo": [
+    "claimInfo",
+    "显示您所处于的领地信息"
+  ],
+  "command.delete": [
+    "delete",
+    "删除当前的领地"
+  ],
+  "command.deleteAll": [
+    "deleteAll",
+    "删除您的所有领地 (您需要输入两次来确认，确保不会出问题)."
+  ],
+  "command.deleteSubClaim": [
+    "deleteSubClaim",
+    "删除当前副领地"
+  ],
+  "command.deleteAllSubClaims": [
+    "deleteAllSubClaims",
+    "删除当前主领地下的所有副领地"
+  ],
+  "command.list": [
+    "list <player>",
+    "列出您拥有的所有领地。 (如果服务器管理员也给予了列出其他玩家所拥有的领地的能力)"
+  ],
+  "command.switchMode": [
+    "switchMode",
+    "在 主/副 领地模式之间切换"
+  ],
+  "command.group": [
+    "group (add | remove <name>) | (players add | remove <player> [overwrite])",
+    "- 添加/删除 该名称的组. 也可以通过在领地菜单中编辑。",
+    "- 添加/删除 该组内的玩家 (如果覆盖，则将覆盖当前组的玩家，否则不执行任何操作)"
+  ],
+  "command.transferClaim": [
+    "transferClaim <player>",
+    "将领地的所有权授予指定玩家。 只有当您是领地所有者时才有效"
+  ],
+  "command.addClaim": [
+    "addClaim (<x y z> <x y z>) | all | (rect x z)",
+    "在已给位置上创建一个领地(与使用领地工具的效果相同)",
+    "<all> 用掉所有剩余的方块，以获得以玩家为中心的矩形领地",
+    "<rect> 创建一个以玩家为中心的矩形领地"
+  ],
+  "command.permission": [
+    "permission {global | (group <name>) | (personal <name>)} <permission> true | false | default",
+    " 设定 global/group/personal 权限。 也可以通过在领地菜单中编辑 (对于右键单击菜单中的组来说)."
+  ],
+  "command.personalGroups": [
+    "personalGroups",
+    "打开菜单来编辑个人组"
+  ],
+  "command.sellBlocks": [
+    "sellBlocks <amount>",
+    "出售 <amount> 个领地格子。 需要足够的火药作为货币。"
+  ],
+  "command.buyBlocks": [
+    "buyBlocks <amount>",
+    "购入 <amount> 个领地格子。 需要足够的火药作为货币。"
+  ],
+  "command.trapped": [
+    "trapped",
+    "如果正处于一个不属于玩家的领地，可以使用此命令尝试将玩家在5秒后从中解脱出来。"
+  ],
+  "command.unlockDrops": [
+    "unlockDrops <players>",
+    "解锁从死亡中掉落的物品，以便其他玩家也可以拾取它们。或者所有给定的玩家 (需要管理员权限)"
+  ],
+  "command.setHome": [
+    "setHome",
+    "处于一个拥有足够权限集的领地中，设定玩家的家的位置"
+  ],
+  "command.teleport": [
+    "teleport self | admin | (other <player>) (<claim name> | <claim uuid>)",
+    "传送至给定的领地家的位置。 使用 admin 传送至管理员领地"
+  ],
+  "command.name": [
+    "name self <name>",
+    "设定当前领地的名称"
+  ],
+  "command.claimMessage": [
+    "claimMessage (enter | leave) (title | subtitle) (string | text) <value>",
+    "设定领地的提示信息。 使用 \"$empty\" 来删除信息"
+  ],
+  "command.reload": [
+    "reload",
+    "重置游戏内的插件配置"
+  ],
+  "command.adminMode": [
+    "adminMode",
+    "切换至管理模式，忽略所有领地。"
+  ],
+  "command.readGriefPrevention": [
+    "readGriefPreventionData",
+    "将GriefPrevention插件中的数据解析到flan"
+  ],
+  "command.setAdminClaim": [
+    "setAdminClaim",
+    "将一个领地设置为管理员领地"
+  ],
+  "command.listAdminClaims": [
+    "listAdminClaim",
+    "列出当前世界中的所有管理员领地"
+  ],
+  "command.adminDelete": [
+    "adminDelete [all <player>]",
+    "强制删除当前领地或删除指定玩家的所有领地。"
+  ],
+  "command.giveClaimBlocks": [
+    "giveClaimBlocks <amount>",
+    "给予一名玩家额外的领地格子。"
+  ]
+}
