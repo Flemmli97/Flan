@@ -49,14 +49,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ClaimStorage implements IPermissionStorage {
@@ -222,6 +215,10 @@ public class ClaimStorage implements IPermissionStorage {
                     return claim;
             }
         return null;
+    }
+
+    public List<Claim> getClaimsAt(int chunkX, int chunkZ) {
+        return this.claims.getOrDefault(ChunkPos.asLong(chunkX, chunkZ), Collections.emptyList());
     }
 
     @Override
