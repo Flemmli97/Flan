@@ -351,11 +351,14 @@ public class EntityInteractEvents {
                     BlockPos.MutableBlockPos bPos = rounded.mutable();
                     boolean isSub = currentClaim.parentClaim() != null;
                     Claim mainClaim = isSub ? currentClaim.parentClaim() : currentClaim;
-                    if (!mainClaim.canInteract(player, PermissionRegistry.CANSTAY, bPos, true)) {
+                    Entity passenger = player.getVehicle();
+                    if (!mainClaim.canInteract(player, PermissionRegistry.CANSTAY, bPos, true) || (passenger instanceof Boat && !mainClaim.canInteract(player, PermissionRegistry.BOAT, bPos, true))) {
                         Claim sub = isSub ? currentClaim : null;
                         Vec3 tp = TeleportUtils.getTeleportPos(player, pos, storage, sub != null ? sub.getDimensions() : mainClaim.getDimensions(), true, bPos, (claim, nPos) -> claim.canInteract(player, PermissionRegistry.CANSTAY, nPos, false));
-                        if (player.isPassenger())
+                        if (passenger != null) {
                             player.stopRiding();
+                            passenger.teleportToWithTicket(tp.x(), tp.y(), tp.z());
+                        }
                         player.teleportToWithTicket(tp.x(), tp.y(), tp.z());
                     }
                     if (player.getAbilities().flying && !player.isCreative() && !mainClaim.canInteract(player, PermissionRegistry.FLIGHT, rounded, true)) {
