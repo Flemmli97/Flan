@@ -35,6 +35,8 @@ public class FlanForge {
         forge.addListener(BlockInteractEventsForge::startBreakBlocks);
         forge.addListener(BlockInteractEventsForge::breakBlocks);
         forge.addListener(EventPriority.HIGHEST, BlockInteractEventsForge::useBlocks);
+        forge.addListener(EventPriority.HIGHEST, BlockInteractEventsForge::placeBlock);
+        forge.addListener(EventPriority.HIGHEST, BlockInteractEventsForge::placeBlocks);
         forge.addListener(EntityInteractEventsForge::attackEntity);
         forge.addListener(EntityInteractEventsForge::useAtEntity);
         forge.addListener(EntityInteractEventsForge::useEntity);
