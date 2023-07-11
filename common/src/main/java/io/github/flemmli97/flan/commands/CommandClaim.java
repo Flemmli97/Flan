@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class CommandClaim {
@@ -132,7 +133,7 @@ public class CommandClaim {
                 .then(Commands.literal("teleport").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdTeleport))
                         .then(Commands.literal("self").then(Commands.argument("claim", StringArgumentType.string()).suggests((ctx, b) -> CommandHelpers.claimSuggestions(ctx, b, ctx.getSource().getPlayerOrException().getUUID()))
                                 .executes(CommandClaim::teleport)))
-                        .then(Commands.literal("admin").then(Commands.argument("claim", StringArgumentType.string()).suggests((ctx, b) -> CommandHelpers.claimSuggestions(ctx, b, null))
+                        .then(Commands.literal("global").then(Commands.argument("claim", StringArgumentType.string()).suggests((ctx, b) -> CommandHelpers.claimSuggestions(ctx, b, null))
                                 .executes(CommandClaim::teleportAdminClaims)))
                         .then(Commands.literal("other").then(Commands.argument("player", GameProfileArgument.gameProfile()).then(Commands.argument("claim", StringArgumentType.string()).suggests((ctx, b) -> CommandHelpers.claimSuggestions(ctx, b, CommandHelpers.singleProfile(ctx, "player").getId()))
                                 .executes(src -> CommandClaim.teleport(src, CommandHelpers.singleProfile(src, "player").getId()))))))
@@ -845,24 +846,29 @@ public class CommandClaim {
     public static int teleport(CommandContext<CommandSourceStack> context, UUID owner) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         String name = StringArgumentType.getString(context, "claim");
-        return ClaimStorage.get(player.getLevel()).allClaimsFromPlayer(owner)
+        Optional<Claim> claims = ClaimStorage.get(player.getLevel()).allClaimsFromPlayer(owner)
                 .stream().filter(claim -> {
                     if (claim.getClaimName().isEmpty())
                         return claim.getClaimID().toString().equals(name);
                     return claim.getClaimName().equals(name);
-                }).findFirst().map(claim -> {
-                    BlockPos pos = claim.getHomePos();
-                    if (claim.canInteract(player, PermissionRegistry.TELEPORT, pos, false)) {
-                        PlayerClaimData data = PlayerClaimData.get(player);
-                        if (data.setTeleportTo(pos)) {
-                            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("teleportHome"), ChatFormatting.GOLD), false);
-                            return Command.SINGLE_SUCCESS;
-                        }
-                        context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("teleportHomeFail"), ChatFormatting.RED), false);
-                    } else
-                        context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), ChatFormatting.DARK_RED), false);
-                    return 0;
-                }).orElse(0);
+                }).findFirst();
+        if (claims.isEmpty()) {
+            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("teleportNoClaim"), ChatFormatting.RED), false);
+            return 0;
+        }
+        return claims.map(claim -> {
+            BlockPos pos = claim.getHomePos();
+            if (claim.canInteract(player, PermissionRegistry.TELEPORT, pos, false)) {
+                PlayerClaimData data = PlayerClaimData.get(player);
+                if (data.setTeleportTo(pos)) {
+                    context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("teleportHome"), ChatFormatting.GOLD), false);
+                    return Command.SINGLE_SUCCESS;
+                }
+                context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("teleportHomeFail"), ChatFormatting.RED), false);
+            } else
+                context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), ChatFormatting.DARK_RED), false);
+            return 0;
+        }).orElse(0);
     }
 
     public static int editClaimMessages(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
