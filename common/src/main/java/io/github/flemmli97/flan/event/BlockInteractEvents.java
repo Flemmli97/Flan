@@ -38,10 +38,14 @@ import java.util.List;
 public class BlockInteractEvents {
 
     public static InteractionResult startBreakBlocks(Player player, Level world, InteractionHand hand, BlockPos pos, Direction direction) {
-        return breakBlocks(world, player, pos, world.getBlockState(pos), world.getBlockEntity(pos)) ? InteractionResult.PASS : InteractionResult.FAIL;
+        return breakBlocks(world, player, pos, world.getBlockState(pos), world.getBlockEntity(pos), true) ? InteractionResult.PASS : InteractionResult.FAIL;
     }
 
     public static boolean breakBlocks(Level world, Player p, BlockPos pos, BlockState state, BlockEntity tile) {
+        return breakBlocks(world, p, pos, world.getBlockState(pos), world.getBlockEntity(pos), false);
+    }
+
+    public static boolean breakBlocks(Level world, Player p, BlockPos pos, BlockState state, BlockEntity tile, boolean attempt) {
         if (!(p instanceof ServerPlayer player) || p.isSpectator())
             return true;
         ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
@@ -50,6 +54,16 @@ public class BlockInteractEvents {
             ResourceLocation id = CrossPlatformStuff.INSTANCE.registryBlocks().getIDFrom(state.getBlock());
             if (contains(id, world.getBlockEntity(pos), ConfigHandler.config.breakBlockBlacklist, ConfigHandler.config.breakBETagBlacklist))
                 return true;
+            if (attempt) {
+                ClaimPermission perm = ObjectToPermissionMap.getForLeftClickBlock(state.getBlock());
+                if (perm != null) {
+                    if (!claim.canInteract(player, perm, pos, true)) {
+                        PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
+                        return false;
+                    }
+                    return true;
+                }
+            }
             if (!claim.canInteract(player, PermissionRegistry.BREAK, pos, true)) {
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
                 return false;

@@ -85,6 +85,14 @@ public class Config {
     public List<String> blockPermission = Lists.newArrayList(
     );
 
+    public List<String> leftClickBlockIgnore = Lists.newArrayList(
+            "@storagedrawers:drawers-OPENCONTAINER",
+            "mekanism:basic_bin-OPENCONTAINER",
+            "mekanism:advanced_bin-OPENCONTAINER",
+            "mekanism:ultimate_bin-OPENCONTAINER",
+            "mekanism:creative_bin-OPENCONTAINER"
+    );
+
     public int dropTicks = 6000;
 
     public int inactivityTime = 30;
@@ -202,6 +210,8 @@ public class Config {
             ConfigHandler.arryFromJson(obj, "customItemPermission").forEach(e -> this.itemPermission.add(e.getAsString()));
             this.blockPermission.clear();
             ConfigHandler.arryFromJson(obj, "customBlockPermission").forEach(e -> this.blockPermission.add(e.getAsString()));
+            this.leftClickBlockIgnore.clear();
+            ConfigHandler.arryFromJson(obj, "leftClickBlockIgnore").forEach(e -> this.leftClickBlockIgnore.add(e.getAsString()));
 
             this.dropTicks = ConfigHandler.fromJson(obj, "dropTicks", this.dropTicks);
             this.inactivityTime = ConfigHandler.fromJson(obj, "inactivityTimeDays", this.inactivityTime);
@@ -311,6 +321,10 @@ public class Config {
         JsonArray blockPerms = new JsonArray();
         this.blockPermission.forEach(blockPerms::add);
         obj.add("customBlockPermission", blockPerms);
+
+        JsonArray leftIgnore = new JsonArray();
+        this.leftClickBlockIgnore.forEach(leftIgnore::add);
+        obj.add("leftClickBlockIgnore", leftIgnore);
 
         obj.addProperty("dropTicks", this.dropTicks);
         obj.addProperty("inactivityTimeDays", this.inactivityTime);
