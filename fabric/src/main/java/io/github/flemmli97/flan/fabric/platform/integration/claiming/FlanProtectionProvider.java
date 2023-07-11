@@ -1,8 +1,5 @@
 package io.github.flemmli97.flan.fabric.platform.integration.claiming;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.mojang.authlib.GameProfile;
 import eu.pb4.common.protection.api.CommonProtection;
 import eu.pb4.common.protection.api.ProtectionProvider;
@@ -13,7 +10,6 @@ import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import net.fabricmc.fabric.api.entity.FakePlayer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -28,8 +24,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.concurrent.TimeUnit;
 
 public class FlanProtectionProvider implements ProtectionProvider {
     public static final ResourceLocation Id = new ResourceLocation("flan", "provider");
@@ -110,9 +104,9 @@ public class FlanProtectionProvider implements ProtectionProvider {
 
         if (perm == null) {
             BlockEntity be = world.getBlockEntity(pos);
-            perm = be != null &&CrossPlatformStuff.INSTANCE.isInventoryTile(be)
-                ? PermissionRegistry.OPENCONTAINER
-                : PermissionRegistry.INTERACTBLOCK;
+            perm = be != null && CrossPlatformStuff.INSTANCE.isInventoryTile(be)
+                    ? PermissionRegistry.OPENCONTAINER
+                    : PermissionRegistry.INTERACTBLOCK;
         }
 
         return ClaimStorage.get(sl).getForPermissionCheck(pos).canInteract(sp, perm, pos);
