@@ -30,7 +30,9 @@
     "SculkSensorMixin",
     "SculkShriekerMixin",
     "DragonEggBlockMixin",
-    "AllayMixin"
+    "AllayMixin",
+    "ChunkGeneratorMixin",
+    "StructureManagerAccessor"
   ],
   "server": [
   ],
