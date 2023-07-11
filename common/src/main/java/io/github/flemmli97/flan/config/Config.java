@@ -59,7 +59,8 @@ public class Config {
     public List<String> interactBlockBlacklist = Lists.newArrayList(
             "universal_graves:grave",
             "yigd:grave",
-            "waystones"
+            "waystones",
+            "universal_shops:trade_block"
     );
 
     public List<String> breakBETagBlacklist = Lists.newArrayList(
