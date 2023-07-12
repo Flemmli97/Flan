@@ -86,6 +86,18 @@ public class ClaimStorage implements IPermissionStorage {
         return uuid;
     }
 
+    public boolean createAdminClaim(BlockPos pos1, BlockPos pos2, ServerLevel level) {
+        Claim claim = new Claim(pos1.below(ConfigHandler.config.defaultClaimDepth), pos2.below(ConfigHandler.config.defaultClaimDepth), null, level);
+        Set<DisplayBox> conflicts = this.conflicts(claim, null);
+        if (conflicts.isEmpty()) {
+            claim.setClaimID(this.generateUUID());
+            Flan.log("Creating new admin claim {}", claim);
+            this.addClaim(claim);
+            return true;
+        }
+        return false;
+    }
+
     public boolean createClaim(BlockPos pos1, BlockPos pos2, ServerPlayer player) {
         Claim claim = new Claim(pos1.below(ConfigHandler.config.defaultClaimDepth), pos2.below(ConfigHandler.config.defaultClaimDepth), player);
         Set<DisplayBox> conflicts = this.conflicts(claim, null);

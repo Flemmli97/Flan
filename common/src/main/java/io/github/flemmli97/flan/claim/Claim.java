@@ -146,7 +146,7 @@ public class Claim implements IPermissionContainer {
 
     private BlockPos getInitCenterPos() {
         BlockPos center = new BlockPos(this.minX + (this.maxX - this.minX) * 0.5, 0, this.minZ + (this.maxZ - this.minZ) * 0.5);
-        int y = this.world.getChunk(center.getX() >> 4, center.getZ() >> 4, ChunkStatus.HEIGHTMAPS).getHeight(Heightmap.Types.MOTION_BLOCKING, center.getX() & 15, center.getZ() & 15);
+        int y = !this.world.hasChunk(center.getX() >> 4, center.getZ() >> 4) ? this.minY + 1 : this.world.getChunk(center.getX() >> 4, center.getZ() >> 4, ChunkStatus.HEIGHTMAPS).getHeight(Heightmap.Types.MOTION_BLOCKING, center.getX() & 15, center.getZ() & 15);
         return new BlockPos(center.getX(), y + 1, center.getZ());
     }
 

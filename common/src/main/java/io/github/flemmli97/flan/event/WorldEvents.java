@@ -3,19 +3,25 @@ package io.github.flemmli97.flan.event;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.claim.ClaimStorage;
+import io.github.flemmli97.flan.mixin.StructureManagerAccessor;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.StructureFeatureManager;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
 
 public class WorldEvents {
 
@@ -96,5 +102,20 @@ public class WorldEvents {
 
     public static void serverTick(MinecraftServer server) {
         LogoutTracker.getInstance(server).tick();
+    }
+
+    @SuppressWarnings("deprecation")
+    public static void onStructureGen(StructureStart structureStart, StructureFeatureManager structureManager) {
+        LevelAccessor acc = ((StructureManagerAccessor) structureManager).getLevel();
+        ServerLevel level = null;
+        if (acc instanceof WorldGenRegion region)
+            level = region.getLevel();
+        else if (acc instanceof ServerLevel serverLevel)
+            level = serverLevel;
+        if (level == null)
+            return;
+        BoundingBox bb = structureStart.getBoundingBox();
+        ClaimStorage.get(level)
+                .createAdminClaim(new BlockPos(bb.minX(), bb.minY(), bb.minZ()), new BlockPos(bb.maxX(), bb.minY(), bb.maxZ()), level);
     }
 }

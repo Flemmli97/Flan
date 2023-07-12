@@ -48,6 +48,8 @@ public class Config {
     public boolean claimDisplayActionBar = false;
     public int permissionLevel = 2;
 
+    public boolean autoClaimStructures;
+
     public BuySellHandler buySellHandler = new BuySellHandler();
     public int maxBuyBlocks = -1;
 
@@ -186,6 +188,8 @@ public class Config {
             this.claimDisplayActionBar = ConfigHandler.fromJson(obj, "claimDisplayActionBar", this.claimDisplayActionBar);
             this.permissionLevel = ConfigHandler.fromJson(obj, "permissionLevel", this.permissionLevel);
 
+            this.autoClaimStructures = ConfigHandler.fromJson(obj, "autoClaimStructures", this.autoClaimStructures);
+
             this.ftbChunksCheck = ConfigHandler.fromJson(obj, "ftbChunksCheck", this.ftbChunksCheck);
             this.gomlReservedCheck = ConfigHandler.fromJson(obj, "gomlReservedCheck", this.gomlReservedCheck);
             this.mineColoniesCheck = ConfigHandler.fromJson(obj, "mineColoniesCheck", this.mineColoniesCheck);
@@ -288,6 +292,8 @@ public class Config {
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
         obj.addProperty("claimDisplayActionBar", this.claimDisplayActionBar);
         obj.addProperty("permissionLevel", this.permissionLevel);
+
+        obj.addProperty("autoClaimStructures", this.autoClaimStructures);
 
         obj.addProperty("ftbChunksCheck", this.ftbChunksCheck);
         obj.addProperty("gomlReservedCheck", this.gomlReservedCheck);
