@@ -56,7 +56,7 @@ public class PermissionRegistry {
     public static ClaimPermission FROSTWALKER = register(new ClaimPermission("FROSTWALKER", () -> new ItemStack(Items.LEATHER_BOOTS), "Permission for frostwalker to activate"));
     public static ClaimPermission PORTAL = register(new ClaimPermission("PORTAL", () -> new ItemStack(Items.OBSIDIAN), true, "Permission to use nether portals"));
     public static ClaimPermission RAID = register(new ClaimPermission("RAID", Raid::getLeaderBannerInstance, "Permission to trigger raids in claim.", "Wont prevent raids (just) outside"));
-    public static ClaimPermission BOAT = register(new ClaimPermission("BOAT", () -> new ItemStack(Items.OAK_BOAT), "Permission to sit in boats"));
+    public static ClaimPermission BOAT = register(new ClaimPermission("BOAT", () -> new ItemStack(Items.OAK_BOAT), "Permission to use boats"));
     public static ClaimPermission MINECART = register(new ClaimPermission("MINECART", () -> new ItemStack(Items.MINECART), "Permission to sit in minecarts"));
     public static ClaimPermission BUCKET = register(new ClaimPermission("BUCKET", () -> new ItemStack(Items.BUCKET), "Permission to take liquids with buckets"));
     public static ClaimPermission ENDERPEARL = register(new ClaimPermission("ENDERPEARL", () -> new ItemStack(Items.ENDER_PEARL), "Permission to use enderpearls"));
