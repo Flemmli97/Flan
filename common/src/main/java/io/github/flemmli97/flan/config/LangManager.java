@@ -194,6 +194,7 @@ public class LangManager {
         this.defaultTranslation.put("claimNameUsedSub", "One of the subclaim of this claim already has this name");
 
         this.defaultTranslation.put("setHome", "Claim home set to [x=%1$s,y=%2$s,z=%3$s]");
+        this.defaultTranslation.put("teleportNoClaim", "No such claim to teleport to");
         this.defaultTranslation.put("teleportHome", "Teleporting to claim home. Don't move for 5 seconds");
         this.defaultTranslation.put("teleportHomeFail", "Teleport already happening");
 
