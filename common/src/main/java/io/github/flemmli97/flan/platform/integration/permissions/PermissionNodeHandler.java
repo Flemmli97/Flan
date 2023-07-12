@@ -48,6 +48,7 @@ public interface PermissionNodeHandler {
     String permClaimBlocks = "flan.claim.blocks.max";
     String permMaxClaims = "flan.claims.amount";
     String permClaimBlocksCap = "flan.claim.blocks.cap";
+    String permClaimBlocksBonus = "flan.claim.blocks.bonus";
 
     PermissionNodeHandler INSTANCE = Flan.getPlatformInstance(PermissionNodeHandler.class,
             "io.github.flemmli97.flan.fabric.platform.integration.permissions.PermissionNodeHandlerImpl",
