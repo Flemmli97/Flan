@@ -51,6 +51,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -222,6 +223,10 @@ public class ClaimStorage implements IPermissionStorage {
                     return claim;
             }
         return null;
+    }
+
+    public List<Claim> getClaimsAt(int chunkX, int chunkZ) {
+        return this.claims.getOrDefault(ChunkPos.asLong(chunkX, chunkZ), Collections.emptyList());
     }
 
     @Override

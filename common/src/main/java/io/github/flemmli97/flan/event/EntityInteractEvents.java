@@ -59,6 +59,8 @@ import java.util.function.Consumer;
 
 public class EntityInteractEvents {
 
+    private static ResourceLocation TATERZEN = new ResourceLocation("taterzen", "npc");
+
     public static InteractionResult attackEntity(Player player, Level world, InteractionHand hand, Entity entity, EntityHitResult hitResult) {
         return attackSimple(player, entity, true);
     }
@@ -98,7 +100,7 @@ public class EntityInteractEvents {
                     return claim.canInteract(player, PermissionRegistry.OPENCONTAINER, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
                 return claim.canInteract(player, PermissionRegistry.MINECART, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             }
-            if (entity instanceof Villager)
+            if (entity instanceof Villager || CrossPlatformStuff.INSTANCE.registryEntities().getIDFrom(entity.getType()).equals(TATERZEN))
                 return claim.canInteract(player, PermissionRegistry.TRADING, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             if (entity instanceof ItemFrame)
                 return claim.canInteract(player, PermissionRegistry.ITEMFRAMEROTATE, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;

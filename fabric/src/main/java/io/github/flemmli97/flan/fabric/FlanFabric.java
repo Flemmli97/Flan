@@ -10,6 +10,7 @@ import io.github.flemmli97.flan.event.ItemInteractEvents;
 import io.github.flemmli97.flan.event.PlayerEvents;
 import io.github.flemmli97.flan.event.WorldEvents;
 import io.github.flemmli97.flan.fabric.integration.HarvestWithEase;
+import io.github.flemmli97.flan.fabric.platform.integration.claiming.FlanProtectionProvider;
 import io.github.flemmli97.flan.fabric.platform.integration.playerability.PlayerAbilityEvents;
 import io.github.flemmli97.flan.platform.integration.webmap.BluemapIntegration;
 import io.github.flemmli97.flan.platform.integration.webmap.DynmapIntegration;
@@ -65,6 +66,7 @@ public class FlanFabric implements ModInitializer {
         Flan.diamondCurrency = FabricLoader.getInstance().isModLoaded("diamondeconomy");
         Flan.ftbChunks = FabricLoader.getInstance().isModLoaded("ftbchunks");
         Flan.gomlServer = FabricLoader.getInstance().isModLoaded("goml");
+        Flan.commonProtApi = FabricLoader.getInstance().isModLoaded("common-protection-api");
 
         if (Flan.playerAbilityLib)
             PlayerAbilityEvents.register();
@@ -72,6 +74,8 @@ public class FlanFabric implements ModInitializer {
             DynmapIntegration.reg();
         if (FabricLoader.getInstance().isModLoaded("harvestwithease"))
             HarvestWithEase.init();
+        if (Flan.commonProtApi)
+            FlanProtectionProvider.register();
         ClaimCriterias.init();
     }
 
