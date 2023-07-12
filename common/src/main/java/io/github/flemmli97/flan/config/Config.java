@@ -87,8 +87,11 @@ public class Config {
     );
     public List<String> blockPermission = Lists.newArrayList(
     );
+    public List<String> entityPermission = Lists.newArrayList(
+            "taterzen:npc-TRADING"
+    );
 
-    public List<String> leftClickBlockIgnore = Lists.newArrayList(
+    public List<String> leftClickBlockPermission = Lists.newArrayList(
             "@storagedrawers:drawers-OPENCONTAINER",
             "mekanism:basic_bin-OPENCONTAINER",
             "mekanism:advanced_bin-OPENCONTAINER",
@@ -215,8 +218,10 @@ public class Config {
             ConfigHandler.arryFromJson(obj, "customItemPermission").forEach(e -> this.itemPermission.add(e.getAsString()));
             this.blockPermission.clear();
             ConfigHandler.arryFromJson(obj, "customBlockPermission").forEach(e -> this.blockPermission.add(e.getAsString()));
-            this.leftClickBlockIgnore.clear();
-            ConfigHandler.arryFromJson(obj, "leftClickBlockIgnore").forEach(e -> this.leftClickBlockIgnore.add(e.getAsString()));
+            this.entityPermission.clear();
+            ConfigHandler.arryFromJson(obj, "customEntityPermission").forEach(e -> this.entityPermission.add(e.getAsString()));
+            this.leftClickBlockPermission.clear();
+            ConfigHandler.arryFromJson(obj, "leftClickBlockPermission").forEach(e -> this.leftClickBlockPermission.add(e.getAsString()));
 
             this.dropTicks = ConfigHandler.fromJson(obj, "dropTicks", this.dropTicks);
             this.inactivityTime = ConfigHandler.fromJson(obj, "inactivityTimeDays", this.inactivityTime);
@@ -328,10 +333,11 @@ public class Config {
         JsonArray blockPerms = new JsonArray();
         this.blockPermission.forEach(blockPerms::add);
         obj.add("customBlockPermission", blockPerms);
-
+        this.entityPermission.forEach(blockPerms::add);
+        obj.add("customEntityPermission", blockPerms);
         JsonArray leftIgnore = new JsonArray();
-        this.leftClickBlockIgnore.forEach(leftIgnore::add);
-        obj.add("leftClickBlockIgnore", leftIgnore);
+        this.leftClickBlockPermission.forEach(leftIgnore::add);
+        obj.add("leftClickBlockPermission", leftIgnore);
 
         obj.addProperty("dropTicks", this.dropTicks);
         obj.addProperty("inactivityTimeDays", this.inactivityTime);

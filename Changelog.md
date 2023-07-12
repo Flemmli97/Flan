@@ -14,6 +14,7 @@ Flan 1.8.5
 - Add config `autoClaimStructures` to auto claim generated structures as admin claims
 - Rename `admin` option in tp command to `global`
 - Fix thrown item triggering sculks when sculk permission is off
+- Add config `customEntityPermission` that allows to change permission for an entity when interacted (right click). just like block and items
 
 Flan 1.8.4.3
 ================
