@@ -66,7 +66,7 @@ public class EntityInteractEvents {
     }
 
     public static InteractionResult useAtEntity(Player player, Level world, InteractionHand hand, Entity entity, /* Nullable */ EntityHitResult hitResult) {
-        if (!(player instanceof ServerPlayer) || player.isSpectator() || canInteract(entity))
+        if (!(player instanceof ServerPlayer serverPlayer) || player.isSpectator() || canInteract(entity))
             return InteractionResult.PASS;
         if (entity instanceof Enemy)
             return InteractionResult.PASS;
@@ -74,12 +74,16 @@ public class EntityInteractEvents {
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
+            ClaimPermission perm = ObjectToPermissionMap.getFromEntity(entity.getType());
+            if (perm != null) {
+                return claim.canInteract(serverPlayer, perm, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
+            }
             if (entity instanceof ArmorStand) {
-                if (!claim.canInteract((ServerPlayer) player, PermissionRegistry.ARMORSTAND, pos, true))
+                if (!claim.canInteract(serverPlayer, PermissionRegistry.ARMORSTAND, pos, true))
                     return InteractionResult.FAIL;
             }
             if (entity instanceof Mob)
-                return claim.canInteract((ServerPlayer) player, PermissionRegistry.ANIMALINTERACT, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
+                return claim.canInteract(serverPlayer, PermissionRegistry.ANIMALINTERACT, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
         }
         return InteractionResult.PASS;
     }
@@ -93,6 +97,10 @@ public class EntityInteractEvents {
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
+            ClaimPermission perm = ObjectToPermissionMap.getFromEntity(entity.getType());
+            if (perm != null) {
+                return claim.canInteract(player, perm, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
+            }
             if (entity instanceof Boat)
                 return claim.canInteract(player, PermissionRegistry.BOAT, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             if (entity instanceof AbstractMinecart) {

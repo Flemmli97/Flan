@@ -7,6 +7,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.BucketItem;
@@ -41,6 +42,7 @@ import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.TurtleEggBlock;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -58,11 +60,14 @@ public class ObjectToPermissionMap {
     private static final Map<Item, ClaimPermission> itemToPermission = new HashMap<>();
     private static final Map<Predicate<Item>, Supplier<ClaimPermission>> itemPermissionBuilder = new HashMap<>();
 
+    private static final Map<EntityType<?>, ClaimPermission> entityToPermission = new HashMap<>();
+
     private static final Map<Block, ClaimPermission> leftClickBlockPermission = new HashMap<>();
 
     public static void reload(MinecraftServer server) {
         blockToPermission.clear();
         itemToPermission.clear();
+        entityToPermission.clear();
         leftClickBlockPermission.clear();
         for (Block block : CrossPlatformStuff.INSTANCE.registryBlocks().getIterator()) {
             blockPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(block)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> blockToPermission.put(block, sub.get()));
@@ -70,58 +75,29 @@ public class ObjectToPermissionMap {
         for (Item item : CrossPlatformStuff.INSTANCE.registryItems().getIterator()) {
             itemPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(item)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> itemToPermission.put(item, sub.get()));
         }
-        for (String s : ConfigHandler.config.itemPermission) {
+        process(ConfigHandler.config.itemPermission, Registry.ITEM, itemToPermission);
+        process(ConfigHandler.config.blockPermission, Registry.BLOCK, blockToPermission);
+        process(ConfigHandler.config.entityPermission, Registry.ENTITY_TYPE, entityToPermission);
+        process(ConfigHandler.config.leftClickBlockPermission, Registry.BLOCK, leftClickBlockPermission);
+    }
+
+    private static <T> void process(List<String> list, Registry<T> registry, Map<T, ClaimPermission> map) {
+        for (String s : list) {
             String[] sub = s.split("-");
             boolean remove = sub[1].equals("NONE");
             if (s.startsWith("@")) {
                 ResourceLocation res = new ResourceLocation(sub[0].substring(1));
-                processTag(res, Registry.ITEM, i -> {
+                processTag(res, registry, b -> {
                     if (remove)
-                        itemToPermission.remove(i);
+                        map.remove(b);
                     else
-                        itemToPermission.put(i, PermissionRegistry.get(sub[1]));
+                        map.put(b, PermissionRegistry.get(sub[1]));
                 });
             } else {
                 if (remove)
-                    itemToPermission.remove(CrossPlatformStuff.INSTANCE.registryItems().getFromId(new ResourceLocation(sub[0])));
+                    map.remove(registry.get(new ResourceLocation(sub[0])));
                 else
-                    itemToPermission.put(CrossPlatformStuff.INSTANCE.registryItems().getFromId(new ResourceLocation(sub[0])), PermissionRegistry.get(sub[1]));
-            }
-        }
-        for (String s : ConfigHandler.config.blockPermission) {
-            String[] sub = s.split("-");
-            boolean remove = sub[1].equals("NONE");
-            if (s.startsWith("@")) {
-                ResourceLocation res = new ResourceLocation(sub[0].substring(1));
-                processTag(res, Registry.BLOCK, b -> {
-                    if (remove)
-                        blockToPermission.remove(b);
-                    else
-                        blockToPermission.put(b, PermissionRegistry.get(sub[1]));
-                });
-            } else {
-                if (remove)
-                    blockToPermission.remove(CrossPlatformStuff.INSTANCE.registryBlocks().getFromId(new ResourceLocation(sub[0])));
-                else
-                    blockToPermission.put(CrossPlatformStuff.INSTANCE.registryBlocks().getFromId(new ResourceLocation(sub[0])), PermissionRegistry.get(sub[1]));
-            }
-        }
-        for (String s : ConfigHandler.config.leftClickBlockIgnore) {
-            String[] sub = s.split("-");
-            boolean remove = sub[1].equals("NONE");
-            if (s.startsWith("@")) {
-                ResourceLocation res = new ResourceLocation(sub[0].substring(1));
-                processTag(res, Registry.BLOCK, b -> {
-                    if (remove)
-                        leftClickBlockPermission.remove(b);
-                    else
-                        leftClickBlockPermission.put(b, PermissionRegistry.get(sub[1]));
-                });
-            } else {
-                if (remove)
-                    leftClickBlockPermission.remove(CrossPlatformStuff.INSTANCE.registryBlocks().getFromId(new ResourceLocation(sub[0])));
-                else
-                    leftClickBlockPermission.put(CrossPlatformStuff.INSTANCE.registryBlocks().getFromId(new ResourceLocation(sub[0])), PermissionRegistry.get(sub[1]));
+                    map.put(registry.get(new ResourceLocation(sub[0])), PermissionRegistry.get(sub[1]));
             }
         }
     }
@@ -138,6 +114,10 @@ public class ObjectToPermissionMap {
 
     public static ClaimPermission getFromItem(Item item) {
         return itemToPermission.get(item);
+    }
+
+    public static ClaimPermission getFromEntity(EntityType<?> entity) {
+        return entityToPermission.get(entity);
     }
 
     public static ClaimPermission getForLeftClickBlock(Block block) {
