@@ -43,6 +43,7 @@ import net.minecraft.world.level.block.TurtleEggBlock;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -57,9 +58,12 @@ public class ObjectToPermissionMap {
     private static final Map<Item, ClaimPermission> itemToPermission = new HashMap<>();
     private static final Map<Predicate<Item>, Supplier<ClaimPermission>> itemPermissionBuilder = new HashMap<>();
 
+    private static final Map<Block, ClaimPermission> leftClickBlockPermission = new HashMap<>();
+
     public static void reload(MinecraftServer server) {
         blockToPermission.clear();
         itemToPermission.clear();
+        leftClickBlockPermission.clear();
         for (Block block : CrossPlatformStuff.INSTANCE.registryBlocks().getIterator()) {
             blockPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(block)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> blockToPermission.put(block, sub.get()));
         }
@@ -71,14 +75,12 @@ public class ObjectToPermissionMap {
             boolean remove = sub[1].equals("NONE");
             if (s.startsWith("@")) {
                 ResourceLocation res = new ResourceLocation(sub[0].substring(1));
-                Optional<HolderSet.Named<Item>> t = Registry.ITEM.getTags().filter(p -> p.getFirst().location().equals(res))
-                        .map(Pair::getSecond).findFirst();
-                t.ifPresent(holders -> holders.forEach(i -> {
+                processTag(res, Registry.ITEM, i -> {
                     if (remove)
-                        itemToPermission.remove(i.value());
+                        itemToPermission.remove(i);
                     else
-                        itemToPermission.put(i.value(), PermissionRegistry.get(sub[1]));
-                }));
+                        itemToPermission.put(i, PermissionRegistry.get(sub[1]));
+                });
             } else {
                 if (remove)
                     itemToPermission.remove(CrossPlatformStuff.INSTANCE.registryItems().getFromId(new ResourceLocation(sub[0])));
@@ -91,14 +93,12 @@ public class ObjectToPermissionMap {
             boolean remove = sub[1].equals("NONE");
             if (s.startsWith("@")) {
                 ResourceLocation res = new ResourceLocation(sub[0].substring(1));
-                Optional<HolderSet.Named<Block>> t = Registry.BLOCK.getTags().filter(p -> p.getFirst().location().equals(res))
-                        .map(Pair::getSecond).findFirst();
-                t.ifPresent(holders -> holders.forEach(i -> {
+                processTag(res, Registry.BLOCK, b -> {
                     if (remove)
-                        blockToPermission.remove(i.value());
+                        blockToPermission.remove(b);
                     else
-                        blockToPermission.put(i.value(), PermissionRegistry.get(sub[1]));
-                }));
+                        blockToPermission.put(b, PermissionRegistry.get(sub[1]));
+                });
             } else {
                 if (remove)
                     blockToPermission.remove(CrossPlatformStuff.INSTANCE.registryBlocks().getFromId(new ResourceLocation(sub[0])));
@@ -106,6 +106,30 @@ public class ObjectToPermissionMap {
                     blockToPermission.put(CrossPlatformStuff.INSTANCE.registryBlocks().getFromId(new ResourceLocation(sub[0])), PermissionRegistry.get(sub[1]));
             }
         }
+        for (String s : ConfigHandler.config.leftClickBlockIgnore) {
+            String[] sub = s.split("-");
+            boolean remove = sub[1].equals("NONE");
+            if (s.startsWith("@")) {
+                ResourceLocation res = new ResourceLocation(sub[0].substring(1));
+                processTag(res, Registry.BLOCK, b -> {
+                    if (remove)
+                        leftClickBlockPermission.remove(b);
+                    else
+                        leftClickBlockPermission.put(b, PermissionRegistry.get(sub[1]));
+                });
+            } else {
+                if (remove)
+                    leftClickBlockPermission.remove(CrossPlatformStuff.INSTANCE.registryBlocks().getFromId(new ResourceLocation(sub[0])));
+                else
+                    leftClickBlockPermission.put(CrossPlatformStuff.INSTANCE.registryBlocks().getFromId(new ResourceLocation(sub[0])), PermissionRegistry.get(sub[1]));
+            }
+        }
+    }
+
+    private static <T> void processTag(ResourceLocation tag, Registry<T> registry, Consumer<T> action) {
+        Optional<HolderSet.Named<T>> t = registry.getTags().filter(p -> p.getFirst().location().equals(tag))
+                .map(Pair::getSecond).findFirst();
+        t.ifPresent(holders -> holders.forEach(i -> action.accept(i.value())));
     }
 
     public static ClaimPermission getFromBlock(Block block) {
@@ -114,6 +138,10 @@ public class ObjectToPermissionMap {
 
     public static ClaimPermission getFromItem(Item item) {
         return itemToPermission.get(item);
+    }
+
+    public static ClaimPermission getForLeftClickBlock(Block block) {
+        return leftClickBlockPermission.get(block);
     }
 
     /**
