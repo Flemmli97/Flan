@@ -106,9 +106,7 @@ public class ObjectToPermissionMap {
     private static <T> void processTag(ResourceLocation tag, Registry<T> registry, Consumer<T> action) {
         Optional<HolderSet.Named<T>> t = registry.getTags().filter(p -> p.getFirst().location().equals(tag))
                 .map(Pair::getSecond).findFirst();
-        t.ifPresent(holders -> holders.forEach(i -> {
-            action.accept(i.value());
-        }));
+        t.ifPresent(holders -> holders.forEach(i -> action.accept(i.value())));
     }
 
     public static ClaimPermission getFromBlock(Block block) {
