@@ -374,12 +374,14 @@ public class CommandClaim {
                 PermHelper.noClaimMessage(player);
             else if (!b.get())
                 player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("deleteClaimError"), ChatFormatting.DARK_RED), false);
-            else
-                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("deleteClaim"), ChatFormatting.RED), false);
         });
         if (!check)
             return 0;
-        storage.deleteClaim(claim, true, PlayerClaimData.get(player).getEditMode(), player.getLevel());
+        if (!storage.deleteClaim(claim, true, PlayerClaimData.get(player).getEditMode(), player.getLevel())) {
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("deleteSubClaimError"), ChatFormatting.DARK_RED), false);
+        } else {
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("deleteClaim"), ChatFormatting.RED), false);
+        }
         return Command.SINGLE_SUCCESS;
     }
 

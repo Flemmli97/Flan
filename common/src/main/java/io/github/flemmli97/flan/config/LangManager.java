@@ -84,6 +84,7 @@ public class LangManager {
         this.defaultTranslation.put("deleteAllClaim", "All claims deleted");
         this.defaultTranslation.put("deleteClaimError", "You can't delete this claim here");
         this.defaultTranslation.put("deleteSubClaim", "Subclaim deleted");
+        this.defaultTranslation.put("deleteSubClaimError", "There is no subclaim here. Switch your claim mode to delete the main claim.");
         this.defaultTranslation.put("deleteSubClaimAll", "All Subclaims from this claim deleted");
         this.defaultTranslation.put("noSuchPerm", "No such Permission %1$s");
         this.defaultTranslation.put("editPerm", "%1$s now set to %2$s");
