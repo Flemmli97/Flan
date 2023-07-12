@@ -1,3 +1,20 @@
+Flan 1.8.5
+================
+- Fabric: common protection api support
+- Add default chinese lang file
+- Taterzen npc now use TRADE permission
+- Make spawn prevention only apply to natural spawns and not other like spawners
+- Prevent entering/placing boats into claims if BOAT permission is disabled
+- Add error message when player is in subclaim mode but trying to delete main claim
+- Use forge player place events in addition to current checks.
+- Add bonus claim block permission node: `flan.claim.blocks.bonus`
+- Add mappings config `leftClickBlockIgnore` for left clicking blocks.  
+  This is useful when blocks have custom behaviour when left clicked e.g. storage drawers
+- Add universal shops to default ignored blocks
+- Add config `autoClaimStructures` to auto claim generated structures as admin claims
+- Rename `admin` option in tp command to `global`
+- Add config `customEntityPermission` that allows to change permission for an entity when interacted (right click). just like block and items
+
 Flan 1.8.4.1
 ================
 - Fabric: Add harvest with ease compat
