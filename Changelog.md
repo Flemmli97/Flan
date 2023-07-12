@@ -13,6 +13,7 @@ Flan 1.8.5
 - Add universal shops to default ignored blocks
 - Add config `autoClaimStructures` to auto claim generated structures as admin claims
 - Rename `admin` option in tp command to `global`
+- Fix thrown item triggering sculks when sculk permission is off
 
 Flan 1.8.4.3
 ================
