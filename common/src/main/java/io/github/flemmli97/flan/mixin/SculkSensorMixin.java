@@ -4,6 +4,7 @@ import io.github.flemmli97.flan.event.PlayerEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SculkSensorBlock;
@@ -24,6 +25,8 @@ public abstract class SculkSensorMixin {
         if (entity instanceof ServerPlayer p)
             player = p;
         else if (entity instanceof Projectile proj && proj.getOwner() instanceof ServerPlayer p)
+            player = p;
+        else if (entity instanceof ItemEntity item && item.getOwner() instanceof ServerPlayer p)
             player = p;
         if (player != null && !PlayerEvents.canSculkTrigger(pos, player))
             info.cancel();
