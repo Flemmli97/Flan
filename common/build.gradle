@@ -1,6 +1,8 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.0"
+    id "com.github.johnrengelman.shadow" version "7.+"
 }
+
+apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-1.2/common.gradle"
 
 configurations {
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
@@ -19,9 +21,6 @@ repositories {
 }
 
 dependencies {
-    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
-    // Do NOT use other classes from fabric loader
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
     implementation group: 'org.yaml', name: 'snakeyaml', version: '1.25'
     shadowCommon group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
@@ -29,10 +28,6 @@ dependencies {
 
     modImplementation "dev.ftb.mods:ftb-chunks:${rootProject.ftb_chunks}"
     implementation 'com.github.BlueMap-Minecraft:BlueMapAPI:v2.2.1'
-}
-
-architectury {
-    common()
 }
 
 shadowJar {
@@ -52,31 +47,25 @@ transformProductionForge {
     input.set shadowJar.archiveFile
 }
 
+task apiJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set "common-api-source"
+    from project(":common").sourceSets.main.output + sourceSets.main.output
+    include "io/github/flemmli97/flan/api/**"
+}
+
+task remapApiJar(type: net.fabricmc.loom.task.RemapJarTask) {
+    archiveClassifier.set "common-api"
+    input.set apiJar.archiveFile
+    addNestedDependencies = false
+    dependsOn apiJar
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(jar) {
-                classifier null
-                builtBy jar
-            }
-            artifact(sourcesJar) {
-                classifier "sources"
-                builtBy remapSourcesJar
-            }
-            artifactId project.archives_base_name
-            version project.version + "-common"
-        }
-    }
-
-    repositories {
-        maven {
-            url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
-            //url "https://maven.pkg.github.com/flemmli97/<>"
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER")
-                password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
-                //password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
+            artifact(remapApiJar) {
+                classifier "api"
+                builtBy remapApiJar
             }
         }
     }
