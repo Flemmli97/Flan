@@ -1,4 +1,4 @@
-apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-1.2/forge.gradle"
+apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-v1/forge.gradle"
 
 loom {
     forge {
