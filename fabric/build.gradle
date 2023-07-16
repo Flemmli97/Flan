@@ -1,27 +1,4 @@
-plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.0"
-}
-
-architectury {
-    platformSetupLoomIde()
-    fabric()
-}
-
-configurations {
-    common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentFabric.extendsFrom common
-}
-
-loom {
-    runs {
-        client {
-            vmArgs "-Dmixin.debug.export=true"
-        }
-    }
-}
+apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-1.2/fabric.gradle"
 
 repositories {
     mavenCentral()
@@ -35,7 +12,7 @@ repositories {
     }
     maven {
         name = 'Ladysnake Mods'
-        url = 'https://ladysnake.jfrog.io/artifactory/mods'
+        url = 'https://maven.ladysnake.org/releases'
         content {
             includeGroup 'io.github.ladysnake'
             includeGroupByRegex 'io\\.github\\.onyxstudios.*'
@@ -64,14 +41,6 @@ repositories {
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
-
-    // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
-
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
-
     modImplementation "me.lucko:fabric-permissions-api:${rootProject.fabric_permissions_api}"
 
     modImplementation octo_economy_api
@@ -88,43 +57,6 @@ dependencies {
 
     modCompileOnly harvest_with_ease_fabric
     modCompileOnly "eu.pb4:common-protection-api:${rootProject.common_prot_api}"
-}
-
-processResources {
-    inputs.property "version", project.version
-
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version, "homepage": curse_page_fabric, 
-                "mcversion": minecraft_version, "fabric_version": fabric_version
-    }
-}
-
-shadowJar {
-    configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
-}
-
-remapJar {
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    classifier "fabric"
-}
-
-jar {
-    classifier "dev"
-}
-
-sourcesJar {
-    def commonSources = project(":common").sourcesJar
-    dependsOn commonSources
-    from commonSources.archiveFile.map { zipTree(it) }
-    classifier "fabric-sources"
-}
-
-components.java {
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-        skip()
-    }
 }
 
 task apiJar(type: Jar, dependsOn: classes) {
@@ -150,32 +82,9 @@ task remapApiJar(type: net.fabricmc.loom.task.RemapJarTask) {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                classifier null
-                builtBy remapJar
-            }
-            artifact(sourcesJar) {
-                classifier "sources"
-                builtBy remapSourcesJar
-            }
             artifact(remapApiJar) {
                 classifier "api"
                 builtBy remapApiJar
-            }
-            artifactId project.archives_base_name
-            version project.version + "-fabric"
-        }
-    }
-
-    repositories {
-        maven {
-            url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
-            //url "https://maven.pkg.github.com/flemmli97/<>"
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER")
-                password = project.findProperty("gpr.gitlab.token") ?: System.getenv("GPR_GITLAB_TOKEN")
-                //password = project.findProperty("gpr.github.token") ?: System.getenv("GPR_TOKEN")
             }
         }
     }
