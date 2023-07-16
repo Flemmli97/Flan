@@ -1,6 +1,8 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.0"
+    id "com.github.johnrengelman.shadow" version "7.+"
 }
+
+apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-v1/common.gradle"
 
 configurations {
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
@@ -19,9 +21,6 @@ repositories {
 }
 
 dependencies {
-    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
-    // Do NOT use other classes from fabric loader
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
     implementation group: 'org.yaml', name: 'snakeyaml', version: '1.25'
     shadowCommon group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
@@ -29,10 +28,6 @@ dependencies {
 
     modImplementation "dev.ftb.mods:ftb-chunks:${rootProject.ftb_chunks}"
     implementation 'com.github.BlueMap-Minecraft:BlueMapAPI:v2.2.1'
-}
-
-architectury {
-    common(rootProject.enabled_platforms.split(","))
 }
 
 shadowJar {
@@ -52,20 +47,26 @@ transformProductionForge {
     input.set shadowJar.archiveFile
 }
 
+task apiJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set "common-api-source"
+    from project(":common").sourceSets.main.output + sourceSets.main.output
+    include "io/github/flemmli97/flan/api/**"
+}
+
+task remapApiJar(type: net.fabricmc.loom.task.RemapJarTask) {
+    archiveClassifier.set "common-api"
+    input.set apiJar.archiveFile
+    addNestedDependencies = false
+    dependsOn apiJar
+}
+
 publishing {
     publications {
-        mavenCommon(MavenPublication) {
-            artifactId = rootProject.archives_base_name
-            // add all the jars that should be included when publishing to maven
-            artifact remapJar
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
+        mavenJava(MavenPublication) {
+            artifact(remapApiJar) {
+                classifier "api"
+                builtBy remapApiJar
             }
         }
-    }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
     }
 }
