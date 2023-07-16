@@ -3,4 +3,4 @@ plugins {
     id "dev.architectury.loom" version "0.11.0-SNAPSHOT" apply false
 }
 
-apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-1.2/main.gradle"
+apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-v1/main.gradle"

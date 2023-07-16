@@ -2,7 +2,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.+"
 }
 
-apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-1.2/common.gradle"
+apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-v1/common.gradle"
 
 configurations {
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.

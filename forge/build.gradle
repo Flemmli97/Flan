@@ -2,7 +2,7 @@ ext {
     shadow_dep = [group: "com.github.johnrengelman.shadow", name: "com.github.johnrengelman.shadow.gradle.plugin", version: "7.1.0"]
 }
 
-apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-1.2/forge.gradle"
+apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-v1/forge.gradle"
 
 loom {
     forge {
