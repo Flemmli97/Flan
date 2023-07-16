@@ -130,14 +130,14 @@ public class EntityInteractEvents {
     }
 
     public static boolean projectileHit(Projectile proj, HitResult res) {
-        if (proj.level.isClientSide)
+        if (proj.level().isClientSide)
             return false;
         Entity owner = proj.getOwner();
         if (owner instanceof ServerPlayer player) {
             if (res.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult blockRes = (BlockHitResult) res;
                 BlockPos pos = blockRes.getBlockPos();
-                BlockState state = proj.level.getBlockState(pos);
+                BlockState state = proj.level().getBlockState(pos);
                 ClaimPermission perm;
                 if (proj instanceof ThrownEnderpearl)
                     perm = PermissionRegistry.ENDERPEARL;
@@ -147,19 +147,19 @@ public class EntityInteractEvents {
                     perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
                 if (perm != PermissionRegistry.ENDERPEARL && perm != PermissionRegistry.TARGETBLOCK && perm != PermissionRegistry.PROJECTILES)
                     return false;
-                ClaimStorage storage = ClaimStorage.get((ServerLevel) proj.level);
+                ClaimStorage storage = ClaimStorage.get((ServerLevel) proj.level());
                 IPermissionContainer claim = storage.getForPermissionCheck(pos);
                 if (claim == null)
                     return false;
                 boolean flag = !claim.canInteract(player, perm, pos, true);
                 if (flag) {
                     if (proj instanceof AbstractArrow pers) {
-                        ((IPersistentProjectileVars) pers).setInBlockState(pers.level.getBlockState(pos));
+                        ((IPersistentProjectileVars) pers).setInBlockState(pers.level().getBlockState(pos));
                         Vec3 vec3d = blockRes.getLocation().subtract(pers.getX(), pers.getY(), pers.getZ());
                         pers.setDeltaMovement(vec3d);
                         Vec3 vec3d2 = vec3d.normalize().scale(0.05000000074505806D);
                         pers.setPosRaw(pers.getX() - vec3d2.x, pers.getY() - vec3d2.y, pers.getZ() - vec3d2.z);
-                        pers.playSound(((IPersistentProjectileVars) pers).getSoundEvent(), 1.0F, 1.2F / (pers.level.random.nextFloat() * 0.2F + 0.9F));
+                        pers.playSound(((IPersistentProjectileVars) pers).getSoundEvent(), 1.0F, 1.2F / (pers.level().random.nextFloat() * 0.2F + 0.9F));
                         ((IPersistentProjectileVars) pers).setInGround(true);
                         pers.shakeTime = 7;
                         pers.setCritArrow(false);
@@ -176,7 +176,7 @@ public class EntityInteractEvents {
                 return flag;
             } else if (res.getType() == HitResult.Type.ENTITY) {
                 if (proj instanceof ThrownEnderpearl) {
-                    ClaimStorage storage = ClaimStorage.get((ServerLevel) proj.level);
+                    ClaimStorage storage = ClaimStorage.get((ServerLevel) proj.level());
                     IPermissionContainer claim = storage.getForPermissionCheck(proj.blockPosition());
                     return claim.canInteract(player, PermissionRegistry.ENDERPEARL, proj.blockPosition(), true);
                 }
@@ -199,8 +199,8 @@ public class EntityInteractEvents {
     public static boolean preventDamage(Entity entity, DamageSource source) {
         if (source.getEntity() instanceof ServerPlayer)
             return attackSimple((ServerPlayer) source.getEntity(), entity, true) != InteractionResult.PASS;
-        else if (source.is(DamageTypeTags.IS_EXPLOSION) && !entity.level.isClientSide && !(entity instanceof ServerPlayer || entity instanceof Enemy)) {
-            IPermissionContainer claim = ClaimStorage.get((ServerLevel) entity.level).getForPermissionCheck(entity.blockPosition());
+        else if (source.is(DamageTypeTags.IS_EXPLOSION) && !entity.level().isClientSide && !(entity instanceof ServerPlayer || entity instanceof Enemy)) {
+            IPermissionContainer claim = ClaimStorage.get((ServerLevel) entity.level()).getForPermissionCheck(entity.blockPosition());
             return claim != null && !claim.canInteract(null, PermissionRegistry.EXPLOSIONS, entity.blockPosition());
         }
         return false;
@@ -211,7 +211,7 @@ public class EntityInteractEvents {
             return InteractionResult.PASS;
         if (entity instanceof Enemy)
             return InteractionResult.PASS;
-        ClaimStorage storage = ClaimStorage.get(player.getLevel());
+        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
@@ -226,7 +226,7 @@ public class EntityInteractEvents {
 
     public static boolean xpAbsorb(Player player) {
         if (player instanceof ServerPlayer) {
-            ClaimStorage storage = ClaimStorage.get((ServerLevel) player.level);
+            ClaimStorage storage = ClaimStorage.get((ServerLevel) player.level());
             BlockPos pos = player.blockPosition();
             IPermissionContainer claim = storage.getForPermissionCheck(pos);
             if (claim != null)
@@ -247,7 +247,7 @@ public class EntityInteractEvents {
                 }
                 if (sPlayer.getUUID().equals(ownedItem.getPlayerOrigin()))
                     return true;
-                ClaimStorage storage = ClaimStorage.get(sPlayer.getLevel());
+                ClaimStorage storage = ClaimStorage.get(sPlayer.serverLevel());
                 BlockPos pos = sPlayer.blockPosition();
                 IPermissionContainer claim = storage.getForPermissionCheck(pos);
                 if (claim != null)
@@ -259,7 +259,7 @@ public class EntityInteractEvents {
 
     public static boolean canDropItem(Player player, ItemStack stack) {
         if (!player.isDeadOrDying() && player instanceof ServerPlayer) {
-            ClaimStorage storage = ClaimStorage.get((ServerLevel) player.level);
+            ClaimStorage storage = ClaimStorage.get((ServerLevel) player.level());
             BlockPos pos = player.blockPosition();
             IPermissionContainer claim = storage.getForPermissionCheck(pos);
             boolean allow = true;
@@ -280,9 +280,9 @@ public class EntityInteractEvents {
     }
 
     public static boolean witherCanDestroy(WitherBoss wither) {
-        if (wither.level.isClientSide)
+        if (wither.level().isClientSide)
             return true;
-        ClaimStorage storage = ClaimStorage.get((ServerLevel) wither.level);
+        ClaimStorage storage = ClaimStorage.get((ServerLevel) wither.level());
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int x = -1; x <= 1; x++)
             for (int z = -1; z <= 1; z++) {
@@ -295,15 +295,15 @@ public class EntityInteractEvents {
     }
 
     public static boolean canEndermanInteract(EnderMan enderman, BlockPos pos) {
-        if (enderman.level.isClientSide)
+        if (enderman.level().isClientSide)
             return true;
-        ClaimStorage storage = ClaimStorage.get((ServerLevel) enderman.level);
+        ClaimStorage storage = ClaimStorage.get((ServerLevel) enderman.level());
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         return claim.canInteract(null, PermissionRegistry.ENDERMAN, pos, false);
     }
 
     public static boolean canSnowGolemInteract(SnowGolem snowgolem) {
-        if (snowgolem.level.isClientSide)
+        if (snowgolem.level().isClientSide)
             return true;
         int x, y, z;
         for (int l = 0; l < 4; ++l) {
@@ -311,7 +311,7 @@ public class EntityInteractEvents {
             y = Mth.floor(snowgolem.getY());
             z = Mth.floor(snowgolem.getZ() + (l / 2 % 2 * 2 - 1) * 0.25F);
             BlockPos pos = new BlockPos(x, y, z);
-            IPermissionContainer claim = ClaimStorage.get((ServerLevel) snowgolem.level).getForPermissionCheck(pos);
+            IPermissionContainer claim = ClaimStorage.get((ServerLevel) snowgolem.level()).getForPermissionCheck(pos);
             if (!claim.canInteract(null, PermissionRegistry.SNOWGOLEM, pos, false))
                 return false;
         }
@@ -325,7 +325,7 @@ public class EntityInteractEvents {
     public static void updateClaim(ServerPlayer player, Claim currentClaim, Consumer<Claim> cons) {
         Vec3 pos = player.position();
         BlockPos rounded = TeleportUtils.roundedBlockPos(pos.add(0, player.getStandingEyeHeight(player.getPose(), player.getDimensions(player.getPose())), 0));
-        ClaimStorage storage = ClaimStorage.get(player.getLevel());
+        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
         if (currentClaim != null) {
             if (!currentClaim.intersects(player.getBoundingBox())) {
                 boolean isSub = currentClaim.parentClaim() != null;
@@ -399,9 +399,9 @@ public class EntityInteractEvents {
     }
 
     public static boolean preventLightningConvert(Entity entity) {
-        if (entity.level.isClientSide || entity instanceof Enemy)
+        if (entity.level().isClientSide || entity instanceof Enemy)
             return false;
-        ClaimStorage storage = ClaimStorage.get((ServerLevel) entity.level);
+        ClaimStorage storage = ClaimStorage.get((ServerLevel) entity.level());
         IPermissionContainer claim = storage.getForPermissionCheck(entity.blockPosition());
         return !claim.canInteract(null, PermissionRegistry.LIGHTNING, entity.blockPosition(), false);
     }

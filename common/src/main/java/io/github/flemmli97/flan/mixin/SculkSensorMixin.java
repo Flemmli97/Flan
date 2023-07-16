@@ -9,18 +9,17 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SculkSensorBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import javax.annotation.Nullable;
-
 @Mixin(SculkSensorBlock.class)
 public abstract class SculkSensorMixin {
 
     @Inject(method = "activate", at = @At("HEAD"), cancellable = true)
-    private static void playerPermCheck(@Nullable Entity entity, Level level, BlockPos pos, BlockState state, int strength, CallbackInfo info) {
+    private void playerPermCheck(@Nullable Entity entity, Level level, BlockPos pos, BlockState state, int power, int frequency, CallbackInfo info) {
         ServerPlayer player = null;
         if (entity instanceof ServerPlayer p)
             player = p;

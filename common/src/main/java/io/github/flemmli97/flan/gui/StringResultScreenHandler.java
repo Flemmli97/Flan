@@ -133,8 +133,9 @@ public class StringResultScreenHandler extends AnvilMenu {
     }
 
     @Override
-    public void setItemName(String string) {
+    public boolean setItemName(String string) {
         this.name = string;
         this.createResult();
+        return true;
     }
 }

@@ -33,7 +33,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.AABB;
@@ -187,7 +186,7 @@ public class PlayerClaimData implements IPlayerData {
 
     public void addDisplayClaim(DisplayBox display, EnumDisplayType type, int height) {
         if (!display.isRemoved())
-            this.displayToAdd.add(new ClaimDisplay(display, this.player.getLevel(), type, height));
+            this.displayToAdd.add(new ClaimDisplay(display, this.player.serverLevel(), type, height));
     }
 
     public EnumEditMode getEditMode() {
@@ -206,12 +205,12 @@ public class PlayerClaimData implements IPlayerData {
 
     public void setEditingCorner(BlockPos pos) {
         if (pos != null) {
-            BlockState state = this.player.level.getBlockState(pos);
-            while (state.isAir() || state.getMaterial().isReplaceable()) {
+            BlockState state = this.player.level().getBlockState(pos);
+            while (state.isAir() || state.canBeReplaced()) {
                 pos = pos.below();
-                state = this.player.level.getBlockState(pos);
+                state = this.player.level().getBlockState(pos);
             }
-            this.cornerRenderPos = ClaimDisplay.getPosFrom(this.player.getLevel(), pos.getX(), pos.getZ(), pos.getY());
+            this.cornerRenderPos = ClaimDisplay.getPosFrom(this.player.serverLevel(), pos.getX(), pos.getZ(), pos.getY());
         } else
             this.cornerRenderPos = null;
         this.firstCorner = pos;
@@ -239,7 +238,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public boolean editDefaultPerms(String group, ClaimPermission perm, int mode) {
-        if (PermissionRegistry.globalPerms().contains(perm) || ConfigHandler.config.globallyDefined(this.player.getLevel(), perm))
+        if (PermissionRegistry.globalPerms().contains(perm) || ConfigHandler.config.globallyDefined(this.player.serverLevel(), perm))
             return false;
         if (mode > 1)
             mode = -1;
@@ -317,11 +316,11 @@ public class PlayerClaimData implements IPlayerData {
                 if (this.tpPos != null) {
                     BlockPos.MutableBlockPos tpTo = this.tpPos.mutable();
                     Vec3 offset = new Vec3(this.tpPos.getX() + 0.5, this.tpPos.getY() + 0.01, this.tpPos.getZ() + 0.5).subtract(this.player.position());
-                    int yHighest = this.player.level.getChunk(this.tpPos.getX() >> 4, this.tpPos.getZ() >> 4, ChunkStatus.HEIGHTMAPS).getHeight(Heightmap.Types.MOTION_BLOCKING, this.tpPos.getX() & 15, this.tpPos.getZ() & 15);
+                    int yHighest = this.player.level().getChunk(this.tpPos.getX() >> 4, this.tpPos.getZ() >> 4).getHeight(Heightmap.Types.MOTION_BLOCKING, this.tpPos.getX() & 15, this.tpPos.getZ() & 15);
                     AABB box = this.player.getBoundingBox().move(offset);
                     if (tpTo.getY() < yHighest) {
                         while (tpTo.getY() < yHighest) {
-                            if (this.player.level.noCollision(this.player, box))
+                            if (this.player.level().noCollision(this.player, box))
                                 break;
                             tpTo.set(tpTo.getX(), tpTo.getY() + 1, tpTo.getZ());
                             box = box.move(0, 1, 0);
@@ -334,7 +333,7 @@ public class PlayerClaimData implements IPlayerData {
                     this.player.teleportToWithTicket(tpTo.getX() + 0.5, tpTo.getY(), tpTo.getZ() + 0.5);
                     this.tpPos = null;
                 } else {
-                    Vec3 tp = TeleportUtils.getTeleportPos(this.player, this.player.position(), ClaimStorage.get(this.player.getLevel()),
+                    Vec3 tp = TeleportUtils.getTeleportPos(this.player, this.player.position(), ClaimStorage.get(this.player.serverLevel()),
                             ((IPlayerClaimImpl) this.player).getCurrentClaim().getDimensions(),
                             TeleportUtils.roundedBlockPos(this.player.position()).mutable(), (claim, nPos) -> false);
                     if (this.player.isPassenger())
@@ -409,7 +408,7 @@ public class PlayerClaimData implements IPlayerData {
             return false;
         if (this.calculateShouldDrop) {
             BlockPos rounded = TeleportUtils.roundedBlockPos(this.player.position().add(0, this.player.getStandingEyeHeight(this.player.getPose(), this.player.getDimensions(this.player.getPose())), 0));
-            this.shouldProtectDrop = ClaimStorage.get(this.player.getLevel()).getForPermissionCheck(rounded)
+            this.shouldProtectDrop = ClaimStorage.get(this.player.serverLevel()).getForPermissionCheck(rounded)
                     .canInteract(this.player, PermissionRegistry.LOCKITEMS, rounded)
                     && !this.player.getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
             this.calculateShouldDrop = false;
@@ -430,7 +429,7 @@ public class PlayerClaimData implements IPlayerData {
             return;
         Map<UUID, Long> map = this.fakePlayerNotif.computeIfAbsent(claim.getClaimID(), o -> new HashMap<>());
         Long last = map.get(fakePlayer.getUUID());
-        if (last == null || this.player.getLevel().getGameTime() - 1200 > last) {
+        if (last == null || this.player.serverLevel().getGameTime() - 1200 > last) {
             Component claimMsg = Component.literal(String.format(ConfigHandler.langManager.get("fakePlayerNotification1"), claim.getWorld().dimension().location().toString(), pos)).withStyle(ChatFormatting.DARK_RED);
             this.player.sendSystemMessage(claimMsg);
             String cmdStr = String.format("/flan fakePlayer add %s", fakePlayer.getUUID().toString());
@@ -447,7 +446,7 @@ public class PlayerClaimData implements IPlayerData {
                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(cmdStr))));
             msg = Component.translatable(ConfigHandler.langManager.get("fakePlayerNotification3"), cmd);
             this.player.sendSystemMessage(msg);
-            map.put(fakePlayer.getUUID(), this.player.getLevel().getGameTime());
+            map.put(fakePlayer.getUUID(), this.player.serverLevel().getGameTime());
         }
     }
 
@@ -552,7 +551,7 @@ public class PlayerClaimData implements IPlayerData {
         Flan.log("Reading grief prevention data");
         File griefPrevention = server.getWorldPath(LevelResource.ROOT).resolve("plugins/GriefPreventionData/PlayerData").toFile();
         if (!griefPrevention.exists()) {
-            src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("cantFindData"), griefPrevention.getAbsolutePath()), ChatFormatting.DARK_RED), false);
+            src.sendSuccess(() -> PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("cantFindData"), griefPrevention.getAbsolutePath()), ChatFormatting.DARK_RED), false);
             return false;
         }
         for (File f : griefPrevention.listFiles()) {
@@ -587,7 +586,7 @@ public class PlayerClaimData implements IPlayerData {
                     reader.close();
                 }
             } catch (Exception e) {
-                src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("errorFile"), f.getName(), ChatFormatting.RED)), false);
+                src.sendSuccess(() -> PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("errorFile"), f.getName(), ChatFormatting.RED)), false);
             }
         }
         return true;

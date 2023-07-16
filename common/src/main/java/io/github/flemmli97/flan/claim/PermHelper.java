@@ -26,7 +26,7 @@ public class PermHelper {
 
     public static Claim checkReturn(ServerPlayer player, ClaimPermission perm, Consumer<Optional<Boolean>> cons) {
         BlockPos pos = player.blockPosition();
-        Claim claim = ClaimStorage.get(player.getLevel()).getClaimAt(pos);
+        Claim claim = ClaimStorage.get(player.serverLevel()).getClaimAt(pos);
         return check(player, pos, claim, perm, cons) ? claim : null;
     }
 

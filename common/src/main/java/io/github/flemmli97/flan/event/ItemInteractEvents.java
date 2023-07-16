@@ -153,11 +153,11 @@ public class ItemInteractEvents {
         if (data.isAdminIgnoreClaim())
             return true;
         if (ConfigHandler.config.worldWhitelist) {
-            if (!cantClaimInWorld(player.getLevel())) {
+            if (!cantClaimInWorld(player.serverLevel())) {
                 player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("landClaimDisabledWorld"), ChatFormatting.DARK_RED), false);
                 return false;
             }
-        } else if (cantClaimInWorld(player.getLevel())) {
+        } else if (cantClaimInWorld(player.serverLevel())) {
             player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("landClaimDisabledWorld"), ChatFormatting.DARK_RED), false);
             return false;
         }
@@ -169,9 +169,9 @@ public class ItemInteractEvents {
             player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), true);
             return;
         }
-        if (!canClaimWorld(player.getLevel(), player))
+        if (!canClaimWorld(player.serverLevel(), player))
             return;
-        ClaimStorage storage = ClaimStorage.get(player.getLevel());
+        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
         Claim claim = storage.getClaimAt(target.offset(0, 255, 0));
         PlayerClaimData data = PlayerClaimData.get(player);
         if (data.claimCooldown())
@@ -250,7 +250,7 @@ public class ItemInteractEvents {
     }
 
     public static void inspect(ServerPlayer player, BlockPos target) {
-        Claim claim = ClaimStorage.get(player.getLevel()).getClaimAt(target);
+        Claim claim = ClaimStorage.get(player.serverLevel()).getClaimAt(target);
         PlayerClaimData data = PlayerClaimData.get(player);
         if (data.claimCooldown())
             return;

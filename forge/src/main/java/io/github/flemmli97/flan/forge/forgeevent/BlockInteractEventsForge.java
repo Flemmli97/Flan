@@ -72,7 +72,7 @@ public class BlockInteractEventsForge {
     private static boolean forgePlaceBlocks(Entity entity, BlockPos placePos, BlockState placedBlock) {
         if (!(entity instanceof ServerPlayer player))
             return false;
-        ClaimStorage storage = ClaimStorage.get(player.getLevel());
+        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
         IPermissionContainer claim = storage.getForPermissionCheck(placePos);
         if (claim == null)
             return false;

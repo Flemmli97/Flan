@@ -29,7 +29,7 @@ public class CommandCurrencyImpl implements CommandCurrency {
                 return false;
             }
             double price = blocks * value;
-            MoneyWSD.get(player.getLevel()).changeBalance(MoneyMod.AcctTypes.PLAYER.key, player.getUUID(), price);
+            MoneyWSD.get(player.serverLevel()).changeBalance(MoneyMod.AcctTypes.PLAYER.key, player.getUUID(), price);
             data.setAdditionalClaims(data.getAdditionalClaims() - blocks);
             message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("sellSuccess"), blocks, price), ChatFormatting.GOLD));
             return true;
@@ -46,7 +46,7 @@ public class CommandCurrencyImpl implements CommandCurrency {
         }
         if (Flan.diceMCMoneySign) {
             UUID uuid = player.getUUID();
-            MoneyWSD manager = MoneyWSD.get(player.getLevel());
+            MoneyWSD manager = MoneyWSD.get(player.serverLevel());
             double bal = manager.getBalance(MoneyMod.AcctTypes.PLAYER.key, uuid);
             double price = blocks * value;
             if (bal >= price) {

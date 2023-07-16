@@ -63,7 +63,7 @@ public class CommandHelpers {
     public static CompletableFuture<Suggestions> groupSuggestion(CommandContext<CommandSourceStack> context, SuggestionsBuilder build) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         List<String> list = new ArrayList<>();
-        ClaimStorage storage = ClaimStorage.get(player.getLevel());
+        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
         Claim claim = storage.getClaimAt(player.blockPosition());
         if (claim != null && claim.canInteract(player, PermissionRegistry.EDITPERMS, player.blockPosition())) {
             list = claim.groups();

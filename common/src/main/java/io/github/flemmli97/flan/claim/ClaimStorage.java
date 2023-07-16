@@ -178,7 +178,7 @@ public class ClaimStorage implements IPermissionStorage {
 
     public void toggleAdminClaim(ServerPlayer player, Claim claim, boolean toggle) {
         Flan.log("Set claim {} to an admin claim", claim);
-        this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.getLevel());
+        this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.serverLevel());
         if (toggle)
             claim.getOwnerPlayer().ifPresent(o -> PlayerClaimData.get(o).updateScoreboard());
         claim.toggleAdminClaim(player, toggle);
@@ -190,7 +190,7 @@ public class ClaimStorage implements IPermissionStorage {
     public boolean resizeClaim(Claim claim, BlockPos from, BlockPos to, ServerPlayer player) {
         int[] dims = claim.getDimensions();
         BlockPos opposite = new BlockPos(dims[0] == from.getX() ? dims[1] : dims[0], dims[4], dims[2] == from.getZ() ? dims[3] : dims[2]);
-        Claim newClaim = new Claim(opposite, to, player.getUUID(), player.getLevel());
+        Claim newClaim = new Claim(opposite, to, player.getUUID(), player.serverLevel());
         if (newClaim.getPlane() < ConfigHandler.config.minClaimsize) {
             player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("minClaimSize"), ConfigHandler.config.minClaimsize), ChatFormatting.RED), false);
             return false;
@@ -211,7 +211,7 @@ public class ClaimStorage implements IPermissionStorage {
         boolean enoughBlocks = claim.isAdminClaim() || data.isAdminIgnoreClaim() || newData.canUseClaimBlocks(diff);
         if (enoughBlocks) {
             Flan.log("Resizing claim {}", claim);
-            this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.getLevel());
+            this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.serverLevel());
             claim.copySizes(newClaim);
             this.addClaim(claim);
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
@@ -427,7 +427,7 @@ public class ClaimStorage implements IPermissionStorage {
         Yaml yml = new Yaml();
         File griefPrevention = server.getWorldPath(LevelResource.ROOT).resolve("plugins/GriefPreventionData/ClaimData").toFile();
         if (!griefPrevention.exists()) {
-            src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("cantFindData"), griefPrevention.getAbsolutePath()), ChatFormatting.DARK_RED), false);
+            src.sendSuccess(() -> PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("cantFindData"), griefPrevention.getAbsolutePath()), ChatFormatting.DARK_RED), false);
             return false;
         }
         Map<File, List<File>> subClaimMap = new HashMap<>();
@@ -461,7 +461,7 @@ public class ClaimStorage implements IPermissionStorage {
                         try {
                             intFileMap.put(Integer.valueOf(f.getName().replace(".yml", "")), f);
                         } catch (NumberFormatException e) {
-                            src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("errorFile"), f.getName(), ChatFormatting.RED)), false);
+                            src.sendSuccess(() -> PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("errorFile"), f.getName(), ChatFormatting.RED)), false);
                         }
                     }
                 }
@@ -494,16 +494,16 @@ public class ClaimStorage implements IPermissionStorage {
                         parentClaim.getB().setClaimID(storage.generateUUID());
                         storage.addClaim(parentClaim.getB());
                     } else {
-                        src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("readConflict"), parent.getName(), conflicts), ChatFormatting.DARK_RED), false);
+                        src.sendSuccess(() -> PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("readConflict"), parent.getName(), conflicts), ChatFormatting.DARK_RED), false);
                         for (DisplayBox claim : conflicts) {
                             DisplayBox.Box dim = claim.box();
                             MutableComponent text = PermHelper.simpleColoredText(String.format("@[x=%d;z=%d]", dim.minX(), dim.minZ()), ChatFormatting.RED);
                             text.setStyle(text.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + dim.minX() + " ~ " + dim.minZ())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.coordinates.tooltip"))));
-                            src.sendSuccess(text, false);
+                            src.sendSuccess(() -> text, false);
                         }
                     }
                 } catch (Exception e) {
-                    src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("errorFile"), parent.getName(), ChatFormatting.RED)), false);
+                    src.sendSuccess(() -> PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("errorFile"), parent.getName(), ChatFormatting.RED)), false);
                     e.printStackTrace();
                 }
             }

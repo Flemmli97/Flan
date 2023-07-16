@@ -20,7 +20,7 @@ public class ClaimHandler {
      * Check if a player can do an interaction at the given position
      */
     public static boolean canInteract(ServerPlayer player, BlockPos pos, ClaimPermission permission) {
-        return ClaimStorage.get(player.getLevel()).getClaimAt(pos).canInteract(player, permission, pos);
+        return ClaimStorage.get(player.serverLevel()).getClaimAt(pos).canInteract(player, permission, pos);
     }
 
     /**

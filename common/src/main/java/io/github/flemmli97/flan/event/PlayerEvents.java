@@ -48,17 +48,17 @@ public class PlayerEvents {
 
     public static boolean growBonemeal(UseOnContext context) {
         if (context.getPlayer() instanceof ServerPlayer serverPlayer) {
-            BlockState state = serverPlayer.level.getBlockState(context.getClickedPos());
+            BlockState state = serverPlayer.level().getBlockState(context.getClickedPos());
             BlockPos.MutableBlockPos pos = context.getClickedPos().mutable();
             ClaimPermission perm = ObjectToPermissionMap.getFromItem(context.getItemInHand().getItem());
             /**
              * {@link ItemInteractEvents#onItemUseBlock} handles this case already.
              * Sadly need to check again. In case its used in a claim. Less expensive than aoe check
              */
-            if (!ClaimStorage.get(serverPlayer.getLevel()).getForPermissionCheck(pos).canInteract(serverPlayer, perm, pos, false))
+            if (!ClaimStorage.get(serverPlayer.serverLevel()).getForPermissionCheck(pos).canInteract(serverPlayer, perm, pos, false))
                 return false;
             int range = 0;
-            Registry<ConfiguredFeature<?, ?>> registry = serverPlayer.level.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE);
+            Registry<ConfiguredFeature<?, ?>> registry = serverPlayer.level().registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE);
             if (state.getBlock() instanceof MossBlock) {
                 VegetationPatchConfiguration cfg = featureRange(registry, CaveFeatures.MOSS_PATCH_BONEMEAL, VegetationPatchConfiguration.class);
                 if (cfg != null) {
@@ -87,7 +87,7 @@ public class PlayerEvents {
                 int y = Math.max(Math.max(h1, h2), h3);
                 pos.set(pos.getX(), pos.getY() + y + 1, pos.getZ());
             }
-            if (range > 0 && perm != null && !ClaimStorage.get(serverPlayer.getLevel()).canInteract(pos, range, serverPlayer, perm, false)) {
+            if (range > 0 && perm != null && !ClaimStorage.get(serverPlayer.serverLevel()).canInteract(pos, range, serverPlayer, perm, false)) {
                 serverPlayer.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("tooCloseClaim"), ChatFormatting.DARK_RED), true);
                 return true;
             }
@@ -98,17 +98,17 @@ public class PlayerEvents {
     public static float canSpawnFromPlayer(Entity entity, float old) {
         BlockPos pos;
         if (entity instanceof ServerPlayer player &&
-                !ClaimStorage.get(player.getLevel()).getForPermissionCheck(pos = player.blockPosition()).canInteract(player, PermissionRegistry.PLAYERMOBSPAWN, pos, false))
+                !ClaimStorage.get(player.serverLevel()).getForPermissionCheck(pos = player.blockPosition()).canInteract(player, PermissionRegistry.PLAYERMOBSPAWN, pos, false))
             return -1;
         return old;
     }
 
     public static boolean canWardenSpawnTrigger(BlockPos pos, ServerPlayer player) {
-        return ClaimStorage.get(player.getLevel()).getForPermissionCheck(pos).canInteract(player, PermissionRegistry.PLAYERMOBSPAWN, pos, false);
+        return ClaimStorage.get(player.serverLevel()).getForPermissionCheck(pos).canInteract(player, PermissionRegistry.PLAYERMOBSPAWN, pos, false);
     }
 
     public static boolean canSculkTrigger(BlockPos pos, ServerPlayer player) {
-        return ClaimStorage.get(player.getLevel()).getForPermissionCheck(pos).canInteract(player, PermissionRegistry.SCULK, pos, false);
+        return ClaimStorage.get(player.serverLevel()).getForPermissionCheck(pos).canInteract(player, PermissionRegistry.SCULK, pos, false);
     }
 
     @SuppressWarnings("unchecked")

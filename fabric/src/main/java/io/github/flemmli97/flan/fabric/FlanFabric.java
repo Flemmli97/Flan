@@ -62,7 +62,6 @@ public class FlanFabric implements ModInitializer {
         Flan.permissionAPI = FabricLoader.getInstance()
                 .getModContainer("fabric-permissions-api-v0")
                 .map(c -> c.getMetadata().getVersion().getFriendlyString().equals("0.2-SNAPSHOT")).orElse(false);
-        Flan.gunpowder = FabricLoader.getInstance().isModLoaded("gunpowder-currency");
         Flan.playerAbilityLib = FabricLoader.getInstance().isModLoaded("playerabilitylib");
         Flan.ftbRanks = FabricLoader.getInstance().isModLoaded("ftbranks");
         Flan.octoEconomy = FabricLoader.getInstance().isModLoaded("octo-economy-api");

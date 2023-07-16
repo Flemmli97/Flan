@@ -52,7 +52,7 @@ public abstract class DragonEggBlockMixin {
             ClaimPermission perm = ObjectToPermissionMap.getFromBlock((DragonEggBlock) (Object) this);
             if (perm == null)
                 perm = PermissionRegistry.INTERACTBLOCK;
-            if (!ClaimStorage.get(player.getLevel()).canInteract(pos, 16, player, perm, true))
+            if (!ClaimStorage.get(player.serverLevel()).canInteract(pos, 16, player, perm, true))
                 info.cancel();
         }
     }

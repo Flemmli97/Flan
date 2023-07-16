@@ -19,9 +19,9 @@ public abstract class PlayerInteractEntityMixin {
 
     @Inject(method = "interactOn", at = @At(value = "HEAD"), cancellable = true)
     private void interactOnEntity(Entity entity, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> info) {
-        if (entity == null || !(entity.level instanceof ServerLevel))
+        if (entity == null || !(entity.level() instanceof ServerLevel))
             return;
-        InteractionResult result = EntityInteractEvents.useEntity((Player) (Object) this, entity.level, interactionHand, entity);
+        InteractionResult result = EntityInteractEvents.useEntity((Player) (Object) this, entity.level(), interactionHand, entity);
         if (result != InteractionResult.PASS) {
             info.setReturnValue(InteractionResult.PASS);
             info.cancel();

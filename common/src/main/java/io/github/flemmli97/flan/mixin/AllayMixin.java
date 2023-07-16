@@ -21,7 +21,7 @@ public abstract class AllayMixin {
     private void onWantingPickup(ItemStack stack, CallbackInfoReturnable<Boolean> info) {
         Allay allay = (Allay) (Object) this;
         if (AllayAi.getLikedPlayer(allay).map(p -> {
-            Claim claim = ClaimStorage.get(p.getLevel()).getClaimAt(allay.blockPosition());
+            Claim claim = ClaimStorage.get(p.serverLevel()).getClaimAt(allay.blockPosition());
             return claim != null && (!claim.canInteract(p, PermissionRegistry.PICKUP, allay.blockPosition(), false));
         }).orElse(false))
             info.setReturnValue(false);
@@ -33,7 +33,7 @@ public abstract class AllayMixin {
             IOwnedItem ownedItem = (IOwnedItem) itemEntity;
             if (p.getUUID().equals(ownedItem.getPlayerOrigin()))
                 return true;
-            Claim claim = ClaimStorage.get(p.getLevel()).getClaimAt(itemEntity.blockPosition());
+            Claim claim = ClaimStorage.get(p.serverLevel()).getClaimAt(itemEntity.blockPosition());
             return claim != null && !claim.canInteract(p, PermissionRegistry.PICKUP, itemEntity.blockPosition(), false);
         }).orElse(false))
             info.cancel();

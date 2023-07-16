@@ -178,13 +178,13 @@ public class BlockInteractEvents {
     }
 
     public static boolean preventFallOn(Entity entity, double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
-        if (entity.level.isClientSide)
+        if (entity.level().isClientSide)
             return false;
         if (entity instanceof ServerPlayer) {
             ClaimPermission perm = ObjectToPermissionMap.getFromBlock(landedState.getBlock());
             if (perm != PermissionRegistry.TRAMPLE)
                 return false;
-            ClaimStorage storage = ClaimStorage.get((ServerLevel) entity.level);
+            ClaimStorage storage = ClaimStorage.get((ServerLevel) entity.level());
             IPermissionContainer claim = storage.getForPermissionCheck(landedPosition);
             if (claim == null)
                 return false;
@@ -195,7 +195,7 @@ public class BlockInteractEvents {
                 ClaimPermission perm = ObjectToPermissionMap.getFromBlock(landedState.getBlock());
                 if (perm != PermissionRegistry.TRAMPLE)
                     return false;
-                ClaimStorage storage = ClaimStorage.get((ServerLevel) entity.level);
+                ClaimStorage storage = ClaimStorage.get((ServerLevel) entity.level());
                 IPermissionContainer claim = storage.getForPermissionCheck(landedPosition);
                 return !claim.canInteract((ServerPlayer) owner, perm, landedPosition, true);
             }

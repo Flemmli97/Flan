@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.event;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.claim.ClaimStorage;
+import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.mixin.StructureManagerAccessor;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import net.minecraft.core.BlockPos;
@@ -70,7 +71,7 @@ public class WorldEvents {
     }
 
     public static boolean canStartRaid(ServerPlayer player) {
-        IPermissionContainer claim = ClaimStorage.get(player.getLevel()).getForPermissionCheck(player.blockPosition());
+        IPermissionContainer claim = ClaimStorage.get(player.serverLevel()).getForPermissionCheck(player.blockPosition());
         return claim.canInteract(player, PermissionRegistry.RAID, player.blockPosition());
     }
 
@@ -87,7 +88,7 @@ public class WorldEvents {
     }
 
     public static boolean lightningFire(LightningBolt lightning) {
-        if (!(lightning.level instanceof ServerLevel world))
+        if (!(lightning.level() instanceof ServerLevel world))
             return true;
         BlockPos.MutableBlockPos mutable = lightning.blockPosition().mutable();
         for (int x = -1; x <= 1; x++)
@@ -106,6 +107,8 @@ public class WorldEvents {
 
     @SuppressWarnings("deprecation")
     public static void onStructureGen(StructureStart structureStart, StructureManager structureManager) {
+        if (!ConfigHandler.config.autoClaimStructures)
+            return;
         LevelAccessor acc = ((StructureManagerAccessor) structureManager).getLevel();
         ServerLevel level = null;
         if (acc instanceof WorldGenRegion region)

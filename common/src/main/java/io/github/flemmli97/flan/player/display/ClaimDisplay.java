@@ -68,12 +68,12 @@ public class ClaimDisplay {
             return this.display.isRemoved();
         DisplayBox.Box dims = this.display.box();
         if (this.corners == null || this.changed(dims)) {
-            this.middlePoss = calculateDisplayPos(player.getLevel(), dims, this.height, this.display.excludedSides());
+            this.middlePoss = calculateDisplayPos(player.serverLevel(), dims, this.height, this.display.excludedSides());
             this.corners = new int[][]{
-                    getPosFrom(player.getLevel(), dims.minX(), dims.minZ(), this.height),
-                    getPosFrom(player.getLevel(), dims.maxX(), dims.minZ(), this.height),
-                    getPosFrom(player.getLevel(), dims.minX(), dims.maxZ(), this.height),
-                    getPosFrom(player.getLevel(), dims.maxX(), dims.maxZ(), this.height),
+                    getPosFrom(player.serverLevel(), dims.minX(), dims.minZ(), this.height),
+                    getPosFrom(player.serverLevel(), dims.maxX(), dims.minZ(), this.height),
+                    getPosFrom(player.serverLevel(), dims.minX(), dims.maxZ(), this.height),
+                    getPosFrom(player.serverLevel(), dims.maxX(), dims.maxZ(), this.height),
             };
         }
         for (int[] pos : this.corners) {
@@ -146,18 +146,19 @@ public class ClaimDisplay {
 
     // SAFETY: Ensure that the X/Z coordinates are for the given chunk
     // since the position is mutating only up or down, it's always in the same chunk
+    @SuppressWarnings("deprecation")
     private static int[] nextAirAndWaterBlockFrom(LevelChunk chunk, int x, int y, int z) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, y, z);
         BlockState state = chunk.getBlockState(pos);
-        if (state.getMaterial().isReplaceable()) {
+        if (state.canBeReplaced()) {
             //Move Down
-            boolean startedInLiquid = state.getMaterial().isLiquid();
+            boolean startedInLiquid = state.liquid();
             boolean liquidCheck = false;
             int liquidHeight = pos.getY();
-            while (state.getMaterial().isReplaceable() && !chunk.isOutsideBuildHeight(pos)) {
+            while (state.canBeReplaced() && !chunk.isOutsideBuildHeight(pos)) {
                 pos.move(0, -1, 0);
                 state = chunk.getBlockState(pos);
-                if (!startedInLiquid && !liquidCheck && state.getMaterial().isLiquid()) {
+                if (!startedInLiquid && !liquidCheck && state.liquid()) {
                     liquidCheck = true;
                     liquidHeight = pos.getY();
                 }
@@ -166,26 +167,26 @@ public class ClaimDisplay {
             if (startedInLiquid) {
                 pos.set(pos.getX(), liquidHeight + 1, pos.getZ());
                 state = chunk.getBlockState(pos);
-                while (state.getMaterial().isLiquid() && !chunk.isOutsideBuildHeight(pos)) {
+                while (state.liquid() && !chunk.isOutsideBuildHeight(pos)) {
                     pos.move(0, 1, 0);
                     state = chunk.getBlockState(pos);
                 }
-                if (state.getMaterial().isReplaceable())
+                if (state.canBeReplaced())
                     yRet[1] = pos.getY();
             }
             return yRet;
         }
         //Move Up
-        while (!state.getMaterial().isReplaceable() && !chunk.isOutsideBuildHeight(pos)) {
+        while (!state.canBeReplaced() && !chunk.isOutsideBuildHeight(pos)) {
             pos.move(0, 1, 0);
             state = chunk.getBlockState(pos);
         }
         int[] yRet = {pos.getY(), pos.getY()};
-        while (state.getMaterial().isLiquid() && !chunk.isOutsideBuildHeight(pos)) {
+        while (state.liquid() && !chunk.isOutsideBuildHeight(pos)) {
             pos.move(0, 1, 0);
             state = chunk.getBlockState(pos);
         }
-        if (state.getMaterial().isReplaceable())
+        if (state.canBeReplaced())
             yRet[1] = pos.getY();
         return yRet;
     }

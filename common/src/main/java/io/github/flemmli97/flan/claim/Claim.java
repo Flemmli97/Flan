@@ -34,11 +34,10 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -89,9 +88,9 @@ public class Claim implements IPermissionContainer {
 
     //New claim
     public Claim(BlockPos pos1, BlockPos pos2, ServerPlayer creator) {
-        this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator.getUUID(), creator.getLevel(), PlayerClaimData.get(creator).playerDefaultGroups().isEmpty());
+        this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator.getUUID(), creator.serverLevel(), PlayerClaimData.get(creator).playerDefaultGroups().isEmpty());
         PlayerClaimData.get(creator).playerDefaultGroups().forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0, true)));
-        Collection<Claim> all = ClaimStorage.get(creator.getLevel()).allClaimsFromPlayer(creator.getUUID());
+        Collection<Claim> all = ClaimStorage.get(creator.serverLevel()).allClaimsFromPlayer(creator.getUUID());
         String name = String.format(ConfigHandler.config.defaultClaimName, creator.getName(), all.size());
         if (!name.isEmpty()) {
             for (Claim claim : all) {
@@ -142,7 +141,7 @@ public class Claim implements IPermissionContainer {
 
     private BlockPos getInitCenterPos() {
         BlockPos center = BlockPos.containing(this.minX + (this.maxX - this.minX) * 0.5, 0, this.minZ + (this.maxZ - this.minZ) * 0.5);
-        int y = !this.world.hasChunk(center.getX() >> 4, center.getZ() >> 4) ? this.minY + 1 : this.world.getChunk(center.getX() >> 4, center.getZ() >> 4, ChunkStatus.HEIGHTMAPS).getHeight(Heightmap.Types.MOTION_BLOCKING, center.getX() & 15, center.getZ() & 15);
+        int y = !this.world.hasChunk(center.getX() >> 4, center.getZ() >> 4) ? this.minY + 1 : this.world.getChunk(center.getX() >> 4, center.getZ() >> 4).getHeight(Heightmap.Types.MOTION_BLOCKING, center.getX() & 15, center.getZ() & 15);
         return new BlockPos(center.getX(), y + 1, center.getZ());
     }
 
@@ -580,7 +579,7 @@ public class Claim implements IPermissionContainer {
     }
 
     public void applyEffects(ServerPlayer player) {
-        if (player.level.getGameTime() % 80 == 0)
+        if (player.level().getGameTime() % 80 == 0)
             this.potions.forEach((effect, amp) -> player.forceAddEffect(new MobEffectInstance(effect, effect == MobEffects.NIGHT_VISION ? 400 : 200, amp - 1, true, false), null));
     }
 

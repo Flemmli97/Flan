@@ -82,7 +82,7 @@ public class ServerScreenHelper {
             Component trans = ServerScreenHelper.coloredGuiText(pdesc, ChatFormatting.YELLOW);
             lore.add(StringTag.valueOf(Component.Serializer.toJson(trans)));
         }
-        Config.GlobalType global = ConfigHandler.config.getGlobal(player.getLevel(), perm);
+        Config.GlobalType global = ConfigHandler.config.getGlobal(player.serverLevel(), perm);
         if (!global.canModify()) {
             Component text = ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenUneditable"), ChatFormatting.DARK_RED);
             lore.add(StringTag.valueOf(Component.Serializer.toJson(text)));
@@ -105,12 +105,12 @@ public class ServerScreenHelper {
 
     public static void playSongToPlayer(ServerPlayer player, SoundEvent event, float vol, float pitch) {
         player.connection.send(
-                new ClientboundSoundPacket(BuiltInRegistries.SOUND_EVENT.wrapAsHolder(event), SoundSource.PLAYERS, player.position().x, player.position().y, player.position().z, vol, pitch, player.level.getRandom().nextLong()));
+                new ClientboundSoundPacket(BuiltInRegistries.SOUND_EVENT.wrapAsHolder(event), SoundSource.PLAYERS, player.position().x, player.position().y, player.position().z, vol, pitch, player.level().getRandom().nextLong()));
     }
 
     public static void playSongToPlayer(ServerPlayer player, Holder<SoundEvent> event, float vol, float pitch) {
         player.connection.send(
-                new ClientboundSoundPacket(event, SoundSource.PLAYERS, player.position().x, player.position().y, player.position().z, vol, pitch, player.level.getRandom().nextLong()));
+                new ClientboundSoundPacket(event, SoundSource.PLAYERS, player.position().x, player.position().y, player.position().z, vol, pitch, player.level().getRandom().nextLong()));
     }
 
     public static Component coloredGuiText(String text, ChatFormatting... formattings) {

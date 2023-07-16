@@ -1,3 +1,8 @@
+Flan 1.8.6
+================
+- Port 1.20.1
+- Fix autoStructureClaim config not working
+
 Flan 1.8.5
 ================
 - Fabric: common protection api support
