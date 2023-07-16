@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.event;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.claim.ClaimStorage;
+import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.mixin.StructureManagerAccessor;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import net.minecraft.core.BlockPos;
@@ -106,6 +107,8 @@ public class WorldEvents {
 
     @SuppressWarnings("deprecation")
     public static void onStructureGen(StructureStart structureStart, StructureFeatureManager structureManager) {
+        if (!ConfigHandler.config.autoClaimStructures)
+            return;
         LevelAccessor acc = ((StructureManagerAccessor) structureManager).getLevel();
         ServerLevel level = null;
         if (acc instanceof WorldGenRegion region)
