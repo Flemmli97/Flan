@@ -333,8 +333,9 @@ public class Config {
         JsonArray blockPerms = new JsonArray();
         this.blockPermission.forEach(blockPerms::add);
         obj.add("customBlockPermission", blockPerms);
-        this.entityPermission.forEach(blockPerms::add);
-        obj.add("customEntityPermission", blockPerms);
+        JsonArray entityPerms = new JsonArray();
+        this.entityPermission.forEach(entityPerms::add);
+        obj.add("customEntityPermission", entityPerms);
         JsonArray leftIgnore = new JsonArray();
         this.leftClickBlockPermission.forEach(leftIgnore::add);
         obj.add("leftClickBlockPermission", leftIgnore);
