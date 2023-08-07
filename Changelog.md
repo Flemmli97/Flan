@@ -1,3 +1,7 @@
+Flan 1.8.7
+================
+- Fix entityPermission wrongly parsed causing extreme large files on reload
+
 Flan 1.8.6
 ================
 - Port 1.20.1  
