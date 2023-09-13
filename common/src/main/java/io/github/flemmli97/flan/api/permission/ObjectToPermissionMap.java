@@ -9,38 +9,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.BoatItem;
-import net.minecraft.world.item.BoneMealItem;
-import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.EnderpearlItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.RecordItem;
-import net.minecraft.world.level.block.AnvilBlock;
-import net.minecraft.world.level.block.BasePressurePlateBlock;
-import net.minecraft.world.level.block.BeaconBlock;
-import net.minecraft.world.level.block.BedBlock;
-import net.minecraft.world.level.block.BellBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.ButtonBlock;
-import net.minecraft.world.level.block.CampfireBlock;
-import net.minecraft.world.level.block.ChorusFlowerBlock;
-import net.minecraft.world.level.block.DaylightDetectorBlock;
-import net.minecraft.world.level.block.DiodeBlock;
-import net.minecraft.world.level.block.DoorBlock;
-import net.minecraft.world.level.block.EnchantmentTableBlock;
-import net.minecraft.world.level.block.EnderChestBlock;
-import net.minecraft.world.level.block.FarmBlock;
-import net.minecraft.world.level.block.FenceGateBlock;
-import net.minecraft.world.level.block.JukeboxBlock;
-import net.minecraft.world.level.block.LeverBlock;
-import net.minecraft.world.level.block.NetherPortalBlock;
-import net.minecraft.world.level.block.NoteBlock;
-import net.minecraft.world.level.block.RedStoneWireBlock;
-import net.minecraft.world.level.block.TargetBlock;
-import net.minecraft.world.level.block.TntBlock;
-import net.minecraft.world.level.block.TrapDoorBlock;
-import net.minecraft.world.level.block.TurtleEggBlock;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.block.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -166,6 +136,7 @@ public class ObjectToPermissionMap {
                 || block instanceof TntBlock || block instanceof ChorusFlowerBlock, () -> PermissionRegistry.PROJECTILES);
         registerBlockPredicateMap(block -> block instanceof EnderChestBlock, () -> PermissionRegistry.ENDERCHEST);
         registerBlockPredicateMap(block -> block instanceof EnchantmentTableBlock, () -> PermissionRegistry.ENCHANTMENTTABLE);
+        registerBlockPredicateMap(block -> block instanceof BrushableBlock,()-> PermissionRegistry.ARCHAEOLOGY);
 
         registerItemPredicateMap(item -> item instanceof EnderpearlItem, () -> PermissionRegistry.ENDERPEARL);
         registerItemPredicateMap(item -> item instanceof BucketItem, () -> PermissionRegistry.BUCKET);
@@ -175,5 +146,6 @@ public class ObjectToPermissionMap {
         registerItemPredicateMap(item -> item instanceof BoneMealItem, () -> PermissionRegistry.PLACE);
         registerItemPredicateMap(item -> item instanceof RecordItem, () -> PermissionRegistry.JUKEBOX);
         registerItemPredicateMap(item -> item instanceof BoatItem, () -> PermissionRegistry.BOAT);
+        registerItemPredicateMap(item->item instanceof BrushItem, ()->PermissionRegistry.ARCHAEOLOGY);
     }
 }

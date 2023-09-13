@@ -91,6 +91,7 @@ public class PermissionRegistry {
     public static ClaimPermission LOCKITEMS = global(new ClaimPermission("LOCKITEMS", () -> new ItemStack(Items.FIREWORK_STAR), true, "If items should be locked on death"));
     public static ClaimPermission FAKEPLAYER = global(new ClaimPermission("FAKEPLAYER", () -> new ItemStack(Items.CARROT_ON_A_STICK), false, "Allow fakeplayers to interact in this claim", "Some mods fakeplayer has the users uuid", "For those mods this permission is not needed"));
 
+    public static ClaimPermission ARCHAEOLOGY = global(new ClaimPermission("ARCHAEOLOGY",()->new ItemStack(Items.BRUSH), false, "Allow players to brush blocks in this claim"));
     public static ClaimPermission register(ClaimPermission perm) {
         if (locked) {
             throw new IllegalStateException("Registering permissions is locked");
