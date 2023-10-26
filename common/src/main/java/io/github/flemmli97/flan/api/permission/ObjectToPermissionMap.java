@@ -11,6 +11,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.BoneMealItem;
+import net.minecraft.world.item.BrushItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.item.Item;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.block.BeaconBlock;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BrushableBlock;
 import net.minecraft.world.level.block.ButtonBlock;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.ChorusFlowerBlock;
@@ -166,6 +168,7 @@ public class ObjectToPermissionMap {
                 || block instanceof TntBlock || block instanceof ChorusFlowerBlock, () -> PermissionRegistry.PROJECTILES);
         registerBlockPredicateMap(block -> block instanceof EnderChestBlock, () -> PermissionRegistry.ENDERCHEST);
         registerBlockPredicateMap(block -> block instanceof EnchantmentTableBlock, () -> PermissionRegistry.ENCHANTMENTTABLE);
+        registerBlockPredicateMap(block -> block instanceof BrushableBlock, () -> PermissionRegistry.ARCHAEOLOGY);
 
         registerItemPredicateMap(item -> item instanceof EnderpearlItem, () -> PermissionRegistry.ENDERPEARL);
         registerItemPredicateMap(item -> item instanceof BucketItem, () -> PermissionRegistry.BUCKET);
@@ -175,5 +178,6 @@ public class ObjectToPermissionMap {
         registerItemPredicateMap(item -> item instanceof BoneMealItem, () -> PermissionRegistry.PLACE);
         registerItemPredicateMap(item -> item instanceof RecordItem, () -> PermissionRegistry.JUKEBOX);
         registerItemPredicateMap(item -> item instanceof BoatItem, () -> PermissionRegistry.BOAT);
+        registerItemPredicateMap(item -> item instanceof BrushItem, () -> PermissionRegistry.ARCHAEOLOGY);
     }
 }

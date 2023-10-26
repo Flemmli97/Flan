@@ -76,6 +76,7 @@ public class PermissionRegistry {
     public static ClaimPermission CLAIMMESSAGE = register(new ClaimPermission("CLAIMMESSAGE", () -> new ItemStack(Items.OAK_SIGN), false, "Permission to edit the enter/leave message"));
     public static ClaimPermission PLAYERMOBSPAWN = register(new ClaimPermission("PLAYERMOBSPAWN", () -> new ItemStack(Items.WARDEN_SPAWN_EGG), false, "Permission for affected players to spawn mobs with interactions", "E.g. wardens, or endermites with enderpearls"));
     public static ClaimPermission SCULK = register(new ClaimPermission("SCULK", () -> new ItemStack(Items.SCULK_SENSOR), false, "Permission for sculk sensors.", "Shriekers are handled under PLAYERMOBSPAWN"));
+    public static ClaimPermission ARCHAEOLOGY = register(new ClaimPermission("ARCHAEOLOGY", () -> new ItemStack(Items.BRUSH), false, "Allow players to brush blocks in this claim"));
 
     public static ClaimPermission HURTPLAYER = global(new ClaimPermission("HURTPLAYER", () -> new ItemStack(Items.DIAMOND_SWORD), "Permission to hurt other players"));
     public static ClaimPermission EXPLOSIONS = global(new ClaimPermission("EXPLOSIONS", () -> new ItemStack(Items.TNT), "Toggle explosions in claim"));
