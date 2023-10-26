@@ -6,7 +6,6 @@
   "mixins": [
     "LevelMixin",
     "SpawnHelperMixin",
-    "PlayerInteractEntityMixin",
     "ProjectileMixin",
     "EntityDamageMixin",
     "XpEntityMixin",

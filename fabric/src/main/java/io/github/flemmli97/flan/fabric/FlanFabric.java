@@ -50,7 +50,11 @@ public class FlanFabric implements ModInitializer {
         AttackBlockCallback.EVENT.register(BlockInteractEvents::startBreakBlocks);
         UseBlockCallback.EVENT.addPhaseOrdering(EventPhase, Event.DEFAULT_PHASE);
         UseBlockCallback.EVENT.register(EventPhase, FlanFabric::useBlocks);
-        UseEntityCallback.EVENT.register(EntityInteractEvents::useAtEntity);
+        UseEntityCallback.EVENT.register(((player, world, hand, entity, hitResult) -> {
+            if (hitResult != null)
+                return EntityInteractEvents.useAtEntity(player, world, hand, entity, null);
+            return EntityInteractEvents.useEntity(player, world, hand, entity);
+        }));
         AttackEntityCallback.EVENT.register(EntityInteractEvents::attackEntity);
         UseItemCallback.EVENT.register(ItemInteractEvents::useItem);
         ServerLifecycleEvents.SERVER_STARTING.register(FlanFabric::serverLoad);
