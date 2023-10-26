@@ -280,10 +280,10 @@ public class PlayerClaimData implements IPlayerData {
 
     public void tick(Claim currentClaim, Consumer<Claim> cons) {
         EntityInteractEvents.updateClaim(this.player, currentClaim, cons);
-        boolean tool = this.player.getMainHandItem().getItem() == ConfigHandler.config.claimingItem
-                || this.player.getOffhandItem().getItem() == ConfigHandler.config.claimingItem;
-        boolean stick = this.player.getMainHandItem().getItem() == ConfigHandler.config.inspectionItem
-                || this.player.getOffhandItem().getItem() == ConfigHandler.config.inspectionItem;
+        boolean tool = ConfigHandler.isClaimingTool(this.player.getMainHandItem())
+                || ConfigHandler.isClaimingTool(this.player.getOffhandItem());
+        boolean stick = ConfigHandler.isInspectionTool(this.player.getMainHandItem())
+                || ConfigHandler.isInspectionTool(this.player.getOffhandItem());
         this.displayToAdd.forEach(add -> {
             if (!this.claimDisplayList.add(add)) {
                 this.claimDisplayList.removeIf(c -> c.equals(add) && c.type != add.type);
