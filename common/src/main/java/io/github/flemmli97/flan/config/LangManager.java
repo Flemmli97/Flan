@@ -47,6 +47,9 @@ public class LangManager {
         this.defaultTranslation.put("ownerTransferFail", "Only the owner may transfer claims");
         this.defaultTranslation.put("ownerTransferNoBlocks", "The new owner doesnt have enough claimblocks");
         this.defaultTranslation.put("ownerTransferNoBlocksAdmin", "You can ignore this by switching to admin mode");
+        this.defaultTranslation.put("noSuchLevel", "Dimension with id %s doesn't exist");
+        this.defaultTranslation.put("noSuchPlayer", "Player with uuid/name %s doesn't exist");
+        this.defaultTranslation.put("claimCreationFailCommand", "Couldn't create claim at this position");
 
         this.defaultTranslation.put("noPermission", "You don't have the required permissions to do that here!");
         this.defaultTranslation.put("noPermissionSimple", "Sorry you can't do that here!");

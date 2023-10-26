@@ -86,16 +86,16 @@ public class ClaimStorage implements IPermissionStorage {
         return uuid;
     }
 
-    public boolean createAdminClaim(BlockPos pos1, BlockPos pos2, ServerLevel level) {
+    public Claim createAdminClaim(BlockPos pos1, BlockPos pos2, ServerLevel level) {
         Claim claim = new Claim(pos1.below(ConfigHandler.config.defaultClaimDepth), pos2.below(ConfigHandler.config.defaultClaimDepth), null, level);
         Set<DisplayBox> conflicts = this.conflicts(claim, null);
         if (conflicts.isEmpty()) {
             claim.setClaimID(this.generateUUID());
             Flan.log("Creating new admin claim {}", claim);
             this.addClaim(claim);
-            return true;
+            return claim;
         }
-        return false;
+        return null;
     }
 
     public boolean createClaim(BlockPos pos1, BlockPos pos2, ServerPlayer player) {
@@ -312,6 +312,10 @@ public class ClaimStorage implements IPermissionStorage {
     public boolean transferOwner(Claim claim, ServerPlayer player, UUID newOwner) {
         if (!PlayerClaimData.get(player).isAdminIgnoreClaim() && !player.getUUID().equals(claim.getOwner()))
             return false;
+        return this.transferOwner(claim, newOwner);
+    }
+
+    public boolean transferOwner(Claim claim, UUID newOwner) {
         this.playerClaimMap.merge(claim.getOwner(), new HashSet<>(), (old, val) -> {
             old.remove(claim);
             return old;

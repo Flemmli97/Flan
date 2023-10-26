@@ -30,13 +30,17 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.GameProfileArgument;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.UuidArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -50,6 +54,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class CommandClaim {
 
@@ -57,7 +62,11 @@ public class CommandClaim {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("flan")
                 .then(Commands.literal("reload").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdReload, true)).executes(CommandClaim::reloadConfig))
                 .then(Commands.literal("addClaim").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.claimCreate))
-                        .then(Commands.argument("from", BlockPosArgument.blockPos()).then(Commands.argument("to", BlockPosArgument.blockPos()).executes(CommandClaim::addClaim)))
+                        .then(Commands.argument("from", BlockPosArgument.blockPos()).then(Commands.argument("to", BlockPosArgument.blockPos()).executes(CommandClaim::addClaim)
+                                .then(Commands.argument("dimension", ResourceLocationArgument.id()).requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.claimCreateAdmin, true))
+                                        .suggests((src, build) -> SharedSuggestionProvider.suggest(src.getSource().getServer().levelKeys().stream().map(k -> k.location().toString()).toList(), build))
+                                        .then(Commands.argument("player", StringArgumentType.word()).suggests((src, build) -> SharedSuggestionProvider.suggest(Stream.concat(Stream.of("+Admin"), src.getSource().getServer().getPlayerList().getPlayers().stream().map(p -> p.getUUID().toString())).toList(), build))
+                                                .executes(CommandClaim::addClaimAs)))))
                         .then(Commands.literal("all").executes(CommandClaim::addClaimAll))
                         .then(Commands.literal("rect").then(Commands.argument("x", IntegerArgumentType.integer()).then(Commands.argument("z", IntegerArgumentType.integer()).executes(ctx -> CommandClaim.addClaimRect(ctx, IntegerArgumentType.getInteger(ctx, "x"), IntegerArgumentType.getInteger(ctx, "z")))))))
                 .then(Commands.literal("expand").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.claimCreate))
@@ -169,6 +178,37 @@ public class CommandClaim {
         BlockPos from = BlockPosArgument.getLoadedBlockPos(context, "from");
         BlockPos to = BlockPosArgument.getLoadedBlockPos(context, "to");
         storage.createClaim(from, to, player);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int addClaimAs(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        String as = StringArgumentType.getString(context, "player");
+        ResourceLocation levelID = ResourceLocationArgument.getId(context, "dimension");
+        ServerLevel level = context.getSource().getServer().getLevel(ResourceKey.create(Registries.DIMENSION, levelID));
+        if (level == null) {
+            context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("noSuchLevel"), levelID)), true);
+            return 0;
+        }
+        UUID uuid = null;
+        if (!as.equals("+Admin")) {
+            uuid = context.getSource().getServer().getProfileCache().get(as).map(GameProfile::getId).orElse(null);
+            if (uuid == null) {
+                context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("noSuchPlayer"), as)), true);
+                return 0;
+            }
+        }
+        ClaimStorage storage = ClaimStorage.get(level);
+        BlockPos from = BlockPosArgument.getLoadedBlockPos(context, "from");
+        BlockPos to = BlockPosArgument.getLoadedBlockPos(context, "to");
+        Claim claim = storage.createAdminClaim(from, to, level);
+        if (claim == null) {
+            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("claimCreationFailCommand")), true);
+            return 0;
+        }
+        if (uuid != null) {
+            storage.transferOwner(claim, uuid);
+        }
+        context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("claimCreateSuccess"), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 

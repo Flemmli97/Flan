@@ -12,6 +12,7 @@ public interface PermissionNodeHandler {
     String cmdGriefPrevention = "flan.command.read.griefprevention";
 
     String claimCreate = "flan.claim.create";
+    String claimCreateAdmin = "flan.claim.admin.create";
 
     String cmdMenu = "flan.command.menu";
     String cmdTrapped = "flan.command.trapped";
