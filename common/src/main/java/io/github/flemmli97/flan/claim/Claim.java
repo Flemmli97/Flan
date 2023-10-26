@@ -158,6 +158,7 @@ public class Claim implements IPermissionContainer {
     public void extendDownwards(BlockPos pos) {
         this.minY = pos.getY();
         this.setDirty(true);
+        WebmapCalls.onExtendDownwards(this);
     }
 
     public UUID getClaimID() {
@@ -237,6 +238,10 @@ public class Claim implements IPermissionContainer {
      */
     public int[] getDimensions() {
         return new int[]{this.minX, this.maxX, this.minZ, this.maxZ, this.minY};
+    }
+
+    public int getMaxY() {
+        return this.getWorld().getMaxBuildHeight();
     }
 
     public boolean insideClaim(BlockPos pos) {

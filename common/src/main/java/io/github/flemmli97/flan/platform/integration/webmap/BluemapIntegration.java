@@ -3,9 +3,9 @@ package io.github.flemmli97.flan.platform.integration.webmap;
 import com.mojang.authlib.GameProfile;
 import de.bluecolored.bluemap.api.BlueMapAPI;
 import de.bluecolored.bluemap.api.BlueMapMap;
+import de.bluecolored.bluemap.api.markers.ExtrudeMarker;
 import de.bluecolored.bluemap.api.markers.Marker;
 import de.bluecolored.bluemap.api.markers.MarkerSet;
-import de.bluecolored.bluemap.api.markers.ShapeMarker;
 import de.bluecolored.bluemap.api.math.Color;
 import de.bluecolored.bluemap.api.math.Shape;
 import io.github.flemmli97.flan.claim.Claim;
@@ -49,10 +49,10 @@ public class BluemapIntegration {
             for (BlueMapMap map : world.getMaps()) {
                 MarkerSet markerSet = map.getMarkerSets().get(markerID);
                 int[] dim = claim.getDimensions();
-                ShapeMarker marker = ShapeMarker.builder()
+                ExtrudeMarker marker = ExtrudeMarker.builder()
                         .label(claimLabel(claim))
                         .depthTestEnabled(false)
-                        .shape(Shape.createRect(dim[0], dim[2], dim[1], dim[3]), claim.getWorld().getSeaLevel())
+                        .shape(Shape.createRect(dim[0], dim[2], dim[1], dim[3]), dim[4], claim.getMaxY())
                         .lineColor(new Color(lineColor(claim.isAdminClaim()), 0.8F))
                         .lineWidth(3)
                         .fillColor(new Color(fillColor(claim.isAdminClaim()), 0.2F))
