@@ -3,13 +3,16 @@ package io.github.flemmli97.flan.config;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
@@ -42,7 +45,9 @@ public class Config {
     public boolean worldWhitelist;
 
     public Item claimingItem = Items.GOLDEN_HOE;
+    public CompoundTag claimingNBT = new CompoundTag();
     public Item inspectionItem = Items.STICK;
+    public CompoundTag inspectionNBT = new CompoundTag();
 
     public int claimDisplayTime = 1000;
     public boolean claimDisplayActionBar = false;
@@ -185,8 +190,12 @@ public class Config {
 
             if (obj.has("claimingItem"))
                 this.claimingItem = CrossPlatformStuff.INSTANCE.registryItems().getFromId(new ResourceLocation((obj.get("claimingItem").getAsString())));
+            this.claimingNBT = CompoundTag.CODEC.parse(JsonOps.INSTANCE, GsonHelper.getAsJsonObject(obj, "claimingNBT", new JsonObject()))
+                    .getOrThrow(true, Flan::error);
             if (obj.has("inspectionItem"))
                 this.inspectionItem = CrossPlatformStuff.INSTANCE.registryItems().getFromId(new ResourceLocation((obj.get("inspectionItem").getAsString())));
+            this.inspectionNBT = CompoundTag.CODEC.parse(JsonOps.INSTANCE, GsonHelper.getAsJsonObject(obj, "inspectionNBT", new JsonObject()))
+                    .getOrThrow(true, Flan::error);
             this.claimDisplayTime = ConfigHandler.fromJson(obj, "claimDisplayTime", this.claimDisplayTime);
             this.claimDisplayActionBar = ConfigHandler.fromJson(obj, "claimDisplayActionBar", this.claimDisplayActionBar);
             this.permissionLevel = ConfigHandler.fromJson(obj, "permissionLevel", this.permissionLevel);
@@ -293,7 +302,11 @@ public class Config {
         obj.addProperty("worldWhitelist", this.worldWhitelist);
 
         obj.addProperty("claimingItem", CrossPlatformStuff.INSTANCE.registryItems().getIDFrom(this.claimingItem).toString());
+        obj.add("claimingNBT", CompoundTag.CODEC.encodeStart(JsonOps.INSTANCE, this.claimingNBT)
+                .getOrThrow(true, Flan::error));
         obj.addProperty("inspectionItem", CrossPlatformStuff.INSTANCE.registryItems().getIDFrom(this.inspectionItem).toString());
+        obj.add("inspectionNBT", CompoundTag.CODEC.encodeStart(JsonOps.INSTANCE, this.inspectionNBT)
+                .getOrThrow(true, Flan::error));
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
         obj.addProperty("claimDisplayActionBar", this.claimDisplayActionBar);
         obj.addProperty("permissionLevel", this.permissionLevel);
