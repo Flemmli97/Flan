@@ -1,3 +1,12 @@
+Flan 1.8.8
+================
+- Fix crash with modded flying and players login out in claims with no flying permission
+- Make map claim markers 3d
+- Add nbt support for claiming items. Any nbt key in the config has to match the one on the item
+- Add command to create claims without players:  
+  /flan addClaim x y z x2 y2 z2 <dimension> <player|+Admin>
+- Update entity interact events for updated fabric api which fixes e.g. villager trading always disabled
+
 Flan 1.8.7
 ================
 - Fix entityPermission wrongly parsed causing extreme large files on reload
