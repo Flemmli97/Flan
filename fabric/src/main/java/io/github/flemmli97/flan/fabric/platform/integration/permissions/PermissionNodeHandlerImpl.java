@@ -1,6 +1,5 @@
 package io.github.flemmli97.flan.fabric.platform.integration.permissions;
 
-import dev.ftb.mods.ftbranks.api.FTBRanksAPI;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
@@ -18,10 +17,7 @@ public class PermissionNodeHandlerImpl implements PermissionNodeHandler {
                 return Permissions.check(src, perm, ConfigHandler.config.permissionLevel);
             return Permissions.check(src, perm, true);
         }
-        if (Flan.ftbRanks && src.getEntity() instanceof ServerPlayer player) {
-            return FTBRanksAPI.getPermissionValue(player, perm).asBoolean().orElse(!adminCmd || player.hasPermissions(ConfigHandler.config.permissionLevel));
-        }
-        return !adminCmd || src.hasPermission(ConfigHandler.config.permissionLevel);
+        return PermissionNodeHandler.super.perm(src, perm, adminCmd);
     }
 
     @Override
@@ -31,10 +27,7 @@ public class PermissionNodeHandlerImpl implements PermissionNodeHandler {
                 return Permissions.check(src, perm, ConfigHandler.config.permissionLevel);
             return Permissions.check(src, perm, true);
         }
-        if (Flan.ftbRanks) {
-            return FTBRanksAPI.getPermissionValue(src, perm).asBoolean().orElse(!adminCmd || src.hasPermissions(ConfigHandler.config.permissionLevel));
-        }
-        return !adminCmd || src.hasPermissions(ConfigHandler.config.permissionLevel);
+        return PermissionNodeHandler.super.perm(src, perm, adminCmd);
     }
 
 
@@ -44,11 +37,7 @@ public class PermissionNodeHandlerImpl implements PermissionNodeHandler {
             int max = Options.get(src, perm, fallback, Integer::parseInt);
             return val <= max;
         }
-        if (Flan.ftbRanks) {
-            int max = FTBRanksAPI.getPermissionValue(src, perm).asInteger().orElse(fallback);
-            return val <= max;
-        }
-        return val <= fallback;
+        return PermissionNodeHandler.super.permBelowEqVal(src, perm, val, fallback);
     }
 
     @Override
@@ -56,9 +45,6 @@ public class PermissionNodeHandlerImpl implements PermissionNodeHandler {
         if (Flan.permissionAPI) {
             return Options.get(src, perm, fallback, Integer::parseInt);
         }
-        if (Flan.ftbRanks) {
-            return FTBRanksAPI.getPermissionValue(src, perm).asInteger().orElse(fallback);
-        }
-        return fallback;
+        return PermissionNodeHandler.super.permVal(src, perm, fallback);
     }
 }
