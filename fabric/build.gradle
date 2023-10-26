@@ -60,7 +60,7 @@ dependencies {
 
     modCompileOnly "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
 
-    modRuntimeOnly "dev.ftb.mods:ftb-ranks-fabric:${ftb_ranks}"
+    //modRuntimeOnly "dev.ftb.mods:ftb-ranks-fabric:${ftb_ranks}"
     //modRuntimeOnly "dev.ftb.mods:ftb-chunks-fabric:${ftb_chunks}"
     //CompileOnly cause too many dependency
     modCompileOnly goml_reserved
