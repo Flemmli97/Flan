@@ -34,4 +34,13 @@ public class WebmapCalls {
         if (bluemapLoaded)
             BluemapIntegration.changeClaimOwner(claim);
     }
+
+    public static void onExtendDownwards(Claim claim) {
+        if (dynmapLoaded) {
+            DynmapIntegration.removeMarker(claim);
+            DynmapIntegration.addClaimMarker(claim);
+        }
+        if (bluemapLoaded)
+            BluemapIntegration.addClaimMarker(claim);
+    }
 }
