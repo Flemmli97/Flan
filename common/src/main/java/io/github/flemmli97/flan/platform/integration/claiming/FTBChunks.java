@@ -23,7 +23,6 @@ public class FTBChunks {
         if (Flan.ftbChunks && ConfigHandler.config.ftbChunksCheck) {
             ServerLevel level = claim.getWorld();
             int[] chunks = ClaimStorage.getChunkPos(claim);
-            Map<FTBChunksTeamData, List<ChunkPos>> map = new HashMap<>();
             for (int x = chunks[0]; x <= chunks[1]; x++)
                 for (int z = chunks[2]; z <= chunks[3]; z++) {
                     ClaimedChunk chunk = FTBChunksAPI.getManager().getChunk(new ChunkDimPos(level.dimension(), x, z));
