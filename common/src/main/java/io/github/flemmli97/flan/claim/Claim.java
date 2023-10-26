@@ -268,7 +268,7 @@ public class Claim implements IPermissionContainer {
     @Override
     public boolean canInteract(ServerPlayer player, ClaimPermission perm, BlockPos pos, boolean message) {
         boolean realPlayer = player != null && player.getClass().equals(ServerPlayer.class);
-        message = message && realPlayer; //dont send messages to fake players
+        message = message && realPlayer && player.connection != null; //dont send messages to fake players
         //Delegate interaction to FAKEPLAYER perm if a fake player
         if (player != null && !realPlayer) {
             //Some mods use the actual user/placer/owner whatever of the fakeplayer. E.g. ComputerCraft
