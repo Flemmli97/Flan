@@ -77,11 +77,11 @@ public class BlockInteractEvents {
         if (!(p instanceof ServerPlayer player))
             return InteractionResult.PASS;
         ItemStack stack = player.getItemInHand(hand);
-        if (stack.getItem() == ConfigHandler.config.claimingItem) {
+        if (ConfigHandler.isClaimingTool(stack)) {
             ItemInteractEvents.claimLandHandling(player, hitResult.getBlockPos());
             return InteractionResult.SUCCESS;
         }
-        if (stack.getItem() == ConfigHandler.config.inspectionItem) {
+        if (ConfigHandler.isInspectionTool(stack)) {
             ItemInteractEvents.inspect(player, hitResult.getBlockPos());
             return InteractionResult.SUCCESS;
         }

@@ -47,7 +47,7 @@ public class ItemInteractEvents {
         if (!(p instanceof ServerPlayer player) || p.isSpectator())
             return InteractionResultHolder.pass(p.getItemInHand(hand));
         ItemStack stack = player.getItemInHand(hand);
-        if (stack.getItem() == ConfigHandler.config.claimingItem) {
+        if (ConfigHandler.isClaimingTool(stack)) {
             HitResult ray = player.pick(64, 0, false);
             if (ray != null && ray.getType() == HitResult.Type.BLOCK) {
                 claimLandHandling(player, ((BlockHitResult) ray).getBlockPos());
@@ -55,7 +55,7 @@ public class ItemInteractEvents {
             }
             return InteractionResultHolder.pass(stack);
         }
-        if (stack.getItem() == ConfigHandler.config.inspectionItem) {
+        if (ConfigHandler.isInspectionTool(stack)) {
             HitResult ray = player.pick(32, 0, false);
             if (ray != null && ray.getType() == HitResult.Type.BLOCK) {
                 inspect(player, ((BlockHitResult) ray).getBlockPos());
