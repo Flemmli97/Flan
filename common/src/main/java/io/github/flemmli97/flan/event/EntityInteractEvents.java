@@ -66,7 +66,7 @@ public class EntityInteractEvents {
         return attackSimple(player, entity, true);
     }
 
-    public static InteractionResult useAtEntity(Player player, Level world, InteractionHand hand, Entity entity, /* Nullable */ EntityHitResult hitResult) {
+    public static InteractionResult useAtEntity(Player player, Level world, InteractionHand hand, Entity entity, EntityHitResult hitResult) {
         if (!(player instanceof ServerPlayer serverPlayer) || player.isSpectator() || canInteract(entity))
             return InteractionResult.PASS;
         if (entity instanceof Enemy)
