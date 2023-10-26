@@ -26,7 +26,8 @@ dependencies {
 
     modImplementation dynmap_fabric
 
-    modImplementation "dev.ftb.mods:ftb-chunks:${rootProject.ftb_chunks}"
+    modImplementation "dev.ftb.mods:ftb-ranks:${ftb_ranks}"
+    modImplementation "dev.ftb.mods:ftb-chunks:${ftb_chunks}"
     implementation 'com.github.BlueMap-Minecraft:BlueMapAPI:v2.2.1'
 }
 

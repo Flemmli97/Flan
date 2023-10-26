@@ -27,12 +27,13 @@ repositories {
 }
 
 dependencies {
-    modCompileOnly "dev.ftb.mods:ftb-ranks-forge:${ftb_ranks}"
     modCompileOnly dicemcmm
 
-    modRuntimeOnly "dev.ftb.mods:ftb-chunks-forge:${rootProject.ftb_chunks}"
+    modRuntimeOnly "dev.ftb.mods:ftb-ranks-forge:${ftb_ranks}"
+    modRuntimeOnly "dev.ftb.mods:ftb-chunks-forge:${ftb_chunks}"
+
     //CompileOnly cause dependencies
-    modCompileOnly "com.ldtteam:minecolonies:${rootProject.minecolonies}"
+    modCompileOnly "com.ldtteam:minecolonies:${minecolonies}"
 
     //For testing fakeplayers
     modRuntimeOnly cyclic

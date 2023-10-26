@@ -1,6 +1,8 @@
 package io.github.flemmli97.flan.platform.integration.permissions;
 
+import dev.ftb.mods.ftbranks.api.FTBRanksAPI;
 import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -58,11 +60,30 @@ public interface PermissionNodeHandler {
         return this.perm(src, perm, false);
     }
 
-    boolean perm(CommandSourceStack src, String perm, boolean adminCmd);
+    default boolean perm(CommandSourceStack src, String perm, boolean adminCmd) {
+        if (!Flan.ftbRanks || !(src.getEntity() instanceof ServerPlayer player))
+            return !adminCmd || src.hasPermission(ConfigHandler.config.permissionLevel);
+        return FTBRanksAPI.getPermissionValue(player, perm).asBoolean().orElse(!adminCmd || player.hasPermissions(ConfigHandler.config.permissionLevel));
+    }
 
-    boolean perm(ServerPlayer src, String perm, boolean adminCmd);
+    default boolean perm(ServerPlayer src, String perm, boolean adminCmd) {
+        if (!Flan.ftbRanks)
+            return !adminCmd || src.hasPermissions(ConfigHandler.config.permissionLevel);
+        return FTBRanksAPI.getPermissionValue(src, perm).asBoolean().orElse(!adminCmd || src.hasPermissions(ConfigHandler.config.permissionLevel));
+    }
 
-    boolean permBelowEqVal(ServerPlayer src, String perm, int val, int fallback);
+    default boolean permBelowEqVal(ServerPlayer src, String perm, int val, int fallback) {
+        if (Flan.ftbRanks) {
+            int max = FTBRanksAPI.getPermissionValue(src, perm).asInteger().orElse(fallback);
+            return val <= max;
+        }
+        return val <= fallback;
+    }
 
-    int permVal(ServerPlayer src, String perm, int fallback);
+    default int permVal(ServerPlayer src, String perm, int fallback) {
+        if (Flan.ftbRanks) {
+            return FTBRanksAPI.getPermissionValue(src, perm).asInteger().orElse(fallback);
+        }
+        return fallback;
+    }
 }
