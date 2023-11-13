@@ -84,8 +84,10 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
                 int id = (i % 9) + row * 7 - 1;
                 if (id < players.size()) {
                     ItemStack group = new ItemStack(Items.PLAYER_HEAD);
-                    GameProfile gameProfile = new GameProfile(null, players.get(id));
-                    SkullBlockEntity.updateGameprofile(gameProfile, prof -> group.getOrCreateTag().put("SkullOwner", NbtUtils.writeGameProfile(new CompoundTag(), prof)));
+//                    GameProfile gameProfile = new GameProfile(null, players.get(id));
+                    var compoundTag = group.getOrCreateTag();
+                    compoundTag.putString("SkullOwner", players.get(id));
+                    SkullBlockEntity.resolveGameProfile(compoundTag);
                     inv.updateStack(i, group);
                 }
             }
