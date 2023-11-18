@@ -93,7 +93,7 @@ public class Config {
     public List<String> blockPermission = Lists.newArrayList(
     );
     public List<String> entityPermission = Lists.newArrayList(
-            "taterzen:npc-TRADING"
+            "taterzens:npc-TRADING"
     );
 
     public List<String> leftClickBlockPermission = Lists.newArrayList(
