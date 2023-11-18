@@ -34,6 +34,7 @@ public class PermissionRegistry {
     public static ClaimPermission PLACE = register(new ClaimPermission("PLACE", () -> new ItemStack(Items.GRASS_BLOCK), "Permission to place blocks in the claim"));
     public static ClaimPermission OPENCONTAINER = register(new ClaimPermission("OPENCONTAINER", () -> new ItemStack(Items.CHEST), "Permission to open containers", "(chest, furnace etc.)"));
     public static ClaimPermission INTERACTBLOCK = register(new ClaimPermission("INTERACTBLOCK", () -> new ItemStack(Items.GOLD_NUGGET), "Generic permission for block interaction.", "Fallback to OPENCONTAINER", "Gets used for all blocks OPENCONTAINER doesn't check for"));
+    public static ClaimPermission INTERACTSIGN = register(new ClaimPermission("INTERACTSIGN", () -> new ItemStack(Items.BIRCH_SIGN), "Permission to edit signs (e.g. dyeing them)"));
     public static ClaimPermission ANVIL = register(new ClaimPermission("ANVIL", () -> new ItemStack(Items.ANVIL), "Permission to use anvils"));
     public static ClaimPermission BED = register(new ClaimPermission("BED", () -> new ItemStack(Items.RED_BED), "Permission to use beds"));
     public static ClaimPermission BEACON = register(new ClaimPermission("BEACON", () -> new ItemStack(Items.BEACON), "Permission to use beacons"));
