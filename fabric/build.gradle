@@ -51,7 +51,9 @@ dependencies {
     modCompileOnly(gunpowder_currency) {
         exclude group: "com.google.guava", module:"failureaccess"
     }
-    modImplementation octo_economy_api
+    modImplementation (octo_economy_api) {
+        exclude group: "net.fabricmc.fabric-api"
+    }
     modRuntimeOnly eights_economy
 
     //modImplementation "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
