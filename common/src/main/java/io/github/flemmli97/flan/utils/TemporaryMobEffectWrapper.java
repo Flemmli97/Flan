@@ -10,7 +10,7 @@ public class TemporaryMobEffectWrapper extends MobEffectInstance {
     private final MobEffectInstance wrapped;
 
     public TemporaryMobEffectWrapper(MobEffect mobEffect, int duration, int amplifier, MobEffectInstance wrapped) {
-        super(mobEffect, duration, amplifier, true, false, false, null);
+        super(mobEffect, duration, amplifier, true, false, false);
         this.wrapped = wrapped;
     }
 

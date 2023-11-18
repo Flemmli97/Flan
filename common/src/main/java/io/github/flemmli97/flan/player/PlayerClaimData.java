@@ -355,7 +355,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     private boolean shouldDisplayClaimToolMessage() {
-        return ItemInteractEvents.canClaimWorld(this.player.getLevel(), this.player)
+        return ItemInteractEvents.canClaimWorld(this.player.serverLevel(), this.player)
                 && ConfigHandler.config.maxClaimBlocks > 0;
     }
 

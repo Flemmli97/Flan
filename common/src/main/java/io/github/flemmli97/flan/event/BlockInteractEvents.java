@@ -129,7 +129,7 @@ public class BlockInteractEvents {
                     }
                 }
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
-                executeSignCommand(blockEntity, player);
+                executeSignCommand(blockEntity, hitResult.getBlockPos(), player);
                 return InteractionResult.FAIL;
             }
             if (blockEntity != null && !(player.isSecondaryUseActive() && !stack.isEmpty())) {
@@ -157,16 +157,16 @@ public class BlockInteractEvents {
             if (!res) {
                 if (shift)
                     PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
-                executeSignCommand(blockEntity, player);
+                executeSignCommand(blockEntity, hitResult.getBlockPos(), player);
             }
             return res ? InteractionResult.PASS : InteractionResult.FAIL;
         }
         return InteractionResult.PASS;
     }
 
-    private static void executeSignCommand(BlockEntity blockEntity, ServerPlayer player) {
+    private static void executeSignCommand(BlockEntity blockEntity, BlockPos pos, ServerPlayer player) {
         if (blockEntity instanceof SignBlockEntity sign)
-            sign.executeClickCommands(player);
+            sign.executeClickCommandsIfPresent(player, player.level(), pos, sign.isFacingFrontText(player));
     }
 
     public static boolean contains(ResourceLocation id, BlockEntity blockEntity, List<String> idList, List<String> tagList) {
