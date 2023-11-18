@@ -29,7 +29,8 @@
     "DragonEggBlockMixin",
     "ChunkGeneratorMixin",
     "StructureManagerAccessor",
-    "ServerPlayerGameModeMixin"
+    "ServerPlayerGameModeMixin",
+    "ChestBlockMixin"
   ],
   "server": [
   ],
