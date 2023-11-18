@@ -15,6 +15,7 @@ import io.github.flemmli97.flan.claim.ParticleIndicators;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.EntityInteractEvents;
+import io.github.flemmli97.flan.event.ItemInteractEvents;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.display.ClaimDisplay;
 import io.github.flemmli97.flan.player.display.DisplayBox;
@@ -311,7 +312,7 @@ public class PlayerClaimData implements IPlayerData {
             this.setEditingCorner(null);
             this.setEditClaim(null, 0);
             this.claimBlockMessage = false;
-        } else if (!this.claimBlockMessage) {
+        } else if (!this.claimBlockMessage && this.shouldDisplayClaimToolMessage()) {
             this.claimBlockMessage = true;
             this.player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBlocksFormat"),
                     this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks(), this.remainingClaimBlocks()), ChatFormatting.GOLD), false);
@@ -356,6 +357,11 @@ public class PlayerClaimData implements IPlayerData {
         this.deathPickupTick--;
         if (!this.player.isDeadOrDying())
             this.calculateShouldDrop = true;
+    }
+
+    private boolean shouldDisplayClaimToolMessage() {
+        return ItemInteractEvents.canClaimWorld(this.player.getLevel(), this.player)
+                && ConfigHandler.config.maxClaimBlocks > 0;
     }
 
     public void unlockDeathItems() {
