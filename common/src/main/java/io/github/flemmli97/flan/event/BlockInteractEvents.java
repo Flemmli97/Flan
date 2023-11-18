@@ -14,6 +14,8 @@ import io.github.flemmli97.flan.utils.BlockBreakAttemptHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -48,7 +50,17 @@ public class BlockInteractEvents {
     }
 
     public static boolean breakBlocks(Level world, Player p, BlockPos pos, BlockState state, BlockEntity tile) {
-        return breakBlocks(world, p, pos, world.getBlockState(pos), world.getBlockEntity(pos), false);
+        if (!breakBlocks(world, p, pos, world.getBlockState(pos), world.getBlockEntity(pos), false)) {
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (p instanceof ServerPlayer player && blockEntity != null) {
+                Packet<ClientGamePacketListener> updatePacket = blockEntity.getUpdatePacket();
+                if (updatePacket != null) {
+                    player.connection.send(updatePacket);
+                }
+            }
+            return false;
+        }
+        return true;
     }
 
     public static boolean breakBlocks(Level world, Player p, BlockPos pos, BlockState state, BlockEntity tile, boolean attempt) {
@@ -126,6 +138,11 @@ public class BlockInteractEvents {
                         return InteractionResult.PASS;
                     if (state.getValue(LecternBlock.HAS_BOOK))
                         LockedLecternScreenHandler.create(player, (LecternBlockEntity) blockEntity);
+                    return InteractionResult.FAIL;
+                }
+                if (blockEntity instanceof SignBlockEntity) {
+                    if (claim.canInteract(player, PermissionRegistry.INTERACTSIGN, hitResult.getBlockPos(), false))
+                        return InteractionResult.PASS;
                     return InteractionResult.FAIL;
                 }
                 if (!ConfigHandler.config.lenientBlockEntityCheck || CrossPlatformStuff.INSTANCE.isInventoryTile(blockEntity)) {
