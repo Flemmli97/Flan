@@ -3,7 +3,7 @@ package io.github.flemmli97.flan.mixin;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
-import io.github.flemmli97.flan.player.IOwnedItem;
+import io.github.flemmli97.flan.utils.IOwnedItem;
 import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.entity.animal.allay.AllayAi;
 import net.minecraft.world.entity.item.ItemEntity;

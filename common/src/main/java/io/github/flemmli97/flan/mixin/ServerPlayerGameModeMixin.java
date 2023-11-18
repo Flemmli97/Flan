@@ -37,7 +37,7 @@ public class ServerPlayerGameModeMixin implements BlockBreakAttemptHandler {
     }
 
     @Inject(method = "handleBlockBreakAction", at = @At("HEAD"), cancellable = true)
-    private void onBlockBreakAction(BlockPos pos, ServerboundPlayerActionPacket.Action action, Direction direction, int i, CallbackInfo info) {
+    private void onBlockBreakAction(BlockPos pos, ServerboundPlayerActionPacket.Action action, Direction face, int maxBuildHeight, int sequence, CallbackInfo info) {
         if (action == ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK && pos.equals(this.flan_blockBreakFail)) {
             this.flan_blockBreakFail = null;
             this.flan_mining_fatigue_old = null;
