@@ -1,6 +1,7 @@
 package io.github.flemmli97.flan.player;
 
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.utils.LogoutImpl;
 import net.minecraft.server.MinecraftServer;
 
 import java.util.HashSet;

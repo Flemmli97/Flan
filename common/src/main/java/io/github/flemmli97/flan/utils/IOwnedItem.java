@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.player;
+package io.github.flemmli97.flan.utils;
 
 import net.minecraft.world.entity.player.Player;
 

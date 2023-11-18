@@ -1,7 +1,7 @@
 package io.github.flemmli97.flan.platform.integration.claiming;
 
-import dev.ftb.mods.ftbchunks.api.ClaimedChunk;
-import dev.ftb.mods.ftbchunks.api.FTBChunksAPI;
+import dev.ftb.mods.ftbchunks.data.ClaimedChunk;
+import dev.ftb.mods.ftbchunks.data.FTBChunksAPI;
 import dev.ftb.mods.ftblibrary.math.ChunkDimPos;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.Claim;
