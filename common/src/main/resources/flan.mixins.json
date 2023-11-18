@@ -33,7 +33,8 @@
     "AllayMixin",
     "ChunkGeneratorMixin",
     "StructureManagerAccessor",
-    "ServerPlayerGameModeMixin"
+    "ServerPlayerGameModeMixin",
+    "ChestBlockMixin"
   ],
   "server": [
   ],
