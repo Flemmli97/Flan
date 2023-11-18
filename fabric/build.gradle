@@ -43,7 +43,9 @@ repositories {
 dependencies {
     modImplementation "me.lucko:fabric-permissions-api:${rootProject.fabric_permissions_api}"
 
-    modCompileOnly octo_economy_api
+    modImplementation (octo_economy_api) {
+        exclude group: "net.fabricmc.fabric-api"
+    }
     modCompileOnly diamond_economy
 
     modCompileOnly "io.github.ladysnake:PlayerAbilityLib:${rootProject.player_ability_lib}"
