@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.phys.BlockHitResult;
@@ -116,6 +117,7 @@ public class BlockInteractEvents {
                     }
                 }
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
+                executeSignCommand(blockEntity, player);
                 return InteractionResult.FAIL;
             }
             if (blockEntity != null && !(player.isSecondaryUseActive() && !stack.isEmpty())) {
@@ -135,11 +137,19 @@ public class BlockInteractEvents {
             }
             boolean shift = player.isSecondaryUseActive() || stack.isEmpty();
             boolean res = claim.canInteract(player, PermissionRegistry.INTERACTBLOCK, hitResult.getBlockPos(), shift);
-            if (!res && shift)
-                PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
+            if (!res) {
+                if (shift)
+                    PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
+                executeSignCommand(blockEntity, player);
+            }
             return res ? InteractionResult.PASS : InteractionResult.FAIL;
         }
         return InteractionResult.PASS;
+    }
+
+    private static void executeSignCommand(BlockEntity blockEntity, ServerPlayer player) {
+        if (blockEntity instanceof SignBlockEntity sign)
+            sign.executeClickCommands(player);
     }
 
     public static boolean contains(ResourceLocation id, BlockEntity blockEntity, List<String> idList, List<String> tagList) {
