@@ -1,3 +1,16 @@
+Flan 1.8.9
+================
+- Fix taterzen npc id being wrong in config
+- Fix log spam with mismatching position when preventing block breaking
+- Improve block breaking prevention:
+  - Now stops mining at all if breaking is not possible
+- Disable the claim tool held message when player can't claim anyway (blacklisted world, max claimblock = 0)
+- Make sign commands always execute even without permission. 
+  They need commands to setup anyway so servers purposefully put them there in the first place
+- Disable double chests forming if player can't open the other chest
+- Add new permission: INTERACTSIGN:
+  If true players can edit signs, e.g. via dyeing them etc.
+
 Flan 1.8.8
 ================
 - Fix crash with modded flying and players login out in claims with no flying permission
