@@ -21,6 +21,8 @@ import io.github.flemmli97.flan.player.display.ClaimDisplay;
 import io.github.flemmli97.flan.player.display.DisplayBox;
 import io.github.flemmli97.flan.player.display.EnumDisplayType;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
+import io.github.flemmli97.flan.utils.IPlayerClaimImpl;
+import io.github.flemmli97.flan.utils.TeleportUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;

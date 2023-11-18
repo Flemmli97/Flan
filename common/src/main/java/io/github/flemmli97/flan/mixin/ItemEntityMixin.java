@@ -1,8 +1,8 @@
 package io.github.flemmli97.flan.mixin;
 
 import io.github.flemmli97.flan.event.EntityInteractEvents;
-import io.github.flemmli97.flan.player.IOwnedItem;
 import io.github.flemmli97.flan.player.PlayerClaimData;
+import io.github.flemmli97.flan.utils.IOwnedItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;

@@ -10,6 +10,7 @@ import io.github.flemmli97.flan.gui.LockedLecternScreenHandler;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.player.display.EnumDisplayType;
+import io.github.flemmli97.flan.utils.BlockBreakAttemptHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -38,7 +39,11 @@ import java.util.List;
 public class BlockInteractEvents {
 
     public static InteractionResult startBreakBlocks(Player player, Level world, InteractionHand hand, BlockPos pos, Direction direction) {
-        return breakBlocks(world, player, pos, world.getBlockState(pos), world.getBlockEntity(pos), true) ? InteractionResult.PASS : InteractionResult.FAIL;
+        InteractionResult result = breakBlocks(world, player, pos, world.getBlockState(pos), world.getBlockEntity(pos), true) ? InteractionResult.PASS : InteractionResult.FAIL;
+        if (player instanceof ServerPlayer serverPlayer && result == InteractionResult.FAIL) {
+            ((BlockBreakAttemptHandler) serverPlayer.gameMode).setBlockBreakAttemptFail(pos);
+        }
+        return result;
     }
 
     public static boolean breakBlocks(Level world, Player p, BlockPos pos, BlockState state, BlockEntity tile) {

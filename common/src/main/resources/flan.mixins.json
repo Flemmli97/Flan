@@ -32,7 +32,8 @@
     "DragonEggBlockMixin",
     "AllayMixin",
     "ChunkGeneratorMixin",
-    "StructureManagerAccessor"
+    "StructureManagerAccessor",
+    "ServerPlayerGameModeMixin"
   ],
   "server": [
   ],
