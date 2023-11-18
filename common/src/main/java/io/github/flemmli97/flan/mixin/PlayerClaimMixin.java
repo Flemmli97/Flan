@@ -1,8 +1,8 @@
 package io.github.flemmli97.flan.mixin;
 
 import io.github.flemmli97.flan.claim.Claim;
-import io.github.flemmli97.flan.player.IPlayerClaimImpl;
 import io.github.flemmli97.flan.player.PlayerClaimData;
+import io.github.flemmli97.flan.utils.IPlayerClaimImpl;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;

@@ -28,7 +28,8 @@
     "MossBlockCheckMixin",
     "DragonEggBlockMixin",
     "ChunkGeneratorMixin",
-    "StructureManagerAccessor"
+    "StructureManagerAccessor",
+    "ServerPlayerGameModeMixin"
   ],
   "server": [
   ],
