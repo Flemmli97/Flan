@@ -42,9 +42,11 @@ import java.util.List;
 public class BlockInteractEvents {
 
     public static InteractionResult startBreakBlocks(Player player, Level world, InteractionHand hand, BlockPos pos, Direction direction) {
-        InteractionResult result = breakBlocks(world, player, pos, world.getBlockState(pos), world.getBlockEntity(pos), true) ? InteractionResult.PASS : InteractionResult.FAIL;
-        if (player instanceof ServerPlayer serverPlayer && result == InteractionResult.FAIL) {
-            ((BlockBreakAttemptHandler) serverPlayer.gameMode).setBlockBreakAttemptFail(pos);
+        BlockState state = world.getBlockState(pos);
+        InteractionResult result = breakBlocks(world, player, pos, state, world.getBlockEntity(pos), true) ? InteractionResult.PASS : InteractionResult.FAIL;
+        if (player instanceof ServerPlayer serverPlayer) {
+            boolean failed = player.isCreative() || result == InteractionResult.FAIL;
+            ((BlockBreakAttemptHandler) serverPlayer.gameMode).setBlockBreakAttemptFail(failed ? pos : null, failed && state.getDestroyProgress(player, world, pos) >= 1);
         }
         return result;
     }

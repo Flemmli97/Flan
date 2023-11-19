@@ -4,7 +4,6 @@ import io.github.flemmli97.flan.utils.BlockBreakAttemptHandler;
 import io.github.flemmli97.flan.utils.TemporaryMobEffectWrapper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.protocol.game.ClientboundBlockDestructionPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
@@ -26,13 +25,16 @@ public class ServerPlayerGameModeMixin implements BlockBreakAttemptHandler {
     private BlockPos flan_blockBreakFail;
     @Unique
     private MobEffectInstance flan_mining_fatigue_old;
+    @Unique
+    private boolean flan_was_insta_break;
 
     @Inject(method = "tick", at = @At("RETURN"))
     public void onTick(CallbackInfo info) {
         if (this.flan_blockBreakFail != null) {
             // Use mining fatigue for blocking block destroy progress
-            this.player.addEffect(new TemporaryMobEffectWrapper(MobEffects.DIG_SLOWDOWN, 10, -1, this.flan_mining_fatigue_old));
-            this.player.connection.send(new ClientboundBlockDestructionPacket(this.player.getId(), this.flan_blockBreakFail, -1));
+            if (!this.flan_was_insta_break) {
+                this.player.addEffect(new TemporaryMobEffectWrapper(MobEffects.DIG_SLOWDOWN, 20, -1, this.flan_mining_fatigue_old));
+            }
         }
     }
 
@@ -42,20 +44,33 @@ public class ServerPlayerGameModeMixin implements BlockBreakAttemptHandler {
             this.flan_blockBreakFail = null;
             this.flan_mining_fatigue_old = null;
             MobEffectInstance current = this.player.getEffect(MobEffects.DIG_SLOWDOWN);
-            this.player.removeEffect(MobEffects.DIG_SLOWDOWN);
             // Reapply mining fatigue if player had it previously
-            if (current instanceof TemporaryMobEffectWrapper temp && temp.getWrapped() != null) {
-                this.player.addEffect(temp.getWrapped());
+            if (current instanceof TemporaryMobEffectWrapper temp) {
+                this.player.removeEffect(MobEffects.DIG_SLOWDOWN);
+                if (temp.getWrapped() != null)
+                    this.player.addEffect(temp.getWrapped());
             }
             info.cancel();
         }
     }
 
     @Override
-    public void setBlockBreakAttemptFail(BlockPos pos) {
+    public void setBlockBreakAttemptFail(BlockPos pos, boolean instaBreak) {
+        this.flan_was_insta_break = instaBreak;
+        if (pos == null) {
+            this.flan_blockBreakFail = null;
+            this.flan_mining_fatigue_old = null;
+            MobEffectInstance current = this.player.getEffect(MobEffects.DIG_SLOWDOWN);
+            // Reapply mining fatigue if player had it previously
+            if (current instanceof TemporaryMobEffectWrapper temp) {
+                this.player.removeEffect(MobEffects.DIG_SLOWDOWN);
+                if (temp.getWrapped() != null)
+                    this.player.addEffect(temp.getWrapped());
+            }
+            return;
+        }
         this.flan_blockBreakFail = pos;
         this.flan_mining_fatigue_old = this.player.getEffect(MobEffects.DIG_SLOWDOWN);
         this.player.removeEffect(MobEffects.DIG_SLOWDOWN);
-        this.player.connection.send(new ClientboundBlockDestructionPacket(this.player.getId(), this.flan_blockBreakFail, -1));
     }
 }
