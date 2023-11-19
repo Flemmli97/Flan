@@ -1,3 +1,7 @@
+Flan 1.8.10
+================
+- Fix some issues with breaking progress prevention
+
 Flan 1.8.9
 ================
 - Fix taterzen npc id being wrong in config

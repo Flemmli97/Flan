@@ -4,5 +4,5 @@ import net.minecraft.core.BlockPos;
 
 public interface BlockBreakAttemptHandler {
 
-    void setBlockBreakAttemptFail(BlockPos pos);
+    void setBlockBreakAttemptFail(BlockPos pos, boolean instaBreak);
 }
