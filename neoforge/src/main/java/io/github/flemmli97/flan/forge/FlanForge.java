@@ -8,13 +8,13 @@ import io.github.flemmli97.flan.forge.forgeevent.ServerEvents;
 import io.github.flemmli97.flan.forge.forgeevent.WorldEventsForge;
 import io.github.flemmli97.flan.platform.integration.webmap.DynmapIntegration;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.IExtensionPoint;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.IExtensionPoint;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
 
 @Mod(FlanForge.MODID)
 public class FlanForge {
@@ -28,7 +28,7 @@ public class FlanForge {
         Flan.ftbChunks = ModList.get().isLoaded("ftbchunks");
         Flan.mineColonies = ModList.get().isLoaded("minecolonies");
 
-        IEventBus forge = MinecraftForge.EVENT_BUS;
+        IEventBus forge = NeoForge.EVENT_BUS;
         forge.addListener(WorldEventsForge::modifyExplosion);
         forge.addListener(WorldEventsForge::preventMobSpawn);
         forge.addListener(ItemInteractEventsForge::useItem);

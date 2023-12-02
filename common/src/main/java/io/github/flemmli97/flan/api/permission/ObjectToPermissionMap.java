@@ -2,7 +2,6 @@ package io.github.flemmli97.flan.api.permission;
 
 import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -72,10 +71,10 @@ public class ObjectToPermissionMap {
         itemToPermission.clear();
         entityToPermission.clear();
         leftClickBlockPermission.clear();
-        for (Block block : CrossPlatformStuff.INSTANCE.registryBlocks().getIterator()) {
+        for (Block block : BuiltInRegistries.BLOCK) {
             blockPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(block)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> blockToPermission.put(block, sub.get()));
         }
-        for (Item item : CrossPlatformStuff.INSTANCE.registryItems().getIterator()) {
+        for (Item item : BuiltInRegistries.ITEM) {
             itemPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(item)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> itemToPermission.put(item, sub.get()));
         }
         process(ConfigHandler.config.itemPermission, BuiltInRegistries.ITEM, itemToPermission);

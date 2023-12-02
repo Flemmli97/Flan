@@ -21,7 +21,7 @@ versionRange="[${mcversion},)"
 ordering="NONE"
 side="BOTH"
 [[dependencies.flan]]
-modId="forge"
+modId="neoforge"
 mandatory=true
 versionRange="[${forge_version},)"
 ordering="NONE"

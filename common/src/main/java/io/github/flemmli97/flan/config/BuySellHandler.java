@@ -2,10 +2,12 @@ package io.github.flemmli97.flan.config;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.platform.integration.currency.CommandCurrency;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -194,7 +196,7 @@ public class BuySellHandler {
         obj.addProperty("sellType", this.sellType.toString());
         obj.addProperty("buyValue", this.buyAmount);
         obj.addProperty("sellValue", this.sellAmount);
-        obj.add("ingredient", this.ingredient.toJson());
+        obj.add("ingredient", this.ingredient.toJson(true));
         return obj;
     }
 
@@ -204,7 +206,9 @@ public class BuySellHandler {
         this.buyAmount = object.has("buyValue") ? object.get("buyValue").getAsFloat() : this.buyAmount;
         this.sellAmount = object.has("sellValue") ? object.get("sellValue").getAsFloat() : this.sellAmount;
         try {
-            this.ingredient = object.has("ingredient") ? Ingredient.fromJson(object.get("ingredient")) : Ingredient.EMPTY;
+            this.ingredient = object.has("ingredient")
+                    ? Util.getOrThrow(Ingredient.CODEC.parse(JsonOps.INSTANCE, object.get("ingredient")), JsonParseException::new)
+                    : Ingredient.EMPTY;
         } catch (JsonParseException e) {
             this.ingredient = Ingredient.EMPTY;
         }

@@ -4,7 +4,7 @@ import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 public class PermissionCheckEvent extends Event {
 

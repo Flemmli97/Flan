@@ -1,13 +1,11 @@
 package io.github.flemmli97.flan.gui;
 
-import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -84,8 +82,9 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
                 int id = (i % 9) + row * 7 - 1;
                 if (id < players.size()) {
                     ItemStack group = new ItemStack(Items.PLAYER_HEAD);
-                    GameProfile gameProfile = new GameProfile(null, players.get(id));
-                    SkullBlockEntity.updateGameprofile(gameProfile, prof -> group.getOrCreateTag().put("SkullOwner", NbtUtils.writeGameProfile(new CompoundTag(), prof)));
+                    CompoundTag compoundTag = group.getOrCreateTag();
+                    compoundTag.putString("SkullOwner", players.get(id));
+                    SkullBlockEntity.resolveGameProfile(compoundTag);
                     inv.updateStack(i, group);
                 }
             }
