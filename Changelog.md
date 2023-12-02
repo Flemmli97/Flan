@@ -3,12 +3,6 @@ Flan 1.8.11
 - Ignore creative player for start breaking event as they insta break anyway
 - Change claim display from particle to blocks.  
   Can still be enabled in config via `particleDisplay`
-
-Flan 1.8.11
-================
-- Ignore creative player for start breaking event as they insta break anyway
-- Change claim display from particle to blocks.  
-  Can still be enabled in config via `particleDisplay`
 - Impactor economy integration
 
 Flan 1.8.10
