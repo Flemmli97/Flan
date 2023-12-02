@@ -1,3 +1,11 @@
+Flan 1.8.11
+================
+- Ignore creative player for start breaking event as they insta break anyway
+- Change claim display from particle to blocks.  
+  Can still be enabled in config via `particleDisplay`
+- Impactor economy integration
+- Port to 1.20.2
+
 Flan 1.8.10
 ================
 - Fix some issues with breaking progress prevention
