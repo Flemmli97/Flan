@@ -1,10 +1,4 @@
-apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-v1/forge.gradle"
-
-loom {
-    forge {
-        mixinConfigs = ["flan.mixins.json", "flan.forge.mixins.json"]
-    }
-}
+apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-fabric-neoforge/neoforge.gradle"
 
 repositories {
     mavenCentral()

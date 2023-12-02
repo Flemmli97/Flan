@@ -2,6 +2,10 @@ modLoader="javafml"
 loaderVersion="[${loader_version},)"
 license="All rights reserved"
 issueTrackerURL="https://github.com/Flemmli97/Flan/issues"
+[[mixins]]
+config = "flan.mixins.json"
+[[mixins]]
+config = "flan.forge.mixins.json"
 [[mods]] 
 modId="flan"
 version="${version}"

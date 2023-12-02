@@ -2,7 +2,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "8.0.0+"
 }
 
-apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-v1/common.gradle"
+apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-fabric-neoforge/common.gradle"
 
 configurations {
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
@@ -43,7 +43,7 @@ transformProductionFabric {
 }
 
 // Use the shadow jar instead of normal jar to shadow yaml lib properly into forge builds
-transformProductionForge {
+transformProductionNeoForge {
     dependsOn shadowJar
     input.set shadowJar.archiveFile
 }
