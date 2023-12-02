@@ -178,8 +178,10 @@ public class PlayerClaimData implements IPlayerData {
     public void setEditClaim(Claim claim, int height) {
         if (claim != null)
             this.displayEditing = new ClaimDisplay(claim, EnumDisplayType.EDIT, height);
-        else
+        else if (this.displayEditing != null) {
+            this.displayEditing.onRemoved(this.player);
             this.displayEditing = null;
+        }
         this.editingClaim = claim;
     }
 
@@ -294,7 +296,12 @@ public class PlayerClaimData implements IPlayerData {
             }
         });
         this.displayToAdd.clear();
-        this.claimDisplayList.removeIf(d -> d.display(this.player, !tool && !stick));
+        this.claimDisplayList.removeIf(d -> {
+            boolean remove = d.display(this.player, !tool && !stick);
+            if (remove)
+                d.onRemoved(this.player);
+            return remove;
+        });
         if (++this.lastBlockTick > ConfigHandler.config.ticksForNextBlock) {
             this.addClaimBlocks(1);
             this.lastBlockTick = 0;
