@@ -7,6 +7,7 @@ import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.integration.currency.CommandCurrency;
+import io.github.flemmli97.flan.platform.integration.currency.CommonCurrency;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.gunpowder.entities.StoredBalance;
 import io.github.gunpowder.modelhandlers.BalanceHandler;
@@ -28,6 +29,9 @@ public class CommandCurrencyImpl implements CommandCurrency {
             message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("sellDisabled"), ChatFormatting.DARK_RED));
             return false;
         }
+        int common = CommonCurrency.sell(player, blocks, value, message);
+        if (common != -1)
+            return common == 1;
         if (Flan.gunpowder) {
             PlayerClaimData data = PlayerClaimData.get(player);
             if (data.getAdditionalClaims() - Math.max(0, data.usedClaimBlocks() - data.getClaimBlocks()) < blocks) {
@@ -70,6 +74,9 @@ public class CommandCurrencyImpl implements CommandCurrency {
             message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyDisabled"), ChatFormatting.DARK_RED));
             return false;
         }
+        int common = CommonCurrency.buy(player, blocks, value, message);
+        if (common != -1)
+            return common == 1;
         if (Flan.gunpowder) {
             StoredBalance bal = BalanceHandler.INSTANCE.getUser(player.getUUID());
             BigDecimal price = BigDecimal.valueOf(Math.max(0, blocks * value));

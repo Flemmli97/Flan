@@ -18,6 +18,7 @@ repositories {
         name = "CurseMaven"
         url "https://www.cursemaven.com"
     }
+    maven { url "https://maven.impactdev.net/repository/development/" }
 }
 
 dependencies {
@@ -29,6 +30,9 @@ dependencies {
     modImplementation "dev.ftb.mods:ftb-ranks:${ftb_ranks}"
     modImplementation "dev.ftb.mods:ftb-chunks:${ftb_chunks}"
     implementation 'com.github.BlueMap-Minecraft:BlueMapAPI:v2.2.1'
+    implementation ("net.impactdev.impactor.api:economy:${impactor_version}") {
+        exclude group: "net.kyori"
+    }
 }
 
 shadowJar {
