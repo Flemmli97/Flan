@@ -6,6 +6,7 @@ import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.integration.currency.CommandCurrency;
+import io.github.flemmli97.flan.platform.integration.currency.CommonCurrency;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -22,6 +23,9 @@ public class CommandCurrencyImpl implements CommandCurrency {
             message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("sellDisabled"), ChatFormatting.DARK_RED));
             return false;
         }
+        int common = CommonCurrency.sell(player, blocks, value, message);
+        if (common != -1)
+            return common == 1;
         if (Flan.diceMCMoneySign) {
             PlayerClaimData data = PlayerClaimData.get(player);
             if (data.getAdditionalClaims() - Math.max(0, data.usedClaimBlocks() - data.getClaimBlocks()) < blocks) {
@@ -44,6 +48,9 @@ public class CommandCurrencyImpl implements CommandCurrency {
             message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("buyDisabled"), ChatFormatting.DARK_RED));
             return false;
         }
+        int common = CommonCurrency.buy(player, blocks, value, message);
+        if (common != -1)
+            return common == 1;
         if (Flan.diceMCMoneySign) {
             UUID uuid = player.getUUID();
             MoneyWSD manager = MoneyWSD.get(player.serverLevel());

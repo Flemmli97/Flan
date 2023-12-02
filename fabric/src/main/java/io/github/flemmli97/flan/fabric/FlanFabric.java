@@ -73,6 +73,7 @@ public class FlanFabric implements ModInitializer {
         Flan.ftbChunks = FabricLoader.getInstance().isModLoaded("ftbchunks");
         Flan.gomlServer = FabricLoader.getInstance().isModLoaded("goml");
         Flan.commonProtApi = FabricLoader.getInstance().isModLoaded("common-protection-api");
+        Flan.impactor = FabricLoader.getInstance().isModLoaded("impactor");
 
         if (Flan.playerAbilityLib)
             PlayerAbilityEvents.register();
