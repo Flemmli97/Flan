@@ -7,10 +7,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 
@@ -21,6 +24,7 @@ import java.util.Set;
 
 public class ClaimDisplay {
 
+    private boolean initialDisplay;
     private int displayTime;
     private final int height;
     private final DisplayBox display;
@@ -32,6 +36,7 @@ public class ClaimDisplay {
     private DisplayBox.Box prevDims;
 
     private final DustParticleOptions corner, middle;
+    private final Block displayBlock;
 
     public ClaimDisplay(Claim claim, EnumDisplayType type, int y) {
         this(claim.display(), claim.getWorld(), type, y);
@@ -47,18 +52,22 @@ public class ClaimDisplay {
             case SUB -> {
                 this.corner = ParticleIndicators.SUBCLAIMCORNER;
                 this.middle = ParticleIndicators.SUBCLAIMMIDDLE;
+                this.displayBlock = Blocks.IRON_BLOCK;
             }
             case CONFLICT -> {
                 this.corner = ParticleIndicators.OVERLAPCLAIM;
                 this.middle = ParticleIndicators.OVERLAPCLAIM;
+                this.displayBlock = Blocks.REDSTONE_BLOCK;
             }
             case EDIT -> {
                 this.corner = ParticleIndicators.EDITCLAIMCORNER;
                 this.middle = ParticleIndicators.EDITCLAIMMIDDLE;
+                this.displayBlock = Blocks.LAPIS_BLOCK;
             }
             default -> {
                 this.corner = ParticleIndicators.CLAIMCORNER;
                 this.middle = ParticleIndicators.CLAIMMIDDLE;
+                this.displayBlock = Blocks.GOLD_BLOCK;
             }
         }
     }
@@ -68,6 +77,7 @@ public class ClaimDisplay {
             return this.display.isRemoved();
         DisplayBox.Box dims = this.display.box();
         if (this.corners == null || this.changed(dims)) {
+            this.onRemoved(player);
             this.middlePoss = calculateDisplayPos(player.serverLevel(), dims, this.height, this.display.excludedSides());
             this.corners = new int[][]{
                     getPosFrom(player.serverLevel(), dims.minX(), dims.minZ(), this.height),
@@ -75,20 +85,52 @@ public class ClaimDisplay {
                     getPosFrom(player.serverLevel(), dims.minX(), dims.maxZ(), this.height),
                     getPosFrom(player.serverLevel(), dims.maxX(), dims.maxZ(), this.height),
             };
+            this.initialDisplay = false;
         }
-        for (int[] pos : this.corners) {
-            if (pos[1] != pos[2])
-                player.connection.send(new ClientboundLevelParticlesPacket(this.corner, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
-            player.connection.send(new ClientboundLevelParticlesPacket(this.corner, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
-        }
-        if (this.middlePoss != null)
-            for (int[] pos : this.middlePoss) {
+        if (ConfigHandler.config.particleDisplay) {
+            for (int[] pos : this.corners) {
                 if (pos[1] != pos[2])
-                    player.connection.send(new ClientboundLevelParticlesPacket(this.middle, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
-                player.connection.send(new ClientboundLevelParticlesPacket(this.middle, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
+                    player.connection.send(new ClientboundLevelParticlesPacket(this.corner, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
+                player.connection.send(new ClientboundLevelParticlesPacket(this.corner, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
             }
+            if (this.middlePoss != null)
+                for (int[] pos : this.middlePoss) {
+                    if (pos[1] != pos[2])
+                        player.connection.send(new ClientboundLevelParticlesPacket(this.middle, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
+                    player.connection.send(new ClientboundLevelParticlesPacket(this.middle, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
+                }
+        } else if (!this.initialDisplay) {
+            for (int[] pos : this.corners) {
+                BlockPos blockPos = new BlockPos(pos[0], pos[1] != pos[2] ? pos[2] : pos[1], pos[3]);
+                player.connection.send(new ClientboundBlockUpdatePacket(blockPos.below(), this.displayBlock.defaultBlockState()));
+            }
+            if (this.middlePoss != null)
+                for (int[] pos : this.middlePoss) {
+                    BlockPos blockPos = new BlockPos(pos[0], pos[1] != pos[2] ? pos[2] : pos[1], pos[3]);
+                    player.connection.send(new ClientboundBlockUpdatePacket(blockPos.below(), this.displayBlock.defaultBlockState()));
+                }
+        }
         this.prevDims = dims;
+        if (!this.initialDisplay)
+            this.initialDisplay = true;
         return this.display.isRemoved() || (remove && this.displayTime < 0);
+    }
+
+    public void onRemoved(ServerPlayer player) {
+        if (!ConfigHandler.config.particleDisplay) {
+            if (this.corners != null)
+                for (int[] pos : this.corners) {
+                    BlockPos blockPos = new BlockPos(pos[0], pos[1] != pos[2] ? pos[2] : pos[1], pos[3]);
+                    blockPos = blockPos.below();
+                    player.connection.send(new ClientboundBlockUpdatePacket(blockPos, player.level().getBlockState(blockPos)));
+                }
+            if (this.middlePoss != null)
+                for (int[] pos : this.middlePoss) {
+                    BlockPos blockPos = new BlockPos(pos[0], pos[1] != pos[2] ? pos[2] : pos[1], pos[3]);
+                    blockPos = blockPos.below();
+                    player.connection.send(new ClientboundBlockUpdatePacket(blockPos, player.level().getBlockState(blockPos)));
+                }
+        }
     }
 
     private boolean changed(DisplayBox.Box dims) {
