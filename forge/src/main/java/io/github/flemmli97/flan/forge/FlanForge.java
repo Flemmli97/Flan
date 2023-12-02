@@ -27,6 +27,7 @@ public class FlanForge {
         Flan.diceMCMoneySign = ModList.get().isLoaded("dicemcmm");
         Flan.ftbChunks = ModList.get().isLoaded("ftbchunks");
         Flan.mineColonies = ModList.get().isLoaded("minecolonies");
+        Flan.impactor = ModList.get().isLoaded("impactor");
 
         IEventBus forge = MinecraftForge.EVENT_BUS;
         forge.addListener(WorldEventsForge::modifyExplosion);
