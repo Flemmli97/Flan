@@ -98,7 +98,8 @@ public class CommandClaim {
                         .then(Commands.literal("all").then(Commands.argument("players", GameProfileArgument.gameProfile())
                                 .executes(CommandClaim::adminDeleteAll))))
                 .then(Commands.literal("giveClaimBlocks").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdAdminGive, true)).then(Commands.argument("players", GameProfileArgument.gameProfile())
-                        .then(Commands.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::giveClaimBlocks))))
+                        .then(Commands.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::giveClaimBlocks))
+                        .then(Commands.literal("base").then(Commands.argument("amount", IntegerArgumentType.integer()).executes(ctx -> CommandClaim.giveClaimBlocks(ctx, true))))))
                 .then(Commands.literal("buyBlocks").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdBuy, false))
                         .then(Commands.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::buyClaimBlocks)))
                 .then(Commands.literal("sellBlocks").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdSell, false))
@@ -607,6 +608,10 @@ public class CommandClaim {
     }
 
     private static int giveClaimBlocks(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        return giveClaimBlocks(context, false);
+    }
+
+    private static int giveClaimBlocks(CommandContext<CommandSourceStack> context, boolean base) throws CommandSyntaxException {
         CommandSourceStack src = context.getSource();
         List<String> players = new ArrayList<>();
         int amount = IntegerArgumentType.getInteger(context, "amount");
@@ -614,12 +619,15 @@ public class CommandClaim {
             ServerPlayer player = src.getServer().getPlayerList().getPlayer(prof.getId());
             if (player != null) {
                 PlayerClaimData data = PlayerClaimData.get(player);
-                data.setAdditionalClaims(data.getAdditionalClaims() + amount);
+                if (base)
+                    data.addClaimBlocksDirect(amount);
+                else
+                    data.setAdditionalClaims(data.getAdditionalClaims() + amount);
             } else
-                PlayerClaimData.editForOfflinePlayer(src.getServer(), prof.getId(), amount);
+                PlayerClaimData.editForOfflinePlayer(src.getServer(), prof.getId(), amount, base);
             players.add(prof.getName());
         }
-        src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("giveClaimBlocks"), players, amount), ChatFormatting.GOLD), true);
+        src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get(base ? "giveClaimBlocks" : "giveClaimBlocksBonus"), players, amount), ChatFormatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 
