@@ -129,8 +129,8 @@ public class CommandClaim {
                                             return SharedSuggestionProvider.suggest(list, build);
                                         }).executes(CommandClaim::removePlayer))))))
                 .then(Commands.literal("fakePlayer").executes(CommandClaim::toggleFakePlayer)
-                        .then(Commands.literal("add").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdFakePlayer, true)).then(Commands.argument("uuid", UuidArgument.uuid()).executes(CommandClaim::addFakePlayer)))
-                        .then(Commands.literal("remove").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdFakePlayer, true))
+                        .then(Commands.literal("add").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdFakePlayer)).then(Commands.argument("uuid", UuidArgument.uuid()).executes(CommandClaim::addFakePlayer)))
+                        .then(Commands.literal("remove").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdFakePlayer))
                                 .then(Commands.argument("uuid", UuidArgument.uuid()).suggests((context, build) -> {
                                     List<String> list = new ArrayList<>();
                                     CommandSourceStack src = context.getSource();
