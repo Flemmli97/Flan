@@ -104,6 +104,7 @@ public class LangManager {
         this.defaultTranslation.put("errorFile", "Error reading file %1$s");
         this.defaultTranslation.put("readConflict", "%1$s conflicts with existing claims. Not added to world! Conflicts:");
         this.defaultTranslation.put("giveClaimBlocks", "Gave following players %2$d claimblocks: %1$s");
+        this.defaultTranslation.put("giveClaimBlocksBonus", "Gave following players %2$d bonus claimblocks: %1$s");
 
         this.defaultTranslation.put("fakePlayerNotification1", "A fakeplayer tried to interact with your claim at %1$s in %2$s.");
         this.defaultTranslation.put("fakePlayerNotification2", "Click %s while standing in your claim to add the fakeplayer to the claim.");
