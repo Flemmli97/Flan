@@ -19,13 +19,15 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 
 public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
     private final Claim claim;
 
     private ClaimMenuScreenHandler(int syncId, Inventory playerInventory, Claim claim) {
-        super(syncId, playerInventory, 1, claim);
+        super(syncId, playerInventory, 2, claim);
         this.claim = claim;
     }
 
@@ -46,7 +48,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
     @Override
     protected void fillInventoryWith(Player player, SeparateInv inv, Claim claim) {
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 18; i++) {
             switch (i) {
                 case 0 -> {
                     ItemStack close = new ItemStack(Items.TNT);
@@ -95,6 +97,28 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
                         ServerScreenHelper.addLore(delete, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenNoPerm"), ChatFormatting.DARK_RED));
                     inv.updateStack(i, delete);
                 }
+                case 12 -> {
+                    ItemStack stack = new ItemStack(Items.POTION);
+                    PotionUtils.setPotion(stack, Potions.WATER);
+                    stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get(CustomInteractListScreenHandler.Type.ITEM.translationKey), ChatFormatting.GOLD));
+                    if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, PermissionRegistry.EDITCLAIM))
+                        ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenNoPerm"), ChatFormatting.DARK_RED));
+                    inv.updateStack(i, stack);
+                }
+                case 13 -> {
+                    ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
+                    stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get(CustomInteractListScreenHandler.Type.BLOCKBREAK.translationKey), ChatFormatting.GOLD));
+                    if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, PermissionRegistry.EDITCLAIM))
+                        ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenNoPerm"), ChatFormatting.DARK_RED));
+                    inv.updateStack(i, stack);
+                }
+                case 14 -> {
+                    ItemStack stack = new ItemStack(Items.RED_BANNER);
+                    stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get(CustomInteractListScreenHandler.Type.BLOCKUSE.translationKey), ChatFormatting.GOLD));
+                    if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, PermissionRegistry.EDITCLAIM))
+                        ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenNoPerm"), ChatFormatting.DARK_RED));
+                    inv.updateStack(i, stack);
+                }
                 default -> inv.updateStack(i, ServerScreenHelper.emptyFiller());
             }
         }
@@ -102,7 +126,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
     @Override
     protected boolean isRightSlot(int slot) {
-        return slot == 0 || slot == 2 || slot == 3 || slot == 4 || slot == 5 || slot == 6 || slot == 8;
+        return slot == 0 || slot == 2 || slot == 3 || slot == 4 || slot == 5 || slot == 6 || slot == 8 || slot == 12 || slot == 13 || slot == 14;
     }
 
     @Override
@@ -168,6 +192,30 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
                             ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                         }
                     }));
+                } else
+                    ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
+                break;
+            case 12:
+                if (this.hasPerm(this.claim, player, PermissionRegistry.EDITPERMS)) {
+                    player.closeContainer();
+                    player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, CustomInteractListScreenHandler.Type.ITEM, this.claim));
+                    ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
+                } else
+                    ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
+                break;
+            case 13:
+                if (this.hasPerm(this.claim, player, PermissionRegistry.EDITPERMS)) {
+                    player.closeContainer();
+                    player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, CustomInteractListScreenHandler.Type.BLOCKBREAK, this.claim));
+                    ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
+                } else
+                    ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
+                break;
+            case 14:
+                if (this.hasPerm(this.claim, player, PermissionRegistry.EDITPERMS)) {
+                    player.closeContainer();
+                    player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, CustomInteractListScreenHandler.Type.BLOCKUSE, this.claim));
+                    ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                 break;

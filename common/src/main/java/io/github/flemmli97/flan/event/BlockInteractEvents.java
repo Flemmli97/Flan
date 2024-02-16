@@ -4,6 +4,7 @@ import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
+import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.LockedLecternScreenHandler;
@@ -71,6 +72,8 @@ public class BlockInteractEvents {
         ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
+            if (claim instanceof Claim real && real.canBreakBlockItem(state))
+                return true;
             ResourceLocation id = CrossPlatformStuff.INSTANCE.registryBlocks().getIDFrom(state.getBlock());
             if (contains(id, world.getBlockEntity(pos), ConfigHandler.config.breakBlockBlacklist, ConfigHandler.config.breakBETagBlacklist))
                 return true;
@@ -109,6 +112,8 @@ public class BlockInteractEvents {
         IPermissionContainer claim = storage.getForPermissionCheck(hitResult.getBlockPos());
         if (claim != null) {
             BlockState state = world.getBlockState(hitResult.getBlockPos());
+            if (claim instanceof Claim real && real.canUseBlockItem(state))
+                return InteractionResult.PASS;
             ResourceLocation id = CrossPlatformStuff.INSTANCE.registryBlocks().getIDFrom(state.getBlock());
             BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
             if (contains(id, blockEntity, ConfigHandler.config.interactBlockBlacklist, ConfigHandler.config.interactBETagBlacklist))

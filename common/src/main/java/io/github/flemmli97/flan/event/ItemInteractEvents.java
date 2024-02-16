@@ -73,6 +73,8 @@ public class ItemInteractEvents {
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim == null)
             return InteractionResultHolder.pass(stack);
+        if (claim instanceof Claim real && real.canUseItem(stack))
+            return InteractionResultHolder.pass(stack);
         ClaimPermission perm = ObjectToPermissionMap.getFromItem(stack.getItem());
         if (perm != null) {
             boolean success = claim.canInteract(player, perm, pos, true);
@@ -114,6 +116,8 @@ public class ItemInteractEvents {
         if (blackListedItems.contains(stack.getItem()))
             return InteractionResult.PASS;
         boolean actualInClaim = !(claim instanceof Claim) || placePos.getY() >= ((Claim) claim).getDimensions()[4];
+        if (actualInClaim && claim instanceof Claim real && real.canUseItem(stack))
+            return InteractionResult.PASS;
         ClaimPermission perm = ObjectToPermissionMap.getFromItem(stack.getItem());
         if (perm != null) {
             if (claim.canInteract(player, perm, placePos, false))

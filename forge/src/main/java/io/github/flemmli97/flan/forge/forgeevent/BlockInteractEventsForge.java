@@ -4,6 +4,7 @@ import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
+import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -18,6 +19,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -75,6 +77,8 @@ public class BlockInteractEventsForge {
         ClaimStorage storage = ClaimStorage.get(player.getLevel());
         IPermissionContainer claim = storage.getForPermissionCheck(placePos);
         if (claim == null)
+            return false;
+        if (claim instanceof Claim real && real.canUseItem(new ItemStack(placedBlock.getBlock())))
             return false;
         ClaimPermission perm = ObjectToPermissionMap.getFromBlock(placedBlock.getBlock());
         if (perm != null) {
