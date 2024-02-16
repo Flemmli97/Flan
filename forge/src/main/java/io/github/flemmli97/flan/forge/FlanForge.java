@@ -33,8 +33,8 @@ public class FlanForge {
         forge.addListener(WorldEventsForge::modifyExplosion);
         forge.addListener(WorldEventsForge::preventMobSpawn);
         forge.addListener(ItemInteractEventsForge::useItem);
-        forge.addListener(BlockInteractEventsForge::startBreakBlocks);
-        forge.addListener(BlockInteractEventsForge::breakBlocks);
+        forge.addListener(EventPriority.HIGHEST, BlockInteractEventsForge::startBreakBlocks);
+        forge.addListener(EventPriority.HIGHEST, BlockInteractEventsForge::breakBlocks);
         forge.addListener(EventPriority.HIGHEST, BlockInteractEventsForge::useBlocks);
         forge.addListener(EventPriority.HIGHEST, BlockInteractEventsForge::placeBlock);
         forge.addListener(EventPriority.HIGHEST, BlockInteractEventsForge::placeBlocks);
