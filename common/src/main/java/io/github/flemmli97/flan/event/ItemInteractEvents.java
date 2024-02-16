@@ -99,14 +99,22 @@ public class ItemInteractEvents {
         if (!(context.getPlayer() instanceof ServerPlayer player) || context.getItemInHand().isEmpty())
             return InteractionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerLevel) context.getLevel());
+        BlockPos interactPos = context.getClickedPos();
+        InteractionResult interact = itemUseOn(context.getLevel(), player, storage, interactPos, context.getItemInHand());
+        if (interact != InteractionResult.PASS)
+            return interact;
         BlockPos placePos = new BlockPlaceContext(context).getClickedPos();
+        return itemUseOn(context.getLevel(), player, storage, placePos, context.getItemInHand());
+    }
+
+    private static InteractionResult itemUseOn(Level level, ServerPlayer player, ClaimStorage storage, BlockPos placePos, ItemStack stack) {
         IPermissionContainer claim = storage.getForPermissionCheck(placePos.offset(0, 255, 0));
         if (claim == null)
             return InteractionResult.PASS;
-        if (blackListedItems.contains(context.getItemInHand().getItem()))
+        if (blackListedItems.contains(stack.getItem()))
             return InteractionResult.PASS;
         boolean actualInClaim = !(claim instanceof Claim) || placePos.getY() >= ((Claim) claim).getDimensions()[4];
-        ClaimPermission perm = ObjectToPermissionMap.getFromItem(context.getItemInHand().getItem());
+        ClaimPermission perm = ObjectToPermissionMap.getFromItem(stack.getItem());
         if (perm != null) {
             if (claim.canInteract(player, perm, placePos, false))
                 return InteractionResult.PASS;
@@ -116,13 +124,13 @@ public class ItemInteractEvents {
             }
         }
         if (claim.canInteract(player, PermissionRegistry.PLACE, placePos, false)) {
-            if (!actualInClaim && context.getItemInHand().getItem() instanceof BlockItem) {
+            if (!actualInClaim && stack.getItem() instanceof BlockItem) {
                 ((Claim) claim).extendDownwards(placePos);
             }
             return InteractionResult.PASS;
         } else if (actualInClaim) {
             player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), ChatFormatting.DARK_RED), true);
-            BlockState other = context.getLevel().getBlockState(placePos.above());
+            BlockState other = level.getBlockState(placePos.above());
             player.connection.send(new ClientboundBlockUpdatePacket(placePos.above(), other));
             PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
             updateHeldItem(player);
