@@ -37,6 +37,9 @@ dependencies {
 
     //For testing fakeplayers
     modRuntimeOnly cyclic
+
+    // For compat testing
+    // modRuntimeOnly "curse.maven:drawers-223852:3807626"
 }
 
 task apiJar(type: Jar, dependsOn: classes) {
