@@ -63,9 +63,7 @@ public class FlanFabric implements ModInitializer {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PlayerEvents.onLogout(handler.player));
         CommandRegistrationCallback.EVENT.register((dispatcher, reg, env) -> CommandClaim.register(dispatcher, env == Commands.CommandSelection.DEDICATED));
 
-        Flan.permissionAPI = FabricLoader.getInstance()
-                .getModContainer("fabric-permissions-api-v0")
-                .map(c -> c.getMetadata().getVersion().getFriendlyString().equals("0.2-SNAPSHOT")).orElse(false);
+        Flan.permissionAPI = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
         Flan.playerAbilityLib = FabricLoader.getInstance().isModLoaded("playerabilitylib");
         Flan.ftbRanks = FabricLoader.getInstance().isModLoaded("ftbranks");
         Flan.octoEconomy = FabricLoader.getInstance().isModLoaded("octo-economy-api");
