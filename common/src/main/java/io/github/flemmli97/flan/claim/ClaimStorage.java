@@ -256,9 +256,10 @@ public class ClaimStorage implements IPermissionStorage {
     public Set<Claim> getNearbyClaims(BlockPos pos, int rX, int rZ) {
         ChunkPos c = new ChunkPos(new BlockPos(pos.getX() - rX, pos.getY(), pos.getZ() - rZ));
         Set<Claim> affected = new HashSet<>();
-        for (int x = 0, posX = SectionPos.sectionToBlockCoord(c.x + x);
-             posX <= pos.getX() + rX; x++) {
-            for (int z = 0, posZ = SectionPos.sectionToBlockCoord(c.z + z); posZ <= pos.getZ() + rZ; z++) {
+        int posX;
+        for (int x = 0; (posX = SectionPos.sectionToBlockCoord(c.x + x)) <= pos.getX() + rX; x++) {
+            int posZ;
+            for (int z = 0; (posZ = SectionPos.sectionToBlockCoord(c.z + z)) <= pos.getZ() + rZ; z++) {
                 List<Claim> list = this.claims.get(ChunkPos.asLong(c.x + x, c.z + z));
                 if (list != null) {
                     int minX = Math.max(posX, pos.getX() - rX);
