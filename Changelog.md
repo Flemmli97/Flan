@@ -1,3 +1,19 @@
+Flan 1.9.0
+================
+- Add command to modify base claim blocks:
+  - `/flan giveClaimBlocks base`
+- Add claim dependent item and block list:
+  - Custom item list player can use in a claim
+  - Custom block break list player can use in a claim
+  - Custom block interact list player can use
+  - Adding `#` defines it as the entries as a tag
+- Add create minecart contraption permission:
+  - If false will prevent contraptions from crossing into the claim
+  - If a contraption goes out of the claim it will not be able to come back in!
+- Fix fake player command requiring op
+- Fix duplicating items using create wrench when on claim border
+- Fix can take items out of storage drawer in creative mode
+
 Flan 1.8.11
 ================
 - Ignore creative player for start breaking event as they insta break anyway
