@@ -19,6 +19,14 @@ repositories {
         url "https://www.cursemaven.com"
     }
     maven { url "https://maven.impactdev.net/repository/development/" }
+    maven {
+        url "https://maven.tterrag.com/"
+    }
+    maven { url = "https://mvn.devos.one/snapshots/" }
+    maven { // Reach Entity Attributes
+        url = "https://maven.jamieswhiteshirt.com/libs-release"
+        content { includeGroup("com.jamieswhiteshirt") }
+    }
 }
 
 dependencies {
@@ -33,6 +41,16 @@ dependencies {
     implementation ("net.impactdev.impactor.api:economy:${impactor_version}"){
         exclude group: "net.kyori"
     }
+
+    // We can actually use the fabric version as the package structure is the same
+    // On forge though due to forge interfaces this is not possible
+    modCompileOnly "io.github.fabricators_of_create.Porting-Lib:base:${porting_lib}"
+    modCompileOnly "io.github.fabricators_of_create.Porting-Lib:entity:${porting_lib}"
+    modCompileOnly "com.jamieswhiteshirt:reach-entity-attributes:${reach_entity_attributes_version}"
+    modCompileOnly("com.simibubi.create:create-fabric-1.20.1:${create_fabric}") {
+        transitive = false
+    }
+    modCompileOnly "com.tterrag.registrate_fabric:Registrate:${registrate}"
 }
 
 shadowJar {

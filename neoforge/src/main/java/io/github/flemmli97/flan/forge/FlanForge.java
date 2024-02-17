@@ -6,6 +6,7 @@ import io.github.flemmli97.flan.forge.forgeevent.EntityInteractEventsForge;
 import io.github.flemmli97.flan.forge.forgeevent.ItemInteractEventsForge;
 import io.github.flemmli97.flan.forge.forgeevent.ServerEvents;
 import io.github.flemmli97.flan.forge.forgeevent.WorldEventsForge;
+import io.github.flemmli97.flan.platform.integration.create.CreateCompat;
 import io.github.flemmli97.flan.platform.integration.webmap.DynmapIntegration;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.neoforged.bus.api.EventPriority;
@@ -58,6 +59,8 @@ public class FlanForge {
 
         if (ModList.get().isLoaded("dynmap"))
             DynmapIntegration.reg();
+        if (ModList.get().isLoaded("create"))
+            CreateCompat.init();
 
         ClaimCriterias.init();
     }
