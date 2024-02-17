@@ -34,6 +34,10 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
@@ -79,6 +83,10 @@ public class Claim implements IPermissionContainer {
     private final ServerLevel world;
 
     private final Map<MobEffect, Integer> potions = new HashMap<>();
+
+    public final AllowedRegistryList<Item> allowedItems = new AllowedRegistryList<>(BuiltInRegistries.ITEM, this);
+    public final AllowedRegistryList<Block> allowedUseBlocks = new AllowedRegistryList<>(BuiltInRegistries.BLOCK, this);
+    public final AllowedRegistryList<Block> allowedBreakBlocks = new AllowedRegistryList<>(BuiltInRegistries.BLOCK, this);
 
     public Component enterTitle, enterSubtitle, leaveTitle, leaveSubtitle;
 
@@ -637,6 +645,18 @@ public class Claim implements IPermissionContainer {
         this.displayTitleMessage(player, this.leaveTitle, this.leaveSubtitle);
     }
 
+    public boolean canUseItem(ItemStack stack) {
+        return this.allowedItems.matches(stack::is, stack::is);
+    }
+
+    public boolean canUseBlockItem(BlockState state) {
+        return this.allowedUseBlocks.matches(state::is, state::is);
+    }
+
+    public boolean canBreakBlockItem(BlockState state) {
+        return this.allowedBreakBlocks.matches(state::is, state::is);
+    }
+
     /**
      * Only marks non sub claims
      */
@@ -693,6 +713,9 @@ public class Claim implements IPermissionContainer {
                 this.owner = null;
             else
                 this.owner = uuid;
+            this.allowedItems.read(ConfigHandler.arryFromJson(obj, "AllowedItems"));
+            this.allowedUseBlocks.read(ConfigHandler.arryFromJson(obj, "AllowedUseBlocks"));
+            this.allowedBreakBlocks.read(ConfigHandler.arryFromJson(obj, "AllowedBreakBlocks"));
             this.globalPerm.clear();
             this.permissions.clear();
             this.subClaims.clear();
@@ -773,6 +796,9 @@ public class Claim implements IPermissionContainer {
         obj.add("Potions", potions);
         if (this.parent != null)
             obj.addProperty("Parent", this.parent.toString());
+        obj.add("AllowedItems", this.allowedItems.save());
+        obj.add("AllowedUseBlocks", this.allowedUseBlocks.save());
+        obj.add("AllowedBreakBlocks", this.allowedBreakBlocks.save());
         if (!this.globalPerm.isEmpty()) {
             JsonElement gPerm;
             if (this.parent == null) {
