@@ -24,7 +24,8 @@ public class ClaimCriterias {
             Constructor<ObjectiveCriteria> cons = ObjectiveCriteria.class.getDeclaredConstructor(String.class, boolean.class, ObjectiveCriteria.RenderType.class);
             cons.setAccessible(true);
             return cons.newInstance(name, readOnly, renderType);
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+                 InvocationTargetException e) {
             e.printStackTrace();
         }
         return null;
