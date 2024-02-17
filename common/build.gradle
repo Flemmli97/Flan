@@ -19,6 +19,10 @@ repositories {
         url "https://www.cursemaven.com"
     }
     maven { url "https://maven.impactdev.net/repository/development/" }
+    maven {
+        url "https://maven.tterrag.com/"
+    }
+    maven { url = "https://mvn.devos.one/snapshots/" }
 }
 
 dependencies {
@@ -33,6 +37,12 @@ dependencies {
     implementation ("net.impactdev.impactor.api:economy:${impactor_version}") {
         exclude group: "net.kyori"
     }
+
+    // We can actually use the fabric version as the package structure is the same
+    // On forge though due to forge interfaces this is not possible
+    modCompileOnly "io.github.fabricators_of_create:Porting-Lib:${porting_lib}+${minecraft_version}"
+    modCompileOnly create_fabric
+    modCompileOnly "com.tterrag.registrate_fabric:Registrate:${registrate}"
 }
 
 shadowJar {
