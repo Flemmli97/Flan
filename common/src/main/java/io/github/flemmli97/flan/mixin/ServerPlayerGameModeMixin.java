@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerGameMode.class)
-public class ServerPlayerGameModeMixin implements BlockBreakAttemptHandler {
+public abstract class ServerPlayerGameModeMixin implements BlockBreakAttemptHandler {
 
     @Shadow
     private ServerPlayer player;
