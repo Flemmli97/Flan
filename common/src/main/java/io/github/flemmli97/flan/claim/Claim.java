@@ -21,6 +21,7 @@ import io.github.flemmli97.flan.player.display.ClaimDisplayBox;
 import io.github.flemmli97.flan.player.display.DisplayBox;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
