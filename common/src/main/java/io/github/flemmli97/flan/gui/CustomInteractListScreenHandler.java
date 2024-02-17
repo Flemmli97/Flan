@@ -142,7 +142,6 @@ public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<Cus
         }
         ItemStack stack = slot.getItem();
         if (!stack.isEmpty()) {
-            String name = stack.getHoverName().getContents();
             CompoundTag nbt = stack.getTag();
             int idx = nbt != null ? nbt.getInt("Index") : 0;
             if (this.removeMode) {
