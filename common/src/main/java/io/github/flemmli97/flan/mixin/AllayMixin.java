@@ -32,7 +32,7 @@ public abstract class AllayMixin {
         if (AllayAi.getLikedPlayer((Allay) (Object) this).map(p -> {
             IOwnedItem ownedItem = (IOwnedItem) itemEntity;
             if (p.getUUID().equals(ownedItem.getPlayerOrigin()))
-                return true;
+                return false;
             Claim claim = ClaimStorage.get(p.serverLevel()).getClaimAt(itemEntity.blockPosition());
             return claim != null && !claim.canInteract(p, PermissionRegistry.PICKUP, itemEntity.blockPosition(), false);
         }).orElse(false))
