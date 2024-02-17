@@ -42,6 +42,10 @@ repositories {
         }
     }
     maven { url "https://maven.nucleoid.xyz/" }
+    maven {
+        url "https://maven.tterrag.com/"
+    }
+    maven { url = "https://mvn.devos.one/snapshots/" }
 }
 
 dependencies {
@@ -67,6 +71,10 @@ dependencies {
 
     modCompileOnly harvest_with_ease_fabric
     modCompileOnly "eu.pb4:common-protection-api:${rootProject.common_prot_api}"
+
+    modRuntimeOnly create_fabric
+    modRuntimeOnly "com.jozufozu.flywheel:flywheel-fabric-${minecraft_version}:${flywheel}"
+    modRuntimeOnly "com.tterrag.registrate_fabric:Registrate:${registrate}"
 }
 
 task apiJar(type: Jar, dependsOn: classes) {

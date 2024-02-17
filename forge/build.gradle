@@ -24,6 +24,9 @@ repositories {
         name = "minecolonies"
         url "https://ldtteam.jfrog.io/ldtteam/modding/"
     }
+    maven {
+        url "https://maven.tterrag.com/"
+    }
 }
 
 dependencies {
@@ -40,6 +43,9 @@ dependencies {
 
     // For compat testing
     // modRuntimeOnly "curse.maven:drawers-223852:3807626"
+    modRuntimeOnly create
+    modRuntimeOnly "com.jozufozu.flywheel:flywheel-forge-${minecraft_version}:${flywheel}"
+    modRuntimeOnly "com.tterrag.registrate:Registrate:${registrate}"
 }
 
 task apiJar(type: Jar, dependsOn: classes) {

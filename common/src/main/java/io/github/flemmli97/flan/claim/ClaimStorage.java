@@ -41,6 +41,7 @@ import net.minecraft.util.Tuple;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.world.phys.AABB;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -249,34 +250,39 @@ public class ClaimStorage implements IPermissionStorage {
         return this.globalClaim;
     }
 
+    /**
+     * Gets claims in a radius around the position.
+     */
+    public Set<Claim> getNearbyClaims(BlockPos pos, int rX, int rZ) {
+        ChunkPos c = new ChunkPos(new BlockPos(pos.getX() - rX, pos.getY(), pos.getZ() - rZ));
+        Set<Claim> affected = new HashSet<>();
+        for (int x = 0, posX = SectionPos.sectionToBlockCoord(c.x + x);
+             posX <= pos.getX() + rX; x++) {
+            for (int z = 0, posZ = SectionPos.sectionToBlockCoord(c.z + z); posZ <= pos.getZ() + rZ; z++) {
+                List<Claim> list = this.claims.get(ChunkPos.asLong(c.x + x, c.z + z));
+                if (list != null) {
+                    int minX = Math.max(posX, pos.getX() - rX);
+                    int minZ = Math.max(posZ, pos.getZ() - rZ);
+                    int maxX = Math.min(posX + 15, pos.getX() + rX);
+                    int maxZ = Math.min(posZ + 15, pos.getZ() + rZ);
+                    // AABB that defines the area for this chunk
+                    AABB bb = new AABB(minX, 0, minZ, maxX, 0, maxZ);
+                    list.stream().filter(claim -> claim.intersects(bb)).forEach(affected::add);
+                }
+            }
+        }
+        return affected;
+    }
+
     public boolean canInteract(BlockPos pos, int radius, ServerPlayer player, ClaimPermission perm, boolean message) {
         boolean realPlayer = player != null && player.getClass().equals(ServerPlayer.class);
         message = message && realPlayer;
-        ChunkPos c = new ChunkPos(new BlockPos(pos.getX() - radius, pos.getY(), pos.getZ() - radius));
-        List<Claim> affected = new ArrayList<>();
-        for (int x = 0; SectionPos.sectionToBlockCoord(c.x + x) <= pos.getX() + radius; x++) {
-            for (int z = 0; SectionPos.sectionToBlockCoord(c.z + z) <= pos.getZ() + radius; z++) {
-                List<Claim> list = this.claims.get(ChunkPos.asLong(c.x + x, c.z + z));
-                if (list != null)
-                    affected.addAll(this.claims.get(ChunkPos.asLong(c.x + x, c.z + z)));
-            }
-        }
-        Claim last = null;
+        Set<Claim> affected = this.getNearbyClaims(pos, radius, radius);
+        affected.remove(this.getClaimAt(pos));
         for (BlockPos ipos : BlockPos.betweenClosed(pos.getX() - radius, pos.getY(), pos.getZ() - radius,
                 pos.getX() + radius, pos.getY(), pos.getZ() + radius)) {
-            if (last != null) {
-                if (last.insideClaim(ipos)) {
-                    if (!last.canInteract(player, perm, ipos, false)) {
-                        if (message)
-                            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionTooClose"), ChatFormatting.DARK_RED), true);
-                        return false;
-                    }
-                    continue;
-                } else last = null;
-            }
             for (Claim claim : affected) {
                 if (claim.insideClaim(ipos)) {
-                    last = claim;
                     if (!claim.canInteract(player, perm, ipos, message)) {
                         if (message)
                             player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionTooClose"), ChatFormatting.DARK_RED), true);
