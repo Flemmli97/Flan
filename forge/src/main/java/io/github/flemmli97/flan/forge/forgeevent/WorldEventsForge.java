@@ -18,6 +18,6 @@ public class WorldEventsForge {
         if (!(event.getLevel() instanceof ServerLevel) || event.getSpawnType() != MobSpawnType.NATURAL)
             return;
         if (WorldEvents.preventMobSpawn((ServerLevel) event.getLevel(), event.getEntity()))
-            event.setResult(Event.Result.DENY);
+            event.setSpawnCancelled(true);
     }
 }
