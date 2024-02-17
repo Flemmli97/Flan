@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ChestBlock.class)
-public class ChestBlockMixin {
+public abstract class ChestBlockMixin {
 
     @Inject(method = "candidatePartnerFacing", at = @At("HEAD"), cancellable = true)
     private void checkCandidate(BlockPlaceContext context, Direction direction, CallbackInfoReturnable<Direction> info) {

@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(ChunkGenerator.class)
-public class ChunkGeneratorMixin {
+public abstract class ChunkGeneratorMixin {
 
     @ModifyVariable(method = "tryGenerateStructure", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/level/StructureFeatureManager;setStartForFeature(Lnet/minecraft/core/SectionPos;Lnet/minecraft/world/level/levelgen/feature/ConfiguredStructureFeature;Lnet/minecraft/world/level/levelgen/structure/StructureStart;Lnet/minecraft/world/level/chunk/FeatureAccess;)V"))

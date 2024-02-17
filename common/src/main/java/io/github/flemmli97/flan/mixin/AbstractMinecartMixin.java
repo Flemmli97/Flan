@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractMinecart.class)
-public class AbstractMinecartMixin {
+public abstract class AbstractMinecartMixin {
 
     @Inject(method = "tick", at = @At("RETURN"))
     private void updateMovement(CallbackInfo info) {
