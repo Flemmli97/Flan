@@ -13,6 +13,7 @@ Flan 1.9.0
 - Fix fake player command requiring op
 - Fix duplicating items using create wrench when on claim border
 - Fix can take items out of storage drawer in creative mode
+- Fix mobspawn blocking not working on forge
 
 Flan 1.8.11
 ================
