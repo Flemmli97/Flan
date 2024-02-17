@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionRegistry;
+import io.github.flemmli97.flan.gui.CustomInteractListScreenHandler;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 
 import java.io.File;
@@ -167,6 +168,10 @@ public class LangManager {
         this.defaultTranslation.put("screenLeaveText", "Edit title text on leave.");
         this.defaultTranslation.put("screenLeaveSubText", "Edit subtitle text on leave.");
         this.defaultTranslation.put("screenDelete", "Use \"$empty\" to delete the message");
+        this.defaultTranslation.put(CustomInteractListScreenHandler.Type.ITEM.translationKey, "Allowed item use");
+        this.defaultTranslation.put(CustomInteractListScreenHandler.Type.BLOCKBREAK.translationKey, "Allowed block break");
+        this.defaultTranslation.put(CustomInteractListScreenHandler.Type.BLOCKUSE.translationKey, "Allowed block use");
+        this.defaultTranslation.put("allowListEmptyTag", "Empty Tag");
 
         this.defaultTranslation.put("chatClaimTextEdit", "[Click for command]");
 
