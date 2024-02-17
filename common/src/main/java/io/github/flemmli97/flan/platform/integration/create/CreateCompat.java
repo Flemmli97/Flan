@@ -23,7 +23,7 @@ public class CreateCompat {
 
     public static void init() {
         Flan.create = true;
-        CREATE = PermissionRegistry.global(new ClaimPermission("CREATEMINECART", () -> new ItemStack(AllBlocks.CART_ASSEMBLER.get()), "Gives permission to allow minecart contraptions to pass through claim border.", "Note if this is disabled and your contraption goes out of the claim it can't go back in!"));
+        CREATE = PermissionRegistry.global(new ClaimPermission("CONTRAPTION", () -> new ItemStack(AllBlocks.CART_ASSEMBLER.get()), "Gives permission to allow minecart contraptions to pass through claim border.", "Note if this is disabled and your contraption goes out of the claim it can't go back in!"));
     }
 
     // Checks if a minecart with a contraption can cross a claims border
