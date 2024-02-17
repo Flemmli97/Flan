@@ -112,6 +112,10 @@ public class PlayerClaimData implements IPlayerData {
         updateScoreFor(this.player, ClaimCriterias.FREE, this.claimBlocks + this.additionalClaimBlocks - this.usedBlocks);
     }
 
+    public void addClaimBlocksDirect(int amount) {
+        this.setClaimBlocks(this.claimBlocks + amount);
+    }
+
     public boolean addClaimBlocks(int amount) {
         if (this.canIncrease(this.claimBlocks + amount)) {
             this.setClaimBlocks(this.claimBlocks + amount);
@@ -536,7 +540,7 @@ public class PlayerClaimData implements IPlayerData {
         player.getScoreboard().forAllObjectives(criterion, player.getScoreboardName(), (scoreboardPlayerScore) -> scoreboardPlayerScore.setScore(val));
     }
 
-    public static void editForOfflinePlayer(MinecraftServer server, UUID uuid, int additionalClaimBlocks) {
+    public static void editForOfflinePlayer(MinecraftServer server, UUID uuid, int additionalClaimBlocks, boolean base) {
         Flan.log("Adding {} addional claimblocks for offline player with uuid {}", additionalClaimBlocks, uuid);
         Path dir = ConfigHandler.getPlayerSavePath(server);
         try {
@@ -551,8 +555,13 @@ public class PlayerClaimData implements IPlayerData {
             reader.close();
             if (obj == null)
                 obj = new JsonObject();
-            int additionalBlocks = ConfigHandler.fromJson(obj, "AdditionalBlocks", 0);
-            obj.addProperty("AdditionalBlocks", additionalBlocks + additionalClaimBlocks);
+            if (base) {
+                int blocks = ConfigHandler.fromJson(obj, "ClaimBlocks", 0);
+                obj.addProperty("ClaimBlocks", blocks + additionalClaimBlocks);
+            } else {
+                int additionalBlocks = ConfigHandler.fromJson(obj, "AdditionalBlocks", 0);
+                obj.addProperty("AdditionalBlocks", additionalBlocks + additionalClaimBlocks);
+            }
             Flan.debug("Attempting to write following json data {} to file {}", obj, file.getFileName());
             JsonWriter jsonWriter = ConfigHandler.GSON.newJsonWriter(Files.newBufferedWriter(file, StandardCharsets.UTF_8));
             ConfigHandler.GSON.toJson(obj, jsonWriter);
