@@ -1,3 +1,7 @@
+Flan 1.9.1
+================
+- Ignore missing registry entries for allowed items/block list
+
 Flan 1.9.0
 ================
 - Add command to modify base claim blocks:

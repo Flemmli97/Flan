@@ -18,8 +18,11 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.List;
 
@@ -105,20 +108,29 @@ public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<Cus
                     case ITEM -> {
                         if (s.startsWith("#"))
                             this.claim.allowedItems.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.ITEM.key(), new ResourceLocation(s.substring(1)))));
-                        else
-                            this.claim.allowedItems.addAllowedItem(Either.left(BuiltInRegistries.ITEM.get(new ResourceLocation(s))));
+                        else {
+                            Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(s));
+                            if (item != Items.AIR)
+                                this.claim.allowedItems.addAllowedItem(Either.left(item));
+                        }
                     }
                     case BLOCKBREAK -> {
                         if (s.startsWith("#"))
                             this.claim.allowedBreakBlocks.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.BLOCK.key(), new ResourceLocation(s.substring(1)))));
-                        else
-                            this.claim.allowedBreakBlocks.addAllowedItem(Either.left(BuiltInRegistries.BLOCK.get(new ResourceLocation(s))));
+                        else {
+                            Block block = BuiltInRegistries.BLOCK.get(new ResourceLocation(s));
+                            if (block != Blocks.AIR)
+                                this.claim.allowedUseBlocks.addAllowedItem(Either.left(block));
+                        }
                     }
                     case BLOCKUSE -> {
                         if (s.startsWith("#"))
                             this.claim.allowedUseBlocks.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.BLOCK.key(), new ResourceLocation(s.substring(1)))));
-                        else
-                            this.claim.allowedUseBlocks.addAllowedItem(Either.left(BuiltInRegistries.BLOCK.get(new ResourceLocation(s))));
+                        else {
+                            Block block = BuiltInRegistries.BLOCK.get(new ResourceLocation(s));
+                            if (block != Blocks.AIR)
+                                this.claim.allowedUseBlocks.addAllowedItem(Either.left(block));
+                        }
                     }
                 }
                 player.closeContainer();
