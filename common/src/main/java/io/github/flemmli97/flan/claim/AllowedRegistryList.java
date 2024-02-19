@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.claim;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
+import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.ServerScreenHelper;
 import net.minecraft.ChatFormatting;
@@ -76,8 +77,14 @@ public class AllowedRegistryList<T extends ItemLike> {
             String element = e.getAsString();
             if (element.startsWith("#"))
                 this.list.add(Either.right(TagKey.create(this.registry.key(), new ResourceLocation(element.substring(1)))));
-            else
-                this.list.add(Either.left(this.registry.get(new ResourceLocation(element))));
+            else {
+                ResourceLocation id = new ResourceLocation(element);
+                if (this.registry.containsKey(id)) {
+                    this.list.add(Either.left(this.registry.get(id)));
+                } else {
+                    Flan.logger.error("No such registry item for " + this.registry.key() + " with id: " + id);
+                }
+            }
         });
     }
 }
