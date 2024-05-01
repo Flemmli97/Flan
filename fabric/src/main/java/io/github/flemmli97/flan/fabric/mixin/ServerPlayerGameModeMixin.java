@@ -66,8 +66,7 @@ public abstract class ServerPlayerGameModeMixin implements ItemUseBlockFlags {
      */
     @WrapWithCondition(
             method = "handleBlockBreakAction",
-            at = @At(value = "INVOKE", target = "Lorg/slf4j/Logger;warn(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V"),
-            remap = false
+            at = @At(value = "INVOKE", target = "Lorg/slf4j/Logger;warn(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V")
     )
     private boolean shouldWarn(Logger logger, String warn, Object obj, Object obj2) {
         return !((BlockBreakAttemptHandler) this).wasInstabreak() || ((BlockBreakAttemptHandler) this).failedPos() == null;
