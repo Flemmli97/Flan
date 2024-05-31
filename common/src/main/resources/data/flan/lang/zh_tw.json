@@ -1,0 +1,467 @@
+{
+  "noClaim": "這裡沒有領地",
+  "inspectBlockOwner": "這是 %1$s 的領地",
+  "inspectNoClaim": "沒有玩家擁有這個格子",
+  "claimBlocksFormat": "領地內格子: %1$d + (額外) %2$d); 已使用: %3$d; 剩餘: %4$d",
+  "listClaims": "列出所有領地:",
+  "listAdminClaims": "在 %1$s 內列出所有管理員領地:",
+  "onlyOnePlayer": "只能使用一個玩家作為參數",
+  "ownerTransferSuccess": "現在新領地的所有者: %1$s",
+  "ownerTransferFail": "只有領地的所有者才可轉讓領地",
+  "ownerTransferNoBlocks": "新的領地所有者沒有足夠的領地格子",
+  "ownerTransferNoBlocksAdmin": "您可以透過切換到管理員模式來停用它",
+  "noPermission": "您沒有權限在這裡做這件事！",
+  "noPermissionSimple": "抱歉，您不能在這裡做這件事！",
+  "noPermissionTooClose": "對不起，這裡離領地太近了！",
+  "tooCloseClaim": "這裡距離一個受保護的區域太近了！",
+  "configReload": "已重新載入插件配置",
+  "cantClaimHere": "抱歉，您不能將這裡設為領地",
+  "minClaimSize": "領地太小了。 最小的領地大小為 %d",
+  "maxClaims": "到達領地數量最大值",
+  "landClaimDisabledWorld": "本世界中停用了領地功能",
+  "editMode": "編輯模式設置為 %1$s",
+  "notEnoughBlocks": "沒有足夠的領地格子",
+  "conflictOther": "此領地將覆蓋其它的領地",
+  "wrongMode": "錯誤的領地模式。 您現在處於 %1$s 模式",
+  "stringScreenReturn": "點擊手中的紙來返回",
+  "groupAdd": "已加入組 %1$s",
+  "groupRemove": "已刪除組 %1$s",
+  "groupExist": "這個組已經存在了",
+  "uuidFakeAdd": "在領地中加入了 uuid %1$s 的假人",
+  "uuidFakeRemove": "從領地中刪除了 uuid 為 %1$s 的假人",
+  "uuidFakeModifyNo": "已經加入了具有uuid的假人",
+  "playerModify": "修改了以下玩家的權限組 %1$s: %2$s",
+  "playerModifyNo": "無法修改這些玩家的權限組。 可能是因為玩家已經在一個組中所導致的",
+  "playerGroupAddFail": "無法將該玩家加入到組中，原因可能是該玩家已在組中，或者找不到與該名稱所匹配的玩家",
+  "resizeClaim": "正在重新設定領地大小",
+  "resizeSuccess": "已重新設定領地大小",
+  "claimCreateSuccess": "建立一個新領地",
+  "subClaimCreateSuccess": "建立一個新的副領地",
+  "deleteClaim": "領地已刪除",
+  "deleteAllClaimConfirm": "您確定要刪除您所有的領地嗎？請重新輸入來確認",
+  "deleteAllClaim": "所有領地已刪除",
+  "deleteClaimError": "您不能在這裡刪除這個領地",
+  "deleteSubClaim": "副領地已刪除",
+  "deleteSubClaimAll": "所有主領地下的副領地已刪除",
+  "noSuchPerm": "沒有足夠的權限 %1$s",
+  "editPerm": "%1$s 現在設定為 %2$s",
+  "editPermGroup": "%1$s 對於 %2$s 現在設定為 %3$s",
+  "editPersonalGroup": "在 %2$s 組中的預設權限 %1$s 現在設定為 %3$s",
+  "adminMode": "管理員模式 (領地除外) 設定為: %1$s",
+  "adminDeleteAll": "已刪除以下玩家的所有領地: %1$s",
+  "setAdminClaim": "在這些領地中的管理員領地現在為: %1$s",
+  "readGriefpreventionData": "在GriefPrevention插件中讀取數據",
+  "readGriefpreventionClaimDataSuccess": "成功讀取領地數據",
+  "readGriefpreventionPlayerDataSuccess": "成功讀取玩家數據",
+  "cantFindData": "在 %1$s 中沒有Griefprevention插件數據",
+  "errorFile": "讀取文件錯誤 %1$s",
+  "readConflict": "%1$s 與現有的領地衝突。無法加入到世界中！衝突的領地為:",
+  "giveClaimBlocks": "給予以下玩家 %2$d 領地方塊: %1$s",
+  "fakePlayerNotification1": "一個假人曾試圖在%2$s中以%1$s與您的領地進行互動",
+  "fakePlayerNotification2": "站在領地中單擊%s，將假人加入到領地中",
+  "clickableComponent": "這裡",
+  "fakePlayerNotification3": "Click %s to disable this notification.",
+  "fakePlayerNotification": "FakePlayer notification set to %s",
+  "claimBasicInfo": "領地所有者: %1$s, 從: [x=%2$d,z=%3$d] 到 [x=%4$d,z=%5$d]); 副領地數量: %6$d",
+  "claimBasicInfoNamed": "領地: %7$s, 所有者: %1$s, 從: [x=%2$d,z=%3$d] 到 [x=%4$d,z=%5$d]); 副領地數量: %6$d",
+  "claimSubHeader": "==副領地資訊==",
+  "claimBasicInfoSub": "領地所有者: %1$s, 從: [x=%2$d,z=%3$d] 到 [x=%4$d,z=%5$d]",
+  "claimBasicInfoSubNamed": "領地: %6$s, 所有者: %1$s, 從: [x=%2$d,z=%3$d] 到 [x=%4$d,z=%5$d]",
+  "claimInfoPerms": "權限: %1$s",
+  "claimGroupInfoHeader": "組: ",
+  "claimGroupPerms": "    權限: %1$s",
+  "claimGroupPlayers": "    組中的玩家: %1$s",
+  "helpHeader": "可用的二級指令為 (頁數 %d):",
+  "helpCmdHeader": "====================",
+  "helpCmdSyntax": "語法: %1$s",
+  "screenEnableText": "是否啟用: %1$s",
+  "screenUneditable": "不可編輯！",
+  "screenClose": "關閉",
+  "screenNext": "下一頁",
+  "screenPrevious": "上一頁",
+  "screenAdd": "加入",
+  "screenBack": "返回",
+  "screenNoPerm": "沒有權限",
+  "screenFalse": "停用",
+  "screenTrue": "啟用",
+  "screenDefault": "默認",
+  "screenMenu": "領地菜單",
+  "screenMenuSub": "副領地菜單",
+  "screenMenuGlobal": "編輯全局權限",
+  "screenMenuGroup": "編輯權限組",
+  "screenMenuPotion": "編輯進入領地時玩家的附加效果",
+  "screenMenuClaimText": "編輯 進入/離開 領地時的提示文字",
+  "screenMenuFakePlayers": "假人",
+  "screenMenuDelete": "刪除領地",
+  "screenConfirm": "確認",
+  "screenYes": "是",
+  "screenNo": "否",
+  "screenGroupPlayers": "%1$s-玩家",
+  "screenRemoveMode": "已刪除模式: %1$s",
+  "screenGlobalPerms": "全局權限",
+  "screenGroupName": "%s",
+  "screenGroups": "領地組",
+  "screenGroupPerms": "%1$s-權限",
+  "screenPersonalGroups": "個人組",
+  "screenPersonalPermissions": "%1$s 的個人組",
+  "screenFakePlayerNameUUID": "%s",
+  "screenPotions": "領地附加效果",
+  "screenPotionText": "%s",
+  "screenTitleEditor": "領地文字",
+  "screenTitleEditorSub": "副領地文字",
+  "screenTextJson": "點擊滑鼠右鍵來使用 JSON 文字。 不會的話去 Minecraft Wiki 搜尋一下",
+  "screenEnterText": "編輯進入領地時的主提示文字",
+  "screenEnterSubText": "編輯進入領地時的副示文字",
+  "screenLeaveText": "編輯離開領地時的主提示文字",
+  "screenLeaveSubText": "編輯進入領地時的副提示文字",
+  "screenDelete": "請使用 \"$empty\" 來刪除文字",
+  "chatClaimTextEdit": "[點擊滑鼠右鍵來使用命令]",
+  "sellDisabled": "出售領地方塊現在是停用狀態",
+  "buyDisabled": "購買領地方塊現在是停用狀態",
+  "sellFail": "沒有足夠的領地格子來出售",
+  "buyFail": "沒有足夠的錢",
+  "buyFailItem": "沒有足夠的物品",
+  "buyFailXP": "沒有足夠的經驗值",
+  "sellSuccess": "以 %2$s 個貨幣出售了 %1$s 個領地中的格子",
+  "sellSuccessItem": "以 %3$s x%2$s 這個物品出售了 %1$s 個領地中的格子",
+  "sellSuccessXP": "以 %2$s 點經驗出售了 %1$s 個領地中的格子",
+  "buySuccess": "以 %2$s 個貨幣購買了 %1$s 個領地中的格子",
+  "buySuccessItem": "以 %2$s 這個物品購買了 %1$s 個領地中的格子",
+  "buySuccessXP": "以 %2$s 點經驗購買了 %1$s 個領地中的格子",
+  "currencyMissing": "缺少支持的貨幣模組",
+  "trappedRescue": "正在救援. 請在原地待5秒鐘",
+  "trappedFail": "沒有必要在救援中時再次執行救援",
+  "trappedMove": "您移動了. 正在拒絕傳送",
+  "unlockDropsCmd": "您的掉落物品現在已被保護。 請使用 %1$s 為其他玩家解鎖這些物品",
+  "unlockDrops": "您的掉落物品在 %1$s ticks內被解鎖了",
+  "unlockDropsMulti": "已為 %1$s 解鎖掉落物品",
+  "claimNameSet": "領地名稱現在設定為 %1$s",
+  "claimNameUsed": "這個領地的所有者已經有了與其名字相同的領地",
+  "claimNameUsedSub": "這片領地的某一副領地已使用了這個名字",
+  "setHome": "家園領地已設置到 [x=%1$s,y=%2$s,z=%3$s]",
+  "teleportHome": "正在傳送到家。請不要在5秒內移動",
+  "teleportHomeFail": "已經在傳送",
+  "setEnterMessage": "將進入領地時的標題文字設置為 %1$s",
+  "setEnterSubMessage": "將進入領地時的副標題文字設置為 %1$s",
+  "setLeaveMessage": "將離開領地時的標題文字設置為 %1$s",
+  "setLeaveSubMessage": "將離開領地時的副標題文字設置為 %1$s",
+  "wiki": "另請參閱Wiki:",
+  "EDITCLAIM.desc": [
+    "給予編輯 (例如重新設定大小、刪除等) 領地的權限"
+  ],
+"EDITPERMS.desc": [
+    "給予修改領地權限的權限"
+  ],
+  "EDITPOTIONS.desc": [
+    "給予修改領地內附加效果的權限"
+  ],
+  "BREAK.desc": [
+    "給予領地內破壞方塊的權限"
+  ],
+  "PLACE.desc": [
+    "給予領地內放置方塊的權限"
+  ],
+  "OPENCONTAINER.desc": [
+    "打開容器的權限",
+    "(例如儲物箱、熔爐等)"
+  ],
+  "INTERACTBLOCK.desc": [
+    "方塊互動通用權限",
+    "應對於 OPENCONTAINER",
+    "使在 OPENCONTAINER 中不被檢查的的方塊的變為可使用狀態"
+  ],
+  "ANVIL.desc": [
+    "使用鐵砧的權限"
+  ],
+  "BED.desc": [
+    "使用床的權限"
+  ],
+  "BEACON.desc": [
+    "使用烽火台的權限"
+  ],
+  "DOOR.desc": [
+    "使用門的權限"
+  ],
+  "FENCEGATE.desc": [
+    "使用地板門的權限"
+  ],
+  "TRAPDOOR.desc": [
+    "使用拌線鉤的權限"
+  ],
+  "BUTTONLEVER.desc": [
+    "觸發控制桿和按鈕的權限"
+  ],
+  "PRESSUREPLATE.desc": [
+    "觸發壓力板的權限"
+  ],
+  "NOTEBLOCK.desc": [
+    "改變音階盒音調/音色的權限"
+  ],
+  "REDSTONE.desc": [
+    "改變紅石組成部分的權限"
+  ],
+  "JUKEBOX.desc": [
+    "插入/拿出 音樂唱片的權限"
+  ],
+  "ENDERCHEST.desc": [
+    "使用終界箱的權限"
+  ],
+  "ENCHANTMENT.desc": [
+    "使用附魔台的權限"
+  ],
+  "ITEMFRAMEROTATE.desc": [
+    "改變物品展示框內物品角度的權限"
+  ],
+  "LECTERNTAKE.desc": [
+    "改變講台上所放置的書的權限"
+  ],
+  "ENDCRYSTALPLACE.desc": [
+    "放置終界水晶的權限"
+  ],
+  "TARGETBLOCK.desc": [
+    "觸發標靶方塊的權限"
+  ],
+  "PROJECTILES.desc": [
+    "投射物權限",
+    "互動方塊 (例如用箭去射按鈕)"
+  ],
+  "TRAMPLE.desc": [
+    "可被踩壞方塊的權限",
+    "(例如耕地、海龜蛋)"
+  ],
+  "FROSTWALKER.desc": [
+    "冰霜行者附魔效果的權限"
+  ],
+  "PORTAL.desc": [
+    "使用地獄傳送門的權限"
+  ],
+  "RAID.desc": [
+    "在領地內觸發村莊突襲的權限",
+    "不會阻止在領地外面發生的村莊突襲"
+  ],
+  "BOAT.desc": [
+    "坐入船的權限"
+  ],
+  "MINECART.desc": [
+    "坐入礦車的權限"
+  ],
+  "BUCKET.desc": [
+    "允許用鐵桶盛裝液體"
+  ],
+  "ENDERPEARL.desc": [
+    "使用終界珍珠的權限"
+  ],
+  "CHORUSFRUIT.desc": [
+    "食用歌萊果的權限"
+  ],
+  "ANIMALINTERACT.desc": [
+    "與動物互動的權限",
+    "(例如給羊剪羊毛)"
+  ],
+  "HURTANIMAL.desc": [
+    "傷害動物的權限"
+  ],
+  "XP.desc": [
+    "吸取經驗球的權限"
+  ],
+  "TRADING.desc": [
+    "與村民進行交易的權限"
+  ],
+  "ARMORSTAND.desc": [
+    "與盔甲架互動的權限"
+  ],
+  "BREAKNONLIVING.desc": [
+    "破壞如礦車、盔甲架等實體的權限"
+  ],
+  "DROP.desc": [
+    "允許丟棄物品"
+  ],
+  "PICKUP.desc": [
+    "允許撿起物品"
+  ],
+  "FLIGHT.desc": [
+    "允許非創造模式狀態下的飛行"
+  ],
+  "CANSTAY.desc": [
+    "允許玩家進入您的領地"
+  ],
+  "TELEPORT.desc": [
+    "允許玩家傳送到您的領地家的傳送點"
+  ],
+  "NOHUNGER.desc": [
+    "停用減少肌餓值"
+  ],
+  "CLAIMMESSAGE.desc": [
+    "修改 進入/離開 領地時的提示文字的權限"
+  ],
+  "PLAYERMOBSPAWN.desc": [
+    "實體受玩家所影響的權限",
+    "例如潛聲守衛或終界蟎"
+  ],
+  "SCULK.desc": [
+    "潛聲感測器受玩家所影響的權限",
+    "潛聲感測器在 PLAYERMOBSPAWN 下被處理"
+  ],
+  "HURTPLAYER.desc": [
+    "傷害玩家的權限"
+  ],
+  "EXPLOSIONS.desc": [
+    "允許在領地內爆炸"
+  ],
+  "WITHER.desc": [
+    "允許凋零怪在領地內破壞方塊"
+  ],
+  "ENDERMAN.desc": [
+    "允許終界使者在領地內撿起/放置方塊"
+  ],
+  "SNOWGOLEM.desc": [
+    "允許雪人在腳下生成雪地毯"
+  ],
+  "FIRESPREAD.desc": [
+    "允許在領地內發生火焰擴散"
+  ],
+  "WATERBORDER.desc": [
+    "允許液體穿過領地邊界"
+  ],
+  "PISTONBORDER.desc": [
+    "允許活塞推出/拉進領地邊界"
+  ],
+  "MOBSPAWN.desc": [
+    "阻止在領地內生成敵對生物"
+  ],
+  "ANIMALSPAWN.desc": [
+    "阻止在領地內生成其他生物"
+  ],
+  "LIGHTNING.desc": [
+    "允許照明方塊影響領地內的方塊",
+    "例如在火焰上放置方塊",
+    "或影響動物 (不包括生物)"
+  ],
+  "LOCKITEMS.desc": [
+    "在玩家死亡後是否鎖定物品"
+  ],
+  "FAKEPLAYER.desc": [
+    "允許假人領地中互動",
+    "一些裝有mod的假人會擁有使用者的uuid",
+    "對於那些mod來說，這個權限是沒有必要的"
+  ],
+  "command.help": [
+    "help <page> | (cmd <command>)",
+    "顯示給定命令的所有可用命令或資訊"
+  ],
+  "command.menu": [
+    "menu",
+    "當您處於領地中時，可使用領地菜單的權限"
+  ],
+  "command.claimInfo": [
+    "claimInfo",
+    "顯示您所處於的領地資訊"
+  ],
+  "command.delete": [
+    "delete",
+    "刪除目前的領地"
+  ],
+  "command.deleteAll": [
+    "deleteAll",
+    "刪除您的所有領地 (您需要輸入兩次來確認，確保不會出問題)."
+  ],
+  "command.deleteSubClaim": [
+    "deleteSubClaim",
+    "刪除目前副領地"
+  ],
+  "command.deleteAllSubClaims": [
+    "deleteAllSubClaims",
+    "刪除目前主領地下的所有副領地"
+  ],
+  "command.list": [
+    "list <player>",
+    "列出您擁有的所有領地。 (如果伺服器管理員也給予了列出其他玩家所擁有的領地的能力)"
+  ],
+  "command.switchMode": [
+    "switchMode",
+    "在 主/副 領地模式之間切換"
+  ],
+  "command.group": [
+    "group (add | remove <name>) | (players add | remove <player> [overwrite])",
+    "- 加入/刪除 該名稱的組. 也可以透過在領地菜單中編輯。",
+    "- 加入/刪除 該組內的玩家 (如果覆蓋，則將覆蓋目前組的玩家，否則不執行任何操作)"
+  ],
+  "command.transferClaim": [
+    "transferClaim <player>",
+    "將領地的所有權授予指定玩家。 只有當您是領地所有者時才有效"
+  ],
+  "command.addClaim": [
+    "addClaim (<x y z> <x y z>) | all | (rect x z)",
+    "在已給位置上建立一個領地(與使用領地工具的效果相同)",
+    "<all> 用掉所有剩餘的方塊，以獲得以玩家為中心的矩形領地",
+    "<rect> 建立一個以玩家為中心的矩形領地"
+  ],
+  "command.permission": [
+    "permission {global | (group <name>) | (personal <name>)} <permission> true | false | default",
+    " 設定 global/group/personal 權限。 也可以透過在領地菜單中編輯 (對於右鍵單擊菜單中的組來說)."
+  ],
+  "command.personalGroups": [
+    "personalGroups",
+    "打開菜單來編輯個人組"
+  ],
+  "command.sellBlocks": [
+    "sellBlocks <amount>",
+    "出售 <amount> 個領地格子。 需要足夠的火藥作為貨幣。"
+  ],
+  "command.buyBlocks": [
+    "buyBlocks <amount>",
+    "購入 <amount> 個領地格子。 需要足夠的火藥作為貨幣。"
+  ],
+  "command.trapped": [
+    "trapped",
+    "如果正處於一個不屬於玩家的領地，可以使用此命令嘗試將玩家在5秒後從中解脫出來。"
+  ],
+  "command.unlockDrops": [
+    "unlockDrops <players>",
+    "解鎖從死亡中掉落的物品，以便其他玩家也可以拾取它們。或者所有給定的玩家 (需要管理員權限)"
+  ],
+  "command.setHome": [
+    "setHome",
+    "處於一個擁有足夠權限集的領地中，設定玩家的家的位置"
+  ],
+  "command.teleport": [
+    "teleport self | admin | (other <player>) (<claim name> | <claim uuid>)",
+    "傳送至給定的領地家的位置。 使用 admin 傳送至管理員領地"
+  ],
+  "command.name": [
+    "name self <name>",
+    "設定目前領地的名稱"
+  ],
+  "command.claimMessage": [
+    "claimMessage (enter | leave) (title | subtitle) (string | text) <value>",
+    "設定領地的提示資訊。 使用 \"$empty\" 來刪除資訊"
+  ],
+  "command.reload": [
+    "reload",
+    "重設遊戲內的插件配置"
+  ],
+  "command.adminMode": [
+    "adminMode",
+    "切換至管理模式，忽略所有領地。"
+  ],
+  "command.readGriefPrevention": [
+    "readGriefPreventionData",
+    "將GriefPrevention插件中的數據解析到flan"
+  ],
+  "command.setAdminClaim": [
+    "setAdminClaim",
+    "將一個領地設置為管理員領地"
+  ],
+  "command.listAdminClaims": [
+    "listAdminClaim",
+    "列出目前世界中的所有管理員領地"
+  ],
+  "command.adminDelete": [
+    "adminDelete [all <player>]",
+    "強制刪除目前領地或刪除指定玩家的所有領地。"
+  ],
+  "command.giveClaimBlocks": [
+    "giveClaimBlocks <amount>",
+    "給予一名玩家額外的領地格子。"
+  ]
+}
