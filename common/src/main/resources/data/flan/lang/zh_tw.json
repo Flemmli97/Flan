@@ -35,8 +35,8 @@
   "playerGroupAddFail": "無法將該玩家加入到組中，原因可能是該玩家已在組中，或者找不到與該名稱所匹配的玩家",
   "resizeClaim": "正在重新設定領地大小",
   "resizeSuccess": "已重新設定領地大小",
-  "claimCreateSuccess": "建立一個新領地",
-  "subClaimCreateSuccess": "建立一個新的副領地",
+  "claimCreateSuccess": "創建一個新領地",
+  "subClaimCreateSuccess": "創建一個新的副領地",
   "deleteClaim": "領地已刪除",
   "deleteAllClaimConfirm": "您確定要刪除您所有的領地嗎？請重新輸入來確認",
   "deleteAllClaim": "所有領地已刪除",
@@ -141,250 +141,187 @@
   "setHome": "家園領地已設置到 [x=%1$s,y=%2$s,z=%3$s]",
   "teleportHome": "正在傳送到家。請不要在5秒內移動",
   "teleportHomeFail": "已經在傳送",
-  "setEnterMessage": "將進入領地時的標題文字設置為 %1$s",
-  "setEnterSubMessage": "將進入領地時的副標題文字設置為 %1$s",
-  "setLeaveMessage": "將離開領地時的標題文字設置為 %1$s",
-  "setLeaveSubMessage": "將離開領地時的副標題文字設置為 %1$s",
+  "setEnterMessage": "將進入領地時的標題文字設定為 %1$s",
+  "setEnterSubMessage": "將進入領地時的副標題文字設定為 %1$s",
+  "setLeaveMessage": "將離開領地時的標題文字設定為 %1$s",
+  "setLeaveSubMessage": "將離開領地時的副標題文字設定為 %1$s",
   "wiki": "另請參閱Wiki:",
-  "EDITCLAIM.desc": [
-    "給予編輯 (例如重新設定大小、刪除等) 領地的權限"
-  ],
-"EDITPERMS.desc": [
-    "給予修改領地權限的權限"
-  ],
-  "EDITPOTIONS.desc": [
-    "給予修改領地內附加效果的權限"
-  ],
-  "BREAK.desc": [
-    "給予領地內破壞方塊的權限"
-  ],
-  "PLACE.desc": [
-    "給予領地內放置方塊的權限"
-  ],
-  "OPENCONTAINER.desc": [
-    "打開容器的權限",
-    "(例如儲物箱、熔爐等)"
-  ],
-  "INTERACTBLOCK.desc": [
+  "flan:edit_claim": "編輯領地",
+  "flan:edit_perms": "編輯權限",
+  "flan:edit_potions": "編輯藥水效果",
+  "flan:break": "破壞",
+  "flan:place": "放置",
+  "flan:open_container": "開啟容器",
+  "flan:interact_block": "方塊互動",
+  "flan:interact_sign": "告示牌互動",
+  "flan:anvil": "鐵砧",
+  "flan:bed": "床",
+  "flan:beacon": "烽火臺",
+  "flan:door": "門",
+  "flan:fence_gate": "柵欄門",
+  "flan:trapdoor": "地板門",
+  "flan:button_lever": "按鈕 控制桿",
+  "flan:pressure_plate": "壓力版",
+  "flan:noteblock": "音階盒",
+  "flan:redstone": "紅石",
+  "flan:jukebox": "唱片機",
+  "flan:enderchest": "終界箱",
+  "flan:enchantment": "附魔",
+  "flan:itemframe_rotate": "展示框旋轉",
+  "flan:lectern_take": "講台取走書本",
+  "flan:endcrystal_place": "終界水晶放置",
+  "flan:target_block": "標靶觸發",
+  "flan:projectiles": "投射物",
+  "flan:trample": "可被踩壞方塊",
+  "flan:frost_walker": "冰霜行者",
+  "flan:portal": "傳送門",
+  "flan:raid": "突襲",
+  "flan:boat": "船",
+  "flan:minecart": "礦車",
+  "flan:bucket": "鐵桶",
+  "flan:ender_pearl": "終界珍珠",
+  "flan:chorus_fruit": "歌萊果",
+  "flan:animal_interact": "動物互動",
+  "flan:hurt_animal": "傷害動物",
+  "flan:xp": "XP 經驗",
+  "flan:trading": "交易",
+  "flan:armorstand": "盔甲架",
+  "flan:break_non_living": "破壞 非生物",
+  "flan:drop": "丟棄",
+  "flan:pickup": "撿起",
+  "flan:flight": "飛行",
+  "flan:can_stay": "可逗留",
+  "flan:teleport": "傳送",
+  "flan:no_hunger": "無飢餓",
+  "flan:claim_message": "領地訊息",
+  "flan:hurt_player": "傷害玩家",
+  "flan:explosions": "爆炸",
+  "flan:wither": "凋零怪",
+  "flan:enderman": "終界使者",
+  "flan:snow_golem": "雪人",
+  "flan:fire_spread": "火焰蔓延",
+  "flan:water_border": "水邊界",
+  "flan:piston_border": "活塞邊界",
+  "flan:mob_spawn": "怪物生成",
+  "flan:animal_spawn": "動物生成",
+  "flan:lightning": "閃電",
+  "flan:lock_items": "鎖定物品",
+  "flan:fake_player": "假人",
+  "flan:player_mob_spawn": "玩家生物生成",
+  "flan:sculk": "伏聆",
+  "flan:archeology": "考古",
+  "flan:edit_claim.desc": ["給予編輯 (例如重新設定大小、刪除等) 領地的權限"],
+  "flan:edit_perms.desc": ["給予修改領地權限的權限"],
+  "flan:edit_potions.desc": ["給予修改領地內附加效果的權限"],
+  "flan:break.desc": ["給予領地內破壞方塊的權限"],
+  "flan:place.desc": ["給予領地內放置方塊的權限"],
+  "flan:open_container.desc": ["打開容器的權限", "(例如儲物箱、熔爐等)"],
+  "flan:interact_block.desc": [
     "方塊互動通用權限",
     "應對於 OPENCONTAINER",
     "使在 OPENCONTAINER 中不被檢查的的方塊的變為可使用狀態"
   ],
-  "ANVIL.desc": [
-    "使用鐵砧的權限"
-  ],
-  "BED.desc": [
-    "使用床的權限"
-  ],
-  "BEACON.desc": [
-    "使用烽火台的權限"
-  ],
-  "DOOR.desc": [
-    "使用門的權限"
-  ],
-  "FENCEGATE.desc": [
-    "使用地板門的權限"
-  ],
-  "TRAPDOOR.desc": [
-    "使用拌線鉤的權限"
-  ],
-  "BUTTONLEVER.desc": [
-    "觸發控制桿和按鈕的權限"
-  ],
-  "PRESSUREPLATE.desc": [
-    "觸發壓力板的權限"
-  ],
-  "NOTEBLOCK.desc": [
-    "改變音階盒音調/音色的權限"
-  ],
-  "REDSTONE.desc": [
-    "改變紅石組成部分的權限"
-  ],
-  "JUKEBOX.desc": [
-    "插入/拿出 音樂唱片的權限"
-  ],
-  "ENDERCHEST.desc": [
-    "使用終界箱的權限"
-  ],
-  "ENCHANTMENT.desc": [
-    "使用附魔台的權限"
-  ],
-  "ITEMFRAMEROTATE.desc": [
-    "改變物品展示框內物品角度的權限"
-  ],
-  "LECTERNTAKE.desc": [
-    "改變講台上所放置的書的權限"
-  ],
-  "ENDCRYSTALPLACE.desc": [
-    "放置終界水晶的權限"
-  ],
-  "TARGETBLOCK.desc": [
-    "觸發標靶方塊的權限"
-  ],
-  "PROJECTILES.desc": [
-    "投射物權限",
-    "互動方塊 (例如用箭去射按鈕)"
-  ],
-  "TRAMPLE.desc": [
-    "可被踩壞方塊的權限",
-    "(例如耕地、海龜蛋)"
-  ],
-  "FROSTWALKER.desc": [
-    "冰霜行者附魔效果的權限"
-  ],
-  "PORTAL.desc": [
-    "使用地獄傳送門的權限"
-  ],
-  "RAID.desc": [
+  "flan:interact_sign.desc": ["使用告示牌的權限 (例如 對字上顏色)"],
+  "flan:anvil.desc": ["使用鐵砧的權限"],
+  "flan:bed.desc": ["使用床的權限"],
+  "flan:beacon.desc": ["使用烽火台的權限"],
+  "flan:door.desc": ["使用門的權限"],
+  "flan:fence_gate.desc": ["使用地板門的權限"],
+  "flan:trapdoor.desc": ["使用拌線鉤的權限"],
+  "flan:button_lever.desc": ["觸發控制桿和按鈕的權限"],
+  "flan:pressure_plate.desc": ["觸發壓力板的權限"],
+  "flan:noteblock.desc": ["改變音階盒音調/音色的權限"],
+  "flan:redstone.desc": ["改變紅石組成部分的權限"],
+  "flan:jukebox.desc": ["插入/拿出 音樂唱片的權限"],
+  "flan:enderchest.desc": ["使用終界箱的權限"],
+  "flan:enchantment.desc": ["使用附魔台的權限"],
+  "flan:itemframe_rotate.desc": ["改變物品展示框內物品角度的權限"],
+  "flan:lectern_take.desc": ["改變講台上所放置的書的權限"],
+  "flan:endcrystal_place.desc": ["放置終界水晶的權限"],
+  "flan:target_block.desc": ["觸發標靶方塊的權限"],
+  "flan:projectiles.desc": ["投射物權限", "互動方塊 (例如用箭去射按鈕)"],
+  "flan:trample.desc": ["可被踩壞方塊的權限", "(例如耕地、海龜蛋)"],
+  "flan:frost_walker.desc": ["冰霜行者附魔效果的權限"],
+  "flan:portal.desc": ["使用下屆傳送門的權限"],
+  "flan:raid.desc": [
     "在領地內觸發村莊突襲的權限",
     "不會阻止在領地外面發生的村莊突襲"
   ],
-  "BOAT.desc": [
-    "坐入船的權限"
-  ],
-  "MINECART.desc": [
-    "坐入礦車的權限"
-  ],
-  "BUCKET.desc": [
-    "允許用鐵桶盛裝液體"
-  ],
-  "ENDERPEARL.desc": [
-    "使用終界珍珠的權限"
-  ],
-  "CHORUSFRUIT.desc": [
-    "食用歌萊果的權限"
-  ],
-  "ANIMALINTERACT.desc": [
-    "與動物互動的權限",
-    "(例如給羊剪羊毛)"
-  ],
-  "HURTANIMAL.desc": [
-    "傷害動物的權限"
-  ],
-  "XP.desc": [
-    "吸取經驗球的權限"
-  ],
-  "TRADING.desc": [
-    "與村民進行交易的權限"
-  ],
-  "ARMORSTAND.desc": [
-    "與盔甲架互動的權限"
-  ],
-  "BREAKNONLIVING.desc": [
-    "破壞如礦車、盔甲架等實體的權限"
-  ],
-  "DROP.desc": [
-    "允許丟棄物品"
-  ],
-  "PICKUP.desc": [
-    "允許撿起物品"
-  ],
-  "FLIGHT.desc": [
-    "允許非創造模式狀態下的飛行"
-  ],
-  "CANSTAY.desc": [
-    "允許玩家進入您的領地"
-  ],
-  "TELEPORT.desc": [
-    "允許玩家傳送到您的領地家的傳送點"
-  ],
-  "NOHUNGER.desc": [
-    "停用減少肌餓值"
-  ],
-  "CLAIMMESSAGE.desc": [
-    "修改 進入/離開 領地時的提示文字的權限"
-  ],
-  "PLAYERMOBSPAWN.desc": [
-    "實體受玩家所影響的權限",
-    "例如潛聲守衛或終界蟎"
-  ],
+  "flan:boat.desc": ["坐入船的權限"],
+  "flan:minecart.desc": ["坐入礦車的權限"],
+  "flan:bucket.desc": ["使用鐵桶舀取液體的權限"],
+  "flan:ender_pearl.desc": ["使用終界珍珠的權限"],
+  "flan:chorus_fruit.desc": ["食用紫影果的權限"],
+  "flan:animal_interact.desc": ["與動物互動的權限", "(例如給羊剪羊毛)"],
+  "flan:hurt_animal.desc": ["傷害動物的權限"],
+  "flan:xp.desc": ["吸取經驗球的權限"],
+  "flan:trading.desc": ["與村民進行交易的權限"],
+  "flan:armorstand.desc": ["與盔甲架互動的權限"],
+  "flan:break_non_living.desc": ["破壞如礦車、盔甲架等實體的權限"],
+  "flan:drop.desc": ["允許丟棄物品"],
+  "flan:pickup.desc": ["允許撿起物品"],
+  "flan:flight.desc": ["允許非創造模式狀態下的飛行"],
+  "flan:can_stay.desc": ["允許玩家進入您的領地"],
+  "flan:teleport.desc": ["允許玩家傳送到您的領地家的傳送點"],
+  "flan:no_hunger.desc": ["停用減少肌餓值"],
+  "flan:claim_message.desc": ["修改 進入/離開 領地時的提示文字的權限"],
+  "PLAYERMOBSPAWN.desc": ["實體受玩家所影響的權限", "例如潛聲守衛或終界蟎"],
   "SCULK.desc": [
     "潛聲感測器受玩家所影響的權限",
     "潛聲感測器在 PLAYERMOBSPAWN 下被處理"
   ],
-  "HURTPLAYER.desc": [
-    "傷害玩家的權限"
-  ],
-  "EXPLOSIONS.desc": [
-    "允許在領地內爆炸"
-  ],
-  "WITHER.desc": [
-    "允許凋零怪在領地內破壞方塊"
-  ],
-  "ENDERMAN.desc": [
-    "允許終界使者在領地內撿起/放置方塊"
-  ],
-  "SNOWGOLEM.desc": [
-    "允許雪人在腳下生成雪地毯"
-  ],
-  "FIRESPREAD.desc": [
-    "允許在領地內發生火焰擴散"
-  ],
-  "WATERBORDER.desc": [
-    "允許液體穿過領地邊界"
-  ],
-  "PISTONBORDER.desc": [
-    "允許活塞推出/拉進領地邊界"
-  ],
-  "MOBSPAWN.desc": [
-    "阻止在領地內生成敵對生物"
-  ],
-  "ANIMALSPAWN.desc": [
-    "阻止在領地內生成其他生物"
-  ],
-  "LIGHTNING.desc": [
+  "flan:hurt_player.desc": ["傷害玩家的權限"],
+  "flan:explosions.desc": ["允許在領地內爆炸"],
+  "flan:wither.desc": ["允許凋零怪在領地內破壞方塊"],
+  "flan:enderman.desc": ["允許終界使者在領地內撿起/放置方塊"],
+  "flan:snow_golem.desc": ["允許雪人在腳下生成雪地毯"],
+  "flan:fire_spread.desc": ["允許在領地內發生火焰擴散"],
+  "flan:water_border.desc": ["允許液體穿過領地邊界"],
+  "flan:piston_border.desc": ["允許活塞推出/拉進領地邊界"],
+  "flan:mob_spawn.desc": ["阻止在領地內生成敵對生物"],
+  "flan:animal_spawn.desc": ["阻止在領地內生成其他生物"],
+  "flan:lightning.desc": [
     "允許照明方塊影響領地內的方塊",
     "例如在火焰上放置方塊",
     "或影響動物 (不包括生物)"
   ],
-  "LOCKITEMS.desc": [
-    "在玩家死亡後是否鎖定物品"
-  ],
-  "FAKEPLAYER.desc": [
+  "flan:lock_items.desc": ["在玩家死亡後是否鎖定物品"],
+  "flan:fake_player.desc": [
     "允許假人領地中互動",
-    "一些裝有mod的假人會擁有使用者的uuid",
+    "一些裝有mod的假人會擁有用戶的uuid",
     "對於那些mod來說，這個權限是沒有必要的"
   ],
+  "flan:player_mob_spawn.desc": [
+    "允許受影響的玩家生成具有互動作用的生物",
+    "例如 伏守者, 又或者是終界珍珠丟出來的終界蟎"
+  ],
+  "flan:sculk.desc": ["允許使用伏聆振測器", "伏聆嘯口由玩家生成的生物處理"],
+  "flan:archeology.desc": ["允許玩家在該領地粉刷方塊"],
   "command.help": [
     "help <page> | (cmd <command>)",
     "顯示給定命令的所有可用命令或資訊"
   ],
-  "command.menu": [
-    "menu",
-    "當您處於領地中時，可使用領地菜單的權限"
-  ],
-  "command.claimInfo": [
-    "claimInfo",
-    "顯示您所處於的領地資訊"
-  ],
-  "command.delete": [
-    "delete",
-    "刪除目前的領地"
-  ],
+  "command.menu": ["menu", "當您處於領地中時，可使用領地菜單的權限"],
+  "command.claimInfo": ["claimInfo", "顯示您所處於的領地資訊"],
+  "command.delete": ["delete", "刪除當前的領地"],
   "command.deleteAll": [
     "deleteAll",
     "刪除您的所有領地 (您需要輸入兩次來確認，確保不會出問題)."
   ],
-  "command.deleteSubClaim": [
-    "deleteSubClaim",
-    "刪除目前副領地"
-  ],
+  "command.deleteSubClaim": ["deleteSubClaim", "刪除當前副領地"],
   "command.deleteAllSubClaims": [
     "deleteAllSubClaims",
-    "刪除目前主領地下的所有副領地"
+    "刪除當前主領地下的所有副領地"
   ],
   "command.list": [
     "list <player>",
     "列出您擁有的所有領地。 (如果伺服器管理員也給予了列出其他玩家所擁有的領地的能力)"
   ],
-  "command.switchMode": [
-    "switchMode",
-    "在 主/副 領地模式之間切換"
-  ],
+  "command.switchMode": ["switchMode", "在 主/副 領地模式之間切換"],
   "command.group": [
     "group (add | remove <name>) | (players add | remove <player> [overwrite])",
     "- 加入/刪除 該名稱的組. 也可以透過在領地菜單中編輯。",
-    "- 加入/刪除 該組內的玩家 (如果覆蓋，則將覆蓋目前組的玩家，否則不執行任何操作)"
+    "- 加入/刪除 該組內的玩家 (如果覆蓋，則將覆蓋當前組的玩家，否則不執行任何操作)"
   ],
   "command.transferClaim": [
     "transferClaim <player>",
@@ -392,18 +329,15 @@
   ],
   "command.addClaim": [
     "addClaim (<x y z> <x y z>) | all | (rect x z)",
-    "在已給位置上建立一個領地(與使用領地工具的效果相同)",
+    "在已給位置上創建一個領地(與使用領地工具的效果相同)",
     "<all> 用掉所有剩餘的方塊，以獲得以玩家為中心的矩形領地",
-    "<rect> 建立一個以玩家為中心的矩形領地"
+    "<rect> 創建一個以玩家為中心的矩形領地"
   ],
   "command.permission": [
     "permission {global | (group <name>) | (personal <name>)} <permission> true | false | default",
     " 設定 global/group/personal 權限。 也可以透過在領地菜單中編輯 (對於右鍵單擊菜單中的組來說)."
   ],
-  "command.personalGroups": [
-    "personalGroups",
-    "打開菜單來編輯個人組"
-  ],
+  "command.personalGroups": ["personalGroups", "打開菜單來編輯個人組"],
   "command.sellBlocks": [
     "sellBlocks <amount>",
     "出售 <amount> 個領地格子。 需要足夠的火藥作為貨幣。"
@@ -428,37 +362,25 @@
     "teleport self | admin | (other <player>) (<claim name> | <claim uuid>)",
     "傳送至給定的領地家的位置。 使用 admin 傳送至管理員領地"
   ],
-  "command.name": [
-    "name self <name>",
-    "設定目前領地的名稱"
-  ],
+  "command.name": ["name self <name>", "設定當前領地的名稱"],
   "command.claimMessage": [
     "claimMessage (enter | leave) (title | subtitle) (string | text) <value>",
     "設定領地的提示資訊。 使用 \"$empty\" 來刪除資訊"
   ],
-  "command.reload": [
-    "reload",
-    "重設遊戲內的插件配置"
-  ],
-  "command.adminMode": [
-    "adminMode",
-    "切換至管理模式，忽略所有領地。"
-  ],
+  "command.reload": ["reload", "重設遊戲內的插件配置"],
+  "command.adminMode": ["adminMode", "切換至管理模式，忽略所有領地。"],
   "command.readGriefPrevention": [
     "readGriefPreventionData",
     "將GriefPrevention插件中的數據解析到flan"
   ],
-  "command.setAdminClaim": [
-    "setAdminClaim",
-    "將一個領地設置為管理員領地"
-  ],
+  "command.setAdminClaim": ["setAdminClaim", "將一個領地設置為管理員領地"],
   "command.listAdminClaims": [
     "listAdminClaim",
-    "列出目前世界中的所有管理員領地"
+    "列出當前世界中的所有管理員領地"
   ],
   "command.adminDelete": [
     "adminDelete [all <player>]",
-    "強制刪除目前領地或刪除指定玩家的所有領地。"
+    "強制刪除當前領地或刪除指定玩家的所有領地。"
   ],
   "command.giveClaimBlocks": [
     "giveClaimBlocks <amount>",
