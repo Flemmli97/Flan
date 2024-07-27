@@ -1,0 +1,273 @@
+{
+  "noClaim": "Non ci sono claim qui.",
+  "inspectBlockOwner": "Questo blocco è claimato da %1$s",
+  "inspectNoClaim": "Questo blocco non appartiene a nessuno",
+  "claimBlocksFormat": "Blocchi di claim: %1$d + (Bonus) %2$d; Usati: %3$d; Rimasti: %4$d",
+  "listClaims": "Lista di tutti i claim:",
+  "listAdminClaims": "Lista di tutti i claim di admin in %1$s:",
+  "onlyOnePlayer": "Solo un giocatore può essere usato come argomento",
+  "ownerTransferSuccess": "Nuovo owner del claim attuale: %1$s",
+  "ownerTransferFail": "Solo l'owner può trasferire un claim",
+  "ownerTransferNoBlocks": "Il nuovo owner non ha abbastanza blocchi di claim",
+  "ownerTransferNoBlocksAdmin": "Si può ignorare passando alla modalità admin",
+  "noSuchLevel": "Non esiste dimensione con id %s",
+  "noSuchPlayer": "Non esistono giocatori con uuid/nome %s",
+  "claimCreationFailCommand": "Non è stato possibile claimare questa posizione",
+  "noPermission": "Non hai i permessi necessari per farlo qui!",
+  "noPermissionSimple": "Scusa, non puoi farlo qui!",
+  "noPermissionTooClose": "Scusa, sei troppo vicino/a a un claim per farlo qui!",
+  "tooCloseClaim": "Sei troppo vicino/a a un'area protetta per farlo!",
+  "configReload": "Configurazioni ricaricate",
+  "cantClaimHere": "Scusa, non puoi claimare qui",
+  "minClaimSize": "Area troppo piccola. La dimensione minima di claim è %d",
+  "maxClaims": "Valore massimo di claim raggiunto",
+  "landClaimDisabledWorld": "I claim sono disattivati in questo mondo",
+  "editMode": "Modalità di modifica impostata a %1$s",
+  "notEnoughBlocks": "Non hai abbastanza blocchi di claim",
+  "conflictOther": "Il claim si sovrapporrebbe con altri claim",
+  "wrongMode": "Modalità di claim sbagliata. Sei in modalità %1$s",
+  "stringScreenReturn": "Clicca sulla carta per tornare indietro",
+  "groupAdd": "Aggiunto gruppo %1$s",
+  "groupRemove": "Rimosso gruppo %1$s",
+  "groupExist": "Gruppo già esistente",
+  "uuidFakeAdd": "Aggiunto al claim fakeplayer con uuid %1$s",
+  "uuidFakeRemove": "Rimosso dal claim fakeplayer con uuid %1$s",
+  "uuidFakeModifyNo": "È già stato aggiunto un fakeplayer con l'uuid fornito",
+  "playerModify": "Modificato il gruppo di permessi in %1$s per i seguenti giocatori: %2$s",
+  "playerModifyNo": "Impossibile impostare il gruppo di permesso per i giocatori. Probabilmente appartengono già a un gruppo",
+  "playerGroupAddFail": "Impossibile aggiungere questo giocatore al gruppo perché il giocatore è già in un gruppo o non è stato trovato alcun giocatore con quel nome",
+  "resizeClaim": "Ridimensionando claim",
+  "resizeSuccess": "Claim ridimensionato",
+  "claimCreateSuccess": "Creato nuovo claim",
+  "subClaimCreateSuccess": "Creato nuovo sotto-claim",
+  "deleteClaim": "Claim eliminato",
+  "deleteAllClaimConfirm": "Sei sicuro/a di voler eliminare tutti i claim? Scrivilo di nuovo per confermare",
+  "deleteAllClaim": "Eliminato tutti i claim",
+  "deleteClaimError": "Non puoi eliminare questo claim qui",
+  "deleteSubClaim": "Sotto-claim eliminato",
+  "deleteSubClaimAll": "Eliminati tutti i sotto-claim da questo claim",
+  "noSuchPerm": "Non esiste alcun permesso %1$s",
+  "editPerm": "%1$s è ora impostato a %2$s",
+  "editPermGroup": "%1$s per %2$s ora impostato a %3$s",
+  "editPersonalGroup": "Permesso predefinito %1$s per gruppo %2$s ora impostato a %3$s",
+  "nonGlobalOnly": "Non è possibile modificare %1$s perché qui è un permesso globale",
+  "adminMode": "Modalità admin (Ignora Claim) impostata a: %1$s",
+  "adminDeleteAll": "Eliminati tutti i claim per i seguenti giocatori: %1$s",
+  "setAdminClaim": "Nuovo claim admin per questo claim: %1$s",
+  "readGriefpreventionData": "Lettura dati da GriefPrevention",
+  "readGriefpreventionClaimDataSuccess": "Dati di claim letti con successo",
+  "readGriefpreventionPlayerDataSuccess": "Dati del giocatore letti con successo",
+  "cantFindData": "Nessuna GriefPrevention a %1$s",
+  "errorFile": "Errore nella lettura del file %1$s",
+  "readConflict": "Conflitto tra %1$s e i claim esistenti. Non aggiunto al mondo! Conflitti:",
+  "giveClaimBlocks": "Forniti %1$s blocchi di claim ai seguenti giocatori: %2$d",
+  "giveClaimBlocksBonus": "Forniti %1$s blocchi di claim bonus ai seguenti giocatori: %2$d",
+  "fakePlayerNotification1": "Un FakePlayer ha tentato di interagire con il tuo claim a %1$s in %2$s.",
+  "fakePlayerNotification2": "Clicca %s mentre ti trovi nel tuo claim per aggiungere il FakePlayer al claim.",
+  "clickableComponent": "qui",
+  "fakePlayerNotification3": "Clicca %s per disabilitare questa notifica.",
+  "fakePlayerNotification": "Notifica FakePlayer impostata a %s",
+  "claimBasicInfo": "Owner: %1$s, da [x=%2$d,z=%3$d] a [x=%4$d,z=%5$d]; quantità di sotto-claim: %6$d",
+  "claimBasicInfoNamed": "Claim: %7$s, Owner: %1$s, da [x=%2$d,z=%3$d] a [x=%4$d,z=%5$d]; quantità di sotto-claim: %6$d",
+  "claimSubHeader": "==Info di sotto-claim==",
+  "claimBasicInfoSub": "Owner: %1$s, da [x=%2$d,z=%3$d] a [x=%4$d,z=%5$d]",
+  "claimBasicInfoSubNamed": "Claim: %7$s, Owner: %1$s, da [x=%2$d,z=%3$d] a [x=%4$d,z=%5$d]",
+  "claimInfoPerms": "Permessi: %1$s",
+  "claimGroupInfoHeader": "Gruppi: ",
+  "claimGroupPerms": "    Permessi: %1$s",
+  "claimGroupPlayers": "    Giocatori: %1$s",
+  "helpHeader": "Sotto-comandi disponibili (pagina %d):",
+  "helpCmdHeader": "====================",
+  "helpCmdSyntax": "Sintassi: %1$s",
+  "screenEnableText": "Abilitato: %1$s",
+  "screenUneditable": "Non si può modificare!",
+  "screenClose": "Chiudi",
+  "screenNext": "Successivo",
+  "screenPrevious": "Precedente",
+  "screenAdd": "Aggiungi",
+  "screenBack": "Indietro",
+  "screenNoPerm": "Nessun permesso",
+  "screenFalse": "false",
+  "screenTrue": "true",
+  "screenDefault": "default",
+  "screenMenu": "Menu claim",
+  "screenMenuSub": "Menu sotto-claim",
+  "screenMenuGlobal": "Modifica i permessi globali",
+  "screenMenuGroup": "Modifica i gruppi di permessi",
+  "screenMenuPotion": "Modifica gli effetti delle pozioni",
+  "screenMenuClaimText": "Modifica il testo di entrata/uscita",
+  "screenMenuFakePlayers": "FakePlayer",
+  "screenMenuDelete": "Elimina claim",
+  "screenConfirm": "Conferma",
+  "screenYes": "Sì",
+  "screenNo": "No",
+  "screenGroupPlayers": "%1$s - Giocatori",
+  "screenRemoveMode": "Rimuovi modalità: %1$s",
+  "screenGlobalPerms": "Permessi globali",
+  "screenGroupName": "%s",
+  "screenGroups": "Gruppi di claim",
+  "screenGroupPerms": "%1$s - Permessi",
+  "screenPersonalGroups": "Gruppi personali",
+  "screenPersonalPermissions": "Permessi personali per %1$s",
+  "screenFakePlayerNameUUID": "%s",
+  "screenPotions": "Pozioni di claim",
+  "screenPotionText": "%s",
+  "screenTitleEditor": "Messaggi di claim",
+  "screenTitleEditorSub": "Messaggi di sotto-claim",
+  "screenTextJson": "Tasto destro per usare un testo JSON. Vedi Minecraft Wiki per info.",
+  "screenEnterText": "Cambia il titolo all'entrata.",
+  "screenEnterSubText": "Cambia il sottotitolo all'entrata.",
+  "screenLeaveText": "Cambia il titolo all'uscita.",
+  "screenLeaveSubText": "Cambia il sottotitolo all'uscita.",
+  "screenDelete": "Usa \"$empty\" per eliminare il messaggio",
+  "chatClaimTextEdit": "[Clicca per il comando]",
+  "sellDisabled": "La vendita di blocchi di claim è disabilitata",
+  "buyDisabled": "L'acquisto di blocchi di claim è disabilitato",
+  "sellFail": "Non hai abbastanza blocchi di claim da vendere",
+  "buyFail": "Non hai abbastanza soldi",
+  "buyFailItem": "Non hai abbastanza oggetti",
+  "buyFailXP": "Non hai abbastanza punti esperienza",
+  "sellSuccess": "Hai venduto %1$s blocchi di claim per %2$s",
+  "sellSuccessItem": "Hai venduto %1$s blocchi di claim per %2$s %3$s",
+  "sellSuccessXP": "Hai venduto %1$s blocchi di claim per %2$s punti esperienza",
+  "buySuccess": "Hai comprato %1$s blocchi di claim per %2$s",
+  "buySuccessItem": "Hai comprato %1$s blocchi di claim per %2$s oggetti",
+  "buySuccessXP": "Hai comprato %1$s blocchi di claim per %2$s punti esperienza",
+  "currencyMissing": "Manca una mod di denaro supportata",
+  "trappedRescue": "Salvataggio. Non muoverti per 5 secondi",
+  "trappedFail": "Salvataggio non necessario o già in corso",
+  "trappedMove": "Ti sei mosso/a. Teletrasporto in annullamento",
+  "unlockDropsCmd": "I tuoi oggetti di morte sono protetti. Usa %1$s per sbloccarli per altri giocatori",
+  "unlockDrops": "I tuoi oggetti di morte sono stati sbloccati per %1$s tick",
+  "unlockDropsMulti": "Drop sbloccati per %1$s",
+  "claimNameSet": "Nome del claim impostato a %1$s",
+  "claimNameUsed": "L'owner del claim ha già un altro claim con lo stesso nome",
+  "claimNameUsedSub": "Esiste già un sotto-claim di questo claim con questo nome",
+  "setHome": "Home del claim impostata a [x=%1$s,y=%2$s,z=%3$s]",
+  "teleportHome": "Teletrasporto alla home del claim. Non muoverti per 5 secondi",
+  "teleportHomeFail": "Teletrasporto già in corso",
+  "setEnterMessage": "Imposta il titolo di entrata a %1$s",
+  "setEnterSubMessage": "Imposta il sottotitolo di entrata a %1$s",
+  "setLeaveMessage": "Imposta il titolo di uscita a %1$s",
+  "setLeaveSubMessage": "Imposta il sottotitolo di uscita a %1$s",
+  "wiki": "Per più informazioni controlla la wiki:",
+  "command.help": [
+    "help <pagina> | (cmd <comando>)",
+    "Mostra tutti i comandi o le info disponibili per il comandi fornito."
+  ],
+  "command.menu": [
+    "menu",
+    "Quando ti trovi in un claim hai i permessi per aprire il menu del claim."
+  ],
+  "command.claimInfo": [
+    "claimInfo",
+    "Mostra informazioni sul claim in cui ti trovi."
+  ],
+  "command.delete": [
+    "delete",
+    "Elimina il claim attuale."
+  ],
+  "command.deleteAll": [
+    "deleteAll",
+    "Elimina tutti i tuoi claim (per evitare incidenti, devi scriverlo due volte per confermare)."
+  ],
+  "command.deleteSubClaim": [
+    "deleteSubClaim",
+    "Elimina il sotto-claim attuale."
+  ],
+  "command.deleteAllSubClaims": [
+    "deleteAllSubClaims",
+    "Elimina tutti i sotto-claim del claim attuale."
+  ],
+  "command.list": [
+    "list <giocatore>",
+    "Elenca tutti i tuoi claim. Se sei op puoi anche elencare i claim degli altri giocatori."
+  ],
+  "command.switchMode": [
+    "switchMode",
+    "Passa da modalità claim a modalità sotto-claim e viceversa."
+  ],
+  "command.group": [
+    "group (add | remove <nome>) | (players add | remove <giocatore> [overwrite])",
+    "- Aggiunge o rimuove il gruppo con il nome fornito. Modificabile anche dal menu claim.",
+    "- Aggiunge o rimuove un giocatore dal gruppo. Se il giocatore appartiene già a un gruppo, fornire il parametro overwrite sovrascriverà il gruppo attuale del giocatore. Modificabile anche dal menu claim."
+  ],
+  "command.transferClaim": [
+    "transferClaim <giocatore>",
+    "Rende il giocatore specificato owner del claim. Funziona solo se tu sei l'owner."
+  ],
+  "command.addClaim": [
+    "addClaim (<x y z> <x y z>) | all | (rect x z)",
+    "Crea un claim con le posizioni fornite, come se usassi lo strumento di claim.",
+    "<all> consuma tutti i blocchi di claim rimasti per un claim quadrato centrato sul giocatore",
+    "<rect> crea un claim rettangolare centrato attorno al giocatore"
+  ],
+  "command.permission": [
+    "permission {global | (group <nome>) | (personal <nome>)} <permesso> true | false | default",
+    "Imposta i permessi globali, di gruppo o personali. Modificabile anche dal menu claim (per i permessi di gruppo clicca col tasto destro sul gruppo nel menu)."
+  ],
+  "command.personalGroups": [
+    "personalGroups",
+    "Apre la GUI per modificare i gruppi personali."
+  ],
+  "command.sellBlocks": [
+    "sellBlocks <quantità>",
+    "Vende la quantità specificata di blocchi di claim. Richiede la mod Gunpowder Currency installata."
+  ],
+  "command.buyBlocks": [
+    "buyBlocks <quantità>",
+    "Compra la quantità specificata di blocchi di claim. Richiede la mod Gunpowder Currency installata."
+  ],
+  "command.trapped": [
+    "trapped",
+    "Se il giocatore si trova in un claim non appartenente a lui, tenta di teletrasportarlo fuori dopo 5 secondi."
+  ],
+  "command.unlockDrops": [
+    "unlockDrops <giocatori>",
+    "Sblocca gli oggetti lasciati alla morte così che anche gli altri giocatori li possano prendere. È possibile specificare quali giocatori possono prenderli. (Necessari permessi op)"
+  ],
+  "command.setHome": [
+    "setHome",
+    "Se il giocatore si trova in un claim dove ha i permessi necessari, imposta quel claim come home del giocatore"
+  ],
+  "command.teleport": [
+    "teleport self | admin | (other <giocatore>) (<nome del claim> | <uuid del claim>)",
+    "Teletrasporta il giocatore alla home del claim indicato. Usa il parametro admin per teletrasportarti a un claim admin"
+  ],
+  "command.name": [
+    "name self <nome>",
+    "Imposta il nome del claim attuale"
+  ],
+  "command.claimMessage": [
+    "claimMessage (enter | leave) (title | subtitle) (string | text) <valore>",
+    "Imposta il messaggio di claim. Usa \"$empty\" per rimuovere il messaggio"
+  ],
+  "command.reload": [
+    "reload",
+    "Ricarica la configurazione in partita."
+  ],
+  "command.adminMode": [
+    "adminMode",
+    "Passa alla modalità admin ignorando tutti i claim."
+  ],
+  "command.readGriefPrevention": [
+    "readGriefPreventionData",
+    "Analizza i dati dal plugin GriefPrevention"
+  ],
+  "command.setAdminClaim": [
+    "setAdminClaim",
+    "Imposta un claim come claim admin."
+  ],
+  "command.listAdminClaims": [
+    "listAdminClaim",
+    "Elenca tutti i claim admin nel mondo attuale."
+  ],
+  "command.adminDelete": [
+    "adminDelete [all <giocatore>]",
+    "Forza l'eliminazione del claim attuale o elimina tutti i claim dal giocatore specificato."
+  ],
+  "command.giveClaimBlocks": [
+    "giveClaimBlocks <quantità>",
+    "Fornisce a un giocatore ulteriori blocchi di claim."
+  ]
+}
