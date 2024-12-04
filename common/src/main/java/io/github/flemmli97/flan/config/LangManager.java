@@ -67,7 +67,7 @@ public class LangManager {
         this.defaultTranslation.put("maxClaims", "Maximum amount of claims reached");
         this.defaultTranslation.put("landClaimDisabledWorld", "Claiming is disabled in this world");
         this.defaultTranslation.put("editMode", "Editing mode set to %1$s");
-        this.defaultTranslation.put("notEnoughBlocks", "Not enough claim blocks");
+        this.defaultTranslation.put("notEnoughBlocks", "Not enough claim blocks. Required: %s, Current: %s");
         this.defaultTranslation.put("conflictOther", "Claim would overlap other claims");
         this.defaultTranslation.put("wrongMode", "Wrong claim mode. You are in %1$s-mode");
         this.defaultTranslation.put("stringScreenReturn", "Click on paper to go back");
