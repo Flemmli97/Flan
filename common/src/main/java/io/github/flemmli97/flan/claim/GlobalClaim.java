@@ -16,12 +16,12 @@ public record GlobalClaim(ServerLevel world) implements IPermissionContainer {
     @Override
     public boolean canInteract(ServerPlayer player, ResourceLocation perm, BlockPos pos, boolean message) {
         message = message && player.getClass().equals(ServerPlayer.class); //dont send messages to fake players
-        Config.GlobalType global = ConfigHandler.config.getGlobal(this.world, perm);
+        Config.GlobalType global = ConfigHandler.CONFIG.getGlobal(this.world, perm);
         if (global != Config.GlobalType.NONE && (player == null || !PlayerClaimData.get(player).isAdminIgnoreClaim())) {
             if (global.getValue())
                 return true;
             if (message)
-                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), ChatFormatting.DARK_RED), true);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noPermissionSimple"), ChatFormatting.DARK_RED), true);
             return false;
         }
         return !perm.equals(BuiltinPermission.MOBSPAWN) && !perm.equals(BuiltinPermission.ANIMALSPAWN);

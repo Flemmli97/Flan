@@ -38,7 +38,7 @@ public class FakePlayerScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.simpleColoredText(ConfigHandler.langManager.get("screenMenuFakePlayers"));
+                return PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("screenMenuFakePlayers"));
             }
         };
         player.openMenu(fac);
@@ -50,15 +50,15 @@ public class FakePlayerScreenHandler extends ServerOnlyScreenHandler<Claim> {
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
-                close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenBack"), ChatFormatting.DARK_RED));
+                close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenBack"), ChatFormatting.DARK_RED));
                 inv.updateStack(i, close);
             } else if (i == 3) {
                 ItemStack stack = new ItemStack(Items.ANVIL);
-                stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("screenAdd"), ChatFormatting.DARK_GREEN));
+                stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenAdd"), ChatFormatting.DARK_GREEN));
                 inv.updateStack(i, stack);
             } else if (i == 4) {
                 ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-                stack.setHoverName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.langManager.get("screenRemoveMode"), this.removeMode ? ConfigHandler.langManager.get("screenTrue") : ConfigHandler.langManager.get("screenFalse")), ChatFormatting.DARK_RED));
+                stack.setHoverName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.LANG_MANAGER.get("screenRemoveMode"), this.removeMode ? ConfigHandler.LANG_MANAGER.get("screenTrue") : ConfigHandler.LANG_MANAGER.get("screenFalse")), ChatFormatting.DARK_RED));
                 inv.updateStack(i, stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 inv.updateStack(i, ServerScreenHelper.emptyFiller());
@@ -67,7 +67,7 @@ public class FakePlayerScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 int id = (i % 9) + row * 7 - 1;
                 if (id < players.size()) {
                     ItemStack fakePlayer = new ItemStack(Items.ZOMBIE_HEAD);
-                    fakePlayer.setHoverName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.langManager.get("screenFakePlayerNameUUID"), players.get(id)), ChatFormatting.YELLOW));
+                    fakePlayer.setHoverName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.LANG_MANAGER.get("screenFakePlayerNameUUID"), players.get(id)), ChatFormatting.YELLOW));
                     inv.updateStack(i, fakePlayer);
                 }
             }
@@ -96,7 +96,7 @@ public class FakePlayerScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 if (fl)
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
                 else {
-                    player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("playerGroupAddFail"), ChatFormatting.RED), false);
+                    player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("playerGroupAddFail"), ChatFormatting.RED), false);
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                 }
             }, () -> {
@@ -110,7 +110,7 @@ public class FakePlayerScreenHandler extends ServerOnlyScreenHandler<Claim> {
         if (index == 4) {
             this.removeMode = !this.removeMode;
             ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-            stack.setHoverName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.langManager.get("screenRemoveMode"), this.removeMode ? ConfigHandler.langManager.get("screenTrue") : ConfigHandler.langManager.get("screenFalse")), ChatFormatting.DARK_RED));
+            stack.setHoverName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.LANG_MANAGER.get("screenRemoveMode"), this.removeMode ? ConfigHandler.LANG_MANAGER.get("screenTrue") : ConfigHandler.LANG_MANAGER.get("screenFalse")), ChatFormatting.DARK_RED));
             slot.set(stack);
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;

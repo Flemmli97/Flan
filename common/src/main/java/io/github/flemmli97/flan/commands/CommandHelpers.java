@@ -48,7 +48,7 @@ public class CommandHelpers {
     public static GameProfile singleProfile(CommandContext<CommandSourceStack> context, String arg) throws CommandSyntaxException {
         Collection<GameProfile> profs = GameProfileArgument.getGameProfiles(context, arg);
         if (profs.size() != 1) {
-            throw new SimpleCommandExceptionType(() -> ConfigHandler.langManager.get("onlyOnePlayer")).create();
+            throw new SimpleCommandExceptionType(() -> ConfigHandler.LANG_MANAGER.get("onlyOnePlayer")).create();
         }
         return profs.stream().findFirst().get();
     }
@@ -59,7 +59,7 @@ public class CommandHelpers {
         boolean admin = claim != null && claim.isAdminClaim();
         List<String> allowedPerms = new ArrayList<>();
         for (ClaimPermission perm : PermissionManager.INSTANCE.getAll()) {
-            if (!admin && ConfigHandler.config.globallyDefined(world, perm.getId())) {
+            if (!admin && ConfigHandler.CONFIG.globallyDefined(world, perm.getId())) {
                 continue;
             }
             if (!group || !perm.global)

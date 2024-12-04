@@ -15,7 +15,7 @@ public interface IPlayerData {
     void setAdditionalClaims(int amount);
 
     default boolean canUseClaimBlocks(int amount) {
-        if (ConfigHandler.config.maxClaimBlocks == -1)
+        if (ConfigHandler.CONFIG.maxClaimBlocks == -1)
             return true;
         int usedClaimsBlocks = this.usedClaimBlocks();
         return usedClaimsBlocks + amount <= this.getClaimBlocks() + this.getAdditionalClaims();

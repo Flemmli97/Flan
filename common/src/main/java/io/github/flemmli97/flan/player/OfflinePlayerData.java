@@ -33,7 +33,7 @@ public class OfflinePlayerData implements IPlayerData {
 
     public OfflinePlayerData(MinecraftServer server, UUID uuid) {
         this.save = ConfigHandler.getPlayerSavePath(server).resolve(uuid + ".json");
-        int claim = ConfigHandler.config.startingBlocks;
+        int claim = ConfigHandler.CONFIG.startingBlocks;
         int add = 0;
         this.owner = uuid;
         LocalDateTime last = LocalDateTime.now();
@@ -121,9 +121,9 @@ public class OfflinePlayerData implements IPlayerData {
         boolean banned = entry != null && entry.getExpires() == null;
         if (banned) {
             LocalDateTime bannedTime = LocalDateTime.ofInstant(((BannedEntryAccessor) entry).getCreationDate().toInstant(), ZoneId.systemDefault());
-            return ConfigHandler.config.bannedDeletionTime != -1 && now.isAfter(bannedTime.plusDays(ConfigHandler.config.bannedDeletionTime));
+            return ConfigHandler.CONFIG.bannedDeletionTime != -1 && now.isAfter(bannedTime.plusDays(ConfigHandler.CONFIG.bannedDeletionTime));
         }
-        return ConfigHandler.config.inactivityTime != -1 && now.isAfter(this.lastOnline.plusDays(ConfigHandler.config.inactivityTime)) && this.claimBlocks + this.additionalClaimBlocks < ConfigHandler.config.inactivityBlocksMax;
+        return ConfigHandler.CONFIG.inactivityTime != -1 && now.isAfter(this.lastOnline.plusDays(ConfigHandler.CONFIG.inactivityTime)) && this.claimBlocks + this.additionalClaimBlocks < ConfigHandler.CONFIG.inactivityBlocksMax;
     }
 
     public void deleteFile() {

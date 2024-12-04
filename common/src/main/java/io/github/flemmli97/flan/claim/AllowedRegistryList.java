@@ -64,7 +64,7 @@ public class AllowedRegistryList<T> {
 
     private ItemStack empty() {
         ItemStack stack = new ItemStack(Items.STICK);
-        ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText(ConfigHandler.langManager.get("allowListEmptyTag"), ChatFormatting.DARK_RED));
+        ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("allowListEmptyTag"), ChatFormatting.DARK_RED));
         return stack;
     }
 

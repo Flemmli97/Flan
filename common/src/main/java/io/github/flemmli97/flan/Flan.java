@@ -21,12 +21,12 @@ public class Flan {
     public static final DateTimeFormatter ONLINE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public static void log(String msg, Object... o) {
-        if (ConfigHandler.config.log)
+        if (ConfigHandler.CONFIG.log)
             Flan.LOGGER.info(msg, o);
     }
 
     public static void debug(String msg, Object... o) {
-        if (ConfigHandler.config.log)
+        if (ConfigHandler.CONFIG.log)
             Flan.LOGGER.debug(msg, o);
     }
 

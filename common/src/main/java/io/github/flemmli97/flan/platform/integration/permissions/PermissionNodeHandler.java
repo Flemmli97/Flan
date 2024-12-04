@@ -65,14 +65,14 @@ public interface PermissionNodeHandler {
 
     default boolean perm(CommandSourceStack src, String perm, boolean adminCmd) {
         if (!Flan.ftbRanks || !(src.getEntity() instanceof ServerPlayer player))
-            return !adminCmd || src.hasPermission(ConfigHandler.config.permissionLevel);
-        return FTBRanksAPI.getPermissionValue(player, perm).asBoolean().orElse(!adminCmd || player.hasPermissions(ConfigHandler.config.permissionLevel));
+            return !adminCmd || src.hasPermission(ConfigHandler.CONFIG.permissionLevel);
+        return FTBRanksAPI.getPermissionValue(player, perm).asBoolean().orElse(!adminCmd || player.hasPermissions(ConfigHandler.CONFIG.permissionLevel));
     }
 
     default boolean perm(ServerPlayer src, String perm, boolean adminCmd) {
         if (!Flan.ftbRanks)
-            return !adminCmd || src.hasPermissions(ConfigHandler.config.permissionLevel);
-        return FTBRanksAPI.getPermissionValue(src, perm).asBoolean().orElse(!adminCmd || src.hasPermissions(ConfigHandler.config.permissionLevel));
+            return !adminCmd || src.hasPermissions(ConfigHandler.CONFIG.permissionLevel);
+        return FTBRanksAPI.getPermissionValue(src, perm).asBoolean().orElse(!adminCmd || src.hasPermissions(ConfigHandler.CONFIG.permissionLevel));
     }
 
     default boolean permBelowEqVal(ServerPlayer src, String perm, int val, int fallback) {

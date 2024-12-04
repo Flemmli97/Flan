@@ -126,9 +126,9 @@ public class EntityInteractEvents {
 
     public static boolean canInteract(Entity entity) {
         ResourceLocation id = CrossPlatformStuff.INSTANCE.registryEntities().getIDFrom(entity.getType());
-        return ConfigHandler.config.ignoredEntityTypes.contains(id.getNamespace())
-                || ConfigHandler.config.ignoredEntityTypes.contains(id.toString())
-                || entity.getTags().stream().anyMatch(ConfigHandler.config.entityTagIgnore::contains);
+        return ConfigHandler.CONFIG.ignoredEntityTypes.contains(id.getNamespace())
+                || ConfigHandler.CONFIG.ignoredEntityTypes.contains(id.toString())
+                || entity.getTags().stream().anyMatch(ConfigHandler.CONFIG.entityTagIgnore::contains);
     }
 
     public static boolean projectileHit(Projectile proj, HitResult res) {

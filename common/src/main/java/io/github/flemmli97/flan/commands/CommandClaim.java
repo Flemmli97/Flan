@@ -208,7 +208,7 @@ public class CommandClaim {
 
     private static int reloadConfig(CommandContext<CommandSourceStack> context) {
         ConfigHandler.reloadConfigs(context.getSource().getServer());
-        context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("configReload")), true);
+        context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("configReload")), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -228,14 +228,14 @@ public class CommandClaim {
         ResourceLocation levelID = ResourceLocationArgument.getId(context, "dimension");
         ServerLevel level = context.getSource().getServer().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, levelID));
         if (level == null) {
-            context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("noSuchLevel"), levelID)), true);
+            context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("noSuchLevel"), levelID)), true);
             return 0;
         }
         UUID uuid = null;
         if (!as.equals("+Admin")) {
             uuid = context.getSource().getServer().getProfileCache().get(as).map(GameProfile::getId).orElse(null);
             if (uuid == null) {
-                context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("noSuchPlayer"), as)), true);
+                context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("noSuchPlayer"), as)), true);
                 return 0;
             }
         }
@@ -244,13 +244,13 @@ public class CommandClaim {
         BlockPos to = BlockPosArgument.getLoadedBlockPos(context, "to");
         Claim claim = storage.createAdminClaim(from, to, level);
         if (claim == null) {
-            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("claimCreationFailCommand")), true);
+            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("claimCreationFailCommand")), true);
             return 0;
         }
         if (uuid != null) {
             storage.transferOwner(claim, uuid);
         }
-        context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("claimCreateSuccess"), ChatFormatting.GOLD), false);
+        context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("claimCreateSuccess"), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -279,14 +279,14 @@ public class CommandClaim {
         ServerPlayer player = context.getSource().getPlayerOrException();
         Collection<GameProfile> profs = GameProfileArgument.getGameProfiles(context, "player");
         if (profs.size() != 1) {
-            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("onlyOnePlayer"), ChatFormatting.RED), false);
+            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("onlyOnePlayer"), ChatFormatting.RED), false);
             return 0;
         }
         GameProfile prof = profs.iterator().next();
         ClaimStorage storage = ClaimStorage.get(player.getLevel());
         Claim claim = storage.getClaimAt(player.blockPosition());
         if (claim == null) {
-            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noClaim"), ChatFormatting.RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noClaim"), ChatFormatting.RED), false);
             return 0;
         }
         PlayerClaimData data = PlayerClaimData.get(player);
@@ -298,16 +298,16 @@ public class CommandClaim {
             enoughBlocks = newData.canUseClaimBlocks(claim.getPlane());
         }
         if (!enoughBlocks) {
-            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("ownerTransferNoBlocks"), ChatFormatting.RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("ownerTransferNoBlocks"), ChatFormatting.RED), false);
             if (PermissionNodeHandler.INSTANCE.perm(context.getSource(), PermissionNodeHandler.cmdBypassMode, true))
-                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("ownerTransferNoBlocksAdmin"), ChatFormatting.RED), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("ownerTransferNoBlocksAdmin"), ChatFormatting.RED), false);
             return 0;
         }
         if (!storage.transferOwner(claim, player, prof.getId())) {
-            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("ownerTransferFail"), ChatFormatting.RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("ownerTransferFail"), ChatFormatting.RED), false);
             return 0;
         }
-        player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("ownerTransferSuccess"), prof.getName()), ChatFormatting.GOLD), false);
+        player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("ownerTransferSuccess"), prof.getName()), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -336,10 +336,10 @@ public class CommandClaim {
         ServerPlayer player = context.getSource().getPlayerOrException();
         PlayerClaimData data = PlayerClaimData.get(player);
         if (data.setTrappedRescue()) {
-            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("trappedRescue"), ChatFormatting.GOLD), false);
+            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("trappedRescue"), ChatFormatting.GOLD), false);
             return Command.SINGLE_SUCCESS;
         } else {
-            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("trappedFail"), ChatFormatting.RED), false);
+            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("trappedFail"), ChatFormatting.RED), false);
         }
         return 0;
     }
@@ -356,9 +356,9 @@ public class CommandClaim {
             if (!nameUsed) {
                 String name = StringArgumentType.getString(context, "name");
                 claim.setClaimName(name);
-                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimNameSet"), name), ChatFormatting.GOLD), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("claimNameSet"), name), ChatFormatting.GOLD), false);
             } else {
-                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("claimNameUsed"), ChatFormatting.DARK_RED), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("claimNameUsed"), ChatFormatting.DARK_RED), false);
             }
         } else {
             Claim claim = ClaimStorage.get(player.getLevel()).getClaimAt(player.blockPosition());
@@ -369,9 +369,9 @@ public class CommandClaim {
                 if (!nameUsed) {
                     String name = StringArgumentType.getString(context, "name");
                     sub.setClaimName(name);
-                    player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimNameSet"), name), ChatFormatting.GOLD), false);
+                    player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("claimNameSet"), name), ChatFormatting.GOLD), false);
                 } else {
-                    player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("claimNameUsedSub"), ChatFormatting.DARK_RED), false);
+                    player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("claimNameUsedSub"), ChatFormatting.DARK_RED), false);
                 }
             } else if (claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
                 boolean nameUsed = ClaimStorage.get(player.getLevel()).allClaimsFromPlayer(claim.getOwner())
@@ -379,12 +379,12 @@ public class CommandClaim {
                 if (!nameUsed) {
                     String name = StringArgumentType.getString(context, "name");
                     claim.setClaimName(name);
-                    player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimNameSet"), name), ChatFormatting.GOLD), false);
+                    player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("claimNameSet"), name), ChatFormatting.GOLD), false);
                 } else {
-                    player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("claimNameUsed"), ChatFormatting.DARK_RED), false);
+                    player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("claimNameUsed"), ChatFormatting.DARK_RED), false);
                 }
             } else
-                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noPermission"), ChatFormatting.DARK_RED), false);
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -393,7 +393,7 @@ public class CommandClaim {
         ServerPlayer player = context.getSource().getPlayerOrException();
         PlayerClaimData data = PlayerClaimData.get(player);
         data.unlockDeathItems();
-        context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("unlockDrops"), ConfigHandler.config.dropTicks), ChatFormatting.GOLD), false);
+        context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("unlockDrops"), ConfigHandler.CONFIG.dropTicks), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -408,7 +408,7 @@ public class CommandClaim {
                 success.add(prof.getName());
             }
         }
-        context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("unlockDropsMulti"), success), ChatFormatting.GOLD), false);
+        context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("unlockDropsMulti"), success), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -427,14 +427,14 @@ public class CommandClaim {
         Claim claim = ClaimStorage.get(player.getLevel()).getClaimAt(player.blockPosition());
         PlayerClaimData data = PlayerClaimData.get(player);
         if (claim == null) {
-            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noClaim"), ChatFormatting.RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noClaim"), ChatFormatting.RED), false);
             return 0;
         }
         if (data.getEditMode() == EnumEditMode.SUBCLAIM) {
             Claim sub = claim.getSubClaim(player.blockPosition());
             if (sub != null) {
                 List<Component> info = sub.infoString(player, infoType);
-                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("claimSubHeader"), ChatFormatting.AQUA), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("claimSubHeader"), ChatFormatting.AQUA), false);
                 for (Component text : info)
                     player.displayClientMessage(text, false);
                 return Command.SINGLE_SUCCESS;
@@ -454,14 +454,14 @@ public class CommandClaim {
             if (!b.isPresent())
                 PermHelper.noClaimMessage(player);
             else if (!b.get())
-                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("deleteClaimError"), ChatFormatting.DARK_RED), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("deleteClaimError"), ChatFormatting.DARK_RED), false);
         });
         if (!check)
             return 0;
         if (!storage.deleteClaim(claim, true, PlayerClaimData.get(player).getEditMode(), player.getLevel())) {
-            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("deleteSubClaimError"), ChatFormatting.DARK_RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("deleteSubClaimError"), ChatFormatting.DARK_RED), false);
         } else {
-            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("deleteClaim"), ChatFormatting.RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("deleteClaim"), ChatFormatting.RED), false);
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -474,11 +474,11 @@ public class CommandClaim {
                 ClaimStorage storage = ClaimStorage.get(world);
                 storage.allClaimsFromPlayer(player.getUUID()).forEach((claim) -> storage.deleteClaim(claim, true, PlayerClaimData.get(player).getEditMode(), player.getLevel()));
             }
-            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("deleteAllClaim"), ChatFormatting.GOLD), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("deleteAllClaim"), ChatFormatting.GOLD), false);
             data.setConfirmDeleteAll(false);
         } else {
             data.setConfirmDeleteAll(true);
-            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("deleteAllClaimConfirm"), ChatFormatting.DARK_RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("deleteAllClaimConfirm"), ChatFormatting.DARK_RED), false);
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -488,21 +488,21 @@ public class CommandClaim {
         ClaimStorage storage = ClaimStorage.get(player.getLevel());
         Claim claim = storage.getClaimAt(player.blockPosition());
         if (claim == null) {
-            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noClaim"), ChatFormatting.RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noClaim"), ChatFormatting.RED), false);
             return 0;
         }
         Claim sub = claim.getSubClaim(player.blockPosition());
         if (sub == null) {
-            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noClaim"), ChatFormatting.RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noClaim"), ChatFormatting.RED), false);
             return 0;
         }
         boolean check = PermHelper.check(player, player.blockPosition(), claim, BuiltinPermission.EDITCLAIM, b -> {
             if (!b.isPresent())
                 PermHelper.noClaimMessage(player);
             else if (!b.get())
-                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("deleteClaimError"), ChatFormatting.DARK_RED), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("deleteClaimError"), ChatFormatting.DARK_RED), false);
             else
-                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("deleteSubClaim"), ChatFormatting.DARK_RED), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("deleteSubClaim"), ChatFormatting.DARK_RED), false);
         });
         if (!check)
             return 0;
@@ -517,7 +517,7 @@ public class CommandClaim {
             return 0;
         List<Claim> subs = claim.getAllSubclaims();
         subs.forEach(claim::deleteSubClaim);
-        player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("deleteSubClaimAll"), ChatFormatting.DARK_RED), false);
+        player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("deleteSubClaimAll"), ChatFormatting.DARK_RED), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -527,7 +527,7 @@ public class CommandClaim {
 
     private static int listClaims(CommandContext<CommandSourceStack> context, Collection<GameProfile> profs) throws CommandSyntaxException {
         if (profs.size() != 1) {
-            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("onlyOnePlayer"), ChatFormatting.RED), false);
+            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("onlyOnePlayer"), ChatFormatting.RED), false);
             return 0;
         }
         GameProfile prof = profs.iterator().next();
@@ -544,18 +544,18 @@ public class CommandClaim {
             ClaimStorage storage = ClaimStorage.get(world);
             claims.put(world, storage.allClaimsFromPlayer(player != null ? player.getUUID() : of));
         }
-        if (ConfigHandler.config.maxClaimBlocks != -1) {
+        if (ConfigHandler.CONFIG.maxClaimBlocks != -1) {
             if (player != null) {
                 PlayerClaimData data = PlayerClaimData.get(player);
-                context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBlocksFormat"),
+                context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("claimBlocksFormat"),
                         data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks(), data.remainingClaimBlocks()), ChatFormatting.GOLD), false);
             } else {
                 OfflinePlayerData data = new OfflinePlayerData(server, of);
-                context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBlocksFormat"),
+                context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("claimBlocksFormat"),
                         data.claimBlocks, data.getAdditionalClaims(), data.usedClaimBlocks(), data.remainingClaimBlocks()), ChatFormatting.GOLD), false);
             }
         }
-        context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("listClaims"), ChatFormatting.GOLD), false);
+        context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("listClaims"), ChatFormatting.GOLD), false);
         for (Map.Entry<Level, Collection<Claim>> entry : claims.entrySet())
             for (Claim claim : entry.getValue())
                 context.getSource().sendSuccess(PermHelper.simpleColoredText(
@@ -567,7 +567,7 @@ public class CommandClaim {
         ServerPlayer player = context.getSource().getPlayerOrException();
         PlayerClaimData data = PlayerClaimData.get(player);
         data.setEditMode(data.getEditMode() == EnumEditMode.DEFAULT ? EnumEditMode.SUBCLAIM : EnumEditMode.DEFAULT);
-        player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("editMode"), data.getEditMode()), ChatFormatting.GOLD), false);
+        player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("editMode"), data.getEditMode()), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -575,7 +575,7 @@ public class CommandClaim {
         ServerPlayer player = context.getSource().getPlayerOrException();
         PlayerClaimData data = PlayerClaimData.get(player);
         data.setAdminIgnoreClaim(!data.isAdminIgnoreClaim());
-        player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("adminMode"), data.isAdminIgnoreClaim()), ChatFormatting.GOLD), false);
+        player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("adminMode"), data.isAdminIgnoreClaim()), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -584,11 +584,11 @@ public class CommandClaim {
         ClaimStorage storage = ClaimStorage.get(src.getLevel());
         Claim claim = storage.getClaimAt(new BlockPos(src.getPosition()));
         if (claim == null) {
-            src.sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noClaim"), ChatFormatting.RED), false);
+            src.sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noClaim"), ChatFormatting.RED), false);
             return 0;
         }
         storage.deleteClaim(claim, true, EnumEditMode.DEFAULT, src.getLevel());
-        src.sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("deleteClaim"), ChatFormatting.RED), true);
+        src.sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("deleteClaim"), ChatFormatting.RED), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -598,7 +598,7 @@ public class CommandClaim {
             PlayerClaimData data = PlayerClaimData.get(player);
             if (!data.confirmedDeleteAll()) {
                 data.setConfirmDeleteAll(true);
-                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("deleteAllClaimConfirm"), ChatFormatting.DARK_RED), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("deleteAllClaimConfirm"), ChatFormatting.DARK_RED), false);
                 return Command.SINGLE_SUCCESS;
             }
         }
@@ -610,7 +610,7 @@ public class CommandClaim {
             }
             players.add(prof.getName());
         }
-        src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("adminDeleteAll"), players), ChatFormatting.GOLD), true);
+        src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("adminDeleteAll"), players), ChatFormatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -619,18 +619,18 @@ public class CommandClaim {
         ClaimStorage storage = ClaimStorage.get(player.getLevel());
         Claim claim = storage.getClaimAt(player.blockPosition());
         if (claim == null) {
-            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noClaim"), ChatFormatting.RED), false);
+            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noClaim"), ChatFormatting.RED), false);
             return 0;
         }
         storage.toggleAdminClaim(player, claim, BoolArgumentType.getBool(context, "toggle"));
-        context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("setAdminClaim"), claim.isAdminClaim()), ChatFormatting.GOLD), true);
+        context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("setAdminClaim"), claim.isAdminClaim()), ChatFormatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 
     private static int listAdminClaims(CommandContext<CommandSourceStack> context) {
         CommandSourceStack src = context.getSource();
         Collection<Claim> claims = ClaimStorage.get(src.getLevel()).getAdminClaims();
-        src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("listAdminClaims"), src.getLevel().dimension().location()), ChatFormatting.GOLD), false);
+        src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("listAdminClaims"), src.getLevel().dimension().location()), ChatFormatting.GOLD), false);
         for (Claim claim : claims)
             src.sendSuccess(PermHelper.simpleColoredText(claim.formattedClaim(), ChatFormatting.YELLOW), false);
         return Command.SINGLE_SUCCESS;
@@ -638,11 +638,11 @@ public class CommandClaim {
 
     private static int readGriefPreventionData(CommandContext<CommandSourceStack> context) {
         CommandSourceStack src = context.getSource();
-        src.sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("readGriefpreventionData"), ChatFormatting.GOLD), true);
+        src.sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("readGriefpreventionData"), ChatFormatting.GOLD), true);
         if (ClaimStorage.readGriefPreventionData(src.getServer(), src))
-            src.sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("readGriefpreventionClaimDataSuccess"), ChatFormatting.GOLD), true);
+            src.sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("readGriefpreventionClaimDataSuccess"), ChatFormatting.GOLD), true);
         if (PlayerClaimData.readGriefPreventionPlayerData(src.getServer(), src))
-            src.sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("readGriefpreventionPlayerDataSuccess"), ChatFormatting.GOLD), true);
+            src.sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("readGriefpreventionPlayerDataSuccess"), ChatFormatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -666,7 +666,7 @@ public class CommandClaim {
                 PlayerClaimData.editForOfflinePlayer(src.getServer(), prof.getId(), amount, base);
             players.add(prof.getName());
         }
-        src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get(base ? "giveClaimBlocks" : "giveClaimBlocksBonus"), players, amount), ChatFormatting.GOLD), true);
+        src.sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get(base ? "giveClaimBlocks" : "giveClaimBlocksBonus"), players, amount), ChatFormatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -694,19 +694,19 @@ public class CommandClaim {
         }
         if (remove) {
             if (claim.removePermGroup(player, group))
-                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("groupRemove"), group), ChatFormatting.GOLD), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("groupRemove"), group), ChatFormatting.GOLD), false);
             else {
-                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noPermission"), ChatFormatting.DARK_RED), false);
                 return 0;
             }
         } else {
             if (claim.groups().contains(group)) {
-                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("groupExist"), group), ChatFormatting.RED), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("groupExist"), group), ChatFormatting.RED), false);
                 return 0;
             } else if (claim.editPerms(player, group, BuiltinPermission.EDITPERMS, -1))
-                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("groupAdd"), group), ChatFormatting.GOLD), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("groupAdd"), group), ChatFormatting.GOLD), false);
             else {
-                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noPermission"), ChatFormatting.DARK_RED), false);
                 return 0;
             }
         }
@@ -741,7 +741,7 @@ public class CommandClaim {
                 claim = sub;
         }
         if (!claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
-            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noPermission"), ChatFormatting.DARK_RED), false);
             return 0;
         }
         List<String> modified = new ArrayList<>();
@@ -750,9 +750,9 @@ public class CommandClaim {
                 modified.add(prof.getName());
         }
         if (!modified.isEmpty())
-            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("playerModify"), group, modified), ChatFormatting.GOLD), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("playerModify"), group, modified), ChatFormatting.GOLD), false);
         else
-            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("playerModifyNo"), group), ChatFormatting.RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("playerModifyNo"), group), ChatFormatting.RED), false);
         return modified.size();
     }
 
@@ -760,7 +760,7 @@ public class CommandClaim {
         ServerPlayer player = context.getSource().getPlayerOrException();
         PlayerClaimData data = PlayerClaimData.get(player);
         data.setFakePlayerNotif(!data.hasFakePlayerNotificationOn());
-        player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("fakePlayerNotification"), data.hasFakePlayerNotificationOn()), ChatFormatting.GOLD), false);
+        player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("fakePlayerNotification"), data.hasFakePlayerNotificationOn()), ChatFormatting.GOLD), false);
         return 1;
     }
 
@@ -786,18 +786,18 @@ public class CommandClaim {
                 claim = sub;
         }
         if (!claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
-            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noPermission"), ChatFormatting.DARK_RED), false);
             return 0;
         }
         UUID uuid = UuidArgument.getUuid(context, "uuid");
         if (claim.modifyFakePlayerUUID(uuid, remove)) {
             if (!remove)
-                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("uuidFakeAdd"), uuid), ChatFormatting.GOLD), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("uuidFakeAdd"), uuid), ChatFormatting.GOLD), false);
             else
-                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("uuidFakeRemove"), uuid), ChatFormatting.GOLD), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("uuidFakeRemove"), uuid), ChatFormatting.GOLD), false);
             return 1;
         }
-        player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("uuidFakeModifyNo"), ChatFormatting.RED), false);
+        player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("uuidFakeModifyNo"), ChatFormatting.RED), false);
         return 0;
     }
 
@@ -835,25 +835,25 @@ public class CommandClaim {
             return 0;
         }
         if (!claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
-            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermission"), ChatFormatting.DARK_RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noPermission"), ChatFormatting.DARK_RED), false);
             return 0;
         }
         ResourceLocation perm = ResourceLocationArgument.getId(context, "permission");
         if (group != null && PermissionManager.INSTANCE.isGlobalPermission(perm)) {
-            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("nonGlobalOnly"), perm), ChatFormatting.DARK_RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("nonGlobalOnly"), perm), ChatFormatting.DARK_RED), false);
             return 0;
         }
         if (PermissionManager.INSTANCE.get(perm) == null) {
-            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("noSuchPerm"), perm), ChatFormatting.DARK_RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("noSuchPerm"), perm), ChatFormatting.DARK_RED), false);
             return 0;
         }
         String setPerm = mode == 1 ? "true" : mode == 0 ? "false" : "default";
         if (group == null) {
             claim.editGlobalPerms(player, perm, mode);
-            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("editPerm"), perm, setPerm), ChatFormatting.GOLD), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("editPerm"), perm, setPerm), ChatFormatting.GOLD), false);
         } else {
             claim.editPerms(player, group, perm, mode);
-            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("editPermGroup"), perm, group, setPerm), ChatFormatting.GOLD), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("editPermGroup"), perm, group, setPerm), ChatFormatting.GOLD), false);
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -869,16 +869,16 @@ public class CommandClaim {
         };
         ResourceLocation perm = ResourceLocationArgument.getId(context, "permission");
         if (PermissionManager.INSTANCE.isGlobalPermission(perm)) {
-            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("nonGlobalOnly"), perm), ChatFormatting.DARK_RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("nonGlobalOnly"), perm), ChatFormatting.DARK_RED), false);
             return 0;
         }
         if (PermissionManager.INSTANCE.get(perm) == null) {
-            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("noSuchPerm"), perm), ChatFormatting.DARK_RED), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("noSuchPerm"), perm), ChatFormatting.DARK_RED), false);
             return 0;
         }
         String setPerm = mode == 1 ? "true" : mode == 0 ? "false" : "default";
         if (PlayerClaimData.get(player).editDefaultPerms(group, perm, mode))
-            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("editPersonalGroup"), group, perm, setPerm), ChatFormatting.GOLD), false);
+            player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("editPersonalGroup"), group, perm, setPerm), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -888,7 +888,7 @@ public class CommandClaim {
         if (claim == null)
             return 0;
         claim.setHomePos(player.blockPosition());
-        context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("setHome"), player.blockPosition().getX(), player.blockPosition().getY(), player.blockPosition().getZ()), ChatFormatting.GOLD), false);
+        context.getSource().sendSuccess(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("setHome"), player.blockPosition().getX(), player.blockPosition().getY(), player.blockPosition().getZ()), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -938,7 +938,7 @@ public class CommandClaim {
                     return claim.getClaimName().equals(name);
                 }).findFirst();
         if (claims.isEmpty()) {
-            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("teleportNoClaim"), ChatFormatting.RED), false);
+            context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("teleportNoClaim"), ChatFormatting.RED), false);
             return 0;
         }
         return claims.map(claim -> {
@@ -946,12 +946,12 @@ public class CommandClaim {
             if (claim.canInteract(player, BuiltinPermission.TELEPORT, pos, false)) {
                 PlayerClaimData data = PlayerClaimData.get(player);
                 if (data.setTeleportTo(pos)) {
-                    context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("teleportHome"), ChatFormatting.GOLD), false);
+                    context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("teleportHome"), ChatFormatting.GOLD), false);
                     return Command.SINGLE_SUCCESS;
                 }
-                context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("teleportHomeFail"), ChatFormatting.RED), false);
+                context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("teleportHomeFail"), ChatFormatting.RED), false);
             } else
-                context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.langManager.get("noPermissionSimple"), ChatFormatting.DARK_RED), false);
+                context.getSource().sendSuccess(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noPermissionSimple"), ChatFormatting.DARK_RED), false);
             return 0;
         }).orElse(0);
     }
@@ -983,18 +983,18 @@ public class CommandClaim {
         if (enter) {
             if (sub) {
                 claim.setEnterTitle(claim.enterTitle, text);
-                feedback = ConfigHandler.langManager.get("setEnterSubMessage");
+                feedback = ConfigHandler.LANG_MANAGER.get("setEnterSubMessage");
             } else {
                 claim.setEnterTitle(text, claim.enterSubtitle);
-                feedback = ConfigHandler.langManager.get("setEnterMessage");
+                feedback = ConfigHandler.LANG_MANAGER.get("setEnterMessage");
             }
         } else {
             if (sub) {
                 claim.setLeaveTitle(claim.leaveTitle, text);
-                feedback = ConfigHandler.langManager.get("setLeaveSubMessage");
+                feedback = ConfigHandler.LANG_MANAGER.get("setLeaveSubMessage");
             } else {
                 claim.setLeaveTitle(text, claim.leaveSubtitle);
-                feedback = ConfigHandler.langManager.get("setLeaveMessage");
+                feedback = ConfigHandler.LANG_MANAGER.get("setLeaveMessage");
             }
         }
         MutableComponent cmdFeed = new TranslatableComponent(feedback, text).withStyle(ChatFormatting.GOLD);
@@ -1018,7 +1018,7 @@ public class CommandClaim {
             case ENTITYATTACK -> addClaimListEntry(context, Registry.ENTITY_TYPE, claim.allowedEntityAttack);
             case ENTITYUSE -> addClaimListEntry(context, Registry.ENTITY_TYPE, claim.allowedEntityUse);
         };
-        MutableComponent cmdFeed = new TranslatableComponent(ConfigHandler.langManager.get("addIgnoreEntry"), result, type.commandKey).withStyle(ChatFormatting.GOLD);
+        MutableComponent cmdFeed = new TranslatableComponent(ConfigHandler.LANG_MANAGER.get("addIgnoreEntry"), result, type.commandKey).withStyle(ChatFormatting.GOLD);
         context.getSource().sendSuccess(cmdFeed, false);
         return Command.SINGLE_SUCCESS;
     }
@@ -1040,18 +1040,18 @@ public class CommandClaim {
             case ENTITYATTACK -> claim.allowedEntityAttack.removeAllowedItem(value);
             case ENTITYUSE -> claim.allowedEntityUse.removeAllowedItem(value);
         }
-        MutableComponent cmdFeed = new TranslatableComponent(ConfigHandler.langManager.get("removeIgnoreEntry"), value, type.commandKey).withStyle(ChatFormatting.GOLD);
+        MutableComponent cmdFeed = new TranslatableComponent(ConfigHandler.LANG_MANAGER.get("removeIgnoreEntry"), value, type.commandKey).withStyle(ChatFormatting.GOLD);
         context.getSource().sendSuccess(cmdFeed, false);
         return Command.SINGLE_SUCCESS;
     }
 
     private static int sellClaimBlocks(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        boolean b = ConfigHandler.config.buySellHandler.sell(context.getSource().getPlayerOrException(), Math.max(0, IntegerArgumentType.getInteger(context, "amount")), m -> context.getSource().sendSuccess(m, false));
+        boolean b = ConfigHandler.CONFIG.buySellHandler.sell(context.getSource().getPlayerOrException(), Math.max(0, IntegerArgumentType.getInteger(context, "amount")), m -> context.getSource().sendSuccess(m, false));
         return b ? Command.SINGLE_SUCCESS : 0;
     }
 
     private static int buyClaimBlocks(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        boolean b = ConfigHandler.config.buySellHandler.buy(context.getSource().getPlayerOrException(), Math.max(0, IntegerArgumentType.getInteger(context, "amount")), m -> context.getSource().sendSuccess(m, false));
+        boolean b = ConfigHandler.CONFIG.buySellHandler.buy(context.getSource().getPlayerOrException(), Math.max(0, IntegerArgumentType.getInteger(context, "amount")), m -> context.getSource().sendSuccess(m, false));
         return b ? Command.SINGLE_SUCCESS : 0;
     }
 

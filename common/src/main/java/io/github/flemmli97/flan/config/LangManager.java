@@ -313,7 +313,7 @@ public class LangManager {
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
-        this.reload(ConfigHandler.config.lang);
+        this.reload(ConfigHandler.CONFIG.lang);
     }
 
     public void reload(String lang) {
