@@ -109,10 +109,12 @@ public class Claim implements IPermissionContainer {
         this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator.getUUID(), creator.getLevel(), PlayerClaimData.get(creator).playerDefaultGroups().isEmpty());
         PlayerClaimData.get(creator).playerDefaultGroups().forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0, true)));
         Collection<Claim> all = ClaimStorage.get(creator.getLevel()).allClaimsFromPlayer(creator.getUUID());
-        String name = String.format(ConfigHandler.CONFIG.defaultClaimName, creator.getName(), all.size());
+        String name = String.format(ConfigHandler.CONFIG.defaultClaimName, "%1$s", all.size());
         if (!name.isEmpty()) {
             for (Claim claim : all) {
-                if (claim.claimName.equals(name)) {
+                // If config formatting has no number this should return the appended number
+                String numbered = claim.claimName.replace(name + " #", "");
+                if (!numbered.isEmpty()) {
                     name = name + " #" + all.size();
                     break;
                 }
@@ -184,7 +186,8 @@ public class Claim implements IPermissionContainer {
     }
 
     public String getClaimName() {
-        return this.claimName;
+        String ownerName = this.world.getServer().getProfileCache().get(this.owner).map(GameProfile::getName).orElse("<UNKNOWN>");
+        return String.format(this.claimName, ownerName);
     }
 
     public void setClaimName(String name) {
@@ -645,10 +648,11 @@ public class Claim implements IPermissionContainer {
         if (component == null)
             return null;
         MutableComponent res;
+        String claimName = this.getClaimName();
         if (component instanceof TranslatableComponent trans) {
-            res = new TranslatableComponent(trans.getKey(), this.isAdminClaim() ? "Admin" : this.world.getServer().getProfileCache().get(this.owner).map(GameProfile::getName).orElse("<UNKNOWN>"), this.claimName);
+            res = new TranslatableComponent(trans.getKey(), this.isAdminClaim() ? "Admin" : this.world.getServer().getProfileCache().get(this.owner).map(GameProfile::getName).orElse("<UNKNOWN>"), claimName);
         } else if (component instanceof TextComponent comp) {
-            res = new TranslatableComponent(comp.getText(), this.isAdminClaim() ? "Admin" : this.world.getServer().getProfileCache().get(this.owner).map(GameProfile::getName).orElse("<UNKNOWN>"), this.claimName);
+            res = new TranslatableComponent(comp.getText(), this.isAdminClaim() ? "Admin" : this.world.getServer().getProfileCache().get(this.owner).map(GameProfile::getName).orElse("<UNKNOWN>"), claimName);
         } else {
             res = component.plainCopy();
         }
@@ -877,15 +881,17 @@ public class Claim implements IPermissionContainer {
     }
 
     public String nameAndPosition() {
-        if (this.claimName.isEmpty())
+        String name = this.getClaimName();
+        if (name.isEmpty())
             return String.format("[x=%d,z=%d]-[x=%d,z=%d]", this.minX, this.minZ, this.maxX, this.maxZ);
-        return String.format("%s:[x=%d,z=%d]-[x=%d,z=%d]", this.claimName, this.minX, this.minZ, this.maxX, this.maxZ);
+        return String.format("%s:[x=%d,z=%d]-[x=%d,z=%d]", name, this.minX, this.minZ, this.maxX, this.maxZ);
     }
 
     public String formattedClaim() {
-        if (this.claimName.isEmpty())
+        String name = this.getClaimName();
+        if (name.isEmpty())
             return String.format("[x=%d,z=%d] - [x=%d,z=%d] = %d blocks", this.minX, this.minZ, this.maxX, this.maxZ, this.getPlane());
-        return String.format("%s:[x=%d,z=%d] - [x=%d,z=%d] = %d blocks", this.claimName, this.minX, this.minZ, this.maxX, this.maxZ, this.getPlane());
+        return String.format("%s:[x=%d,z=%d] - [x=%d,z=%d] = %d blocks", name, this.minX, this.minZ, this.maxX, this.maxZ, this.getPlane());
     }
 
     public List<Component> infoString(ServerPlayer player, InfoType infoType) {
@@ -893,16 +899,17 @@ public class Claim implements IPermissionContainer {
         List<Component> l = new ArrayList<>();
         l.add(PermHelper.simpleColoredText("=============================================", ChatFormatting.GREEN));
         String ownerName = this.isAdminClaim() ? "Admin" : player.getServer().getProfileCache().get(this.owner).map(GameProfile::getName).orElse("<UNKNOWN>");
+        String claimName = this.getClaimName();
         if (this.parent == null) {
-            if (this.claimName.isEmpty())
+            if (claimName.isEmpty())
                 l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("claimBasicInfo"), ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size()), ChatFormatting.GOLD));
             else
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("claimBasicInfoNamed"), ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size(), this.claimName), ChatFormatting.GOLD));
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("claimBasicInfoNamed"), ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size(), claimName), ChatFormatting.GOLD));
         } else {
-            if (this.claimName.isEmpty())
+            if (claimName.isEmpty())
                 l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("claimBasicInfoSub"), ownerName, this.minX, this.minZ, this.maxX, this.maxZ), ChatFormatting.GOLD));
             else
-                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("claimBasicInfoSubNamed"), ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.claimName), ChatFormatting.GOLD));
+                l.add(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("claimBasicInfoSubNamed"), ownerName, this.minX, this.minZ, this.maxX, this.maxZ, claimName), ChatFormatting.GOLD));
         }
         if (perms) {
             if (infoType == InfoType.ALL || infoType == InfoType.GLOBAL)
