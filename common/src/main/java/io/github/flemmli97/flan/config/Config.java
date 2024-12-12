@@ -109,7 +109,7 @@ public class Config {
 
     public int dropTicks = 6000;
 
-    public int inactivityTime = 30;
+    public int inactivityTime = -1;
     public int inactivityBlocksMax = 2000;
     public boolean deletePlayerFile = false;
     public int bannedDeletionTime = 30;
