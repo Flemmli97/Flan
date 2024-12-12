@@ -127,7 +127,8 @@ public class ClaimStorage implements IPermissionStorage {
                 return false;
             }
             if (!data.isAdminIgnoreClaim() && !data.canUseClaimBlocks(claim.getPlane())) {
-                player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("notEnoughBlocks"), ChatFormatting.RED), false);
+                player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("notEnoughBlocks"),
+                        claim.getPlane(), data.remainingClaimBlocks()), ChatFormatting.RED), false);
                 return false;
             }
             claim.setClaimID(this.generateUUID());
@@ -238,7 +239,8 @@ public class ClaimStorage implements IPermissionStorage {
                     newData.getClaimBlocks(), newData.getAdditionalClaims(), newData.usedClaimBlocks(), data.remainingClaimBlocks()), ChatFormatting.GOLD), false);
             return true;
         }
-        player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("notEnoughBlocks"), ChatFormatting.RED), false);
+        player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("notEnoughBlocks"),
+                claim.getPlane(), data.remainingClaimBlocks()), ChatFormatting.RED), false);
         return false;
     }
 
