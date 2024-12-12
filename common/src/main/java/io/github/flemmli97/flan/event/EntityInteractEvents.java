@@ -223,6 +223,9 @@ public class EntityInteractEvents {
                 return claim.canInteract(player, BuiltinPermission.BREAKNONLIVING, pos, message) ? InteractionResult.PASS : InteractionResult.FAIL;
             if (entity instanceof Player)
                 return claim.canInteract(player, BuiltinPermission.HURTPLAYER, pos, message) ? InteractionResult.PASS : InteractionResult.FAIL;
+            if (entity.hasCustomName() && !claim.canInteract(player, BuiltinPermission.HURTNAMED, pos, message)) {
+                return InteractionResult.FAIL;
+            }
             return claim.canInteract(player, BuiltinPermission.HURTANIMAL, pos, message) ? InteractionResult.PASS : InteractionResult.FAIL;
         }
         return InteractionResult.PASS;

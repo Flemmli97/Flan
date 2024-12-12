@@ -62,6 +62,7 @@ public class BuiltinPermission {
     public static ResourceLocation CHORUSFRUIT = register("chorus_fruit", new ItemStack(Items.CHORUS_FRUIT), "Permission to eat chorus fruits");
     public static ResourceLocation ANIMALINTERACT = register("animal_interact", new ItemStack(Items.CHICKEN_SPAWN_EGG), "Permission to interact with animals", "(e.g. shearing sheeps)");
     public static ResourceLocation HURTANIMAL = register("hurt_animal", new ItemStack(Items.BEEF), "Permission to hurt animals");
+    public static ResourceLocation HURTNAMED = register("hurt_named", new ItemStack(Items.NAME_TAG), false, "Permission to hurt named mobs");
     public static ResourceLocation XP = register("xp", new ItemStack(Items.EXPERIENCE_BOTTLE), "Permission to pick up xp orbs");
     public static ResourceLocation TRADING = register("trading", new ItemStack(Items.EMERALD), "Permission to trade with villagers");
     public static ResourceLocation ARMORSTAND = register("armorstand", new ItemStack(Items.ARMOR_STAND), "Permission to interact with armor stands");
