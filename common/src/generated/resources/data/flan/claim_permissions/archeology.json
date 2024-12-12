@@ -3,12 +3,12 @@
     "Allow players to brush blocks in this claim"
   ],
   "defaultVal": false,
-  "global": true,
+  "global": false,
   "guiItem": {
     "id": "minecraft:brush",
     "tag": {
       "Damage": 0
     }
   },
-  "order": 63
+  "order": 49
 }

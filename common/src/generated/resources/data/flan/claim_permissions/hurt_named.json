@@ -1,11 +1,11 @@
 {
   "defaultDescription": [
-    "Permission to pick up xp orbs"
+    "Permission to hurt named mobs"
   ],
   "defaultVal": false,
   "global": false,
   "guiItem": {
-    "id": "minecraft:experience_bottle"
+    "id": "minecraft:name_tag"
   },
-  "order": 38
+  "order": 37
 }

@@ -8,6 +8,6 @@
   "guiItem": {
     "id": "create:cart_assembler"
   },
-  "order": 64,
+  "order": 65,
   "requiredMod": "create"
 }
