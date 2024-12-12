@@ -4,7 +4,7 @@
   },
   "defaultVal": false,
   "global": true,
-  "order": 56,
+  "order": 57,
   "defaultDescription": [
     "Prevent hostile mobspawn in claim"
   ]

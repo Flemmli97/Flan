@@ -4,7 +4,7 @@
   },
   "defaultVal": true,
   "global": false,
-  "order": 42,
+  "order": 43,
   "defaultDescription": [
     "Allow the pickup of items"
   ]

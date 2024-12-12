@@ -7,7 +7,7 @@
   },
   "defaultVal": false,
   "global": true,
-  "order": 58,
+  "order": 59,
   "defaultDescription": [
     "Allow lightning to affect claims",
     "e.g. set blocks on fire",

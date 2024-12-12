@@ -1,3 +1,11 @@
+Flan 1.10.9
+================
+- Move config init to earlier point. Fixing datapack fails when using flan commands in them
+- Add required claimblocks to chat feedback when claiming and failing
+- Fix usernames in default claim names
+- Fix nullpointer with dynmap and worldedit (or "fake worlds" stuff)
+- Add permission to prevent hurting named entities
+
 Flan 1.10.8
 ================
 - Fix claim message spam when claiming is disabled

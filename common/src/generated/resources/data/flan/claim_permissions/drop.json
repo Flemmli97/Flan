@@ -4,7 +4,7 @@
   },
   "defaultVal": true,
   "global": false,
-  "order": 41,
+  "order": 42,
   "defaultDescription": [
     "Allow the drop of items"
   ]

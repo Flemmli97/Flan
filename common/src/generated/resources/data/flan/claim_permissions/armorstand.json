@@ -4,7 +4,7 @@
   },
   "defaultVal": false,
   "global": false,
-  "order": 39,
+  "order": 40,
   "defaultDescription": [
     "Permission to interact with armor stands"
   ]

@@ -4,7 +4,7 @@
   },
   "defaultVal": false,
   "global": true,
-  "order": 49,
+  "order": 50,
   "defaultDescription": [
     "Toggle explosions in claim"
   ]

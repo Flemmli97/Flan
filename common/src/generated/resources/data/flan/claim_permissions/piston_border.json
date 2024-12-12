@@ -4,7 +4,7 @@
   },
   "defaultVal": false,
   "global": true,
-  "order": 55,
+  "order": 56,
   "defaultDescription": [
     "Toggle piston pull/push across claim borders"
   ]

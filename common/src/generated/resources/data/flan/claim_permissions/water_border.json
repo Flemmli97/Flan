@@ -4,7 +4,7 @@
   },
   "defaultVal": false,
   "global": true,
-  "order": 54,
+  "order": 55,
   "defaultDescription": [
     "Toggle water crossing claim borders"
   ]

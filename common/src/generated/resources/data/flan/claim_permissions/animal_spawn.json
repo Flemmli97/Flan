@@ -4,7 +4,7 @@
   },
   "defaultVal": false,
   "global": true,
-  "order": 57,
+  "order": 58,
   "defaultDescription": [
     "Prevent other spawn in claim"
   ]

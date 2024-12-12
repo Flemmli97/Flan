@@ -4,7 +4,7 @@
   },
   "defaultVal": true,
   "global": true,
-  "order": 59,
+  "order": 60,
   "defaultDescription": [
     "If items should be locked on death"
   ]

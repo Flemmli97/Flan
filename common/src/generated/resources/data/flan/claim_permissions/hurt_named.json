@@ -1,11 +1,11 @@
 {
   "guiItem": {
-    "id": "minecraft:oak_sign"
+    "id": "minecraft:name_tag"
   },
   "defaultVal": false,
   "global": false,
-  "order": 48,
+  "order": 37,
   "defaultDescription": [
-    "Permission to edit the enter/leave message"
+    "Permission to hurt named mobs"
   ]
 }

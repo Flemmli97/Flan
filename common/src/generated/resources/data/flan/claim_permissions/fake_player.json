@@ -7,7 +7,7 @@
   },
   "defaultVal": false,
   "global": true,
-  "order": 60,
+  "order": 61,
   "defaultDescription": [
     "Allow fakeplayers to interact in this claim",
     "Some mods fakeplayer has the users uuid",

@@ -4,7 +4,7 @@
   },
   "defaultVal": false,
   "global": true,
-  "order": 50,
+  "order": 51,
   "defaultDescription": [
     "Toggle wither breaking blocks in claim"
   ]

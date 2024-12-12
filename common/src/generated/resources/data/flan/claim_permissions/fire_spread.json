@@ -4,7 +4,7 @@
   },
   "defaultVal": false,
   "global": true,
-  "order": 53,
+  "order": 54,
   "defaultDescription": [
     "Toggle firespread in claim"
   ]
