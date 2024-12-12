@@ -13,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -143,6 +144,10 @@ public class FlanProtectionProvider implements ProtectionProvider {
             permission = BuiltinPermission.HURTPLAYER;
         else
             permission = BuiltinPermission.HURTANIMAL;
+
+        if (entity.hasCustomName() && !ClaimStorage.get(sl).getForPermissionCheck(entity.blockPosition()).canInteract(sp, BuiltinPermission.HURTNAMED, entity.blockPosition())) {
+            return false;
+        }
 
         return ClaimStorage.get(sl).getForPermissionCheck(entity.blockPosition()).canInteract(sp, permission, entity.blockPosition());
     }
