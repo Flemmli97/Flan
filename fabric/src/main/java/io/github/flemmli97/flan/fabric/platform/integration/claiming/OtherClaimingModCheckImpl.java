@@ -15,7 +15,7 @@ public class OtherClaimingModCheckImpl implements OtherClaimingModCheck {
 
     public void findConflicts(Claim claim, Set<DisplayBox> set) {
         FTBChunks.findConflicts(claim, set);
-        if (Flan.gomlServer && ConfigHandler.config.gomlReservedCheck) {
+        if (Flan.gomlServer && ConfigHandler.CONFIG.gomlReservedCheck) {
             int[] dim = claim.getDimensions();
             ClaimUtils.getClaimsInBox(claim.getWorld(), ClaimUtils.createBox(dim[0] - 1, dim[4], dim[2] - 1, dim[1] + 1, claim.getWorld().getMaxBuildHeight(), dim[3] + 1))
                     .forEach(e -> {

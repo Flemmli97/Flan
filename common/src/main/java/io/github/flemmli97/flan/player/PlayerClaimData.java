@@ -96,7 +96,7 @@ public class PlayerClaimData implements IPlayerData {
 
     public PlayerClaimData(ServerPlayer player) {
         this.player = player;
-        this.claimBlocks = ConfigHandler.config.startingBlocks;
+        this.claimBlocks = ConfigHandler.CONFIG.startingBlocks;
     }
 
     public static PlayerClaimData get(ServerPlayer player) {
@@ -128,7 +128,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     private boolean canIncrease(int blocks) {
-        return PermissionNodeHandler.INSTANCE.permBelowEqVal(this.player, PermissionNodeHandler.permClaimBlocks, blocks, ConfigHandler.config.maxClaimBlocks);
+        return PermissionNodeHandler.INSTANCE.permBelowEqVal(this.player, PermissionNodeHandler.permClaimBlocks, blocks, ConfigHandler.CONFIG.maxClaimBlocks);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class PlayerClaimData implements IPlayerData {
 
     @Override
     public boolean canUseClaimBlocks(int amount) {
-        if (ConfigHandler.config.maxClaimBlocks == -1)
+        if (ConfigHandler.CONFIG.maxClaimBlocks == -1)
             return true;
         return amount <= this.remainingClaimBlocks();
     }
@@ -161,7 +161,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public long nextClaimCooldown() {
-        return ConfigHandler.config.nextClaimCooldown <= 0 ? 0 : Math.max(0, this.player.level().getGameTime() - this.lastClaimTime - ConfigHandler.config.nextClaimCooldown);
+        return ConfigHandler.CONFIG.nextClaimCooldown <= 0 ? 0 : Math.max(0, this.player.level().getGameTime() - this.lastClaimTime - ConfigHandler.CONFIG.nextClaimCooldown);
     }
 
     public void updateLastClaim() {
@@ -258,7 +258,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public boolean editDefaultPerms(String group, ResourceLocation perm, int mode) {
-        if (PermissionManager.INSTANCE.isGlobalPermission(perm) || ConfigHandler.config.globallyDefined(this.player.serverLevel(), perm))
+        if (PermissionManager.INSTANCE.isGlobalPermission(perm) || ConfigHandler.CONFIG.globallyDefined(this.player.serverLevel(), perm))
             return false;
         if (mode > 1)
             mode = -1;
@@ -312,7 +312,7 @@ public class PlayerClaimData implements IPlayerData {
                 d.onRemoved(this.player);
             return remove;
         });
-        if (++this.lastBlockTick > ConfigHandler.config.ticksForNextBlock) {
+        if (++this.lastBlockTick > ConfigHandler.CONFIG.ticksForNextBlock) {
             this.addClaimBlocks(1);
             this.lastBlockTick = 0;
         }
@@ -332,7 +332,7 @@ public class PlayerClaimData implements IPlayerData {
         } else if (!this.claimBlockMessage) {
             this.claimBlockMessage = true;
             if (this.shouldDisplayClaimToolMessage()) {
-                this.player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("claimBlocksFormat"),
+                this.player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("claimBlocksFormat"),
                         this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks(), this.remainingClaimBlocks()), ChatFormatting.GOLD), false);
                 this.addDisplayClaim(currentClaim, EnumDisplayType.MAIN, this.player.blockPosition().getY());
             }
@@ -370,7 +370,7 @@ public class PlayerClaimData implements IPlayerData {
             } else if (this.player.position().distanceToSqr(this.trappedPos) > 0.15) {
                 this.trappedTick = -1;
                 this.trappedPos = null;
-                this.player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("trappedMove"), ChatFormatting.RED), false);
+                this.player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("trappedMove"), ChatFormatting.RED), false);
             }
         }
         this.deathPickupTick--;
@@ -380,7 +380,7 @@ public class PlayerClaimData implements IPlayerData {
 
     private boolean shouldDisplayClaimToolMessage() {
         return ItemInteractEvents.canClaimWorld(this.player.serverLevel(), this.player)
-                && ConfigHandler.config.maxClaimBlocks > 0;
+                && ConfigHandler.CONFIG.maxClaimBlocks > 0;
     }
 
     public void unlockDeathItems() {
@@ -397,7 +397,7 @@ public class PlayerClaimData implements IPlayerData {
         this.defaultGroups.clear();
         this.defaultGroups.putAll(data.defaultGroups);
         if (data.setDeathItemOwner()) {
-            String msg = ConfigHandler.langManager.get("unlockDropsCmd");
+            String msg = ConfigHandler.LANG_MANAGER.get("unlockDropsCmd");
             if (!msg.isEmpty())
                 this.player.displayClientMessage(PermHelper.simpleColoredText(String.format(msg, "/flan unlockDrops"), ChatFormatting.GOLD), false);
         }
@@ -462,21 +462,21 @@ public class PlayerClaimData implements IPlayerData {
         Map<UUID, Long> map = this.fakePlayerNotif.computeIfAbsent(claim.getClaimID(), o -> new HashMap<>());
         Long last = map.get(fakePlayer.getUUID());
         if (last == null || this.player.serverLevel().getGameTime() - 1200 > last) {
-            Component claimMsg = Component.literal(String.format(ConfigHandler.langManager.get("fakePlayerNotification1"), claim.getWorld().dimension().location().toString(), pos)).withStyle(ChatFormatting.DARK_RED);
+            Component claimMsg = Component.literal(String.format(ConfigHandler.LANG_MANAGER.get("fakePlayerNotification1"), claim.getWorld().dimension().location().toString(), pos)).withStyle(ChatFormatting.DARK_RED);
             this.player.sendSystemMessage(claimMsg);
             String cmdStr = String.format("/flan fakePlayer add %s", fakePlayer.getUUID().toString());
-            Component cmd = Component.literal(ConfigHandler.langManager.get("clickableComponent"))
+            Component cmd = Component.literal(ConfigHandler.LANG_MANAGER.get("clickableComponent"))
                     .withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)
                             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, cmdStr))
                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(cmdStr))));
-            Component msg = Component.translatable(ConfigHandler.langManager.get("fakePlayerNotification2"), cmd);
+            Component msg = Component.translatable(ConfigHandler.LANG_MANAGER.get("fakePlayerNotification2"), cmd);
             this.player.sendSystemMessage(msg);
             cmdStr = "/flan fakePlayer";
-            cmd = Component.literal(ConfigHandler.langManager.get("clickableComponent"))
+            cmd = Component.literal(ConfigHandler.LANG_MANAGER.get("clickableComponent"))
                     .withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)
                             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, cmdStr))
                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(cmdStr))));
-            msg = Component.translatable(ConfigHandler.langManager.get("fakePlayerNotification3"), cmd);
+            msg = Component.translatable(ConfigHandler.LANG_MANAGER.get("fakePlayerNotification3"), cmd);
             this.player.sendSystemMessage(msg);
             map.put(fakePlayer.getUUID(), this.player.serverLevel().getGameTime());
         }
@@ -583,7 +583,7 @@ public class PlayerClaimData implements IPlayerData {
         Flan.log("Reading grief prevention data");
         File griefPrevention = server.getWorldPath(LevelResource.ROOT).resolve("plugins/GriefPreventionData/PlayerData").toFile();
         if (!griefPrevention.exists()) {
-            src.sendSuccess(() -> PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("cantFindData"), griefPrevention.getAbsolutePath()), ChatFormatting.DARK_RED), false);
+            src.sendSuccess(() -> PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("cantFindData"), griefPrevention.getAbsolutePath()), ChatFormatting.DARK_RED), false);
             return false;
         }
         for (File f : griefPrevention.listFiles()) {
@@ -618,7 +618,7 @@ public class PlayerClaimData implements IPlayerData {
                     reader.close();
                 }
             } catch (Exception e) {
-                src.sendSuccess(() -> PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("errorFile"), f.getName(), ChatFormatting.RED)), false);
+                src.sendSuccess(() -> PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("errorFile"), f.getName(), ChatFormatting.RED)), false);
             }
         }
         return true;

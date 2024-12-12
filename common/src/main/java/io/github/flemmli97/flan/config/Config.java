@@ -11,7 +11,6 @@ import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
@@ -154,7 +153,7 @@ public class Config {
         perms.put(BuiltinPermission.LOCKITEMS, GlobalType.ALLTRUE);
     })));
 
-    public Config(MinecraftServer server) {
+    public Config() {
         File configDir = CrossPlatformStuff.INSTANCE.configPath().resolve("flan").toFile();
         try {
             if (!configDir.exists())
@@ -403,37 +402,37 @@ public class Config {
 
     public GlobalType getGlobal(ServerLevel world, ResourceLocation perm) {
         //Update permission map if not done already
-        Map<ResourceLocation, GlobalType> allMap = ConfigHandler.config.globalDefaultPerms.get("*");
+        Map<ResourceLocation, GlobalType> allMap = ConfigHandler.CONFIG.globalDefaultPerms.get("*");
         if (allMap != null) {
             world.getServer().getAllLevels().forEach(w -> {
-                Map<ResourceLocation, GlobalType> wMap = ConfigHandler.config.globalDefaultPerms.getOrDefault(w.dimension().location().toString(), new HashMap<>());
+                Map<ResourceLocation, GlobalType> wMap = ConfigHandler.CONFIG.globalDefaultPerms.getOrDefault(w.dimension().location().toString(), new HashMap<>());
                 allMap.forEach((key, value) -> {
                     if (!wMap.containsKey(key))
                         wMap.put(key, value);
                 });
-                ConfigHandler.config.globalDefaultPerms.put(w.dimension().location().toString(), wMap);
+                ConfigHandler.CONFIG.globalDefaultPerms.put(w.dimension().location().toString(), wMap);
             });
-            ConfigHandler.config.globalDefaultPerms.remove("*");
+            ConfigHandler.CONFIG.globalDefaultPerms.remove("*");
         }
 
-        Map<ResourceLocation, GlobalType> permMap = ConfigHandler.config.globalDefaultPerms.get(world.dimension().location().toString());
+        Map<ResourceLocation, GlobalType> permMap = ConfigHandler.CONFIG.globalDefaultPerms.get(world.dimension().location().toString());
         return permMap == null ? GlobalType.NONE : permMap.getOrDefault(perm, GlobalType.NONE);
     }
 
     public Stream<Map.Entry<ResourceLocation, GlobalType>> getGloballyDefinedVals(ServerLevel world) {
-        Map<ResourceLocation, GlobalType> allMap = ConfigHandler.config.globalDefaultPerms.get("*");
+        Map<ResourceLocation, GlobalType> allMap = ConfigHandler.CONFIG.globalDefaultPerms.get("*");
         if (allMap != null) {
             world.getServer().getAllLevels().forEach(w -> {
-                Map<ResourceLocation, GlobalType> wMap = ConfigHandler.config.globalDefaultPerms.getOrDefault(w.dimension().location().toString(), new HashMap<>());
+                Map<ResourceLocation, GlobalType> wMap = ConfigHandler.CONFIG.globalDefaultPerms.getOrDefault(w.dimension().location().toString(), new HashMap<>());
                 allMap.forEach((key, value) -> {
                     if (!wMap.containsKey(key))
                         wMap.put(key, value);
                 });
-                ConfigHandler.config.globalDefaultPerms.put(w.dimension().location().toString(), wMap);
+                ConfigHandler.CONFIG.globalDefaultPerms.put(w.dimension().location().toString(), wMap);
             });
-            ConfigHandler.config.globalDefaultPerms.remove("*");
+            ConfigHandler.CONFIG.globalDefaultPerms.remove("*");
         }
-        Map<ResourceLocation, GlobalType> permMap = ConfigHandler.config.globalDefaultPerms.get(world.dimension().location().toString());
+        Map<ResourceLocation, GlobalType> permMap = ConfigHandler.CONFIG.globalDefaultPerms.get(world.dimension().location().toString());
         return permMap == null ? Stream.empty() : permMap.entrySet().stream().filter(e -> e.getValue().canModify());
     }
 

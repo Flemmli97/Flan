@@ -19,7 +19,7 @@ public class LogoutTracker {
     }
 
     public void track(UUID player) {
-        if (ConfigHandler.config.offlineProtectActivation == -1)
+        if (ConfigHandler.CONFIG.offlineProtectActivation == -1)
             return;
         this.trackerUUID.add(player);
         this.tracker.add(new LogoutTicket(player));
@@ -40,7 +40,7 @@ public class LogoutTracker {
 
     private static class LogoutTicket {
         private final UUID uuid;
-        private int time = ConfigHandler.config.offlineProtectActivation;
+        private int time = ConfigHandler.CONFIG.offlineProtectActivation;
 
         public LogoutTicket(UUID player) {
             this.uuid = player;

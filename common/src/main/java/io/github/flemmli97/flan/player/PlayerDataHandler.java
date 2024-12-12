@@ -51,7 +51,7 @@ public class PlayerDataHandler {
     }
 
     public static void deleteInactivePlayerData(MinecraftServer server) {
-        if (ConfigHandler.config.deletePlayerFile && inActivePlayerData != null) {
+        if (ConfigHandler.CONFIG.deletePlayerFile && inActivePlayerData != null) {
             inActivePlayerData.forEach((uuid, data) -> data.deleteFile());
             inActivePlayerData = null;
         }

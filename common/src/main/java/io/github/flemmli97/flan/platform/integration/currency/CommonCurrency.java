@@ -21,7 +21,7 @@ public class CommonCurrency {
         if (Flan.impactor) {
             PlayerClaimData data = PlayerClaimData.get(player);
             if (data.getAdditionalClaims() - Math.max(0, data.usedClaimBlocks() - data.getClaimBlocks()) < blocks) {
-                message.accept(PermHelper.simpleColoredText(ConfigHandler.langManager.get("sellFail"), ChatFormatting.DARK_RED));
+                message.accept(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("sellFail"), ChatFormatting.DARK_RED));
                 return 0;
             }
             CompletableFuture<Account> future = EconomyService.instance().account(player.getUUID());
@@ -29,7 +29,7 @@ public class CommonCurrency {
                 BigDecimal price = BigDecimal.valueOf(blocks * value);
                 acc.depositAsync(price);
                 data.setAdditionalClaims(data.getAdditionalClaims() - blocks);
-                message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("sellSuccess"), blocks, price), ChatFormatting.GOLD));
+                message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("sellSuccess"), blocks, price), ChatFormatting.GOLD));
             });
             return 1;
         }
@@ -46,7 +46,7 @@ public class CommonCurrency {
                     acc.withdrawAsync(price);
                     PlayerClaimData data = PlayerClaimData.get(player);
                     data.setAdditionalClaims(data.getAdditionalClaims() + blocks);
-                    message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.langManager.get("buySuccess"), blocks, price), ChatFormatting.GOLD));
+                    message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("buySuccess"), blocks, price), ChatFormatting.GOLD));
                     return 1;
                 }
                 return 0;

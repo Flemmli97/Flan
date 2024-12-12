@@ -107,7 +107,7 @@ public class WorldEvents {
 
     @SuppressWarnings("deprecation")
     public static void onStructureGen(StructureStart structureStart, StructureManager structureManager) {
-        if (!ConfigHandler.config.autoClaimStructures)
+        if (!ConfigHandler.CONFIG.autoClaimStructures)
             return;
         LevelAccessor acc = ((StructureManagerAccessor) structureManager).getLevel();
         ServerLevel level = null;

@@ -88,7 +88,7 @@ public class PlayerEvents {
                 pos.set(pos.getX(), pos.getY() + y + 1, pos.getZ());
             }
             if (range > 0 && perm != null && !ClaimStorage.get(serverPlayer.serverLevel()).canInteract(pos, range, serverPlayer, perm, false)) {
-                serverPlayer.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.langManager.get("tooCloseClaim"), ChatFormatting.DARK_RED), true);
+                serverPlayer.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("tooCloseClaim"), ChatFormatting.DARK_RED), true);
                 return true;
             }
         }

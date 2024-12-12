@@ -22,20 +22,14 @@ public class ConfigHandler {
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
-    public static Config config;
-    public static LangManager langManager;
+    public static final Config CONFIG = new Config();
+    public static final LangManager LANG_MANAGER = new LangManager();
     private static final Map<ResourceKey<Level>, Path> CLAIM_SAVE_PATH = new HashMap<>();
     private static Path playerSavePath;
 
-    public static void serverLoad(MinecraftServer server) {
-        config = new Config(server);
-        langManager = new LangManager();
-        reloadConfigs(server);
-    }
-
     public static void reloadConfigs(MinecraftServer server) {
-        config.load();
-        langManager.reload(config.lang);
+        CONFIG.load();
+        LANG_MANAGER.reload(CONFIG.lang);
         ObjectToPermissionMap.reload(server);
     }
 
@@ -50,11 +44,11 @@ public class ConfigHandler {
     }
 
     public static boolean isClaimingTool(ItemStack stack) {
-        return stack.getItem() == ConfigHandler.config.claimingItem && partialyMatchNBT(ConfigHandler.config.claimingNBT, stack.getTag());
+        return stack.getItem() == ConfigHandler.CONFIG.claimingItem && partialyMatchNBT(ConfigHandler.CONFIG.claimingNBT, stack.getTag());
     }
 
     public static boolean isInspectionTool(ItemStack stack) {
-        return stack.getItem() == ConfigHandler.config.inspectionItem && partialyMatchNBT(ConfigHandler.config.inspectionNBT, stack.getTag());
+        return stack.getItem() == ConfigHandler.CONFIG.inspectionItem && partialyMatchNBT(ConfigHandler.CONFIG.inspectionNBT, stack.getTag());
     }
 
     private static boolean partialyMatchNBT(CompoundTag config, CompoundTag second) {

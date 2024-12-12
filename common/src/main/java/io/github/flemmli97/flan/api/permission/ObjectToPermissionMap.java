@@ -79,10 +79,10 @@ public class ObjectToPermissionMap {
         for (Item item : CrossPlatformStuff.INSTANCE.registryItems().getIterator()) {
             itemPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(item)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> itemToPermission.put(item, sub.get()));
         }
-        process(ConfigHandler.config.itemPermission, BuiltInRegistries.ITEM, itemToPermission);
-        process(ConfigHandler.config.blockPermission, BuiltInRegistries.BLOCK, blockToPermission);
-        process(ConfigHandler.config.entityPermission, BuiltInRegistries.ENTITY_TYPE, entityToPermission);
-        process(ConfigHandler.config.leftClickBlockPermission, BuiltInRegistries.BLOCK, leftClickBlockPermission);
+        process(ConfigHandler.CONFIG.itemPermission, BuiltInRegistries.ITEM, itemToPermission);
+        process(ConfigHandler.CONFIG.blockPermission, BuiltInRegistries.BLOCK, blockToPermission);
+        process(ConfigHandler.CONFIG.entityPermission, BuiltInRegistries.ENTITY_TYPE, entityToPermission);
+        process(ConfigHandler.CONFIG.leftClickBlockPermission, BuiltInRegistries.BLOCK, leftClickBlockPermission);
     }
 
     private static <T> void process(List<String> list, Registry<T> registry, Map<T, ResourceLocation> map) {

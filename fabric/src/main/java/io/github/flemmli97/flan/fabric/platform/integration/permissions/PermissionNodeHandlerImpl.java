@@ -14,7 +14,7 @@ public class PermissionNodeHandlerImpl implements PermissionNodeHandler {
     public boolean perm(CommandSourceStack src, String perm, boolean adminCmd) {
         if (Flan.permissionAPI) {
             if (adminCmd)
-                return Permissions.check(src, perm, ConfigHandler.config.permissionLevel);
+                return Permissions.check(src, perm, ConfigHandler.CONFIG.permissionLevel);
             return Permissions.check(src, perm, true);
         }
         return PermissionNodeHandler.super.perm(src, perm, adminCmd);
@@ -24,7 +24,7 @@ public class PermissionNodeHandlerImpl implements PermissionNodeHandler {
     public boolean perm(ServerPlayer src, String perm, boolean adminCmd) {
         if (Flan.permissionAPI) {
             if (adminCmd)
-                return Permissions.check(src, perm, ConfigHandler.config.permissionLevel);
+                return Permissions.check(src, perm, ConfigHandler.CONFIG.permissionLevel);
             return Permissions.check(src, perm, true);
         }
         return PermissionNodeHandler.super.perm(src, perm, adminCmd);

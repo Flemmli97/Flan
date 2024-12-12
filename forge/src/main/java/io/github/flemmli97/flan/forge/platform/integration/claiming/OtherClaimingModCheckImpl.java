@@ -25,7 +25,7 @@ public class OtherClaimingModCheckImpl implements OtherClaimingModCheck {
 
     public void findConflicts(Claim claim, Set<DisplayBox> set) {
         FTBChunks.findConflicts(claim, set);
-        if (Flan.mineColonies && ConfigHandler.config.mineColoniesCheck) {
+        if (Flan.mineColonies && ConfigHandler.CONFIG.mineColoniesCheck) {
             ServerLevel level = claim.getWorld();
             int[] chunks = ClaimStorage.getChunkPos(claim);
             Map<IColony, List<ChunkPos>> map = new HashMap<>();

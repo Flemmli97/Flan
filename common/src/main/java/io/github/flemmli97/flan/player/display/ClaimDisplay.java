@@ -47,7 +47,7 @@ public class ClaimDisplay {
 
     public ClaimDisplay(DisplayBox display, Level level, EnumDisplayType type, int y) {
         this.display = display;
-        this.displayTime = ConfigHandler.config.claimDisplayTime;
+        this.displayTime = ConfigHandler.CONFIG.claimDisplayTime;
         this.prevDims = display.box();
         this.type = type;
         this.height = Math.max(1 + level.getMinBuildHeight(), y);
@@ -86,7 +86,7 @@ public class ClaimDisplay {
             this.corners = this.calculateCorners(player.serverLevel(), dims, chunkCache);
             this.initialDisplay = false;
         }
-        if (ConfigHandler.config.particleDisplay) {
+        if (ConfigHandler.CONFIG.particleDisplay) {
             for (int[] pos : this.corners) {
                 if (pos[1] != pos[2])
                     player.connection.send(new ClientboundLevelParticlesPacket(this.corner, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
@@ -116,7 +116,7 @@ public class ClaimDisplay {
     }
 
     public void onRemoved(ServerPlayer player) {
-        if (!ConfigHandler.config.particleDisplay) {
+        if (!ConfigHandler.CONFIG.particleDisplay) {
             if (this.corners != null)
                 for (int[] pos : this.corners) {
                     BlockPos blockPos = new BlockPos(pos[0], pos[1] != pos[2] ? pos[2] : pos[1], pos[3]);
