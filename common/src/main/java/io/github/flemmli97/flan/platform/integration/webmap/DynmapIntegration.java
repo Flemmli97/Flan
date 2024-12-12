@@ -15,14 +15,14 @@ import java.util.Optional;
 public class DynmapIntegration {
 
     private static MarkerSet markerSet;
-    private static final String markerID = "flan.claims", markerLabel = "Claims";
+    private static final String MARKER_ID = "flan.claims", MARKER_LABEL = "Claims";
 
     public static void reg() {
         DynmapCommonAPIListener.register(new DynmapCommonAPIListener() {
             @Override
             public void apiEnabled(DynmapCommonAPI dynmapCommonAPI) {
                 MarkerAPI markerAPI = dynmapCommonAPI.getMarkerAPI();
-                markerSet = markerAPI.createMarkerSet(markerID, markerLabel, dynmapCommonAPI.getMarkerAPI().getMarkerIcons(), false);
+                markerSet = markerAPI.createMarkerSet(MARKER_ID, MARKER_LABEL, dynmapCommonAPI.getMarkerAPI().getMarkerIcons(), false);
                 WebmapCalls.dynmapLoaded = true;
             }
         });
@@ -33,9 +33,11 @@ public class DynmapIntegration {
             return;
         int[] dim = claim.getDimensions();
         AreaMarker marker = markerSet.createAreaMarker(claim.getClaimID().toString(), claimLabel(claim), true, getWorldName(claim.getWorld()), new double[]{dim[0], dim[1]}, new double[]{dim[2], dim[3]}, false);
-        marker.setLineStyle(3, 0.8, lineColor(claim.isAdminClaim()));
-        marker.setFillStyle(0.2, fillColor(claim.isAdminClaim()));
-        marker.setRangeY(dim[4], claim.getMaxY());
+        if (marker != null) {
+            marker.setLineStyle(3, 0.8, lineColor(claim.isAdminClaim()));
+            marker.setFillStyle(0.2, fillColor(claim.isAdminClaim()));
+            marker.setRangeY(dim[4], claim.getMaxY());
+        }
     }
 
     static void removeMarker(Claim claim) {
@@ -49,16 +51,19 @@ public class DynmapIntegration {
     static void changeClaimName(Claim claim) {
         if (markerSet == null)
             return;
-        markerSet.findAreaMarker(claim.getClaimID().toString())
-                .setLabel(claimLabel(claim));
+        AreaMarker marker = markerSet.findAreaMarker(claim.getClaimID().toString());
+        if (marker != null)
+            marker.setLabel(claimLabel(claim));
     }
 
     static void changeClaimOwner(Claim claim) {
         if (markerSet == null)
             return;
-        if (claim.getClaimName() == null || claim.getClaimName().isEmpty())
-            markerSet.findAreaMarker(claim.getClaimID().toString())
-                    .setLabel(claimLabel(claim));
+        if (claim.getClaimName() == null || claim.getClaimName().isEmpty()) {
+            AreaMarker marker = markerSet.findAreaMarker(claim.getClaimID().toString());
+            if (marker != null)
+                marker.setLabel(claimLabel(claim));
+        }
     }
 
     private static String getWorldName(Level level) {
