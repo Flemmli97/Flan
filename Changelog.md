@@ -1,3 +1,7 @@
+Flan 1.10.10
+================
+- Fix nullpointer with claim name and admin claims
+
 Flan 1.10.9
 ================
 - Move config init to earlier point. Fixing datapack fails when using flan commands in them

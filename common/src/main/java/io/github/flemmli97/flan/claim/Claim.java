@@ -186,7 +186,7 @@ public class Claim implements IPermissionContainer {
     }
 
     public String getClaimName() {
-        String ownerName = this.world.getServer().getProfileCache().get(this.owner).map(GameProfile::getName).orElse("<UNKNOWN>");
+        String ownerName = this.isAdminClaim() ? "Admin" : this.world.getServer().getProfileCache().get(this.owner).map(GameProfile::getName).orElse("<UNKNOWN>");
         return String.format(this.claimName, ownerName);
     }
 
