@@ -260,6 +260,9 @@ public class LangManager {
         this.defaultTranslationArray.put("command.listAdminClaims", new String[]{"listAdminClaim", "Lists all admin claims in the current world."});
         this.defaultTranslationArray.put("command.adminDelete", new String[]{"adminDelete [all <player>]", "Force deletes the current claim or deletes all claims from the specified player."});
         this.defaultTranslationArray.put("command.giveClaimBlocks", new String[]{"giveClaimBlocks <amount>", "Gives a player additional claim blocks."});
+
+        this.defaultTranslation.put("command.confirmation.confirmMessage", "Run the command '/flan confirm' if you are sure you want to execute this command.");
+        this.defaultTranslation.put("command.confirmation.cancelled", "Your command has not been sent.");
     }
 
     private String capitalize(String s) {

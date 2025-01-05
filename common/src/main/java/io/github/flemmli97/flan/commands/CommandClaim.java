@@ -54,6 +54,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.mrliam2614.flan.commands.CommandCallback;
+import net.mrliam2614.flan.commands.CommandConfirmation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,6 +69,9 @@ import java.util.stream.Stream;
 public class CommandClaim {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, boolean dedicated) {
+        //MrLiam2614 - Register Command Confirmation
+        new CommandConfirmation();
+
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("flan")
                 .then(Commands.literal("reload").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdReload, true)).executes(CommandClaim::reloadConfig))
                 .then(Commands.literal("add").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.claimCreate))
@@ -198,7 +203,8 @@ public class CommandClaim {
                                                 .executes(src -> CommandClaim.removeClaimListEntries(src, CustomInteractListScreenHandler.Type.ENTITYATTACK))))
                                 .then(Commands.literal(CustomInteractListScreenHandler.Type.ENTITYUSE.commandKey)
                                         .then(Commands.argument("entry", ResourceOrTagKeyArgument.resourceOrTagKey(Registries.ENTITY_TYPE)).suggests((src, b) -> CommandHelpers.claimEntryListSuggestion(src, b, CustomInteractListScreenHandler.Type.ENTITYUSE))
-                                                .executes(src -> CommandClaim.removeClaimListEntries(src, CustomInteractListScreenHandler.Type.ENTITYUSE)))))
+                                                .executes(src -> CommandClaim.removeClaimListEntries(src, CustomInteractListScreenHandler.Type.ENTITYUSE))))))
+                .then(Commands.literal("confirm").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdConfirm)).executes(CommandClaim::confirmCommand)
                 );
         builder.then(Commands.literal("help").executes(ctx -> CommandHelp.helpMessage(ctx, 0, builder.getArguments()))
                 .then(Commands.argument("page", IntegerArgumentType.integer()).executes(ctx -> CommandHelp.helpMessage(ctx, builder.getArguments())))
@@ -581,15 +587,21 @@ public class CommandClaim {
     }
 
     private static int adminDelete(CommandContext<CommandSourceStack> context) {
-        CommandSourceStack src = context.getSource();
-        ClaimStorage storage = ClaimStorage.get(src.getLevel());
-        Claim claim = storage.getClaimAt(BlockPos.containing(src.getPosition()));
-        if (claim == null) {
-            src.sendSuccess(() -> PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noClaim"), ChatFormatting.RED), false);
-            return 0;
-        }
-        storage.deleteClaim(claim, true, EnumEditMode.DEFAULT, src.getLevel());
-        src.sendSuccess(() -> PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("deleteClaim"), ChatFormatting.RED), true);
+        CommandConfirmation.INSTANCE.requestConfirmation(context, new CommandCallback() {
+            @Override
+            public int onConfirm(CommandContext<CommandSourceStack> context) {
+                CommandSourceStack src = context.getSource();
+                ClaimStorage storage = ClaimStorage.get(src.getLevel());
+                Claim claim = storage.getClaimAt(BlockPos.containing(src.getPosition()));
+                if (claim == null) {
+                    src.sendSuccess(() -> PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("noClaim"), ChatFormatting.RED), false);
+                    return 0;
+                }
+                storage.deleteClaim(claim, true, EnumEditMode.DEFAULT, src.getLevel());
+                src.sendSuccess(() -> PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("deleteClaim"), ChatFormatting.RED), true);
+                return Command.SINGLE_SUCCESS;
+            }
+        });
         return Command.SINGLE_SUCCESS;
     }
 
@@ -1067,5 +1079,12 @@ public class CommandClaim {
                 list.addAllowedItem(Either.left(entry));
         });
         return value.asPrintable();
+    }
+
+
+    /* Confirm Command by MrLiam2614 */
+    private static int confirmCommand(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        return CommandConfirmation.INSTANCE.confirmCommand(context);
     }
 }

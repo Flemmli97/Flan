@@ -55,6 +55,8 @@ public interface PermissionNodeHandler {
     String permClaimBlocksCap = "flan.claim.blocks.cap";
     String permClaimBlocksBonus = "flan.claim.blocks.bonus";
 
+    String cmdConfirm = "flan.command.confirm";
+
     PermissionNodeHandler INSTANCE = Flan.getPlatformInstance(PermissionNodeHandler.class,
             "io.github.flemmli97.flan.fabric.platform.integration.permissions.PermissionNodeHandlerImpl",
             "io.github.flemmli97.flan.forge.platform.integration.permissions.PermissionNodeHandlerImpl");

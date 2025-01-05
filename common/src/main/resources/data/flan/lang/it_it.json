@@ -269,5 +269,7 @@
   "command.giveClaimBlocks": [
     "giveClaimBlocks <quantità>",
     "Fornisce a un giocatore ulteriori blocchi di claim."
-  ]
+  ],
+  "command.confirmation.confirmMessage": "Run the command '/flan confirm' if you are sure you want to execute this command.",
+  "command.confirmation.cancelled": "Your command has not been sent."
 }
