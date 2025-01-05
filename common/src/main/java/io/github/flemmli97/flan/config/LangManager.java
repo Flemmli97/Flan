@@ -224,6 +224,8 @@ public class LangManager {
         this.defaultTranslation.put("removeIgnoreEntry", "Removed %1$s from the claims ignore list %2$s");
 
         this.defaultTranslation.put("wiki", "For more info check out the wiki:");
+        this.defaultTranslation.put("confirmMessage", "Run the command '/flan confirm' if you are sure you want to execute this command.");
+        this.defaultTranslation.put("confirmCancelled", "Your command has not been sent.");
 
         for (ClaimPermission perm : PermissionManager.INSTANCE.getAll()) {
             this.defaultTranslation.put(perm.translationKey(), this.capitalize(perm.getId().getPath()));
@@ -260,9 +262,7 @@ public class LangManager {
         this.defaultTranslationArray.put("command.listAdminClaims", new String[]{"listAdminClaim", "Lists all admin claims in the current world."});
         this.defaultTranslationArray.put("command.adminDelete", new String[]{"adminDelete [all <player>]", "Force deletes the current claim or deletes all claims from the specified player."});
         this.defaultTranslationArray.put("command.giveClaimBlocks", new String[]{"giveClaimBlocks <amount>", "Gives a player additional claim blocks."});
-
-        this.defaultTranslation.put("command.confirmation.confirmMessage", "Run the command '/flan confirm' if you are sure you want to execute this command.");
-        this.defaultTranslation.put("command.confirmation.cancelled", "Your command has not been sent.");
+        this.defaultTranslationArray.put("command.confirm", new String[]{"confirm", "Confirm a command to send it."});
     }
 
     private String capitalize(String s) {

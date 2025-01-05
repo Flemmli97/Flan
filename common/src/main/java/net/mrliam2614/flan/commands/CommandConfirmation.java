@@ -37,7 +37,7 @@ public class CommandConfirmation {
         }
         UUID uuid = context.getSource().getPlayer().getUUID();
         awaitingConfirmation.put(uuid, commandCallback);
-        context.getSource().sendSuccess(() -> PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("command.confirmation.confirmMessage"), ChatFormatting.AQUA), true);
+        context.getSource().sendSuccess(() -> PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("confirmMessage"), ChatFormatting.AQUA), true);
     }
 
     /**

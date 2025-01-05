@@ -204,7 +204,7 @@ public class CommandClaim {
                                 .then(Commands.literal(CustomInteractListScreenHandler.Type.ENTITYUSE.commandKey)
                                         .then(Commands.argument("entry", ResourceOrTagKeyArgument.resourceOrTagKey(Registries.ENTITY_TYPE)).suggests((src, b) -> CommandHelpers.claimEntryListSuggestion(src, b, CustomInteractListScreenHandler.Type.ENTITYUSE))
                                                 .executes(src -> CommandClaim.removeClaimListEntries(src, CustomInteractListScreenHandler.Type.ENTITYUSE))))))
-                .then(Commands.literal("confirm").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdConfirm)).executes(CommandClaim::confirmCommand)
+                .then(Commands.literal("confirm").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdConfirm, true)).executes(CommandClaim::confirmCommand)
                 );
         builder.then(Commands.literal("help").executes(ctx -> CommandHelp.helpMessage(ctx, 0, builder.getArguments()))
                 .then(Commands.argument("page", IntegerArgumentType.integer()).executes(ctx -> CommandHelp.helpMessage(ctx, builder.getArguments())))

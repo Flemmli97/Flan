@@ -36,7 +36,7 @@ public interface CommandCallback {
     default void onDeny(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() ->
                 PermHelper.simpleColoredText(
-                        ConfigHandler.LANG_MANAGER.get("command.confirmation.cancelled"),
+                        ConfigHandler.LANG_MANAGER.get("confirmCancelled"),
                         ChatFormatting.RED
                 ), true
         );

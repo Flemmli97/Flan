@@ -151,6 +151,8 @@
   "setLeaveMessage": "Imposta il titolo di uscita a %1$s",
   "setLeaveSubMessage": "Imposta il sottotitolo di uscita a %1$s",
   "wiki": "Per più informazioni controlla la wiki:",
+  "confirmMessage": "Run the command '/flan confirm' if you are sure you want to execute this command.",
+  "confirmCancelled": "Your command has not been sent.",
   "command.help": [
     "help <pagina> | (cmd <comando>)",
     "Mostra tutti i comandi o le info disponibili per il comandi fornito."
@@ -269,7 +271,5 @@
   "command.giveClaimBlocks": [
     "giveClaimBlocks <quantità>",
     "Fornisce a un giocatore ulteriori blocchi di claim."
-  ],
-  "command.confirmation.confirmMessage": "Run the command '/flan confirm' if you are sure you want to execute this command.",
-  "command.confirmation.cancelled": "Your command has not been sent."
+  ]
 }
