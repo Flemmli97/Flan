@@ -1,14 +1,15 @@
 package io.github.flemmli97.flan.claim;
 
-import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -31,7 +32,7 @@ public class PermHelper {
     }
 
     public static void noClaimMessage(ServerPlayer player) {
-        player.displayClientMessage(new TextComponent(ConfigHandler.LANG_MANAGER.get("noClaim")).setStyle(Style.EMPTY.applyFormat(ChatFormatting.DARK_RED)), false);
+        player.displayClientMessage(translatedText("flan.noClaim", ChatFormatting.DARK_RED), false);
     }
 
     public static Consumer<Optional<Boolean>> genericNoPermMessage(ServerPlayer player) {
@@ -39,11 +40,20 @@ public class PermHelper {
             if (!b.isPresent())
                 PermHelper.noClaimMessage(player);
             else if (!b.get())
-                player.displayClientMessage(simpleColoredText(ConfigHandler.LANG_MANAGER.get("noPermission"), ChatFormatting.DARK_RED), false);
+                player.displayClientMessage(translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
         });
     }
 
-    public static MutableComponent simpleColoredText(String text, ChatFormatting... formatting) {
-        return new TextComponent(text).setStyle(formatting != null ? Style.EMPTY.applyFormats(formatting) : Style.EMPTY);
+    public static MutableComponent translatedText(String key, Object... compArgs) {
+        List<ChatFormatting> formattings = new ArrayList<>();
+        List<Object> args = new ArrayList<>();
+        for (Object obj : compArgs) {
+            if (obj instanceof ChatFormatting formatting)
+                formattings.add(formatting);
+            else
+                args.add(obj);
+        }
+        return new TranslatableComponent(key,
+                args.toArray()).setStyle(Style.EMPTY.applyFormats(formattings.toArray(ChatFormatting[]::new)));
     }
 }

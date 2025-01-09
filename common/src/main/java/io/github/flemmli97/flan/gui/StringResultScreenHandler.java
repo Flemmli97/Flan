@@ -1,9 +1,9 @@
 package io.github.flemmli97.flan.gui;
 
 import io.github.flemmli97.flan.claim.PermHelper;
-import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.mixin.AbstractContainerAccessor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSetExperiencePacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -35,10 +35,10 @@ public class StringResultScreenHandler extends AnvilMenu {
     private StringResultScreenHandler(int syncId, Inventory playerInventory, Consumer<String> cons, Runnable ret) {
         super(syncId, playerInventory);
         ItemStack stack = new ItemStack(Items.PAPER);
-        stack.setHoverName(PermHelper.simpleColoredText(""));
+        stack.setHoverName(PermHelper.translatedText(""));
         this.inputSlots.setItem(0, stack);
         ItemStack out = new ItemStack(Items.BOOK);
-        out.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("stringScreenReturn")));
+        out.setHoverName(ServerScreenHelper.coloredGuiText("flan.stringScreenReturn"));
         this.resultSlots.setItem(0, out);
         this.cons = cons;
         this.ret = ret;
@@ -53,7 +53,7 @@ public class StringResultScreenHandler extends AnvilMenu {
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.simpleColoredText("");
+                return PermHelper.translatedText("");
             }
         };
         player.openMenu(fac);
@@ -79,9 +79,9 @@ public class StringResultScreenHandler extends AnvilMenu {
         if (i == 0)
             this.ret.run();
         else if (i == 2) {
-            String s = slot.getItem().hasCustomHoverName() ? slot.getItem().getHoverName().getContents() : "";
-            if (!s.isEmpty() && !s.equals(ConfigHandler.LANG_MANAGER.get("stringScreenReturn"))) {
-                this.cons.accept(s);
+            Component s = slot.getItem().hasCustomHoverName() ? slot.getItem().getHoverName() : null;
+            if (s instanceof TextComponent text) {
+                this.cons.accept(text.getText());
             }
             player.connection.send(new ClientboundSetExperiencePacket(player.experienceProgress, player.totalExperience, player.experienceLevel));
         }
@@ -96,9 +96,10 @@ public class StringResultScreenHandler extends AnvilMenu {
             this.ret.run();
         else if (index == 2) {
             Slot slot = this.slots.get(index);
-            String s = slot.getItem().hasCustomHoverName() ? slot.getItem().getHoverName().getContents() : "";
-            if (!s.isEmpty() && !s.equals(ConfigHandler.LANG_MANAGER.get("stringScreenReturn")))
-                this.cons.accept(s);
+            Component s = slot.getItem().hasCustomHoverName() ? slot.getItem().getHoverName() : null;
+            if (s instanceof TextComponent text) {
+                this.cons.accept(text.getText());
+            }
             ((ServerPlayer) player).connection.send(new ClientboundSetExperiencePacket(player.experienceProgress, player.totalExperience, player.experienceLevel));
         }
         this.broadcastChanges();

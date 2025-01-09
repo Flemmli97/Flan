@@ -9,6 +9,7 @@ configurations {
 }
 
 repositories {
+    mavenLocal()
     maven { url 'https://jitpack.io' }
     maven {
         name = "FTB"
@@ -43,6 +44,8 @@ dependencies {
     modCompileOnly "io.github.fabricators_of_create:Porting-Lib:${porting_lib}+${minecraft_version}"
     modCompileOnly create_fabric
     modCompileOnly "com.tterrag.registrate_fabric:Registrate:${registrate}"
+
+    modImplementation "io.github.flemmli97:lingua_bib:1.18.2-1.0.0-common"
 }
 
 sourceSets.main.resources {

@@ -5,6 +5,7 @@ ext {
 apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-v1/fabric.gradle"
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven {
         name = 'Fabric-Permission-API'
@@ -75,6 +76,7 @@ dependencies {
     //modRuntimeOnly create_fabric
     //modRuntimeOnly "com.jozufozu.flywheel:flywheel-fabric-${minecraft_version}:${flywheel}"
     //modRuntimeOnly "com.tterrag.registrate_fabric:Registrate:${registrate}"
+    modImplementation include("io.github.flemmli97:lingua_bib:1.18.2-1.0.0-fabric")
 }
 
 task apiJar(type: Jar, dependsOn: classes) {

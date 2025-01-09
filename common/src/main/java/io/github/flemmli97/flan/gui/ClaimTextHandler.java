@@ -3,11 +3,11 @@ package io.github.flemmli97.flan.gui;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.PermHelper;
-import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -43,7 +43,7 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.simpleColoredText(claim.parentClaim() != null ? ConfigHandler.LANG_MANAGER.get("screenTitleEditorSub") : ConfigHandler.LANG_MANAGER.get("screenTitleEditor"));
+                return PermHelper.translatedText(claim.parentClaim() != null ? "flan.screenTitleEditorSub" : "flan.screenTitleEditor");
             }
         };
         player.openMenu(fac);
@@ -55,15 +55,15 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
             switch (i) {
                 case 0 -> {
                     ItemStack close = new ItemStack(Items.TNT);
-                    close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenBack"), ChatFormatting.DARK_RED));
+                    close.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
                     inv.updateStack(i, close);
                 }
                 case 2 -> {
                     ItemStack stack = new ItemStack(Items.OAK_SIGN);
-                    stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenEnterText"), ChatFormatting.GOLD));
+                    stack.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenEnterText", ChatFormatting.GOLD));
                     List<Component> lore = new ArrayList<>();
-                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenTextJson"), ChatFormatting.GOLD));
-                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenDelete"), ChatFormatting.DARK_RED));
+                    lore.add(ServerScreenHelper.coloredGuiText("flan.screenTextJson", ChatFormatting.GOLD));
+                    lore.add(ServerScreenHelper.coloredGuiText("flan.screenDelete", ChatFormatting.DARK_RED));
                     if (claim.enterTitle != null)
                         lore.add(claim.enterTitle);
                     ServerScreenHelper.addLore(stack, lore);
@@ -71,10 +71,10 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                 }
                 case 3 -> {
                     ItemStack stack2 = new ItemStack(Items.OAK_SIGN);
-                    stack2.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenEnterSubText"), ChatFormatting.GOLD));
+                    stack2.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenEnterSubText", ChatFormatting.GOLD));
                     List<Component> lore = new ArrayList<>();
-                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenTextJson"), ChatFormatting.GOLD));
-                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenDelete"), ChatFormatting.DARK_RED));
+                    lore.add(ServerScreenHelper.coloredGuiText("flan.screenTextJson", ChatFormatting.GOLD));
+                    lore.add(ServerScreenHelper.coloredGuiText("flan.screenDelete", ChatFormatting.DARK_RED));
                     if (claim.enterSubtitle != null)
                         lore.add(claim.enterSubtitle);
                     ServerScreenHelper.addLore(stack2, lore);
@@ -82,10 +82,10 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                 }
                 case 4 -> {
                     ItemStack stack3 = new ItemStack(Items.OAK_SIGN);
-                    stack3.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenLeaveText"), ChatFormatting.GOLD));
+                    stack3.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenLeaveText", ChatFormatting.GOLD));
                     List<Component> lore = new ArrayList<>();
-                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenTextJson"), ChatFormatting.GOLD));
-                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenDelete"), ChatFormatting.DARK_RED));
+                    lore.add(ServerScreenHelper.coloredGuiText("flan.screenTextJson", ChatFormatting.GOLD));
+                    lore.add(ServerScreenHelper.coloredGuiText("flan.screenDelete", ChatFormatting.DARK_RED));
                     if (claim.leaveTitle != null)
                         lore.add(claim.leaveTitle);
                     ServerScreenHelper.addLore(stack3, lore);
@@ -93,10 +93,10 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                 }
                 case 5 -> {
                     ItemStack stack4 = new ItemStack(Items.OAK_SIGN);
-                    stack4.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenLeaveSubText"), ChatFormatting.GOLD));
+                    stack4.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenLeaveSubText", ChatFormatting.GOLD));
                     List<Component> lore = new ArrayList<>();
-                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenTextJson"), ChatFormatting.GOLD));
-                    lore.add(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenDelete"), ChatFormatting.DARK_RED));
+                    lore.add(ServerScreenHelper.coloredGuiText("flan.screenTextJson", ChatFormatting.GOLD));
+                    lore.add(ServerScreenHelper.coloredGuiText("flan.screenDelete", ChatFormatting.DARK_RED));
                     if (claim.leaveSubtitle != null)
                         lore.add(claim.leaveSubtitle);
                     ServerScreenHelper.addLore(stack4, lore);
@@ -140,7 +140,7 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                         ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                     }));
                 } else {
-                    TextComponent text = new TextComponent(ConfigHandler.LANG_MANAGER.get("chatClaimTextEdit"));
+                    MutableComponent text = PermHelper.translatedText("flan.chatClaimTextEdit");
                     String command = "/flan claimMessage" + (index == 2 || index == 3 ? " enter" : " leave")
                             + (index == 2 || index == 4 ? " title" : " subtitle") + " text ";
                     text.withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)));

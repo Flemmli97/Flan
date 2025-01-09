@@ -23,13 +23,11 @@ public class ConfigHandler {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     public static final Config CONFIG = new Config();
-    public static final LangManager LANG_MANAGER = new LangManager();
     private static final Map<ResourceKey<Level>, Path> CLAIM_SAVE_PATH = new HashMap<>();
     private static Path playerSavePath;
 
     public static void reloadConfigs(MinecraftServer server) {
         CONFIG.load();
-        LANG_MANAGER.reload(CONFIG.lang);
         ObjectToPermissionMap.reload(server);
     }
 

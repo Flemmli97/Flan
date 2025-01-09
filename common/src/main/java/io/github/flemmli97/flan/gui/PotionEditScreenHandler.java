@@ -3,13 +3,12 @@ package io.github.flemmli97.flan.gui;
 import com.google.common.collect.Lists;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.PermHelper;
-import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -51,7 +50,7 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("screenPotions"));
+                return PermHelper.translatedText("flan.screenPotions");
             }
         };
         player.openMenu(fac);
@@ -65,15 +64,15 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
-                close.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenBack"), ChatFormatting.DARK_RED));
+                close.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
                 inv.updateStack(i, close);
             } else if (i == 3) {
                 ItemStack stack = new ItemStack(Items.ANVIL);
-                stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenAdd"), ChatFormatting.DARK_GREEN));
+                stack.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenAdd", ChatFormatting.DARK_GREEN));
                 inv.updateStack(i, stack);
             } else if (i == 4) {
                 ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-                stack.setHoverName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.LANG_MANAGER.get("screenRemoveMode"), this.removeMode ? ConfigHandler.LANG_MANAGER.get("screenTrue") : ConfigHandler.LANG_MANAGER.get("screenFalse")), ChatFormatting.DARK_RED));
+                stack.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode ? ServerScreenHelper.coloredGuiText("flan.screenTrue") : ServerScreenHelper.coloredGuiText("flan.screenFalse"), ChatFormatting.DARK_RED));
                 inv.updateStack(i, stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 inv.updateStack(i, ServerScreenHelper.emptyFiller());
@@ -83,12 +82,12 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 if (id < potions.size()) {
                     MobEffect effect = key.get(id);
                     ItemStack effectStack = new ItemStack(Items.POTION);
-                    TranslatableComponent txt = new TranslatableComponent(effect.getDescriptionId());
+                    MutableComponent txt = PermHelper.translatedText(effect.getDescriptionId());
                     Collection<MobEffectInstance> inst = Collections.singleton(new MobEffectInstance(effect, 0, potions.get(effect)));
                     effectStack.getOrCreateTag().putString("FlanEffect", CrossPlatformStuff.INSTANCE.registryStatusEffects().getIDFrom(effect).toString());
                     effectStack.getTag().putInt("CustomPotionColor", PotionUtils.getColor(inst));
                     txt.append(new TextComponent("-" + potions.get(effect)));
-                    Component comp = new TranslatableComponent(ConfigHandler.LANG_MANAGER.get("screenPotionText"), txt).setStyle(txt.getStyle().withItalic(false).applyFormat(ChatFormatting.DARK_BLUE));
+                    Component comp = ServerScreenHelper.coloredGuiText("flan.screenPotionText", txt, ChatFormatting.DARK_BLUE);
                     effectStack.setHoverName(comp);
                     inv.updateStack(i, effectStack);
                 }
@@ -140,7 +139,7 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
         if (index == 4) {
             this.removeMode = !this.removeMode;
             ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-            stack.setHoverName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.LANG_MANAGER.get("screenRemoveMode"), this.removeMode ? ConfigHandler.LANG_MANAGER.get("screenTrue") : ConfigHandler.LANG_MANAGER.get("screenFalse")), ChatFormatting.DARK_RED));
+            stack.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode ? ServerScreenHelper.coloredGuiText("flan.screenTrue") : ServerScreenHelper.coloredGuiText("flan.screenFalse"), ChatFormatting.DARK_RED));
             slot.set(stack);
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;

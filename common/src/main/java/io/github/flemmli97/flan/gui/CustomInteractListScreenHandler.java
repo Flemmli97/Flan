@@ -3,7 +3,6 @@ package io.github.flemmli97.flan.gui;
 import com.mojang.datafixers.util.Either;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.PermHelper;
-import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
@@ -49,7 +48,7 @@ public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<Cus
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get(type.translationKey));
+                return PermHelper.translatedText(type.translationKey);
             }
         };
         player.openMenu(fac);
@@ -60,15 +59,15 @@ public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<Cus
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack stack = new ItemStack(Items.TNT);
-                stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenBack"), ChatFormatting.DARK_RED));
+                stack.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
                 inv.updateStack(i, stack);
             } else if (i == 3) {
                 ItemStack stack = new ItemStack(Items.ANVIL);
-                stack.setHoverName(ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("screenAdd"), ChatFormatting.DARK_GREEN));
+                stack.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenAdd", ChatFormatting.DARK_GREEN));
                 inv.updateStack(i, stack);
             } else if (i == 4) {
                 ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-                stack.setHoverName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.LANG_MANAGER.get("screenRemoveMode"), this.removeMode ? ConfigHandler.LANG_MANAGER.get("screenTrue") : ConfigHandler.LANG_MANAGER.get("screenFalse")), ChatFormatting.DARK_RED));
+                stack.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode ? ServerScreenHelper.coloredGuiText("flan.screenTrue") : ServerScreenHelper.coloredGuiText("flan.screenFalse"), ChatFormatting.DARK_RED));
                 inv.updateStack(i, stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 inv.updateStack(i, ServerScreenHelper.emptyFiller());
@@ -168,7 +167,7 @@ public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<Cus
         if (index == 4) {
             this.removeMode = !this.removeMode;
             ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-            stack.setHoverName(ServerScreenHelper.coloredGuiText(String.format(ConfigHandler.LANG_MANAGER.get("screenRemoveMode"), this.removeMode ? ConfigHandler.LANG_MANAGER.get("screenTrue") : ConfigHandler.LANG_MANAGER.get("screenFalse")), ChatFormatting.DARK_RED));
+            stack.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode ? ServerScreenHelper.coloredGuiText("flan.screenTrue") : ServerScreenHelper.coloredGuiText("flan.screenFalse"), ChatFormatting.DARK_RED));
             slot.set(stack);
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;
@@ -194,11 +193,11 @@ public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<Cus
     }
 
     public enum Type {
-        ITEM("screenMenuItemUse", "item"),
-        BLOCKBREAK("screenMenuBlockBreak", "block_break"),
-        BLOCKUSE("screenMenuBlockUse", "block_use"),
-        ENTITYATTACK("screenMenuEntityAttack", "entity_attack"),
-        ENTITYUSE("screenMenuEntityUse", "entity_use");
+        ITEM("flan.screenMenuItemUse", "item"),
+        BLOCKBREAK("flan.screenMenuBlockBreak", "block_break"),
+        BLOCKUSE("flan.screenMenuBlockUse", "block_use"),
+        ENTITYATTACK("flan.screenMenuEntityAttack", "entity_attack"),
+        ENTITYUSE("flan.screenMenuEntityUse", "entity_use");
 
         public final String translationKey;
         public final String commandKey;
