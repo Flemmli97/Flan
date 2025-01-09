@@ -5,7 +5,6 @@ import com.epherical.octoecon.api.Currency;
 import com.epherical.octoecon.api.user.UniqueUser;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.PermHelper;
-import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.integration.currency.CommandCurrency;
 import io.github.flemmli97.flan.platform.integration.currency.CommonCurrency;
 import io.github.flemmli97.flan.player.PlayerClaimData;
