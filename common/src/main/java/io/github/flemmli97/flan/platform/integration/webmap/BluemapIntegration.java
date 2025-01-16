@@ -6,6 +6,7 @@ import de.bluecolored.bluemap.api.BlueMapMap;
 import de.bluecolored.bluemap.api.markers.ExtrudeMarker;
 import de.bluecolored.bluemap.api.markers.Marker;
 import de.bluecolored.bluemap.api.markers.MarkerSet;
+import de.bluecolored.bluemap.api.markers.ShapeMarker;
 import de.bluecolored.bluemap.api.math.Color;
 import de.bluecolored.bluemap.api.math.Shape;
 import io.github.flemmli97.flan.claim.Claim;
@@ -18,19 +19,22 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class BluemapIntegration {
-    private static final String markerID = "flan.claims", markerLabel = "Claims";
+
+    private static final String MARKER_3D = "flan.claims", MARKER_2D = "flan.claims.2d", CLAIMS = "Claims";
 
     public static void reg(MinecraftServer server) {
         BlueMapAPI.onEnable(api -> {
             for (ServerLevel level : server.getAllLevels()) {
-                api.getWorld(level).ifPresent(world -> {
-                    world.getMaps().forEach(map -> {
-                        MarkerSet markerSet = MarkerSet.builder().label(markerLabel).build();
-                        map.getMarkerSets().put(markerID, markerSet);
-                    });
-                });
+                api.getWorld(level).ifPresent(world -> world.getMaps().forEach(map -> {
+                    MarkerSet markerSet = MarkerSet.builder().label(CLAIMS).build();
+                    MarkerSet markerSet2 = MarkerSet.builder().label(CLAIMS)
+                            .defaultHidden(true).build();
+                    map.getMarkerSets().put(MARKER_3D, markerSet);
+                    map.getMarkerSets().put(MARKER_2D, markerSet2);
+                }));
                 processClaims(level);
             }
             WebmapCalls.bluemapLoaded = true;
@@ -40,15 +44,13 @@ public class BluemapIntegration {
     public static void processClaims(ServerLevel level) {
         ClaimStorage claimStorage = ClaimStorage.get(level);
         Map<UUID, Set<Claim>> claimMap = claimStorage.getClaims();
-        claimMap.forEach((uuid, claims) -> {
-            claims.forEach(BluemapIntegration::addClaimMarker);
-        });
+        claimMap.forEach((uuid, claims) -> claims.forEach(BluemapIntegration::addClaimMarker));
     }
 
     public static void addClaimMarker(Claim claim) {
         BlueMapAPI.getInstance().flatMap(api -> api.getWorld(claim.getWorld())).ifPresent(world -> {
             for (BlueMapMap map : world.getMaps()) {
-                MarkerSet markerSet = map.getMarkerSets().get(markerID);
+                MarkerSet markerSet = map.getMarkerSets().get(MARKER_3D);
                 ClaimBox dim = claim.getDimensions();
                 ExtrudeMarker marker = ExtrudeMarker.builder()
                         .label(claimLabel(claim))
@@ -60,6 +62,17 @@ public class BluemapIntegration {
                         .fillColor(new Color(fillColor(claim.isAdminClaim()), 0.2F))
                         .build();
                 markerSet.put(claim.getClaimID().toString(), marker);
+                MarkerSet markerSet2 = map.getMarkerSets().get(MARKER_2D);
+                ShapeMarker shapeMarker = ShapeMarker.builder()
+                        .label(claimLabel(claim))
+                        .depthTestEnabled(false)
+                        // Seems you need the offset
+                        .shape(Shape.createRect(dim.minX(), dim.minZ(), dim.maxX() + 1, dim.maxZ() + 1), dim.minY())
+                        .lineColor(new Color(lineColor(claim.isAdminClaim()), 0.8F))
+                        .lineWidth(3)
+                        .fillColor(new Color(fillColor(claim.isAdminClaim()), 0.2F))
+                        .build();
+                markerSet2.put(claim.getClaimID().toString(), shapeMarker);
             }
         });
     }
@@ -67,8 +80,7 @@ public class BluemapIntegration {
     public static void removeMarker(Claim claim) {
         BlueMapAPI.getInstance().flatMap(api -> api.getWorld(claim.getWorld())).ifPresent(world -> {
             for (BlueMapMap map : world.getMaps()) {
-                MarkerSet markerSet = map.getMarkerSets().get(markerID);
-                markerSet.remove(claim.getClaimID().toString());
+                updateMarkers(map, markerSet -> markerSet.remove(claim.getClaimID().toString()));
             }
         });
     }
@@ -76,9 +88,10 @@ public class BluemapIntegration {
     public static void changeClaimName(Claim claim) {
         BlueMapAPI.getInstance().flatMap(api -> api.getWorld(claim.getWorld())).ifPresent(world -> {
             for (BlueMapMap map : world.getMaps()) {
-                MarkerSet markerSet = map.getMarkerSets().get(markerID);
-                Marker marker = markerSet.get(claim.getClaimID().toString());
-                marker.setLabel(claimLabel(claim));
+                updateMarkers(map, markerSet -> {
+                    Marker marker = markerSet.get(claim.getClaimID().toString());
+                    marker.setLabel(claimLabel(claim));
+                });
             }
         });
     }
@@ -86,9 +99,10 @@ public class BluemapIntegration {
     public static void changeClaimOwner(Claim claim) {
         BlueMapAPI.getInstance().flatMap(api -> api.getWorld(claim.getWorld())).ifPresent(world -> {
             for (BlueMapMap map : world.getMaps()) {
-                MarkerSet markerSet = map.getMarkerSets().get(markerID);
-                Marker marker = markerSet.get(claim.getClaimID().toString());
-                marker.setLabel(claimLabel(claim));
+                updateMarkers(map, markerSet -> {
+                    Marker marker = markerSet.get(claim.getClaimID().toString());
+                    marker.setLabel(claimLabel(claim));
+                });
             }
         });
     }
@@ -116,5 +130,10 @@ public class BluemapIntegration {
         } else {
             return name + " - " + prof.map(GameProfile::getName).orElse("UNKNOWN") + "'s Claim";
         }
+    }
+
+    private static void updateMarkers(BlueMapMap map, Consumer<MarkerSet> cons) {
+        cons.accept(map.getMarkerSets().get(MARKER_3D));
+        cons.accept(map.getMarkerSets().get(MARKER_2D));
     }
 }
