@@ -22,6 +22,8 @@
   "flan.minClaimSize": "This is too small. Minimum claimsize is %d",
   "flan.maxClaims": "Maximum amount of claims reached",
   "flan.landClaimDisabledWorld": "Claiming is disabled in this world",
+  "flan.claimingMode": "Claiming mode set to %1$s",
+  "flan.minClaimHeight": "Minimum required height is %d",
   "flan.editMode": "Editing mode set to %1$s",
   "flan.notEnoughBlocks": "Not enough claim blocks. Required: %s, Current: %s",
   "flan.conflictOther": "Claim would overlap other claims",

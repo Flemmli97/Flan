@@ -1,5 +1,6 @@
 package io.github.flemmli97.flan.player.display;
 
+import io.github.flemmli97.flan.claim.ClaimBox;
 import net.minecraft.core.Direction;
 
 import java.util.Arrays;
@@ -9,7 +10,7 @@ import java.util.function.Supplier;
 
 public class DisplayBox {
 
-    private final Box box;
+    private final ClaimBox box;
     private final Supplier<Boolean> removed;
 
     private final EnumSet<Direction> excludedSides = EnumSet.noneOf(Direction.class);
@@ -19,7 +20,7 @@ public class DisplayBox {
     }
 
     public DisplayBox(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, Supplier<Boolean> removed, Direction... exclude) {
-        this.box = new Box(minX, minY, minZ, Math.max(minX + 1, maxX), maxY, Math.max(minZ + 1, maxZ));
+        this.box = new ClaimBox(minX, minY, minZ, Math.max(minX + 1, maxX), maxY, Math.max(minZ + 1, maxZ));
         this.removed = removed;
         this.excludedSides.addAll(Arrays.asList(exclude));
     }
@@ -27,7 +28,7 @@ public class DisplayBox {
     /**
      * For claims with dynamic size (atm only from this mod)
      */
-    public DisplayBox(Box box, Supplier<Boolean> removed, Direction... exclude) {
+    public DisplayBox(ClaimBox box, Supplier<Boolean> removed, Direction... exclude) {
         this.box = box;
         this.removed = removed;
         this.excludedSides.addAll(Arrays.asList(exclude));
@@ -37,12 +38,16 @@ public class DisplayBox {
         return this.removed.get();
     }
 
-    public Box box() {
+    public ClaimBox box() {
         return this.box;
     }
 
     public Set<Direction> excludedSides() {
         return this.excludedSides;
+    }
+
+    public boolean is3d() {
+        return false;
     }
 
     @Override
@@ -58,16 +63,5 @@ public class DisplayBox {
         if (obj instanceof DisplayBox other)
             return this.box.equals(other.box);
         return false;
-    }
-
-    public record Box(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof Box otherBox))
-                return false;
-            return this.minX == otherBox.minX && this.minY == otherBox.minY && this.minZ == otherBox.minZ
-                    && this.maxX == otherBox.maxX && this.maxY == otherBox.maxY && this.maxZ == otherBox.maxZ;
-        }
     }
 }

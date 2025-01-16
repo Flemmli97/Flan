@@ -1,6 +1,6 @@
 package io.github.flemmli97.flan.player;
 
-public enum EnumEditMode {
+public enum ClaimEditingMode {
     DEFAULT,
     SUBCLAIM
 }

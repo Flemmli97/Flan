@@ -9,6 +9,7 @@ import de.bluecolored.bluemap.api.markers.MarkerSet;
 import de.bluecolored.bluemap.api.math.Color;
 import de.bluecolored.bluemap.api.math.Shape;
 import io.github.flemmli97.flan.claim.Claim;
+import io.github.flemmli97.flan.claim.ClaimBox;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -48,11 +49,11 @@ public class BluemapIntegration {
         BlueMapAPI.getInstance().flatMap(api -> api.getWorld(claim.getWorld())).ifPresent(world -> {
             for (BlueMapMap map : world.getMaps()) {
                 MarkerSet markerSet = map.getMarkerSets().get(markerID);
-                int[] dim = claim.getDimensions();
+                ClaimBox dim = claim.getDimensions();
                 ExtrudeMarker marker = ExtrudeMarker.builder()
                         .label(claimLabel(claim))
                         .depthTestEnabled(false)
-                        .shape(Shape.createRect(dim[0], dim[2], dim[1], dim[3]), dim[4], claim.getMaxY())
+                        .shape(Shape.createRect(dim.minX(), dim.minZ(), dim.maxX(), dim.maxZ()), dim.minY(), dim.maxY())
                         .lineColor(new Color(lineColor(claim.isAdminClaim()), 0.8F))
                         .lineWidth(3)
                         .fillColor(new Color(fillColor(claim.isAdminClaim()), 0.2F))

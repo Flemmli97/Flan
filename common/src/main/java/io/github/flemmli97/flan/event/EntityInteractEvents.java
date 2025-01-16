@@ -58,7 +58,7 @@ import java.util.function.Consumer;
 
 public class EntityInteractEvents {
 
-    private static ResourceLocation TATERZEN = new ResourceLocation("taterzen", "npc");
+    private static final ResourceLocation TATERZEN = new ResourceLocation("taterzen", "npc");
 
     public static InteractionResult attackEntity(Player player, Level world, InteractionHand hand, Entity entity, EntityHitResult hitResult) {
         return attackSimple(player, entity, true);
@@ -369,7 +369,7 @@ public class EntityInteractEvents {
                     Entity passenger = player.getVehicle();
                     if (!mainClaim.canInteract(player, BuiltinPermission.CANSTAY, bPos, true) || (passenger instanceof Boat && !mainClaim.canInteract(player, BuiltinPermission.BOAT, bPos, true))) {
                         Claim sub = isSub ? currentClaim : null;
-                        Vec3 tp = TeleportUtils.getTeleportPos(player, pos, storage, sub != null ? sub.getDimensions() : mainClaim.getDimensions(), true, bPos, (claim, nPos) -> claim.canInteract(player, BuiltinPermission.CANSTAY, nPos, false));
+                        Vec3 tp = TeleportUtils.getTeleportPos(player, pos, storage, new TeleportUtils.Area2D(sub != null ? sub.getDimensions() : mainClaim.getDimensions()), true, bPos, (claim, nPos) -> claim.canInteract(player, BuiltinPermission.CANSTAY, nPos, false));
                         if (passenger != null) {
                             player.stopRiding();
                             passenger.teleportToWithTicket(tp.x(), tp.y(), tp.z());

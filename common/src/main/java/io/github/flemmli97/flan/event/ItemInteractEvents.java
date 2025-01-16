@@ -10,7 +10,8 @@ import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
-import io.github.flemmli97.flan.player.EnumEditMode;
+import io.github.flemmli97.flan.player.ClaimEditingMode;
+import io.github.flemmli97.flan.player.ClaimingMode;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.player.display.EnumDisplayType;
 import net.minecraft.ChatFormatting;
@@ -48,22 +49,21 @@ public class ItemInteractEvents {
             return InteractionResultHolder.pass(p.getItemInHand(hand));
         ItemStack stack = player.getItemInHand(hand);
         if (ConfigHandler.isClaimingTool(stack)) {
-            HitResult ray = player.pick(64, 0, false);
-            if (ray != null && ray.getType() == HitResult.Type.BLOCK) {
-                claimLandHandling(player, ((BlockHitResult) ray).getBlockPos());
+            BlockPos pos = rayTargetPos(player);
+            if (pos != null) {
+                claimLandHandling(player, pos);
                 return InteractionResultHolder.success(stack);
             }
             return InteractionResultHolder.pass(stack);
         }
         if (ConfigHandler.isInspectionTool(stack)) {
-            HitResult ray = player.pick(32, 0, false);
-            if (ray != null && ray.getType() == HitResult.Type.BLOCK) {
-                inspect(player, ((BlockHitResult) ray).getBlockPos());
+            BlockPos pos = rayTargetPos(player, 32, false);
+            if (pos != null) {
+                inspect(player, pos);
                 return InteractionResultHolder.success(stack);
             }
             return InteractionResultHolder.pass(stack);
         }
-
         ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
         BlockPos pos = player.blockPosition();
         BlockHitResult hitResult = getPlayerHitResult(world, player, ClipContext.Fluid.SOURCE_ONLY);
@@ -95,7 +95,7 @@ public class ItemInteractEvents {
         return InteractionResultHolder.pass(stack);
     }
 
-    private static final Set<Item> blackListedItems = Sets.newHashSet(Items.COMPASS, Items.FILLED_MAP, Items.FIREWORK_ROCKET);
+    private static final Set<Item> BLACK_LISTED_ITEMS = Sets.newHashSet(Items.COMPASS, Items.FILLED_MAP, Items.FIREWORK_ROCKET);
 
     public static InteractionResult onItemUseBlock(UseOnContext context) {
         if (!(context.getPlayer() instanceof ServerPlayer player) || context.getItemInHand().isEmpty())
@@ -110,37 +110,39 @@ public class ItemInteractEvents {
     }
 
     private static InteractionResult itemUseOn(Level level, ServerPlayer player, ClaimStorage storage, BlockPos placePos, ItemStack stack) {
-        IPermissionContainer claim = storage.getForPermissionCheck(placePos.offset(0, 255, 0));
+        IPermissionContainer claim = storage.getForPermissionCheck(placePos);
+        Claim column = storage.getForPermissionCheck(new BlockPos(placePos.getX(), level.getMaxBuildHeight(), placePos.getZ()))
+                instanceof Claim real ? real : null;
         if (claim == null)
             return InteractionResult.PASS;
-        if (blackListedItems.contains(stack.getItem()))
+        if (BLACK_LISTED_ITEMS.contains(stack.getItem()))
             return InteractionResult.PASS;
-        boolean actualInClaim = !(claim instanceof Claim) || placePos.getY() >= ((Claim) claim).getDimensions()[4];
-        if (actualInClaim && claim instanceof Claim real && real.canUseItem(stack))
+        if (claim instanceof Claim real && real.canUseItem(stack))
             return InteractionResult.PASS;
         ResourceLocation perm = ObjectToPermissionMap.getFromItem(stack.getItem());
         if (perm != null) {
-            if (claim.canInteract(player, perm, placePos, false))
+            if (claim.canInteract(player, perm, placePos, false)) {
+                if (column != null && stack.getItem() instanceof BlockItem) {
+                    column.extendDownwards(placePos);
+                }
                 return InteractionResult.PASS;
-            else if (actualInClaim) {
+            } else {
                 player.displayClientMessage(PermHelper.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
                 return InteractionResult.FAIL;
             }
         }
         if (claim.canInteract(player, BuiltinPermission.PLACE, placePos, false)) {
-            if (!actualInClaim && stack.getItem() instanceof BlockItem) {
-                ((Claim) claim).extendDownwards(placePos);
+            if (column != null && stack.getItem() instanceof BlockItem) {
+                column.extendDownwards(placePos);
             }
             return InteractionResult.PASS;
-        } else if (actualInClaim) {
-            player.displayClientMessage(PermHelper.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
-            BlockState other = level.getBlockState(placePos.above());
-            player.connection.send(new ClientboundBlockUpdatePacket(placePos.above(), other));
-            PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
-            updateHeldItem(player);
-            return InteractionResult.FAIL;
         }
-        return InteractionResult.PASS;
+        player.displayClientMessage(PermHelper.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+        BlockState other = level.getBlockState(placePos.above());
+        player.connection.send(new ClientboundBlockUpdatePacket(placePos.above(), other));
+        PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
+        updateHeldItem(player);
+        return InteractionResult.FAIL;
     }
 
     /**
@@ -160,20 +162,36 @@ public class ItemInteractEvents {
         return false;
     }
 
-    public static boolean canClaimWorld(ServerLevel world, ServerPlayer player) {
+    public static boolean canClaimWorld(ServerLevel level, ServerPlayer player) {
         PlayerClaimData data = PlayerClaimData.get(player);
         if (data.isAdminIgnoreClaim())
             return true;
         if (ConfigHandler.CONFIG.worldWhitelist) {
-            if (!cantClaimInWorld(player.getLevel())) {
+            if (!cantClaimInWorld(level)) {
                 player.displayClientMessage(PermHelper.translatedText("flan.landClaimDisabledWorld", ChatFormatting.DARK_RED), false);
                 return false;
             }
-        } else if (cantClaimInWorld(player.getLevel())) {
+        } else if (cantClaimInWorld(level)) {
             player.displayClientMessage(PermHelper.translatedText("flan.landClaimDisabledWorld", ChatFormatting.DARK_RED), false);
             return false;
         }
         return true;
+    }
+
+    public static BlockPos rayTargetPos(ServerPlayer player) {
+        PlayerClaimData data = PlayerClaimData.get(player);
+        return rayTargetPos(player, data.claimingRange, data.getClaimingMode() == ClaimingMode.DIMENSION_3D && data.editingCorner() != null);
+    }
+
+    public static BlockPos rayTargetPos(ServerPlayer player, int range, boolean allowMiss) {
+        HitResult ray = player.pick(range, 0, false);
+        if (ray instanceof BlockHitResult res) {
+            if (allowMiss) {
+                return res.getBlockPos();
+            }
+            return res.getType() != HitResult.Type.MISS ? res.getBlockPos() : null;
+        }
+        return null;
     }
 
     public static void claimLandHandling(ServerPlayer player, BlockPos target) {
@@ -184,14 +202,16 @@ public class ItemInteractEvents {
         if (!canClaimWorld(player.getLevel(), player))
             return;
         ClaimStorage storage = ClaimStorage.get(player.getLevel());
-        Claim claim = storage.getClaimAt(target.offset(0, 255, 0));
+        Claim claim = storage.getClaimAt(target);
+        if (claim == null)
+            claim = storage.getClaimAt(new BlockPos(target.getX(), player.getLevel().getMaxBuildHeight(), target.getZ()));
         PlayerClaimData data = PlayerClaimData.get(player);
         if (data.claimCooldown())
             return;
         data.setClaimActionCooldown();
         if (claim != null) {
             if (claim.canInteract(player, BuiltinPermission.EDITCLAIM, target)) {
-                if (data.getEditMode() == EnumEditMode.SUBCLAIM) {
+                if (data.getEditMode() == ClaimEditingMode.SUBCLAIM) {
                     Claim subClaim = claim.getSubClaim(target);
                     if (subClaim != null && data.currentEdit() == null) {
                         if (subClaim.isCorner(target)) {
@@ -246,7 +266,7 @@ public class ItemInteractEvents {
                 data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
                 player.displayClientMessage(PermHelper.translatedText("flan.cantClaimHere", ChatFormatting.RED), false);
             }
-        } else if (data.getEditMode() == EnumEditMode.SUBCLAIM) {
+        } else if (data.getEditMode() == ClaimEditingMode.SUBCLAIM) {
             player.displayClientMessage(PermHelper.translatedText("flan.wrongMode", data.getEditMode(), ChatFormatting.RED), false);
         } else {
             if (data.currentEdit() != null) {
