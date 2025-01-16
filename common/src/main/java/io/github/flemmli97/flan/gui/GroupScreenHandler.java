@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.gui;
 
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.claim.Claim;
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -38,7 +38,7 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.translatedText("flan.screenGroups");
+                return ClaimUtils.translatedText("flan.screenGroups");
             }
         };
         player.openMenu(fac);

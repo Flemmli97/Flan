@@ -1,7 +1,7 @@
 package io.github.flemmli97.flan.gui;
 
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
@@ -36,7 +36,7 @@ public class PersonalGroupScreenHandler extends ServerOnlyScreenHandler<Object> 
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.translatedText("flan.screenPersonalGroups");
+                return ClaimUtils.translatedText("flan.screenPersonalGroups");
             }
         };
         player.openMenu(fac);

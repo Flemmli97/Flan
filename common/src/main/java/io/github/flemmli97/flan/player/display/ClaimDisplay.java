@@ -41,7 +41,7 @@ public class ClaimDisplay {
     private final UUID displayId = UUID.randomUUID();
 
     public ClaimDisplay(Claim claim, EnumDisplayType type, int y) {
-        this(claim.display(), claim.getWorld(), type, y);
+        this(claim.display(), claim.getLevel(), type, y);
     }
 
     public ClaimDisplay(DisplayBox display, Level level, EnumDisplayType type, int y) {

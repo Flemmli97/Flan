@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.gui;
 
 import com.mojang.datafixers.util.Either;
 import io.github.flemmli97.flan.claim.Claim;
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
@@ -48,7 +48,7 @@ public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<Cus
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.translatedText(type.translationKey);
+                return ClaimUtils.translatedText(type.translationKey);
             }
         };
         player.openMenu(fac);

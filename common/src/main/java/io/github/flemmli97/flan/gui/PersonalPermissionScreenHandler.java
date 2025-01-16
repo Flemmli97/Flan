@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.gui;
 
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
@@ -44,7 +44,7 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.translatedText("flan.screenPersonalPermissions", group);
+                return ClaimUtils.translatedText("flan.screenPersonalPermissions", group);
             }
         };
         player.openMenu(fac);

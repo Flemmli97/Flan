@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.gui;
 
 import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.claim.Claim;
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -53,7 +53,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.translatedText("flan.screenGroupPlayers", group);
+                return ClaimUtils.translatedText("flan.screenGroupPlayers", group);
             }
         };
         player.openMenu(fac);
@@ -113,7 +113,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
                 if (fl)
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
                 else {
-                    player.displayClientMessage(PermHelper.translatedText("flan.playerGroupAddFail", ChatFormatting.RED), false);
+                    player.displayClientMessage(ClaimUtils.translatedText("flan.playerGroupAddFail", ChatFormatting.RED), false);
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                 }
             }, () -> {

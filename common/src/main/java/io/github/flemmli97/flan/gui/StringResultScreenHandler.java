@@ -1,6 +1,6 @@
 package io.github.flemmli97.flan.gui;
 
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.mixin.AbstractContainerAccessor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -35,7 +35,7 @@ public class StringResultScreenHandler extends AnvilMenu {
     private StringResultScreenHandler(int syncId, Inventory playerInventory, Consumer<String> cons, Runnable ret) {
         super(syncId, playerInventory);
         ItemStack stack = new ItemStack(Items.PAPER);
-        stack.setHoverName(PermHelper.translatedText(""));
+        stack.setHoverName(ClaimUtils.translatedText(""));
         this.inputSlots.setItem(0, stack);
         ItemStack out = new ItemStack(Items.BOOK);
         out.setHoverName(ServerScreenHelper.coloredGuiText("flan.stringScreenReturn"));
@@ -53,7 +53,7 @@ public class StringResultScreenHandler extends AnvilMenu {
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.translatedText("");
+                return ClaimUtils.translatedText("");
             }
         };
         player.openMenu(fac);

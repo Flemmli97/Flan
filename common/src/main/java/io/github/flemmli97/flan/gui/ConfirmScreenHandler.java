@@ -1,6 +1,6 @@
 package io.github.flemmli97.flan.gui;
 
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -33,7 +33,7 @@ public class ConfirmScreenHandler extends ServerOnlyScreenHandler<Object> {
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.translatedText("flan.screenConfirm");
+                return ClaimUtils.translatedText("flan.screenConfirm");
             }
         };
         player.openMenu(fac);

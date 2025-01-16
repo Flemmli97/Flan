@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.event;
 
 import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
 import io.github.flemmli97.flan.claim.ClaimStorage;
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
@@ -69,7 +69,7 @@ public class PlayerEvents {
                 pos.set(pos.getX(), pos.getY() + y + 1, pos.getZ());
             }
             if (range > 0 && perm != null && !ClaimStorage.get(serverPlayer.getLevel()).canInteract(pos, range, serverPlayer, perm, false)) {
-                serverPlayer.displayClientMessage(PermHelper.translatedText("flan.tooCloseClaim", ChatFormatting.DARK_RED), true);
+                serverPlayer.displayClientMessage(ClaimUtils.translatedText("flan.tooCloseClaim", ChatFormatting.DARK_RED), true);
                 return true;
             }
         }

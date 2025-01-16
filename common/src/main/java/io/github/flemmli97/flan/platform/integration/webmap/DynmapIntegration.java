@@ -1,8 +1,8 @@
 package io.github.flemmli97.flan.platform.integration.webmap;
 
-import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimBox;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import org.dynmap.DynmapCommonAPI;
@@ -33,7 +33,7 @@ public class DynmapIntegration {
         if (markerSet == null)
             return;
         ClaimBox dim = claim.getDimensions();
-        AreaMarker marker = markerSet.createAreaMarker(claim.getClaimID().toString(), claimLabel(claim), true, getWorldName(claim.getWorld()),
+        AreaMarker marker = markerSet.createAreaMarker(claim.getClaimID().toString(), claimLabel(claim), true, getWorldName(claim.getLevel()),
                 new double[]{dim.minX(), dim.maxX()}, new double[]{dim.minZ(), dim.maxZ()}, false);
         if (marker != null) {
             marker.setLineStyle(3, 0.8, lineColor(claim.isAdminClaim()));
@@ -93,8 +93,8 @@ public class DynmapIntegration {
         if (name == null || name.isEmpty()) {
             if (claim.isAdminClaim())
                 return "Admin Claim";
-            Optional<GameProfile> prof = claim.getWorld().getServer().getProfileCache().get(claim.getOwner());
-            return prof.map(GameProfile::getName).orElse("UNKOWN") + "'s Claim";
+            Optional<String> prof = ClaimUtils.fetchUsername(claim.getOwner(), claim.getLevel().getServer());
+            return prof.orElse("UNKOWN") + "'s Claim";
         }
         return name;
     }

@@ -1,6 +1,6 @@
 package io.github.flemmli97.flan.gui;
 
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.mixin.ILecternBlockValues;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -38,7 +38,7 @@ public class LockedLecternScreenHandler extends LecternMenu {
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (id == 3) {
-            player.displayClientMessage(PermHelper.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), false);
+            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), false);
             return false;
         }
         return super.clickMenuButton(player, id);

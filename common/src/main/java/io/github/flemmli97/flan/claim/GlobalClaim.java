@@ -21,7 +21,7 @@ public record GlobalClaim(ServerLevel world) implements IPermissionContainer {
             if (global.getValue())
                 return true;
             if (message)
-                player.displayClientMessage(PermHelper.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+                player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
             return false;
         }
         return !perm.equals(BuiltinPermission.MOBSPAWN) && !perm.equals(BuiltinPermission.ANIMALSPAWN);

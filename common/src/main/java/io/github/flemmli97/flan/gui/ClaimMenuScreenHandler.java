@@ -3,7 +3,7 @@ package io.github.flemmli97.flan.gui;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
@@ -39,7 +39,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.translatedText(claim.parentClaim() != null ? "flan.screenMenuSub" : "flan.screenMenu");
+                return ClaimUtils.translatedText(claim.parentClaim() != null ? "flan.screenMenuSub" : "flan.screenMenu");
             }
         };
         player.openMenu(fac);
@@ -197,7 +197,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
                             ClaimStorage storage = ClaimStorage.get(player.getLevel());
                             storage.deleteClaim(this.claim, true, PlayerClaimData.get(player).getEditMode(), player.getLevel());
                             player.closeContainer();
-                            player.displayClientMessage(PermHelper.translatedText("flan.deleteClaim", ChatFormatting.RED), false);
+                            player.displayClientMessage(ClaimUtils.translatedText("flan.deleteClaim", ChatFormatting.RED), false);
                             ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_PLACE, 1, 1f);
                         } else {
                             player.closeContainer();
