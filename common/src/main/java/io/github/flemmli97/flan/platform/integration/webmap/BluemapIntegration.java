@@ -53,7 +53,8 @@ public class BluemapIntegration {
                 ExtrudeMarker marker = ExtrudeMarker.builder()
                         .label(claimLabel(claim))
                         .depthTestEnabled(false)
-                        .shape(Shape.createRect(dim.minX(), dim.minZ(), dim.maxX(), dim.maxZ()), dim.minY(), dim.maxY())
+                        // Seems you need the offset
+                        .shape(Shape.createRect(dim.minX(), dim.minZ(), dim.maxX() + 1, dim.maxZ() + 1), dim.minY(), dim.maxY())
                         .lineColor(new Color(lineColor(claim.isAdminClaim()), 0.8F))
                         .lineWidth(3)
                         .fillColor(new Color(fillColor(claim.isAdminClaim()), 0.2F))
