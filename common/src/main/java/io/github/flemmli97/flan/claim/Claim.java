@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
@@ -85,7 +84,7 @@ public class Claim implements IPermissionContainer {
      */
     private boolean removed;
 
-    private final ServerLevel world;
+    private final ServerLevel level;
 
     private final Map<MobEffect, Integer> potions = new HashMap<>();
 
@@ -98,7 +97,7 @@ public class Claim implements IPermissionContainer {
     public Component enterTitle, enterSubtitle, leaveTitle, leaveSubtitle;
 
     private Claim(ServerLevel world) {
-        this.world = world;
+        this.level = world;
     }
 
     //New claim
@@ -140,7 +139,7 @@ public class Claim implements IPermissionContainer {
         this.maxZ = Math.max(z1, z2);
         this.minY = Math.max(world.getMinBuildHeight(), minY);
         this.owner = creator;
-        this.world = world;
+        this.level = world;
         this.homePos = this.getInitCenterPos();
         this.setDirty(true);
         PermissionManager.INSTANCE.getAll().stream().filter(perm -> perm.defaultVal).forEach(perm -> this.globalPerm.put(perm.getId(), true));
@@ -158,7 +157,7 @@ public class Claim implements IPermissionContainer {
 
     private BlockPos getInitCenterPos() {
         BlockPos center = BlockPos.containing(this.minX + (this.maxX - this.minX) * 0.5, 0, this.minZ + (this.maxZ - this.minZ) * 0.5);
-        int y = !this.world.hasChunk(center.getX() >> 4, center.getZ() >> 4) ? this.minY + 1 : this.world.getChunk(center.getX() >> 4, center.getZ() >> 4).getHeight(Heightmap.Types.MOTION_BLOCKING, center.getX() & 15, center.getZ() & 15);
+        int y = !this.level.hasChunk(center.getX() >> 4, center.getZ() >> 4) ? this.minY + 1 : this.level.getChunk(center.getX() >> 4, center.getZ() >> 4).getHeight(Heightmap.Types.MOTION_BLOCKING, center.getX() & 15, center.getZ() & 15);
         return new BlockPos(center.getX(), y + 1, center.getZ());
     }
 
@@ -190,7 +189,7 @@ public class Claim implements IPermissionContainer {
     }
 
     public String getClaimName() {
-        String ownerName = this.isAdminClaim() ? "Admin" : this.world.getServer().getProfileCache().get(this.owner).map(GameProfile::getName).orElse("<UNKNOWN>");
+        String ownerName = this.isAdminClaim() ? "Admin" : ClaimUtils.fetchUsername(this.owner, this.level.getServer()).orElse(this.owner.toString());
         return String.format(this.claimName, ownerName);
     }
 
@@ -206,19 +205,19 @@ public class Claim implements IPermissionContainer {
 
     public Optional<ServerPlayer> getOwnerPlayer() {
         if (this.getOwner() != null)
-            return Optional.ofNullable(this.world.getServer().getPlayerList().getPlayer(this.getOwner()));
+            return Optional.ofNullable(this.level.getServer().getPlayerList().getPlayer(this.getOwner()));
         return Optional.empty();
     }
 
-    public ServerLevel getWorld() {
-        return this.world;
+    public ServerLevel getLevel() {
+        return this.level;
     }
 
     public Claim parentClaim() {
         if (this.parent == null)
             return null;
         if (this.parentClaim == null) {
-            ClaimStorage storage = ClaimStorage.get(this.world);
+            ClaimStorage storage = ClaimStorage.get(this.level);
             this.parentClaim = storage.getFromUUID(this.parent);
         }
         return this.parentClaim;
@@ -260,7 +259,7 @@ public class Claim implements IPermissionContainer {
     }
 
     public ClaimBox getDimensions() {
-        return new ClaimBox(this.minX, this.minY, this.minZ, this.maxX, this.maxY != null ? this.maxY : (this.getWorld().getMaxBuildHeight() + 10), this.maxZ);
+        return new ClaimBox(this.minX, this.minY, this.minZ, this.maxX, this.maxY != null ? this.maxY : (this.getLevel().getMaxBuildHeight() + 10), this.maxZ);
     }
 
     public boolean is3d() {
@@ -273,7 +272,7 @@ public class Claim implements IPermissionContainer {
     }
 
     public boolean intersects(Claim other) {
-        ClaimBox collisionBox = new ClaimBox(this.minX, this.maxY != null ? this.minY : this.getWorld().getMinBuildHeight() - 10, this.minZ, this.maxX, this.maxY != null ? this.maxY : (this.getWorld().getMaxBuildHeight() + 10), this.maxZ);
+        ClaimBox collisionBox = new ClaimBox(this.minX, this.maxY != null ? this.minY : this.getLevel().getMinBuildHeight() - 10, this.minZ, this.maxX, this.maxY != null ? this.maxY : (this.getLevel().getMaxBuildHeight() + 10), this.maxZ);
         return collisionBox.intersects(other.getDimensions());
     }
 
@@ -316,17 +315,17 @@ public class Claim implements IPermissionContainer {
         if (res != InteractionResult.PASS)
             return res != InteractionResult.FAIL;
         if (!this.isAdminClaim()) {
-            Config.GlobalType global = ConfigHandler.CONFIG.getGlobal(this.world, perm);
+            Config.GlobalType global = ConfigHandler.CONFIG.getGlobal(this.level, perm);
             if (!global.canModify()) {
                 if (global.getValue() || (player != null && this.isAdminIgnore(player)))
                     return true;
                 if (message)
-                    player.displayClientMessage(PermHelper.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+                    player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
                 if (perm.equals(BuiltinPermission.FAKEPLAYER))
                     this.getOwnerPlayer().ifPresent(p -> PlayerClaimData.get(p).notifyFakePlayerInteraction(player, pos, this));
                 return false;
             }
-            if (ConfigHandler.CONFIG.offlineProtectActivation != -1 && (LogoutTracker.getInstance(this.world.getServer()).justLoggedOut(this.getOwner()) || this.getOwnerPlayer().isPresent())) {
+            if (ConfigHandler.CONFIG.offlineProtectActivation != -1 && (LogoutTracker.getInstance(this.level.getServer()).justLoggedOut(this.getOwner()) || this.getOwnerPlayer().isPresent())) {
                 return global == Config.GlobalType.NONE || global.getValue();
             }
         }
@@ -339,7 +338,7 @@ public class Claim implements IPermissionContainer {
             if (this.hasPerm(perm))
                 return true;
             if (message)
-                player.displayClientMessage(PermHelper.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+                player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
             if (perm.equals(BuiltinPermission.FAKEPLAYER))
                 this.getOwnerPlayer().ifPresent(p -> PlayerClaimData.get(p).notifyFakePlayerInteraction(player, pos, this));
             return false;
@@ -358,7 +357,7 @@ public class Claim implements IPermissionContainer {
                 if (map.get(perm))
                     return true;
                 if (message)
-                    player.displayClientMessage(PermHelper.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+                    player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
                 if (perm.equals(BuiltinPermission.FAKEPLAYER))
                     this.getOwnerPlayer().ifPresent(p -> PlayerClaimData.get(p).notifyFakePlayerInteraction(player, pos, this));
                 return false;
@@ -367,7 +366,7 @@ public class Claim implements IPermissionContainer {
         if (this.hasPerm(perm))
             return true;
         if (message)
-            player.displayClientMessage(PermHelper.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
         if (perm.equals(BuiltinPermission.FAKEPLAYER))
             this.getOwnerPlayer().ifPresent(p -> PlayerClaimData.get(p).notifyFakePlayerInteraction(player, pos, this));
         return false;
@@ -409,7 +408,7 @@ public class Claim implements IPermissionContainer {
         //No sub sub claims
         if (this.parentClaim() != null)
             return Set.of(this.parentClaim());
-        Claim sub = new Claim(pos1, new BlockPos(pos2.getX(), 0, pos2.getZ()), this.owner, this.world);
+        Claim sub = new Claim(pos1, new BlockPos(pos2.getX(), 0, pos2.getZ()), this.owner, this.level);
         sub.setClaimID(this.generateUUID());
         Set<Claim> conflicts = new HashSet<>();
         for (Claim other : this.subClaims)
@@ -462,7 +461,7 @@ public class Claim implements IPermissionContainer {
         int minY = claim.is3d() && dims.minY() == from.getY() ? dims.maxY() : dims.minY();
         BlockPos opposite = new BlockPos(dims.minX() == from.getX() ? dims.maxX() : dims.minX(),
                 minY, dims.minZ() == from.getZ() ? dims.maxZ() : dims.minZ());
-        Claim newClaim = new Claim(opposite, to, claim.claimID, this.world);
+        Claim newClaim = new Claim(opposite, to, claim.claimID, this.level);
         if (claim.is3d()) {
             newClaim.withHeight(Math.max(minY, to.getY()));
         }
@@ -506,7 +505,7 @@ public class Claim implements IPermissionContainer {
                 l.add(uuid);
         });
         List<String> names = new ArrayList<>();
-        l.forEach(uuid -> server.getProfileCache().get(uuid).ifPresent(prof -> names.add(prof.getName())));
+        l.forEach(uuid -> ClaimUtils.fetchUsername(uuid, server).ifPresent(names::add));
         names.sort(null);
         return names;
     }
@@ -516,7 +515,7 @@ public class Claim implements IPermissionContainer {
     }
 
     public boolean editGlobalPerms(ServerPlayer player, ResourceLocation toggle, int mode) {
-        if ((player != null && !this.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) || (!this.isAdminClaim() && ConfigHandler.CONFIG.globallyDefined(this.world, toggle)))
+        if ((player != null && !this.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) || (!this.isAdminClaim() && ConfigHandler.CONFIG.globallyDefined(this.level, toggle)))
             return false;
         if (mode > 1)
             mode = -1;
@@ -539,7 +538,7 @@ public class Claim implements IPermissionContainer {
      * @return If editing was successful or not
      */
     public boolean editPerms(ServerPlayer player, String group, ResourceLocation perm, int mode, boolean alwaysCan) {
-        if (PermissionManager.INSTANCE.isGlobalPermission(perm) || (!this.isAdminClaim() && ConfigHandler.CONFIG.globallyDefined(this.world, perm)))
+        if (PermissionManager.INSTANCE.isGlobalPermission(perm) || (!this.isAdminClaim() && ConfigHandler.CONFIG.globallyDefined(this.level, perm)))
             return false;
         if (alwaysCan || this.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
             if (mode > 1)
@@ -663,9 +662,9 @@ public class Claim implements IPermissionContainer {
         MutableComponent res;
         String claimName = this.getClaimName();
         if (component.getContents() instanceof TranslatableContents trans) {
-            res = Component.translatable(trans.getKey(), this.isAdminClaim() ? "Admin" : this.world.getServer().getProfileCache().get(this.owner).map(GameProfile::getName).orElse("<UNKNOWN>"), claimName);
+            res = Component.translatable(trans.getKey(), this.isAdminClaim() ? "Admin" : ClaimUtils.fetchUsername(this.owner, this.level.getServer(), true).orElse("<UNKNOWN>"), claimName);
         } else if (component.getContents() instanceof LiteralContents comp) {
-            res = Component.translatable(comp.text(), this.isAdminClaim() ? "Admin" : this.world.getServer().getProfileCache().get(this.owner).map(GameProfile::getName).orElse("<UNKNOWN>"), claimName);
+            res = Component.translatable(comp.text(), this.isAdminClaim() ? "Admin" : ClaimUtils.fetchUsername(this.owner, this.level.getServer(), true).orElse("<UNKNOWN>"), claimName);
         } else {
             res = component.plainCopy();
         }
@@ -789,7 +788,7 @@ public class Claim implements IPermissionContainer {
             ConfigHandler.fromJson(obj, "PlayerPerms").entrySet()
                     .forEach(key -> this.playersGroups.put(UUID.fromString(key.getKey()), key.getValue().getAsString()));
             ConfigHandler.arryFromJson(obj, "SubClaims")
-                    .forEach(sub -> this.subClaims.add(Claim.fromJson(sub.getAsJsonObject(), this.owner, this.world)));
+                    .forEach(sub -> this.subClaims.add(Claim.fromJson(sub.getAsJsonObject(), this.owner, this.level)));
             ConfigHandler.arryFromJson(obj, "FakePlayers")
                     .forEach(e -> {
                         try {
@@ -914,43 +913,42 @@ public class Claim implements IPermissionContainer {
     public List<Component> infoString(ServerPlayer player, InfoType infoType) {
         boolean perms = this.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition());
         List<Component> l = new ArrayList<>();
-        l.add(PermHelper.translatedText("=============================================", ChatFormatting.GREEN));
-        String ownerName = this.isAdminClaim() ? "Admin" : player.getServer().getProfileCache().get(this.owner).map(GameProfile::getName).orElse("<UNKNOWN>");
+        l.add(ClaimUtils.translatedText("=============================================", ChatFormatting.GREEN));
+        String ownerName = this.isAdminClaim() ? "Admin" : ClaimUtils.fetchUsername(this.owner, this.level.getServer(), true).orElse(this.owner.toString());
         String claimName = this.getClaimName();
         if (this.parent == null) {
             if (claimName.isEmpty())
-                l.add(PermHelper.translatedText("flan.claimBasicInfo", ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size(), ChatFormatting.GOLD));
+                l.add(ClaimUtils.translatedText("flan.claimBasicInfo", ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size(), ChatFormatting.GOLD));
             else
-                l.add(PermHelper.translatedText("flan.claimBasicInfoNamed", ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size(), claimName, ChatFormatting.GOLD));
+                l.add(ClaimUtils.translatedText("flan.claimBasicInfoNamed", ownerName, this.minX, this.minZ, this.maxX, this.maxZ, this.subClaims.size(), claimName, ChatFormatting.GOLD));
         } else {
             if (claimName.isEmpty())
-                l.add(PermHelper.translatedText("flan.claimBasicInfoSub", ownerName, this.minX, this.minZ, this.maxX, this.maxZ, ChatFormatting.GOLD));
+                l.add(ClaimUtils.translatedText("flan.claimBasicInfoSub", ownerName, this.minX, this.minZ, this.maxX, this.maxZ, ChatFormatting.GOLD));
             else
-                l.add(PermHelper.translatedText("flan.claimBasicInfoSubNamed", ownerName, this.minX, this.minZ, this.maxX, this.maxZ, claimName, ChatFormatting.GOLD));
+                l.add(ClaimUtils.translatedText("flan.claimBasicInfoSubNamed", ownerName, this.minX, this.minZ, this.maxX, this.maxZ, claimName, ChatFormatting.GOLD));
         }
         if (perms) {
             if (infoType == InfoType.ALL || infoType == InfoType.GLOBAL)
                 l.add(fromPermissionMap("claimInfoPerms", this.globalPerm));
             if (infoType == InfoType.ALL || infoType == InfoType.GROUP) {
-                l.add(PermHelper.translatedText("flan.claimGroupInfoHeader", ChatFormatting.GOLD));
+                l.add(ClaimUtils.translatedText("flan.claimGroupInfoHeader", ChatFormatting.GOLD));
                 Map<String, List<String>> nameToGroup = new HashMap<>();
                 for (Map.Entry<UUID, String> e : this.playersGroups.entrySet()) {
-                    player.getServer().getProfileCache().get(e.getKey()).ifPresent(pgroup ->
-
-                            nameToGroup.merge(e.getValue(), Lists.newArrayList(pgroup.getName()), (old, val) -> {
-                                old.add(pgroup.getName());
+                    ClaimUtils.fetchUsername(this.owner, this.level.getServer(), true).ifPresent(name ->
+                            nameToGroup.merge(e.getValue(), Lists.newArrayList(name), (old, val) -> {
+                                old.add(name);
                                 return old;
                             })
                     );
                 }
                 for (Map.Entry<String, Map<ResourceLocation, Boolean>> e : this.permissions.entrySet()) {
-                    l.add(PermHelper.translatedText(String.format("  %s:", e.getKey()), ChatFormatting.YELLOW));
+                    l.add(ClaimUtils.translatedText(String.format("  %s:", e.getKey()), ChatFormatting.YELLOW));
                     l.add(fromPermissionMap("claimGroupPerms", e.getValue()));
-                    l.add(PermHelper.translatedText("flan.claimGroupPlayers", nameToGroup.getOrDefault(e.getKey(), new ArrayList<>()), ChatFormatting.RED));
+                    l.add(ClaimUtils.translatedText("flan.claimGroupPlayers", nameToGroup.getOrDefault(e.getKey(), new ArrayList<>()), ChatFormatting.RED));
                 }
             }
         }
-        l.add(PermHelper.translatedText("=============================================", ChatFormatting.GREEN));
+        l.add(ClaimUtils.translatedText("=============================================", ChatFormatting.GREEN));
         return l;
     }
 

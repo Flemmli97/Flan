@@ -3,7 +3,7 @@ package io.github.flemmli97.flan.gui;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.claim.Claim;
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
@@ -36,7 +36,7 @@ public class ServerScreenHelper {
 
     public static ItemStack emptyFiller() {
         ItemStack stack = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
-        stack.setHoverName(PermHelper.translatedText(""));
+        stack.setHoverName(ClaimUtils.translatedText(""));
         return stack;
     }
 
@@ -48,7 +48,7 @@ public class ServerScreenHelper {
             Component trans = ServerScreenHelper.coloredGuiText(pdesc, ChatFormatting.YELLOW);
             lore.add(trans);
         }
-        Config.GlobalType global = ConfigHandler.CONFIG.getGlobal(claim.getWorld(), perm.getId());
+        Config.GlobalType global = ConfigHandler.CONFIG.getGlobal(claim.getLevel(), perm.getId());
         if (!claim.isAdminClaim() && !global.canModify()) {
             Component text = ServerScreenHelper.coloredGuiText("flan.screenUneditable", ChatFormatting.DARK_RED);
             lore.add(text);

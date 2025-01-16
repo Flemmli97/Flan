@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.gui;
 
 import com.google.common.collect.Lists;
 import io.github.flemmli97.flan.claim.Claim;
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import net.minecraft.ChatFormatting;
@@ -49,7 +49,7 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.translatedText("flan.screenPotions");
+                return ClaimUtils.translatedText("flan.screenPotions");
             }
         };
         player.openMenu(fac);
@@ -81,7 +81,7 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 if (id < potions.size()) {
                     MobEffect effect = key.get(id);
                     ItemStack effectStack = new ItemStack(Items.POTION);
-                    MutableComponent txt = PermHelper.translatedText(effect.getDescriptionId());
+                    MutableComponent txt = ClaimUtils.translatedText(effect.getDescriptionId());
                     Collection<MobEffectInstance> inst = Collections.singleton(new MobEffectInstance(effect, 0, potions.get(effect)));
                     effectStack.getOrCreateTag().putString("FlanEffect", CrossPlatformStuff.INSTANCE.registryStatusEffects().getIDFrom(effect).toString());
                     effectStack.getTag().putInt("CustomPotionColor", PotionUtils.getColor(inst));

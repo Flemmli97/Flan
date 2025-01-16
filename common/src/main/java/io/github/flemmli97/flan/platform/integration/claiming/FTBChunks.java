@@ -16,7 +16,7 @@ public class FTBChunks {
 
     public static void findConflicts(Claim claim, Set<DisplayBox> set) {
         if (Flan.ftbChunks && ConfigHandler.CONFIG.ftbChunksCheck) {
-            ServerLevel level = claim.getWorld();
+            ServerLevel level = claim.getLevel();
             int[] chunks = ClaimStorage.getChunkPos(claim);
             for (int x = chunks[0]; x <= chunks[1]; x++)
                 for (int z = chunks[2]; z <= chunks[3]; z++) {

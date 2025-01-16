@@ -20,7 +20,7 @@ public class OtherClaimingModCheckImpl implements OtherClaimingModCheck {
         FTBChunks.findConflicts(claim, set);
         if (Flan.gomlServer && ConfigHandler.CONFIG.gomlReservedCheck) {
             ClaimBox dim = claim.getDimensions();
-            ClaimUtils.getClaimsInBox(claim.getWorld(), new BlockPos(dim.minX() - 1, dim.minY(), dim.minZ() - 1), new BlockPos(dim.maxX() + 1, dim.maxY(), dim.maxZ() + 1))
+            ClaimUtils.getClaimsInBox(claim.getLevel(), new BlockPos(dim.minX() - 1, dim.minY(), dim.minZ() - 1), new BlockPos(dim.maxX() + 1, dim.maxY(), dim.maxZ() + 1))
                     .forEach(e -> {
                         if (!e.getValue().getOwners().contains(claim.getOwner()) && !e.getValue().getTrusted().contains(claim.getOwner()))
                             set.add(convertBox(e.getValue()));

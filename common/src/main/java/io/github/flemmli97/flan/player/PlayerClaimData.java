@@ -11,7 +11,7 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.EntityInteractEvents;
 import io.github.flemmli97.flan.event.ItemInteractEvents;
@@ -29,14 +29,12 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.AABB;
@@ -363,7 +361,7 @@ public class PlayerClaimData implements IPlayerData {
         } else if (!this.claimBlockMessage) {
             this.claimBlockMessage = true;
             if (this.shouldDisplayClaimToolMessage()) {
-                this.player.displayClientMessage(PermHelper.translatedText("flan.claimBlocksFormat",
+                this.player.displayClientMessage(ClaimUtils.translatedText("flan.claimBlocksFormat",
                         this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks(), this.remainingClaimBlocks(), ChatFormatting.GOLD), false);
                 this.addDisplayClaim(currentClaim, EnumDisplayType.MAIN, this.player.blockPosition().getY());
             }
@@ -401,7 +399,7 @@ public class PlayerClaimData implements IPlayerData {
             } else if (this.player.position().distanceToSqr(this.trappedPos) > 0.15) {
                 this.trappedTick = -1;
                 this.trappedPos = null;
-                this.player.displayClientMessage(PermHelper.translatedText("flan.trappedMove", ChatFormatting.RED), false);
+                this.player.displayClientMessage(ClaimUtils.translatedText("flan.trappedMove", ChatFormatting.RED), false);
             }
         }
         this.deathPickupTick--;
@@ -428,7 +426,7 @@ public class PlayerClaimData implements IPlayerData {
         this.defaultGroups.clear();
         this.defaultGroups.putAll(data.defaultGroups);
         if (data.setDeathItemOwner()) {
-            this.player.displayClientMessage(PermHelper.translatedText("flan.unlockDropsCmd", "/flan unlockDrops", ChatFormatting.GOLD), false);
+            this.player.displayClientMessage(ClaimUtils.translatedText("flan.unlockDropsCmd", "/flan unlockDrops", ChatFormatting.GOLD), false);
         }
     }
 
@@ -491,21 +489,21 @@ public class PlayerClaimData implements IPlayerData {
         Map<UUID, Long> map = this.fakePlayerNotif.computeIfAbsent(claim.getClaimID(), o -> new HashMap<>());
         Long last = map.get(fakePlayer.getUUID());
         if (last == null || this.player.serverLevel().getGameTime() - 1200 > last) {
-            Component claimMsg = PermHelper.translatedText("flan.fakePlayerNotification1", claim.getWorld().dimension().location().toString(), pos, ChatFormatting.DARK_RED);
+            Component claimMsg = ClaimUtils.translatedText("flan.fakePlayerNotification1", claim.getLevel().dimension().location().toString(), pos, ChatFormatting.DARK_RED);
             this.player.sendSystemMessage(claimMsg);
             String cmdStr = String.format("/flan fakePlayer add %s", fakePlayer.getUUID());
-            Component cmd = PermHelper.translatedText("flan.clickableComponent")
+            Component cmd = ClaimUtils.translatedText("flan.clickableComponent")
                     .withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)
                             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, cmdStr))
                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(cmdStr))));
-            Component msg = PermHelper.translatedText("flan.fakePlayerNotification2", cmd);
+            Component msg = ClaimUtils.translatedText("flan.fakePlayerNotification2", cmd);
             this.player.sendSystemMessage(msg);
             cmdStr = "/flan fakePlayer";
-            cmd = PermHelper.translatedText("flan.clickableComponent")
+            cmd = ClaimUtils.translatedText("flan.clickableComponent")
                     .withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)
                             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, cmdStr))
                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(cmdStr))));
-            msg = PermHelper.translatedText("flan.fakePlayerNotification3", cmd);
+            msg = ClaimUtils.translatedText("flan.fakePlayerNotification3", cmd);
             this.player.sendSystemMessage(msg);
             map.put(fakePlayer.getUUID(), this.player.serverLevel().getGameTime());
         }
@@ -612,7 +610,7 @@ public class PlayerClaimData implements IPlayerData {
         Flan.log("Reading grief prevention data");
         File griefPrevention = server.getWorldPath(LevelResource.ROOT).resolve("plugins/GriefPreventionData/PlayerData").toFile();
         if (!griefPrevention.exists()) {
-            src.sendSuccess(() -> PermHelper.translatedText("flan.cantFindData", griefPrevention.getAbsolutePath(), ChatFormatting.DARK_RED), false);
+            src.sendSuccess(() -> ClaimUtils.translatedText("flan.cantFindData", griefPrevention.getAbsolutePath(), ChatFormatting.DARK_RED), false);
             return false;
         }
         for (File f : griefPrevention.listFiles()) {
@@ -647,7 +645,7 @@ public class PlayerClaimData implements IPlayerData {
                     reader.close();
                 }
             } catch (Exception e) {
-                src.sendSuccess(() -> PermHelper.translatedText("flan.errorFile", f.getName(), ChatFormatting.RED), false);
+                src.sendSuccess(() -> ClaimUtils.translatedText("flan.errorFile", f.getName(), ChatFormatting.RED), false);
             }
         }
         return true;

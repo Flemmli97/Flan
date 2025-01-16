@@ -1,7 +1,7 @@
 package io.github.flemmli97.flan.platform.integration.currency;
 
 import io.github.flemmli97.flan.Flan;
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.impactdev.impactor.api.economy.EconomyService;
 import net.impactdev.impactor.api.economy.accounts.Account;
@@ -20,7 +20,7 @@ public class CommonCurrency {
         if (Flan.impactor) {
             PlayerClaimData data = PlayerClaimData.get(player);
             if (data.getAdditionalClaims() - Math.max(0, data.usedClaimBlocks() - data.getClaimBlocks()) < blocks) {
-                message.accept(PermHelper.translatedText("flan.sellFail", ChatFormatting.DARK_RED));
+                message.accept(ClaimUtils.translatedText("flan.sellFail", ChatFormatting.DARK_RED));
                 return 0;
             }
             CompletableFuture<Account> future = EconomyService.instance().account(player.getUUID());
@@ -28,7 +28,7 @@ public class CommonCurrency {
                 BigDecimal price = BigDecimal.valueOf(blocks * value);
                 acc.depositAsync(price);
                 data.setAdditionalClaims(data.getAdditionalClaims() - blocks);
-                message.accept(PermHelper.translatedText("flan.sellSuccess", blocks, price, ChatFormatting.GOLD));
+                message.accept(ClaimUtils.translatedText("flan.sellSuccess", blocks, price, ChatFormatting.GOLD));
             });
             return 1;
         }
@@ -45,7 +45,7 @@ public class CommonCurrency {
                     acc.withdrawAsync(price);
                     PlayerClaimData data = PlayerClaimData.get(player);
                     data.setAdditionalClaims(data.getAdditionalClaims() + blocks);
-                    message.accept(PermHelper.translatedText("flan.buySuccess", blocks, price, ChatFormatting.GOLD));
+                    message.accept(ClaimUtils.translatedText("flan.buySuccess", blocks, price, ChatFormatting.GOLD));
                     return 1;
                 }
                 return 0;

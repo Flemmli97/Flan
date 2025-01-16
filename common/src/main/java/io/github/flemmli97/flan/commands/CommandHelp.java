@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.linguabib.api.LanguageAPI;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -30,21 +30,21 @@ public class CommandHelp {
         subCommands.remove("?");
         int max = subCommands.size() / 8;
         int page = Math.min(pageC, max);
-        context.getSource().sendSuccess(() -> PermHelper.translatedText("flan.helpHeader", page, ChatFormatting.GOLD), false);
+        context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.helpHeader", page, ChatFormatting.GOLD), false);
         for (int i = 8 * page; i < 8 * (page + 1); i++)
             if (i < subCommands.size()) {
                 String sub = subCommands.get(i);
-                MutableComponent cmdText = PermHelper.translatedText("- " + sub, ChatFormatting.GRAY);
+                MutableComponent cmdText = ClaimUtils.translatedText("- " + sub, ChatFormatting.GRAY);
                 context.getSource().sendSuccess(() -> cmdText.withStyle(cmdText.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flan help cmd " + sub))), false);
             }
-        MutableComponent txt = PermHelper.translatedText((page > 0 ? "  " : "") + " ", ChatFormatting.DARK_GREEN);
+        MutableComponent txt = ClaimUtils.translatedText((page > 0 ? "  " : "") + " ", ChatFormatting.DARK_GREEN);
         if (page > 0) {
-            MutableComponent pageTextBack = PermHelper.translatedText("<<", ChatFormatting.DARK_GREEN);
+            MutableComponent pageTextBack = ClaimUtils.translatedText("<<", ChatFormatting.DARK_GREEN);
             pageTextBack.withStyle(pageTextBack.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flan help " + (page - 1))));
             txt = pageTextBack.append(txt);
         }
         if (page < max) {
-            MutableComponent pageTextNext = PermHelper.translatedText(">>");
+            MutableComponent pageTextNext = ClaimUtils.translatedText(">>");
             pageTextNext.withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flan help " + (page + 1))));
             txt = txt.append(pageTextNext);
         }
@@ -60,20 +60,20 @@ public class CommandHelp {
 
     public static int helpCmd(CommandContext<CommandSourceStack> context, String command) {
         List<String> cmdHelp = lang(context, "flan.command." + command);
-        context.getSource().sendSuccess(() -> PermHelper.translatedText("flan.helpCmdHeader", ChatFormatting.DARK_GREEN), false);
+        context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.helpCmdHeader", ChatFormatting.DARK_GREEN), false);
         for (int i = 0; i < cmdHelp.size(); i++) {
             String cmp = cmdHelp.get(i);
             if (i == 0) {
-                context.getSource().sendSuccess(() -> PermHelper.translatedText("flan.helpCmdSyntax",
-                        PermHelper.translatedText(cmp), ChatFormatting.GOLD), false);
-                context.getSource().sendSuccess(() -> PermHelper.translatedText(""), false);
+                context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.helpCmdSyntax",
+                        ClaimUtils.translatedText(cmp), ChatFormatting.GOLD), false);
+                context.getSource().sendSuccess(() -> ClaimUtils.translatedText(""), false);
             } else {
-                context.getSource().sendSuccess(() -> PermHelper.translatedText(cmp, ChatFormatting.GOLD), false);
+                context.getSource().sendSuccess(() -> ClaimUtils.translatedText(cmp, ChatFormatting.GOLD), false);
             }
         }
         if (command.equals("help")) {
-            context.getSource().sendSuccess(() -> PermHelper.translatedText("flan.wiki", ChatFormatting.GOLD), false);
-            MutableComponent wiki = PermHelper.translatedText("https://github.com/Flemmli97/Flan/wiki", ChatFormatting.GREEN);
+            context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.wiki", ChatFormatting.GOLD), false);
+            MutableComponent wiki = ClaimUtils.translatedText("https://github.com/Flemmli97/Flan/wiki", ChatFormatting.GREEN);
             wiki.setStyle(wiki.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/Flemmli97/Flan/wiki")));
             context.getSource().sendSuccess(() -> wiki, false);
         }

@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.gui;
 
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.claim.Claim;
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
@@ -42,7 +42,7 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
 
             @Override
             public Component getDisplayName() {
-                return PermHelper.translatedText(claim.parentClaim() != null ? "flan.screenTitleEditorSub" : "flan.screenTitleEditor");
+                return ClaimUtils.translatedText(claim.parentClaim() != null ? "flan.screenTitleEditorSub" : "flan.screenTitleEditor");
             }
         };
         player.openMenu(fac);
@@ -139,7 +139,7 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                         ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                     }));
                 } else {
-                    MutableComponent text = PermHelper.translatedText("flan.chatClaimTextEdit");
+                    MutableComponent text = ClaimUtils.translatedText("flan.chatClaimTextEdit");
                     String command = "/flan claimMessage" + (index == 2 || index == 3 ? " enter" : " leave")
                             + (index == 2 || index == 4 ? " title" : " subtitle") + " text ";
                     text.withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)));

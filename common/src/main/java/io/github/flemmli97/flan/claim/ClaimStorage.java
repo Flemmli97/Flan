@@ -116,7 +116,7 @@ public class ClaimStorage implements IPermissionStorage {
             else
                 pos2 = pos2.below(ConfigHandler.CONFIG.defaultClaimDepth);
         } else if (Math.abs(pos1.getY() - pos2.getY()) < ConfigHandler.CONFIG.minHeight) {
-            player.displayClientMessage(PermHelper.translatedText("flan.minClaimHeight", ConfigHandler.CONFIG.minHeight, ChatFormatting.RED), false);
+            player.displayClientMessage(ClaimUtils.translatedText("flan.minClaimHeight", ConfigHandler.CONFIG.minHeight, ChatFormatting.RED), false);
             return false;
         }
         Claim claim = new Claim(pos1, pos2, player);
@@ -126,7 +126,7 @@ public class ClaimStorage implements IPermissionStorage {
             AABB aabb = new AABB(player.level().getSharedSpawnPos()).inflate(player.getServer().getSpawnProtectionRadius());
             ClaimBox dim = claim.getDimensions();
             if (dim.minX() <= aabb.maxX && dim.maxX() >= aabb.minX && dim.minZ() <= aabb.maxZ && dim.maxZ() >= aabb.minZ) {
-                player.displayClientMessage(PermHelper.translatedText("flan.conflictSpawn", ChatFormatting.RED), false);
+                player.displayClientMessage(ClaimUtils.translatedText("flan.conflictSpawn", ChatFormatting.RED), false);
                 return false;
             }
         }
@@ -135,19 +135,19 @@ public class ClaimStorage implements IPermissionStorage {
             PlayerClaimData data = PlayerClaimData.get(player);
             long cooldown = data.nextClaimCooldown();
             if (cooldown > 0) {
-                player.displayClientMessage(PermHelper.translatedText("flan.claimCooldown", cooldown, ChatFormatting.RED), false);
+                player.displayClientMessage(ClaimUtils.translatedText("flan.claimCooldown", cooldown, ChatFormatting.RED), false);
                 return false;
             }
             if (claim.getPlane() < ConfigHandler.CONFIG.minClaimsize) {
-                player.displayClientMessage(PermHelper.translatedText("flan.minClaimSize", ConfigHandler.CONFIG.minClaimsize, ChatFormatting.RED), false);
+                player.displayClientMessage(ClaimUtils.translatedText("flan.minClaimSize", ConfigHandler.CONFIG.minClaimsize, ChatFormatting.RED), false);
                 return false;
             }
             if (!data.isAdminIgnoreClaim() && ConfigHandler.CONFIG.maxClaims != -1 && !PermissionNodeHandler.INSTANCE.permBelowEqVal(player, PermissionNodeHandler.permMaxClaims, this.playerClaimMap.getOrDefault(player.getUUID(), Sets.newHashSet()).size() + 1, ConfigHandler.CONFIG.maxClaims)) {
-                player.displayClientMessage(PermHelper.translatedText("flan.maxClaims", ChatFormatting.RED), false);
+                player.displayClientMessage(ClaimUtils.translatedText("flan.maxClaims", ChatFormatting.RED), false);
                 return false;
             }
             if (!data.isAdminIgnoreClaim() && !data.canUseClaimBlocks(claim.getPlane())) {
-                player.displayClientMessage(PermHelper.translatedText("flan.notEnoughBlocks",
+                player.displayClientMessage(ClaimUtils.translatedText("flan.notEnoughBlocks",
                         claim.getPlane(), data.remainingClaimBlocks(), ChatFormatting.RED), false);
                 return false;
             }
@@ -157,14 +157,14 @@ public class ClaimStorage implements IPermissionStorage {
             data.updateLastClaim();
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
             data.updateScoreboard();
-            player.displayClientMessage(PermHelper.translatedText("flan.claimCreateSuccess", ChatFormatting.GOLD), false);
-            player.displayClientMessage(PermHelper.translatedText("flan.claimBlocksFormat",
+            player.displayClientMessage(ClaimUtils.translatedText("flan.claimCreateSuccess", ChatFormatting.GOLD), false);
+            player.displayClientMessage(ClaimUtils.translatedText("flan.claimBlocksFormat",
                     data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks(), data.remainingClaimBlocks(), ChatFormatting.GOLD), false);
             return true;
         }
         PlayerClaimData data = PlayerClaimData.get(player);
         conflicts.forEach(conf -> data.addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.blockPosition().getY()));
-        player.displayClientMessage(PermHelper.translatedText("flan.conflictOther", ChatFormatting.RED), false);
+        player.displayClientMessage(ClaimUtils.translatedText("flan.conflictOther", ChatFormatting.RED), false);
         return false;
     }
 
@@ -233,19 +233,19 @@ public class ClaimStorage implements IPermissionStorage {
         Claim newClaim = new Claim(opposite, to, player.getUUID(), player.serverLevel());
         if (claim.is3d()) {
             if (Math.abs(minY - to.getY()) < ConfigHandler.CONFIG.minHeight) {
-                player.displayClientMessage(PermHelper.translatedText("flan.minClaimHeight", ConfigHandler.CONFIG.minHeight, ChatFormatting.RED), false);
+                player.displayClientMessage(ClaimUtils.translatedText("flan.minClaimHeight", ConfigHandler.CONFIG.minHeight, ChatFormatting.RED), false);
                 return false;
             }
             newClaim.withHeight(Math.max(minY, to.getY()));
         }
         if (newClaim.getPlane() < ConfigHandler.CONFIG.minClaimsize) {
-            player.displayClientMessage(PermHelper.translatedText("flan.minClaimSize", ConfigHandler.CONFIG.minClaimsize, ChatFormatting.RED), false);
+            player.displayClientMessage(ClaimUtils.translatedText("flan.minClaimSize", ConfigHandler.CONFIG.minClaimsize, ChatFormatting.RED), false);
             return false;
         }
         Set<DisplayBox> conflicts = this.conflicts(newClaim, claim);
         if (!conflicts.isEmpty()) {
             conflicts.forEach(conf -> PlayerClaimData.get(player).addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.blockPosition().getY()));
-            player.displayClientMessage(PermHelper.translatedText("flan.conflictOther", ChatFormatting.RED), false);
+            player.displayClientMessage(ClaimUtils.translatedText("flan.conflictOther", ChatFormatting.RED), false);
             return false;
         }
         int diff = newClaim.getPlane() - claim.getPlane();
@@ -264,12 +264,12 @@ public class ClaimStorage implements IPermissionStorage {
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
             if (newData instanceof PlayerClaimData)
                 ((PlayerClaimData) newData).updateScoreboard();
-            player.displayClientMessage(PermHelper.translatedText("flan.resizeSuccess", ChatFormatting.GOLD), false);
-            player.displayClientMessage(PermHelper.translatedText("flan.claimBlocksFormat",
+            player.displayClientMessage(ClaimUtils.translatedText("flan.resizeSuccess", ChatFormatting.GOLD), false);
+            player.displayClientMessage(ClaimUtils.translatedText("flan.claimBlocksFormat",
                     newData.getClaimBlocks(), newData.getAdditionalClaims(), newData.usedClaimBlocks(), data.remainingClaimBlocks(), ChatFormatting.GOLD), false);
             return true;
         }
-        player.displayClientMessage(PermHelper.translatedText("flan.notEnoughBlocks",
+        player.displayClientMessage(ClaimUtils.translatedText("flan.notEnoughBlocks",
                 claim.getPlane(), data.remainingClaimBlocks(), ChatFormatting.RED), false);
         return false;
     }
@@ -333,7 +333,7 @@ public class ClaimStorage implements IPermissionStorage {
                 if (claim.insideClaim(ipos)) {
                     if (!claim.canInteract(player, perm, ipos, message)) {
                         if (message)
-                            player.displayClientMessage(PermHelper.translatedText("flan.noPermissionTooClose", ChatFormatting.DARK_RED), true);
+                            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionTooClose", ChatFormatting.DARK_RED), true);
                         return false;
                     }
                 }
@@ -485,7 +485,7 @@ public class ClaimStorage implements IPermissionStorage {
         Yaml yml = new Yaml();
         File griefPrevention = server.getWorldPath(LevelResource.ROOT).resolve("plugins/GriefPreventionData/ClaimData").toFile();
         if (!griefPrevention.exists()) {
-            src.sendSuccess(() -> PermHelper.translatedText("flan.cantFindData", griefPrevention.getAbsolutePath(), ChatFormatting.DARK_RED), false);
+            src.sendSuccess(() -> ClaimUtils.translatedText("flan.cantFindData", griefPrevention.getAbsolutePath(), ChatFormatting.DARK_RED), false);
             return false;
         }
         Map<File, List<File>> subClaimMap = new HashMap<>();
@@ -519,7 +519,7 @@ public class ClaimStorage implements IPermissionStorage {
                         try {
                             intFileMap.put(Integer.valueOf(f.getName().replace(".yml", "")), f);
                         } catch (NumberFormatException e) {
-                            src.sendSuccess(() -> PermHelper.translatedText("flan.errorFile", f.getName(), ChatFormatting.RED), false);
+                            src.sendSuccess(() -> ClaimUtils.translatedText("flan.errorFile", f.getName(), ChatFormatting.RED), false);
                         }
                     }
                 }
@@ -552,16 +552,16 @@ public class ClaimStorage implements IPermissionStorage {
                         parentClaim.getB().setClaimID(storage.generateUUID());
                         storage.addClaim(parentClaim.getB());
                     } else {
-                        src.sendSuccess(() -> PermHelper.translatedText("flan.readConflict", parent.getName(), conflicts, ChatFormatting.DARK_RED), false);
+                        src.sendSuccess(() -> ClaimUtils.translatedText("flan.readConflict", parent.getName(), conflicts, ChatFormatting.DARK_RED), false);
                         for (DisplayBox claim : conflicts) {
                             ClaimBox dim = claim.box();
-                            MutableComponent text = PermHelper.translatedText(String.format("@[x=%d;z=%d]", dim.minX(), dim.minZ()), ChatFormatting.RED);
-                            text.setStyle(text.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + dim.minX() + " ~ " + dim.minZ())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, PermHelper.translatedText("chat.coordinates.tooltip"))));
+                            MutableComponent text = ClaimUtils.translatedText(String.format("@[x=%d;z=%d]", dim.minX(), dim.minZ()), ChatFormatting.RED);
+                            text.setStyle(text.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + dim.minX() + " ~ " + dim.minZ())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, ClaimUtils.translatedText("chat.coordinates.tooltip"))));
                             src.sendSuccess(() -> text, false);
                         }
                     }
                 } catch (Exception e) {
-                    src.sendSuccess(() -> PermHelper.translatedText("flan.errorFile", parent.getName(), ChatFormatting.RED), false);
+                    src.sendSuccess(() -> ClaimUtils.translatedText("flan.errorFile", parent.getName(), ChatFormatting.RED), false);
                     e.printStackTrace();
                 }
             }

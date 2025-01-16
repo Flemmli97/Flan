@@ -1,19 +1,22 @@
 package io.github.flemmli97.flan.claim;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 
-public class PermHelper {
+public class ClaimUtils {
 
     public static boolean check(ServerPlayer player, BlockPos pos, Claim claim, ResourceLocation perm, Consumer<Optional<Boolean>> cons) {
         if (claim == null) {
@@ -38,7 +41,7 @@ public class PermHelper {
     public static Consumer<Optional<Boolean>> genericNoPermMessage(ServerPlayer player) {
         return (b -> {
             if (!b.isPresent())
-                PermHelper.noClaimMessage(player);
+                ClaimUtils.noClaimMessage(player);
             else if (!b.get())
                 player.displayClientMessage(translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
         });
@@ -55,5 +58,19 @@ public class PermHelper {
         }
         return Component.translatable(key,
                 args.toArray()).setStyle(Style.EMPTY.applyFormats(formattings.toArray(ChatFormatting[]::new)));
+    }
+
+    public static Optional<String> fetchUsername(UUID uuid, MinecraftServer server) {
+        return fetchUsername(uuid, server, false);
+    }
+
+    public static Optional<String> fetchUsername(UUID uuid, MinecraftServer server, boolean fetch) {
+        String ownerName = server.getProfileCache().get(uuid).map(GameProfile::getName).orElse(null);
+        if (ownerName == null && fetch) {
+            GameProfile prof = new GameProfile(uuid, null);
+            server.getSessionService().fillProfileProperties(prof, true);
+            ownerName = prof.getName();
+        }
+        return Optional.ofNullable(ownerName);
     }
 }

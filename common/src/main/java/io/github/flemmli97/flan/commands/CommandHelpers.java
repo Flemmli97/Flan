@@ -12,7 +12,7 @@ import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
-import io.github.flemmli97.flan.claim.PermHelper;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.CustomInteractListScreenHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
@@ -48,7 +48,7 @@ public class CommandHelpers {
     public static GameProfile singleProfile(CommandContext<CommandSourceStack> context, String arg) throws CommandSyntaxException {
         Collection<GameProfile> profs = GameProfileArgument.getGameProfiles(context, arg);
         if (profs.size() != 1) {
-            throw new SimpleCommandExceptionType(PermHelper.translatedText("flan.onlyOnePlayer")).create();
+            throw new SimpleCommandExceptionType(ClaimUtils.translatedText("flan.onlyOnePlayer")).create();
         }
         return profs.stream().findFirst().get();
     }
@@ -113,7 +113,7 @@ public class CommandHelpers {
         ResourceOrTagKeyArgument.Result<?> result = (ResourceOrTagKeyArgument.Result<T>) context.getArgument(name, ResourceOrTagKeyArgument.Result.class);
         Optional<ResourceOrTagKeyArgument.Result<T>> optional = result.cast(registryKey);
         return optional.orElseThrow(() -> new DynamicCommandExceptionType((object) ->
-                PermHelper.translatedText("No such entry %1$s", object)).create(result));
+                ClaimUtils.translatedText("No such entry %1$s", object)).create(result));
     }
 
     public static CompletableFuture<Suggestions> claimEntryListSuggestion(CommandContext<CommandSourceStack> context, SuggestionsBuilder build, CustomInteractListScreenHandler.Type type) throws CommandSyntaxException {

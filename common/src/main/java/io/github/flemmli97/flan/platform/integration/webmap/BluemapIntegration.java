@@ -1,6 +1,5 @@
 package io.github.flemmli97.flan.platform.integration.webmap;
 
-import com.mojang.authlib.GameProfile;
 import de.bluecolored.bluemap.api.BlueMapAPI;
 import de.bluecolored.bluemap.api.BlueMapMap;
 import de.bluecolored.bluemap.api.markers.ExtrudeMarker;
@@ -12,6 +11,7 @@ import de.bluecolored.bluemap.api.math.Shape;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimBox;
 import io.github.flemmli97.flan.claim.ClaimStorage;
+import io.github.flemmli97.flan.claim.ClaimUtils;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 
@@ -29,9 +29,9 @@ public class BluemapIntegration {
         BlueMapAPI.onEnable(api -> {
             for (ServerLevel level : server.getAllLevels()) {
                 api.getWorld(level).ifPresent(world -> world.getMaps().forEach(map -> {
-                    MarkerSet markerSet = MarkerSet.builder().label(CLAIMS).build();
-                    MarkerSet markerSet2 = MarkerSet.builder().label(CLAIMS)
+                    MarkerSet markerSet = MarkerSet.builder().label(CLAIMS)
                             .defaultHidden(true).build();
+                    MarkerSet markerSet2 = MarkerSet.builder().label(CLAIMS).build();
                     map.getMarkerSets().put(MARKER_3D, markerSet);
                     map.getMarkerSets().put(MARKER_2D, markerSet2);
                 }));
@@ -48,7 +48,7 @@ public class BluemapIntegration {
     }
 
     public static void addClaimMarker(Claim claim) {
-        BlueMapAPI.getInstance().flatMap(api -> api.getWorld(claim.getWorld())).ifPresent(world -> {
+        BlueMapAPI.getInstance().flatMap(api -> api.getWorld(claim.getLevel())).ifPresent(world -> {
             for (BlueMapMap map : world.getMaps()) {
                 MarkerSet markerSet = map.getMarkerSets().get(MARKER_3D);
                 ClaimBox dim = claim.getDimensions();
@@ -78,7 +78,7 @@ public class BluemapIntegration {
     }
 
     public static void removeMarker(Claim claim) {
-        BlueMapAPI.getInstance().flatMap(api -> api.getWorld(claim.getWorld())).ifPresent(world -> {
+        BlueMapAPI.getInstance().flatMap(api -> api.getWorld(claim.getLevel())).ifPresent(world -> {
             for (BlueMapMap map : world.getMaps()) {
                 updateMarkers(map, markerSet -> markerSet.remove(claim.getClaimID().toString()));
             }
@@ -86,7 +86,7 @@ public class BluemapIntegration {
     }
 
     public static void changeClaimName(Claim claim) {
-        BlueMapAPI.getInstance().flatMap(api -> api.getWorld(claim.getWorld())).ifPresent(world -> {
+        BlueMapAPI.getInstance().flatMap(api -> api.getWorld(claim.getLevel())).ifPresent(world -> {
             for (BlueMapMap map : world.getMaps()) {
                 updateMarkers(map, markerSet -> {
                     Marker marker = markerSet.get(claim.getClaimID().toString());
@@ -97,7 +97,7 @@ public class BluemapIntegration {
     }
 
     public static void changeClaimOwner(Claim claim) {
-        BlueMapAPI.getInstance().flatMap(api -> api.getWorld(claim.getWorld())).ifPresent(world -> {
+        BlueMapAPI.getInstance().flatMap(api -> api.getWorld(claim.getLevel())).ifPresent(world -> {
             for (BlueMapMap map : world.getMaps()) {
                 updateMarkers(map, markerSet -> {
                     Marker marker = markerSet.get(claim.getClaimID().toString());
@@ -124,11 +124,11 @@ public class BluemapIntegration {
                 return name + " - " + "Admin Claim";
             }
         }
-        Optional<GameProfile> prof = claim.getWorld().getServer().getProfileCache().get(claim.getOwner());
+        Optional<String> prof = ClaimUtils.fetchUsername(claim.getOwner(), claim.getLevel().getServer());
         if (name == null || name.isEmpty()) {
-            return prof.map(GameProfile::getName).orElse("UNKNOWN") + "'s Claim";
+            return prof.orElse("UNKNOWN") + "'s Claim";
         } else {
-            return name + " - " + prof.map(GameProfile::getName).orElse("UNKNOWN") + "'s Claim";
+            return name + " - " + prof.orElse("UNKNOWN") + "'s Claim";
         }
     }
 
