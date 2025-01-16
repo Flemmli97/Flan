@@ -53,6 +53,8 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.minClaimSize", "This is too small. Minimum claimsize is %d");
         this.add("flan.maxClaims", "Maximum amount of claims reached");
         this.add("flan.landClaimDisabledWorld", "Claiming is disabled in this world");
+        this.add("flan.claimingMode", "Claiming mode set to %1$s");
+        this.add("flan.minClaimHeight", "Minimum required height is %d");
         this.add("flan.editMode", "Editing mode set to %1$s");
         this.add("flan.notEnoughBlocks", "Not enough claim blocks. Required: %s, Current: %s");
         this.add("flan.conflictOther", "Claim would overlap other claims");

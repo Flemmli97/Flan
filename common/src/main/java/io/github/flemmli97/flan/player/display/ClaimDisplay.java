@@ -1,22 +1,22 @@
 package io.github.flemmli97.flan.player.display;
 
 import io.github.flemmli97.flan.claim.Claim;
-import io.github.flemmli97.flan.claim.ParticleIndicators;
+import io.github.flemmli97.flan.claim.ClaimBox;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.player.ClientBlockDisplayTracker;
+import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
+import net.minecraft.core.Vec3i;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,22 +24,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 public class ClaimDisplay {
 
-    private boolean initialDisplay;
     private int displayTime;
-    private final int height;
+    private final int displayHeight;
+
     private final DisplayBox display;
     public final EnumDisplayType type;
-    private int[][] corners;
 
-    private int[][] middlePoss;
+    private DisplayBoxPos pos;
+    private ClaimBox prevDims;
 
-    private DisplayBox.Box prevDims;
-
-    private final DustParticleOptions corner, middle;
-    private final Block displayBlock;
+    private final UUID displayId = UUID.randomUUID();
 
     public ClaimDisplay(Claim claim, EnumDisplayType type, int y) {
         this(claim.display(), claim.getWorld(), type, y);
@@ -48,199 +47,201 @@ public class ClaimDisplay {
     public ClaimDisplay(DisplayBox display, Level level, EnumDisplayType type, int y) {
         this.display = display;
         this.displayTime = ConfigHandler.CONFIG.claimDisplayTime;
-        this.prevDims = display.box();
         this.type = type;
-        this.height = Math.max(1 + level.getMinBuildHeight(), y);
-        switch (type) {
-            case SUB -> {
-                this.corner = ParticleIndicators.SUBCLAIMCORNER;
-                this.middle = ParticleIndicators.SUBCLAIMMIDDLE;
-                this.displayBlock = Blocks.IRON_BLOCK;
+        this.displayHeight = Math.max(1 + level.getMinBuildHeight(), y);
+    }
+
+    private static DisplayBoxPos calculatePos(ServerLevel level, DisplayBox display, int height) {
+        boolean is3d = display.is3d();
+        ChunkCache chunkCache = new ChunkCache(level);
+        ClaimBox box = display.box();
+        List<BlockPos> vertices = boxVertices(box, is3d, height, chunkCache);
+        List<BlockPos> edges = boxEdges(box, display.excludedSides(), is3d, height, vertices, chunkCache);
+        return new DisplayBoxPos(vertices, edges);
+    }
+
+    private static List<BlockPos> boxVertices(ClaimBox box, boolean is3d, int height, ChunkCache chunkCache) {
+        List<BlockPos> vertices = new ArrayList<>();
+        if (is3d) {
+            vertices.add(new BlockPos(box.minX(), box.minY(), box.minZ()));
+            vertices.add(new BlockPos(box.maxX(), box.minY(), box.minZ()));
+            vertices.add(new BlockPos(box.maxX(), box.minY(), box.maxZ()));
+            vertices.add(new BlockPos(box.minX(), box.minY(), box.maxZ()));
+
+            vertices.add(new BlockPos(box.minX(), box.maxY(), box.minZ()));
+            vertices.add(new BlockPos(box.maxX(), box.maxY(), box.minZ()));
+            vertices.add(new BlockPos(box.maxX(), box.maxY(), box.maxZ()));
+            vertices.add(new BlockPos(box.minX(), box.maxY(), box.maxZ()));
+        } else {
+            List<BlockPos> water = new ArrayList<>();
+            Height pos = getHeight(box.minX(), box.minZ(), height, chunkCache);
+            if (pos != null) {
+                if (pos.solid != pos.water)
+                    water.add(new BlockPos(box.minX(), pos.water, box.minZ()));
+                vertices.add(new BlockPos(box.minX(), pos.solid, box.minZ()));
             }
-            case CONFLICT -> {
-                this.corner = ParticleIndicators.OVERLAPCLAIM;
-                this.middle = ParticleIndicators.OVERLAPCLAIM;
-                this.displayBlock = Blocks.REDSTONE_BLOCK;
+            pos = getHeight(box.maxX(), box.minZ(), height, chunkCache);
+            if (pos != null) {
+                if (pos.solid != pos.water)
+                    water.add(new BlockPos(box.maxX(), pos.water, box.minZ()));
+                vertices.add(new BlockPos(box.maxX(), pos.solid, box.minZ()));
             }
-            case EDIT -> {
-                this.corner = ParticleIndicators.EDITCLAIMCORNER;
-                this.middle = ParticleIndicators.EDITCLAIMMIDDLE;
-                this.displayBlock = Blocks.LAPIS_BLOCK;
+            pos = getHeight(box.maxX(), box.maxZ(), height, chunkCache);
+            if (pos != null) {
+                if (pos.solid != pos.water)
+                    water.add(new BlockPos(box.maxX(), pos.water, box.maxZ()));
+                vertices.add(new BlockPos(box.maxX(), pos.solid, box.maxZ()));
             }
-            default -> {
-                this.corner = ParticleIndicators.CLAIMCORNER;
-                this.middle = ParticleIndicators.CLAIMMIDDLE;
-                this.displayBlock = Blocks.GOLD_BLOCK;
+            pos = getHeight(box.minX(), box.maxZ(), height, chunkCache);
+            if (pos != null) {
+                if (pos.solid != pos.water)
+                    water.add(new BlockPos(box.minX(), pos.water, box.maxZ()));
+                vertices.add(new BlockPos(box.minX(), pos.solid, box.maxZ()));
+            }
+            vertices.addAll(water);
+        }
+        return vertices;
+    }
+
+    private static List<BlockPos> boxEdges(ClaimBox box, Set<Direction> exclude, boolean is3d, int height, List<BlockPos> vertices, ChunkCache chunkCache) {
+        List<BlockPos> edges = new ArrayList<>();
+        if (is3d) {
+            for (int i = 0; i < 4; i++) {
+                int next = (i + 1) % 4;
+                int upperNext = (i + 1) % 4 + 4;
+                BlockPos now = vertices.get(i);
+                BlockPos nowUpper = vertices.get(i + 4);
+                BlockPos nextPos = vertices.get(next);
+                BlockPos nextPosUpper = vertices.get(upperNext);
+                interpolateEvenly(now, nextPos, true, 10, edges::add);
+                interpolateEvenly(nowUpper, nextPosUpper, true, 10, edges::add);
+                interpolateEvenly(now, nowUpper, true, 10, edges::add);
+            }
+        } else {
+            Consumer<BlockPos> cons = pos -> {
+                Height calc = getHeight(pos.getX(), pos.getZ(), height, chunkCache);
+                if (calc != null) {
+                    if (calc.solid != calc.water)
+                        edges.add(new BlockPos(pos.getX(), calc.water, pos.getZ()));
+                    edges.add(new BlockPos(pos.getX(), calc.solid, pos.getZ()));
+                }
+            };
+            for (int i = 0; i < 4; i++) {
+                int next = (i + 1) % 4;
+                BlockPos now = vertices.get(i);
+                BlockPos nextPos = vertices.get(next);
+                if (!exclude.contains(Direction.NORTH) && now.getZ() == nextPos.getZ() && now.getZ() == box.minZ()) {
+                    interpolateEvenly(now, nextPos, false, 10, cons);
+                }
+                if (!exclude.contains(Direction.SOUTH) && now.getZ() == nextPos.getZ() && now.getZ() == box.maxZ()) {
+                    interpolateEvenly(now, nextPos, false, 10, cons);
+                }
+                if (!exclude.contains(Direction.WEST) && now.getX() == nextPos.getX() && now.getX() == box.minX()) {
+                    interpolateEvenly(now, nextPos, false, 10, cons);
+                }
+                if (!exclude.contains(Direction.EAST) && now.getX() == nextPos.getX() && now.getX() == box.maxX()) {
+                    interpolateEvenly(now, nextPos, false, 10, cons);
+                }
             }
         }
+        return edges;
+    }
+
+    private static void interpolateEvenly(@NotNull BlockPos start, BlockPos end, boolean height, int step, Consumer<BlockPos> cons) {
+        BlockPos.MutableBlockPos startM = start.mutable();
+        BlockPos.MutableBlockPos endM = end.mutable();
+        int dX = Integer.compare(endM.getX() - startM.getX(), 0);
+        int dY = Integer.compare(height ? endM.getY() - startM.getY() : 0, 0);
+        int dZ = Integer.compare(endM.getZ() - startM.getZ(), 0);
+        startM.move(dX, dY, dZ);
+        endM.move(-dX, -dY, -dZ);
+        cons.accept(startM.immutable());
+        cons.accept(endM.immutable());
+        if (startM.distManhattan(endM) < step)
+            return;
+        int dist;
+        while ((dist = (height ? startM.distManhattan(endM) : dist2d(startM, endM))) > step) {
+            int amount = (int) Math.min(step, dist * 0.5);
+            startM.move(dX * amount, dY * amount, dZ * amount);
+            endM.move(-dX * amount, -dY * amount, -dZ * amount);
+            cons.accept(startM.immutable());
+            cons.accept(endM.immutable());
+            if (dist < startM.distManhattan(endM) || amount < step)
+                break;
+        }
+    }
+
+    private static int dist2d(Vec3i first, Vec3i sec) {
+        int dX = Math.abs(sec.getX() - first.getX());
+        int dZ = Math.abs(sec.getZ() - first.getZ());
+        return dX + dZ;
     }
 
     public boolean display(ServerPlayer player, boolean remove) {
         if (--this.displayTime % 2 == 0)
             return this.display.isRemoved();
-        DisplayBox.Box dims = this.display.box();
-        if (this.corners == null || this.changed(dims)) {
-            this.onRemoved(player);
-            Map<ChunkPos, LevelChunk> chunkCache = new HashMap<>();
-            this.middlePoss = calculateDisplayPos(player.serverLevel(), dims, this.height, this.display.excludedSides(), chunkCache);
-            this.corners = this.calculateCorners(player.serverLevel(), dims, chunkCache);
-            this.initialDisplay = false;
+        ClaimBox dims = this.display.box();
+        if (this.pos == null || this.changed(dims)) {
+            this.pos = calculatePos(player.serverLevel(), this.display, this.displayHeight);
+            if (!ConfigHandler.CONFIG.particleDisplay) {
+                PlayerClaimData data = PlayerClaimData.get(player);
+                Set<ClientBlockDisplayTracker.DisplayData> displayData = new HashSet<>();
+                for (BlockPos pos : this.pos.vertices) {
+                    displayData.add(new ClientBlockDisplayTracker.DisplayData(pos, this.type.displayBlock));
+                }
+                for (BlockPos pos : this.pos.edges) {
+                    displayData.add(new ClientBlockDisplayTracker.DisplayData(pos, this.type.displayBlock));
+                }
+                data.clientBlockDisplayTracker.displayFakeBlocks(this.displayId, displayData);
+            }
         }
         if (ConfigHandler.CONFIG.particleDisplay) {
-            for (int[] pos : this.corners) {
-                if (pos[1] != pos[2])
-                    player.connection.send(new ClientboundLevelParticlesPacket(this.corner, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
-                player.connection.send(new ClientboundLevelParticlesPacket(this.corner, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
+            for (BlockPos pos : this.pos.vertices) {
+                player.connection.send(new ClientboundLevelParticlesPacket(this.type.cornerParticle, true, pos.getX() + 0.5, pos.getY() + 0.5 + player.serverLevel().getRandom().nextDouble() * 1.5, pos.getZ() + 0.5, 0, 1, 0, 1, 0));
             }
-            if (this.middlePoss != null)
-                for (int[] pos : this.middlePoss) {
-                    if (pos[1] != pos[2])
-                        player.connection.send(new ClientboundLevelParticlesPacket(this.middle, true, pos[0] + 0.5, pos[2] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
-                    player.connection.send(new ClientboundLevelParticlesPacket(this.middle, true, pos[0] + 0.5, pos[1] + 0.25, pos[3] + 0.5, 0, 0.5f, 0, 0, 1));
-                }
-        } else if (!this.initialDisplay) {
-            for (int[] pos : this.corners) {
-                BlockPos blockPos = new BlockPos(pos[0], pos[1] != pos[2] ? pos[2] : pos[1], pos[3]);
-                player.connection.send(new ClientboundBlockUpdatePacket(blockPos.below(), this.displayBlock.defaultBlockState()));
+            for (BlockPos pos : this.pos.vertices) {
+                player.connection.send(new ClientboundLevelParticlesPacket(this.type.middleParticle, true, pos.getX() + 0.5, pos.getY() + 0.5 + player.serverLevel().getRandom().nextDouble() * 1.5, pos.getZ() + 0.5, 0, 1, 0, 1, 0));
             }
-            if (this.middlePoss != null)
-                for (int[] pos : this.middlePoss) {
-                    BlockPos blockPos = new BlockPos(pos[0], pos[1] != pos[2] ? pos[2] : pos[1], pos[3]);
-                    player.connection.send(new ClientboundBlockUpdatePacket(blockPos.below(), this.displayBlock.defaultBlockState()));
-                }
         }
         this.prevDims = dims;
-        if (!this.initialDisplay)
-            this.initialDisplay = true;
         return this.display.isRemoved() || (remove && this.displayTime < 0);
     }
 
     public void onRemoved(ServerPlayer player) {
         if (!ConfigHandler.CONFIG.particleDisplay) {
-            if (this.corners != null)
-                for (int[] pos : this.corners) {
-                    BlockPos blockPos = new BlockPos(pos[0], pos[1] != pos[2] ? pos[2] : pos[1], pos[3]);
-                    blockPos = blockPos.below();
-                    player.connection.send(new ClientboundBlockUpdatePacket(blockPos, player.level().getBlockState(blockPos)));
-                }
-            if (this.middlePoss != null)
-                for (int[] pos : this.middlePoss) {
-                    BlockPos blockPos = new BlockPos(pos[0], pos[1] != pos[2] ? pos[2] : pos[1], pos[3]);
-                    blockPos = blockPos.below();
-                    player.connection.send(new ClientboundBlockUpdatePacket(blockPos, player.level().getBlockState(blockPos)));
-                }
+            PlayerClaimData data = PlayerClaimData.get(player);
+            data.clientBlockDisplayTracker.resetFakeBlocks(this.displayId);
         }
     }
 
-    private int[][] calculateCorners(ServerLevel level, DisplayBox.Box from, Map<ChunkPos, LevelChunk> chunkCache) {
-        List<int[]> l = new ArrayList<>();
-        int[] pos = getPosFrom(level, from.minX(), from.minZ(), this.height, chunkCache);
-        if (pos != null)
-            l.add(pos);
-        pos = getPosFrom(level, from.maxX(), from.minZ(), this.height, chunkCache);
-        if (pos != null)
-            l.add(pos);
-        pos = getPosFrom(level, from.minX(), from.maxZ(), this.height, chunkCache);
-        if (pos != null)
-            l.add(pos);
-        pos = getPosFrom(level, from.maxX(), from.maxZ(), this.height, chunkCache);
-        if (pos != null)
-            l.add(pos);
-        return l.toArray(new int[0][]);
-    }
-
-    private boolean changed(DisplayBox.Box dims) {
-        return !this.prevDims.equals(dims);
-    }
-
-    public static int[][] calculateDisplayPos(ServerLevel level, DisplayBox.Box from, int height, Set<Direction> exclude, Map<ChunkPos, LevelChunk> chunkCache) {
-        List<int[]> l = new ArrayList<>();
-        Set<Integer> xs = new HashSet<>();
-        addEvenly(from.minX(), from.maxX(), 10, xs);
-        xs.add(from.minX() + 1);
-        xs.add(from.maxX() - 1);
-        Set<Integer> zs = new HashSet<>();
-        addEvenly(from.minZ(), from.maxZ(), 10, zs);
-        zs.add(from.minZ() + 1);
-        zs.add(from.maxZ() - 1);
-        for (int x : xs) {
-            if (!exclude.contains(Direction.NORTH)) {
-                int[] pos = getPosFrom(level, x, from.minZ(), height, chunkCache);
-                if (pos != null)
-                    l.add(pos);
-            }
-            if (!exclude.contains(Direction.SOUTH)) {
-                int[] pos = getPosFrom(level, x, from.maxZ(), height, chunkCache);
-                if (pos != null)
-                    l.add(pos);
-            }
-        }
-        for (int z : zs) {
-            if (!exclude.contains(Direction.WEST)) {
-                int[] pos = getPosFrom(level, from.minX(), z, height, chunkCache);
-                if (pos != null)
-                    l.add(pos);
-            }
-            if (!exclude.contains(Direction.EAST)) {
-                int[] pos = getPosFrom(level, from.maxX(), z, height, chunkCache);
-                if (pos != null)
-                    l.add(pos);
-            }
-        }
-
-        return l.toArray(new int[0][]);
-    }
-
-    private static void addEvenly(int min, int max, int step, Set<Integer> l) {
-        if (max - min < step * 1.5)
-            return;
-        if (max - min > 0 && max - min <= step * 0.5) {
-            l.add(max - step + 1);
-            l.add(min + step - 1);
-            return;
-        }
-        l.add(max - step);
-        l.add(min + step);
-        addEvenly(min + step, max - step, step, l);
+    private boolean changed(ClaimBox dims) {
+        return this.prevDims == null || !this.prevDims.equals(dims);
     }
 
     /**
-     * Returns an array of form [x,y1,y2,z] where y1 = height of the lowest replaceable block and y2 = height of the
-     * lowest air block above water (if possible)
+     * Returns a height instance with
      */
-    public static int[] getPosFrom(ServerLevel level, int x, int z, int maxY, Map<ChunkPos, LevelChunk> chunkCache) {
-        ChunkPos pos = new ChunkPos(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(z));
-        LevelChunk chunk = chunkCache.computeIfAbsent(pos, k -> {
-            if (!level.hasChunk(pos.x, pos.z))
-                return null;
-            return level.getChunk(pos.x, pos.z);
-        });
+    public static Height getHeight(int x, int z, int y, ChunkCache chunkCache) {
+        LevelChunk chunk = chunkCache.fetchChunk(x, z);
         if (chunk == null)
             return null;
-        int[] y = nextAirAndWaterBlockFrom(chunk, x, maxY, z);
-        return new int[]{x, y[0], y[1], z};
-    }
-
-    // SAFETY: Ensure that the X/Z coordinates are for the given chunk
-    // since the position is mutating only up or down, it's always in the same chunk
-    @SuppressWarnings("deprecation")
-    private static int[] nextAirAndWaterBlockFrom(LevelChunk chunk, int x, int y, int z) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, y, z);
         BlockState state = chunk.getBlockState(pos);
         if (state.canBeReplaced()) {
             //Move Down
             boolean startedInLiquid = state.liquid();
-            boolean liquidCheck = false;
+            boolean inLiquid = false;
             int liquidHeight = pos.getY();
             while (state.canBeReplaced() && !chunk.isOutsideBuildHeight(pos)) {
                 pos.move(0, -1, 0);
                 state = chunk.getBlockState(pos);
-                if (!startedInLiquid && !liquidCheck && state.liquid()) {
-                    liquidCheck = true;
+                if (!startedInLiquid && !inLiquid && state.liquid()) {
+                    inLiquid = true;
                     liquidHeight = pos.getY();
                 }
             }
-            int[] yRet = {pos.getY() + 1, (liquidCheck ? liquidHeight : pos.getY()) + 1};
+            int height = pos.getY();
+            liquidHeight = inLiquid ? liquidHeight : height;
             if (startedInLiquid) {
                 pos.set(pos.getX(), liquidHeight + 1, pos.getZ());
                 state = chunk.getBlockState(pos);
@@ -249,23 +250,23 @@ public class ClaimDisplay {
                     state = chunk.getBlockState(pos);
                 }
                 if (state.canBeReplaced())
-                    yRet[1] = pos.getY();
+                    liquidHeight = pos.getY() - 1;
             }
-            return yRet;
+            return new Height(height, liquidHeight);
         }
         //Move Up
         while (!state.canBeReplaced() && !chunk.isOutsideBuildHeight(pos)) {
             pos.move(0, 1, 0);
             state = chunk.getBlockState(pos);
         }
-        int[] yRet = {pos.getY(), pos.getY()};
-        while (state.liquid() && !chunk.isOutsideBuildHeight(pos)) {
+        int height = pos.getY() - 1;
+        boolean liquid = false;
+        while (state.liquid() && !state.canBeReplaced() && !chunk.isOutsideBuildHeight(pos)) {
             pos.move(0, 1, 0);
+            liquid = true;
             state = chunk.getBlockState(pos);
         }
-        if (state.canBeReplaced())
-            yRet[1] = pos.getY();
-        return yRet;
+        return new Height(height, liquid ? pos.getY() - 1 : height);
     }
 
     @Override
@@ -280,5 +281,30 @@ public class ClaimDisplay {
         if (obj instanceof ClaimDisplay)
             return this.display.equals(((ClaimDisplay) obj).display);
         return false;
+    }
+
+    record DisplayBoxPos(List<BlockPos> vertices, List<BlockPos> edges) {
+    }
+
+    public record Height(int solid, int water) {
+    }
+
+    public static class ChunkCache {
+
+        private final Map<ChunkPos, LevelChunk> chunkCache = new HashMap<>();
+        private final ServerLevel level;
+
+        public ChunkCache(ServerLevel serverLevel) {
+            this.level = serverLevel;
+        }
+
+        public LevelChunk fetchChunk(int x, int z) {
+            ChunkPos pos = new ChunkPos(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(z));
+            return this.chunkCache.computeIfAbsent(pos, k -> {
+                if (!this.level.hasChunk(pos.x, pos.z))
+                    return null;
+                return this.level.getChunk(pos.x, pos.z);
+            });
+        }
     }
 }

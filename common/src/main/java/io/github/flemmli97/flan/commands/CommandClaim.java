@@ -15,6 +15,7 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.claim.AllowedRegistryList;
 import io.github.flemmli97.flan.claim.Claim;
+import io.github.flemmli97.flan.claim.ClaimBox;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -23,7 +24,8 @@ import io.github.flemmli97.flan.gui.ClaimMenuScreenHandler;
 import io.github.flemmli97.flan.gui.CustomInteractListScreenHandler;
 import io.github.flemmli97.flan.gui.PersonalGroupScreenHandler;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
-import io.github.flemmli97.flan.player.EnumEditMode;
+import io.github.flemmli97.flan.player.ClaimEditingMode;
+import io.github.flemmli97.flan.player.ClaimingMode;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.player.display.EnumDisplayType;
@@ -94,7 +96,8 @@ public class CommandClaim {
                 .then(Commands.literal("deleteAllSubClaims").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdDeleteSubAll)).executes(CommandClaim::deleteAllSubClaim))
                 .then(Commands.literal("list").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdList)).executes(CommandClaim::listClaims).then(Commands.argument("player", GameProfileArgument.gameProfile()).requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdListAll, true))
                         .executes(cmd -> listClaims(cmd, GameProfileArgument.getGameProfiles(cmd, "player")))))
-                .then(Commands.literal("switchMode").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdClaimMode)).executes(CommandClaim::switchClaimMode))
+                .then(Commands.literal("use3d").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdClaimMode)).executes(CommandClaim::switchClaimMode))
+                .then(Commands.literal("switchMode").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdEditClaimMode)).executes(CommandClaim::switchEditMode))
                 .then(Commands.literal("bypass").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdBypassMode, true)).executes(CommandClaim::switchAdminMode))
                 .then(Commands.literal("readGriefPrevention").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdGriefPrevention, true)).executes(CommandClaim::readGriefPreventionData))
                 .then(Commands.literal("setAdminClaim").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.cmdAdminSet, true)).then(Commands.argument("toggle", BoolArgumentType.bool()).executes(CommandClaim::toggleAdminClaim)))
@@ -242,7 +245,8 @@ public class CommandClaim {
         ClaimStorage storage = ClaimStorage.get(level);
         BlockPos from = BlockPosArgument.getLoadedBlockPos(context, "from");
         BlockPos to = BlockPosArgument.getLoadedBlockPos(context, "to");
-        Claim claim = storage.createAdminClaim(from, to, level);
+        Claim claim = storage.createAdminClaim(from, to, level, context.getSource().getEntity() instanceof ServerPlayer player && PlayerClaimData.get(player)
+                .getClaimingMode() == ClaimingMode.DIMENSION_3D);
         if (claim == null) {
             context.getSource().sendSuccess(() -> PermHelper.translatedText("flan.claimCreationFailCommand"), true);
             return 0;
@@ -319,7 +323,7 @@ public class CommandClaim {
             PermHelper.noClaimMessage(player);
             return 0;
         }
-        if (data.getEditMode() == EnumEditMode.DEFAULT) {
+        if (data.getEditMode() == ClaimEditingMode.DEFAULT) {
             ClaimMenuScreenHandler.openClaimMenu(player, claim);
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
         } else {
@@ -347,7 +351,7 @@ public class CommandClaim {
     private static int nameClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         PlayerClaimData data = PlayerClaimData.get(player);
-        if (data.getEditMode() == EnumEditMode.DEFAULT) {
+        if (data.getEditMode() == ClaimEditingMode.DEFAULT) {
             Claim claim = PermHelper.checkReturn(player, BuiltinPermission.EDITPERMS, PermHelper.genericNoPermMessage(player));
             if (claim == null)
                 return 0;
@@ -430,7 +434,7 @@ public class CommandClaim {
             player.displayClientMessage(PermHelper.translatedText("flan.noClaim", ChatFormatting.RED), false);
             return 0;
         }
-        if (data.getEditMode() == EnumEditMode.SUBCLAIM) {
+        if (data.getEditMode() == ClaimEditingMode.SUBCLAIM) {
             Claim sub = claim.getSubClaim(player.blockPosition());
             if (sub != null) {
                 List<Component> info = sub.infoString(player, infoType);
@@ -566,7 +570,15 @@ public class CommandClaim {
     private static int switchClaimMode(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         PlayerClaimData data = PlayerClaimData.get(player);
-        data.setEditMode(data.getEditMode() == EnumEditMode.DEFAULT ? EnumEditMode.SUBCLAIM : EnumEditMode.DEFAULT);
+        data.setClaimingMode(data.getClaimingMode() == ClaimingMode.DEFAULT ? ClaimingMode.DIMENSION_3D : ClaimingMode.DEFAULT);
+        player.displayClientMessage(PermHelper.translatedText("flan.claimingMode", data.getClaimingMode(), ChatFormatting.GOLD), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int switchEditMode(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        PlayerClaimData data = PlayerClaimData.get(player);
+        data.setEditMode(data.getEditMode() == ClaimEditingMode.DEFAULT ? ClaimEditingMode.SUBCLAIM : ClaimEditingMode.DEFAULT);
         player.displayClientMessage(PermHelper.translatedText("flan.editMode", data.getEditMode(), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
@@ -587,7 +599,7 @@ public class CommandClaim {
             src.sendSuccess(() -> PermHelper.translatedText("flan.noClaim", ChatFormatting.RED), false);
             return 0;
         }
-        storage.deleteClaim(claim, true, EnumEditMode.DEFAULT, src.getLevel());
+        storage.deleteClaim(claim, true, ClaimEditingMode.DEFAULT, src.getLevel());
         src.sendSuccess(() -> PermHelper.translatedText("flan.deleteClaim", ChatFormatting.RED), true);
         return Command.SINGLE_SUCCESS;
     }
@@ -606,7 +618,7 @@ public class CommandClaim {
         for (GameProfile prof : GameProfileArgument.getGameProfiles(context, "players")) {
             for (ServerLevel world : src.getLevel().getServer().getAllLevels()) {
                 ClaimStorage storage = ClaimStorage.get(world);
-                storage.allClaimsFromPlayer(prof.getId()).forEach((claim) -> storage.deleteClaim(claim, true, EnumEditMode.DEFAULT, world));
+                storage.allClaimsFromPlayer(prof.getId()).forEach((claim) -> storage.deleteClaim(claim, true, ClaimEditingMode.DEFAULT, world));
             }
             players.add(prof.getName());
         }
@@ -687,7 +699,7 @@ public class CommandClaim {
             PermHelper.noClaimMessage(player);
             return 0;
         }
-        if (PlayerClaimData.get(player).getEditMode() == EnumEditMode.SUBCLAIM) {
+        if (PlayerClaimData.get(player).getEditMode() == ClaimEditingMode.SUBCLAIM) {
             Claim sub = claim.getSubClaim(player.blockPosition());
             if (sub != null)
                 claim = sub;
@@ -735,7 +747,7 @@ public class CommandClaim {
             PermHelper.noClaimMessage(player);
             return 0;
         }
-        if (PlayerClaimData.get(player).getEditMode() == EnumEditMode.SUBCLAIM) {
+        if (PlayerClaimData.get(player).getEditMode() == ClaimEditingMode.SUBCLAIM) {
             Claim sub = claim.getSubClaim(player.blockPosition());
             if (sub != null)
                 claim = sub;
@@ -780,7 +792,7 @@ public class CommandClaim {
             PermHelper.noClaimMessage(player);
             return 0;
         }
-        if (PlayerClaimData.get(player).getEditMode() == EnumEditMode.SUBCLAIM) {
+        if (PlayerClaimData.get(player).getEditMode() == ClaimEditingMode.SUBCLAIM) {
             Claim sub = claim.getSubClaim(player.blockPosition());
             if (sub != null)
                 claim = sub;
@@ -823,7 +835,7 @@ public class CommandClaim {
         ServerPlayer player = context.getSource().getPlayerOrException();
         Claim claim = ClaimStorage.get(player.serverLevel()).getClaimAt(player.blockPosition());
         PlayerClaimData data = PlayerClaimData.get(player);
-        if (data.getEditMode() == EnumEditMode.SUBCLAIM) {
+        if (data.getEditMode() == ClaimEditingMode.SUBCLAIM) {
             Claim sub = claim.getSubClaim(player.blockPosition());
             if (sub != null)
                 claim = sub;
@@ -832,7 +844,7 @@ public class CommandClaim {
             PermHelper.noClaimMessage(player);
             return 0;
         }
-        if (PlayerClaimData.get(player).getEditMode() == EnumEditMode.SUBCLAIM) {
+        if (PlayerClaimData.get(player).getEditMode() == ClaimEditingMode.SUBCLAIM) {
             Claim sub = claim.getSubClaim(player.blockPosition());
             if (sub != null)
                 claim = sub;
@@ -902,23 +914,19 @@ public class CommandClaim {
 
         ClaimStorage storage = ClaimStorage.get(player.serverLevel());
         int amount = IntegerArgumentType.getInteger(context, "distance");
-        int[] dims = claim.getDimensions();
-        int x = dims[0];
-        int X = dims[1];
-        int z = dims[2];
-        int Z = dims[3];
-        int y = dims[4];
-
+        ClaimBox dims = claim.getDimensions();
         Direction facing = player.getDirection();
-
         Tuple<BlockPos, BlockPos> cornerPair = switch (facing) {
-            case SOUTH -> new Tuple<>(new BlockPos(X, y, Z), new BlockPos(X, y, Z + amount));
-            case EAST -> new Tuple<>(new BlockPos(X, y, Z), new BlockPos(X + amount, y, Z));
-            case NORTH -> new Tuple<>(new BlockPos(x, y, z), new BlockPos(x, y, z - amount));
-            case WEST -> new Tuple<>(new BlockPos(x, y, z), new BlockPos(x - amount, y, z));
+            case SOUTH ->
+                    new Tuple<>(new BlockPos(dims.maxX(), dims.minY(), dims.maxZ()), new BlockPos(dims.maxX(), dims.maxY(), dims.maxZ() + amount));
+            case EAST ->
+                    new Tuple<>(new BlockPos(dims.maxX(), dims.minY(), dims.maxZ()), new BlockPos(dims.maxX() + amount, dims.maxY(), dims.maxZ()));
+            case NORTH ->
+                    new Tuple<>(new BlockPos(dims.minX(), dims.minY(), dims.minZ()), new BlockPos(dims.minX(), dims.maxY(), dims.minZ() - amount));
+            case WEST ->
+                    new Tuple<>(new BlockPos(dims.minX(), dims.minY(), dims.minZ()), new BlockPos(dims.minX() - amount, dims.maxY(), dims.minZ()));
             default -> throw new IllegalStateException("Unexpected value: " + facing);
         };
-
         return storage.resizeClaim(claim, cornerPair.getA(), cornerPair.getB(), player) ? Command.SINGLE_SUCCESS : 0;
     }
 
@@ -976,7 +984,7 @@ public class CommandClaim {
         Claim rootClaim = PermHelper.checkReturn(player, BuiltinPermission.CLAIMMESSAGE, PermHelper.genericNoPermMessage(player));
         if (rootClaim == null)
             return 0;
-        Claim claim = data.getEditMode() == EnumEditMode.SUBCLAIM ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
+        Claim claim = data.getEditMode() == ClaimEditingMode.SUBCLAIM ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
         if (claim == null)
             return 0;
         boolean sub = StringArgumentType.getString(context, "title").equals("subtitle");
@@ -1010,7 +1018,7 @@ public class CommandClaim {
         Claim rootClaim = PermHelper.checkReturn(player, BuiltinPermission.CLAIMMESSAGE, PermHelper.genericNoPermMessage(player));
         if (rootClaim == null)
             return 0;
-        Claim claim = data.getEditMode() == EnumEditMode.SUBCLAIM ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
+        Claim claim = data.getEditMode() == ClaimEditingMode.SUBCLAIM ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
         if (claim == null)
             return 0;
         String result = switch (type) {
@@ -1031,7 +1039,7 @@ public class CommandClaim {
         Claim rootClaim = PermHelper.checkReturn(player, BuiltinPermission.CLAIMMESSAGE, PermHelper.genericNoPermMessage(player));
         if (rootClaim == null)
             return 0;
-        Claim claim = data.getEditMode() == EnumEditMode.SUBCLAIM ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
+        Claim claim = data.getEditMode() == ClaimEditingMode.SUBCLAIM ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
         if (claim == null)
             return 0;
         String value = context.getArgument("entry", ResourceOrTagKeyArgument.Result.class).asPrintable();

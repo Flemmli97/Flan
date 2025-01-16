@@ -48,7 +48,6 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,6 +61,7 @@ public class Claim implements IPermissionContainer {
 
     private boolean dirty;
     private int minX, minZ, maxX, maxZ, minY;
+    private Integer maxY;
 
     private UUID owner;
 
@@ -172,7 +172,14 @@ public class Claim implements IPermissionContainer {
         this.setDirty(true);
     }
 
+    public Claim withHeight(int y) {
+        this.maxY = Math.max(y, this.minY + 1);
+        return this;
+    }
+
     public void extendDownwards(BlockPos pos) {
+        if (this.maxY != null)
+            return;
         this.minY = pos.getY();
         this.setDirty(true);
         WebmapCalls.onExtendDownwards(this);
@@ -223,6 +230,7 @@ public class Claim implements IPermissionContainer {
         this.minZ = claim.minZ;
         this.maxZ = claim.maxZ;
         this.minY = claim.minY;
+        this.maxY = claim.maxY;
         this.removed = false;
         this.setDirty(true);
     }
@@ -251,30 +259,33 @@ public class Claim implements IPermissionContainer {
         return (this.maxX - this.minX + 1) * (this.maxZ - this.minZ + 1);
     }
 
-    /**
-     * @return The claims dimension in order: x, X, z, Z, y
-     */
-    public int[] getDimensions() {
-        return new int[]{this.minX, this.maxX, this.minZ, this.maxZ, this.minY};
+    public ClaimBox getDimensions() {
+        return new ClaimBox(this.minX, this.minY, this.minZ, this.maxX, this.maxY != null ? this.maxY : (this.getWorld().getMaxBuildHeight() + 10), this.maxZ);
     }
 
-    public int getMaxY() {
-        return this.getWorld().getMaxBuildHeight();
+    public boolean is3d() {
+        return this.maxY != null;
     }
 
     public boolean insideClaim(BlockPos pos) {
-        return this.minX <= pos.getX() && this.maxX >= pos.getX() && this.minZ <= pos.getZ() && this.maxZ >= pos.getZ() && this.minY <= pos.getY();
+        return this.minX <= pos.getX() && this.maxX >= pos.getX() && this.minZ <= pos.getZ() && this.maxZ >= pos.getZ() && this.minY <= pos.getY()
+                && (this.maxY == null || this.maxY >= pos.getY());
     }
 
     public boolean intersects(Claim other) {
-        return this.minX <= other.maxX && this.maxX >= other.minX && this.minZ <= other.maxZ && this.maxZ >= other.minZ;
+        ClaimBox collisionBox = new ClaimBox(this.minX, this.maxY != null ? this.minY : this.getWorld().getMinBuildHeight() - 10, this.minZ, this.maxX, this.maxY != null ? this.maxY : (this.getWorld().getMaxBuildHeight() + 10), this.maxZ);
+        return collisionBox.intersects(other.getDimensions());
     }
 
     public boolean intersects(AABB box) {
-        return this.minX < box.maxX && this.maxX + 1 > box.minX && this.minZ < box.maxZ && this.maxZ + 1 > box.minZ && box.maxY >= this.minY;
+        return this.getDimensions().intersects(box);
     }
 
     public boolean isCorner(BlockPos pos) {
+        if (this.maxY != null) {
+            if (pos.getY() != this.minY && pos.getY() != this.maxY)
+                return false;
+        }
         return (pos.getX() == this.minX && pos.getZ() == this.minZ) || (pos.getX() == this.minX && pos.getZ() == this.maxZ)
                 || (pos.getX() == this.maxX && pos.getZ() == this.minZ) || (pos.getX() == this.maxX && pos.getZ() == this.maxZ);
     }
@@ -447,9 +458,14 @@ public class Claim implements IPermissionContainer {
     }
 
     public Set<Claim> resizeSubclaim(Claim claim, BlockPos from, BlockPos to) {
-        int[] dims = claim.getDimensions();
-        BlockPos opposite = new BlockPos(dims[0] == from.getX() ? dims[1] : dims[0], dims[4], dims[2] == from.getZ() ? dims[3] : dims[2]);
+        ClaimBox dims = claim.getDimensions();
+        int minY = claim.is3d() && dims.minY() == from.getY() ? dims.maxY() : dims.minY();
+        BlockPos opposite = new BlockPos(dims.minX() == from.getX() ? dims.maxX() : dims.minX(),
+                minY, dims.minZ() == from.getZ() ? dims.maxZ() : dims.minZ());
         Claim newClaim = new Claim(opposite, to, claim.claimID, this.world);
+        if (claim.is3d()) {
+            newClaim.withHeight(Math.max(minY, to.getY()));
+        }
         Set<Claim> conflicts = new HashSet<>();
         for (Claim other : this.subClaims)
             if (!claim.equals(other) && newClaim.intersects(other))
@@ -710,6 +726,8 @@ public class Claim implements IPermissionContainer {
             this.minZ = pos.get(2).getAsInt();
             this.maxZ = pos.get(3).getAsInt();
             this.minY = pos.get(4).getAsInt();
+            if (obj.has("MaxY"))
+                this.maxY = obj.get("MaxY").getAsInt();
             JsonArray home = ConfigHandler.arryFromJson(obj, "Home");
             if (home.size() != 3)
                 this.homePos = this.getDefaultCenterPos();
@@ -794,6 +812,8 @@ public class Claim implements IPermissionContainer {
         pos.add(this.maxZ);
         pos.add(this.minY);
         obj.add("PosxXzZY", pos);
+        if (this.maxY != null)
+            obj.addProperty("MaxY", this.maxY);
         JsonArray home = new JsonArray();
         home.add(this.homePos.getX());
         home.add(this.homePos.getY());
@@ -856,7 +876,7 @@ public class Claim implements IPermissionContainer {
 
     @Override
     public int hashCode() {
-        return this.claimID == null ? Arrays.hashCode(this.getDimensions()) : this.claimID.hashCode();
+        return this.claimID == null ? this.getDimensions().hashCode() : this.claimID.hashCode();
     }
 
     @Override
@@ -865,7 +885,7 @@ public class Claim implements IPermissionContainer {
             return true;
         if (obj instanceof Claim other) {
             if (this.claimID == null && other.claimID == null)
-                return Arrays.equals(this.getDimensions(), ((Claim) obj).getDimensions());
+                return this.getDimensions().equals(other.getDimensions());
             if (this.claimID != null)
                 return this.claimID.equals(((Claim) obj).claimID);
         }
@@ -948,7 +968,7 @@ public class Claim implements IPermissionContainer {
     }
 
     public DisplayBox display() {
-        return new ClaimDisplayBox(this, () -> new DisplayBox.Box(this.minX, this.minY, this.minZ, this.maxX, this.world.getMaxBuildHeight(), this.maxZ), this::isRemoved);
+        return new ClaimDisplayBox(this, this::getDimensions, this::isRemoved);
     }
 
     public enum InfoType {
@@ -960,10 +980,10 @@ public class Claim implements IPermissionContainer {
 
     interface ClaimUpdater {
 
-        Map<Integer, ClaimUpdater> updater = Config.createHashMap(map -> map.put(2, claim -> claim.globalPerm.put(BuiltinPermission.LOCKITEMS, true)));
+        Map<Integer, ClaimUpdater> UPDATER = Config.createHashMap(map -> map.put(2, claim -> claim.globalPerm.put(BuiltinPermission.LOCKITEMS, true)));
 
         static void updateClaim(Claim claim) {
-            updater.entrySet().stream().filter(e -> e.getKey() > ConfigHandler.CONFIG.preConfigVersion).map(Map.Entry::getValue)
+            UPDATER.entrySet().stream().filter(e -> e.getKey() > ConfigHandler.CONFIG.preConfigVersion).map(Map.Entry::getValue)
                     .forEach(up -> up.update(claim));
         }
 

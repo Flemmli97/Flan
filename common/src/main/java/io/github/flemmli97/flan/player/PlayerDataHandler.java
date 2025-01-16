@@ -46,7 +46,7 @@ public class PlayerDataHandler {
         inActivePlayerData.forEach((uuid, data) -> {
             Flan.log("{} Deleting all claims for inactive player {} last seen {}", world.dimension(), data.owner, data.lastOnline);
             storage.allClaimsFromPlayer(data.owner)
-                    .forEach(claim -> storage.deleteClaim(claim, true, EnumEditMode.DEFAULT, world));
+                    .forEach(claim -> storage.deleteClaim(claim, true, ClaimEditingMode.DEFAULT, world));
         });
     }
 

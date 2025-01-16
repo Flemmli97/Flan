@@ -2,6 +2,7 @@ package io.github.flemmli97.flan.platform.integration.webmap;
 
 import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.claim.Claim;
+import io.github.flemmli97.flan.claim.ClaimBox;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import org.dynmap.DynmapCommonAPI;
@@ -31,12 +32,13 @@ public class DynmapIntegration {
     static void addClaimMarker(Claim claim) {
         if (markerSet == null)
             return;
-        int[] dim = claim.getDimensions();
-        AreaMarker marker = markerSet.createAreaMarker(claim.getClaimID().toString(), claimLabel(claim), true, getWorldName(claim.getWorld()), new double[]{dim[0], dim[1]}, new double[]{dim[2], dim[3]}, false);
+        ClaimBox dim = claim.getDimensions();
+        AreaMarker marker = markerSet.createAreaMarker(claim.getClaimID().toString(), claimLabel(claim), true, getWorldName(claim.getWorld()),
+                new double[]{dim.minX(), dim.maxX()}, new double[]{dim.minZ(), dim.maxZ()}, false);
         if (marker != null) {
             marker.setLineStyle(3, 0.8, lineColor(claim.isAdminClaim()));
             marker.setFillStyle(0.2, fillColor(claim.isAdminClaim()));
-            marker.setRangeY(dim[4], claim.getMaxY());
+            marker.setRangeY(dim.minY(), dim.maxY());
         }
     }
 

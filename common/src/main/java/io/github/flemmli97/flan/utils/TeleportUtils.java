@@ -1,6 +1,7 @@
 package io.github.flemmli97.flan.utils;
 
 import io.github.flemmli97.flan.claim.Claim;
+import io.github.flemmli97.flan.claim.ClaimBox;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,11 +18,11 @@ public class TeleportUtils {
         return BlockPos.containing(pos);
     }
 
-    public static Vec3 getTeleportPos(ServerPlayer player, Vec3 playerPos, ClaimStorage storage, int[] dim, BlockPos.MutableBlockPos bPos, BiFunction<Claim, BlockPos, Boolean> check) {
+    public static Vec3 getTeleportPos(ServerPlayer player, Vec3 playerPos, ClaimStorage storage, Area2D dim, BlockPos.MutableBlockPos bPos, BiFunction<Claim, BlockPos, Boolean> check) {
         return getTeleportPos(player, playerPos, storage, dim, false, bPos, check);
     }
 
-    public static Vec3 getTeleportPos(ServerPlayer player, Vec3 playerPos, ClaimStorage storage, int[] dim, boolean checkSub, BlockPos.MutableBlockPos bPos, BiFunction<Claim, BlockPos, Boolean> check) {
+    public static Vec3 getTeleportPos(ServerPlayer player, Vec3 playerPos, ClaimStorage storage, Area2D dim, boolean checkSub, BlockPos.MutableBlockPos bPos, BiFunction<Claim, BlockPos, Boolean> check) {
         Tuple<Direction, Vec3> pos = nearestOutside(dim, playerPos);
         bPos.set(pos.getB().x(), pos.getB().y(), pos.getB().z());
         Claim claim = storage.getClaimAt(bPos);
@@ -40,38 +41,57 @@ public class TeleportUtils {
                 return dest;
             return new Vec3(rounded.getX() + 0.5, y + 1, rounded.getZ() + 0.5);
         }
-        int[] newDim = claim.getDimensions();
+        ClaimBox newDim = claim.getDimensions();
         switch (pos.getA()) {
-            case NORTH -> dim[2] = newDim[2];
-            case SOUTH -> dim[3] = newDim[3];
-            case EAST -> dim[1] = newDim[1];
-            default -> dim[0] = newDim[0];
+            case NORTH -> dim.minZ = newDim.minZ();
+            case SOUTH -> dim.maxZ = newDim.maxZ();
+            case EAST -> dim.maxX = newDim.maxX();
+            default -> dim.minX = newDim.minX();
         }
         return getTeleportPos(player, playerPos, storage, dim, checkSub, bPos, check);
     }
 
-    private static Tuple<Direction, Vec3> nearestOutside(int[] dim, Vec3 from) {
-        double northDist = Math.abs(from.z() - dim[2]);
-        double southDist = Math.abs(dim[3] - from.z());
-        double westDist = Math.abs(from.x() - dim[0]);
-        double eastDist = Math.abs(dim[1] - from.x());
+    private static Tuple<Direction, Vec3> nearestOutside(Area2D dim, Vec3 from) {
+        double northDist = Math.abs(from.z() - dim.minZ);
+        double southDist = Math.abs(dim.maxZ - from.z());
+        double westDist = Math.abs(from.x() - dim.minX);
+        double eastDist = Math.abs(dim.maxX - from.x());
         if (northDist > southDist) {
             if (eastDist > westDist) {
                 if (southDist > westDist)
-                    return new Tuple<>(Direction.WEST, new Vec3(dim[0] - 1.5, from.y(), from.z()));
-                return new Tuple<>(Direction.SOUTH, new Vec3(from.x(), from.y(), dim[3] + 1.5));
+                    return new Tuple<>(Direction.WEST, new Vec3(dim.minX - 1.5, from.y(), from.z()));
+                return new Tuple<>(Direction.SOUTH, new Vec3(from.x(), from.y(), dim.maxZ + 1.5));
             }
             if (southDist > eastDist)
-                return new Tuple<>(Direction.EAST, new Vec3(dim[1] + 1.5, from.y(), from.z()));
-            return new Tuple<>(Direction.SOUTH, new Vec3(from.x(), from.y(), dim[3] + 1.5));
+                return new Tuple<>(Direction.EAST, new Vec3(dim.maxX + 1.5, from.y(), from.z()));
+            return new Tuple<>(Direction.SOUTH, new Vec3(from.x(), from.y(), dim.maxZ + 1.5));
         }
         if (eastDist > westDist) {
             if (northDist > westDist)
-                return new Tuple<>(Direction.WEST, new Vec3(dim[0] - 1.5, from.y(), from.z()));
-            return new Tuple<>(Direction.NORTH, new Vec3(from.x(), from.y(), dim[2] - 1.5));
+                return new Tuple<>(Direction.WEST, new Vec3(dim.minX - 1.5, from.y(), from.z()));
+            return new Tuple<>(Direction.NORTH, new Vec3(from.x(), from.y(), dim.minZ - 1.5));
         }
         if (northDist > eastDist)
-            return new Tuple<>(Direction.EAST, new Vec3(dim[1] + 1.5, from.y(), from.z()));
-        return new Tuple<>(Direction.NORTH, new Vec3(from.x(), from.y(), dim[2] - 1.5));
+            return new Tuple<>(Direction.EAST, new Vec3(dim.maxX + 1.5, from.y(), from.z()));
+        return new Tuple<>(Direction.NORTH, new Vec3(from.x(), from.y(), dim.minZ - 1.5));
+    }
+
+    public static class Area2D {
+
+        public int minX, minZ, maxX, maxZ;
+
+        public Area2D(int minX, int minZ, int maxX, int maxZ) {
+            this.minX = minX;
+            this.maxX = maxX;
+            this.minZ = minZ;
+            this.maxZ = maxZ;
+        }
+
+        public Area2D(ClaimBox box) {
+            this.minX = box.minX();
+            this.maxX = box.maxX();
+            this.minZ = box.minZ();
+            this.maxZ = box.maxZ();
+        }
     }
 }

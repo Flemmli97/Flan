@@ -11,7 +11,6 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
-import io.github.flemmli97.flan.claim.ParticleIndicators;
 import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.EntityInteractEvents;
@@ -36,6 +35,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.LevelResource;
@@ -63,6 +63,9 @@ import java.util.function.Consumer;
 
 public class PlayerClaimData implements IPlayerData {
 
+    private final UUID editDisplay = UUID.randomUUID();
+    private final UUID display3D = UUID.randomUUID();
+
     private int claimBlocks, additionalClaimBlocks, confirmTick, actionCooldown;
     //Scoreboard tracking
     private int usedBlocks;
@@ -70,12 +73,12 @@ public class PlayerClaimData implements IPlayerData {
     private int lastBlockTick, trappedTick = -1, deathPickupTick;
     private Vec3 trappedPos;
     private BlockPos tpPos;
-    private EnumEditMode mode = EnumEditMode.DEFAULT;
+    private ClaimEditingMode editMode = ClaimEditingMode.DEFAULT;
+    private ClaimingMode claimingMode = ClaimingMode.DEFAULT;
     private Claim editingClaim;
     private ClaimDisplay displayEditing;
 
     private BlockPos firstCorner;
-    private int[] cornerRenderPos;
 
     private final Set<ClaimDisplay> claimDisplayList = new HashSet<>();
     private final Set<ClaimDisplay> displayToAdd = new HashSet<>();
@@ -94,9 +97,14 @@ public class PlayerClaimData implements IPlayerData {
 
     private long lastClaimTime;
 
+    public final ClientBlockDisplayTracker clientBlockDisplayTracker;
+
+    public int claimingRange = 64;
+
     public PlayerClaimData(ServerPlayer player) {
         this.player = player;
         this.claimBlocks = ConfigHandler.CONFIG.startingBlocks;
+        this.clientBlockDisplayTracker = new ClientBlockDisplayTracker(player);
     }
 
     public static PlayerClaimData get(ServerPlayer player) {
@@ -209,12 +217,26 @@ public class PlayerClaimData implements IPlayerData {
             this.displayToAdd.add(new ClaimDisplay(display, this.player.serverLevel(), type, height));
     }
 
-    public EnumEditMode getEditMode() {
-        return this.mode;
+    public ClaimEditingMode getEditMode() {
+        return this.editMode;
     }
 
-    public void setEditMode(EnumEditMode mode) {
-        this.mode = mode;
+    public void setEditMode(ClaimEditingMode mode) {
+        this.editMode = mode;
+        this.setEditClaim(null, 0);
+        this.setEditingCorner(null);
+    }
+
+    public ClaimingMode getClaimingMode() {
+        if (this.editingClaim != null && this.editingClaim.is3d())
+            return ClaimingMode.DIMENSION_3D;
+        if (!ConfigHandler.CONFIG.main3dClaims && this.editMode == ClaimEditingMode.DEFAULT)
+            return ClaimingMode.DEFAULT;
+        return this.claimingMode;
+    }
+
+    public void setClaimingMode(ClaimingMode claimingMode) {
+        this.claimingMode = claimingMode;
         this.setEditClaim(null, 0);
         this.setEditingCorner(null);
     }
@@ -225,14 +247,10 @@ public class PlayerClaimData implements IPlayerData {
 
     public void setEditingCorner(BlockPos pos) {
         if (pos != null) {
-            BlockState state = this.player.level().getBlockState(pos);
-            while (state.isAir() || state.canBeReplaced()) {
-                pos = pos.below();
-                state = this.player.level().getBlockState(pos);
-            }
-            this.cornerRenderPos = ClaimDisplay.getPosFrom(this.player.serverLevel(), pos.getX(), pos.getZ(), pos.getY(), new HashMap<>());
-        } else
-            this.cornerRenderPos = null;
+            this.clientBlockDisplayTracker.resetFakeBlocks(this.display3D);
+        } else {
+            this.clientBlockDisplayTracker.resetFakeBlocks(this.editDisplay);
+        }
         this.firstCorner = pos;
     }
 
@@ -316,10 +334,23 @@ public class PlayerClaimData implements IPlayerData {
             this.addClaimBlocks(1);
             this.lastBlockTick = 0;
         }
-        if (this.cornerRenderPos != null) {
-            if (this.cornerRenderPos[1] != this.cornerRenderPos[2])
-                this.player.connection.send(new ClientboundLevelParticlesPacket(ParticleIndicators.SETCORNER, true, this.cornerRenderPos[0] + 0.5, this.cornerRenderPos[2] + 0.25, this.cornerRenderPos[3] + 0.5, 0, 0.25f, 0, 0, 2));
-            this.player.connection.send(new ClientboundLevelParticlesPacket(ParticleIndicators.SETCORNER, true, this.cornerRenderPos[0] + 0.5, this.cornerRenderPos[1] + 0.25, this.cornerRenderPos[3] + 0.5, 0, 0.25f, 0, 0, 2));
+        if (tool) {
+            this.claimingRange = this.getClaimingMode() == ClaimingMode.DIMENSION_3D && this.editingCorner() != null ? 10 : 64;
+            BlockPos pos = ItemInteractEvents.rayTargetPos(this.player);
+            if (pos != null && !pos.equals(this.firstCorner)) {
+                this.clientBlockDisplayTracker.displayFakeBlocks(this.display3D,
+                        new ClientBlockDisplayTracker.DisplayData(pos, Blocks.YELLOW_WOOL.defaultBlockState()));
+            } else {
+                this.clientBlockDisplayTracker.resetFakeBlocks(this.display3D);
+            }
+        } else {
+            this.clientBlockDisplayTracker.resetFakeBlocks(this.display3D);
+            this.claimingRange = 64;
+        }
+        if (this.firstCorner != null && this.player.tickCount % 3 == 0) {
+            this.clientBlockDisplayTracker.displayFakeBlocks(this.editDisplay, new ClientBlockDisplayTracker.DisplayData(
+                    this.firstCorner, Blocks.SEA_LANTERN.defaultBlockState()
+            ));
         }
         if (--this.confirmTick < 0)
             this.confirmDeleteAll = false;
@@ -361,7 +392,7 @@ public class PlayerClaimData implements IPlayerData {
                     this.tpPos = null;
                 } else {
                     Vec3 tp = TeleportUtils.getTeleportPos(this.player, this.player.position(), ClaimStorage.get(this.player.serverLevel()),
-                            ((IPlayerClaimImpl) this.player).getCurrentClaim().getDimensions(),
+                            new TeleportUtils.Area2D(((IPlayerClaimImpl) this.player).getCurrentClaim().getDimensions()),
                             TeleportUtils.roundedBlockPos(this.player.position()).mutable(), (claim, nPos) -> false);
                     if (this.player.isPassenger())
                         this.player.stopRiding();

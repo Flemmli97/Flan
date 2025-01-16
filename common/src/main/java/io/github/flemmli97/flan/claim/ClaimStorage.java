@@ -17,7 +17,8 @@ import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.integration.claiming.OtherClaimingModCheck;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.platform.integration.webmap.WebmapCalls;
-import io.github.flemmli97.flan.player.EnumEditMode;
+import io.github.flemmli97.flan.player.ClaimEditingMode;
+import io.github.flemmli97.flan.player.ClaimingMode;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.player.PlayerDataHandler;
@@ -87,8 +88,16 @@ public class ClaimStorage implements IPermissionStorage {
         return uuid;
     }
 
-    public Claim createAdminClaim(BlockPos pos1, BlockPos pos2, ServerLevel level) {
-        Claim claim = new Claim(pos1.below(ConfigHandler.CONFIG.defaultClaimDepth), pos2.below(ConfigHandler.CONFIG.defaultClaimDepth), null, level);
+    public Claim createAdminClaim(BlockPos pos1, BlockPos pos2, ServerLevel level, boolean is3d) {
+        if (!is3d) {
+            if (pos1.getY() < pos2.getY())
+                pos1 = pos1.below(ConfigHandler.CONFIG.defaultClaimDepth);
+            else
+                pos2 = pos2.below(ConfigHandler.CONFIG.defaultClaimDepth);
+        }
+        Claim claim = new Claim(pos1, pos2, null, level);
+        if (is3d)
+            claim.withHeight(Math.max(pos1.getY(), pos2.getY()));
         Set<DisplayBox> conflicts = this.conflicts(claim, null);
         if (conflicts.isEmpty()) {
             claim.setClaimID(this.generateUUID());
@@ -100,11 +109,23 @@ public class ClaimStorage implements IPermissionStorage {
     }
 
     public boolean createClaim(BlockPos pos1, BlockPos pos2, ServerPlayer player) {
-        Claim claim = new Claim(pos1.below(ConfigHandler.CONFIG.defaultClaimDepth), pos2.below(ConfigHandler.CONFIG.defaultClaimDepth), player);
+        boolean use3D = PlayerClaimData.get(player).getClaimingMode() == ClaimingMode.DIMENSION_3D;
+        if (!use3D) {
+            if (pos1.getY() < pos2.getY())
+                pos1 = pos1.below(ConfigHandler.CONFIG.defaultClaimDepth);
+            else
+                pos2 = pos2.below(ConfigHandler.CONFIG.defaultClaimDepth);
+        } else if (Math.abs(pos1.getY() - pos2.getY()) < ConfigHandler.CONFIG.minHeight) {
+            player.displayClientMessage(PermHelper.translatedText("flan.minClaimHeight", ConfigHandler.CONFIG.minHeight, ChatFormatting.RED), false);
+            return false;
+        }
+        Claim claim = new Claim(pos1, pos2, player);
+        if (use3D)
+            claim.withHeight(Math.max(pos1.getY(), pos2.getY()));
         if (ConfigHandler.CONFIG.spawnProtection && player.level().dimension() == Level.OVERWORLD && player.getServer().getSpawnProtectionRadius() > 0) {
             AABB aabb = new AABB(player.level().getSharedSpawnPos()).inflate(player.getServer().getSpawnProtectionRadius());
-            int[] dim = claim.getDimensions();
-            if (dim[0] <= aabb.maxX && dim[1] >= aabb.minX && dim[2] <= aabb.maxZ && dim[3] >= aabb.minZ) {
+            ClaimBox dim = claim.getDimensions();
+            if (dim.minX() <= aabb.maxX && dim.maxX() >= aabb.minX && dim.minZ() <= aabb.maxZ && dim.maxZ() >= aabb.minZ) {
                 player.displayClientMessage(PermHelper.translatedText("flan.conflictSpawn", ChatFormatting.RED), false);
                 return false;
             }
@@ -150,7 +171,7 @@ public class ClaimStorage implements IPermissionStorage {
     private Set<DisplayBox> conflicts(Claim claim, Claim except) {
         Set<DisplayBox> conflicted = new HashSet<>();
         int[] chunks = getChunkPos(claim);
-        for (int x = chunks[0]; x <= chunks[1]; x++)
+        for (int x = chunks[0]; x <= chunks[1]; x++) {
             for (int z = chunks[2]; z <= chunks[3]; z++) {
                 List<Claim> claims = this.claims.get(ChunkPos.asLong(x, z));
                 if (claims != null)
@@ -160,13 +181,14 @@ public class ClaimStorage implements IPermissionStorage {
                         }
                     }
             }
+        }
         if (!claim.isAdminClaim())
             OtherClaimingModCheck.INSTANCE.findConflicts(claim, conflicted);
         return conflicted;
     }
 
-    public boolean deleteClaim(Claim claim, boolean updateClaim, EnumEditMode mode, ServerLevel world) {
-        if (mode == EnumEditMode.SUBCLAIM) {
+    public boolean deleteClaim(Claim claim, boolean updateClaim, ClaimEditingMode mode, ServerLevel world) {
+        if (mode == ClaimEditingMode.SUBCLAIM) {
             if (claim.parentClaim() != null)
                 return claim.parentClaim().deleteSubClaim(claim);
             return false;
@@ -194,7 +216,7 @@ public class ClaimStorage implements IPermissionStorage {
 
     public void toggleAdminClaim(ServerPlayer player, Claim claim, boolean toggle) {
         Flan.log("Set claim {} to an admin claim", claim);
-        this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.serverLevel());
+        this.deleteClaim(claim, false, ClaimEditingMode.DEFAULT, player.serverLevel());
         if (toggle)
             claim.getOwnerPlayer().ifPresent(o -> PlayerClaimData.get(o).updateScoreboard());
         claim.toggleAdminClaim(player, toggle);
@@ -204,9 +226,18 @@ public class ClaimStorage implements IPermissionStorage {
     }
 
     public boolean resizeClaim(Claim claim, BlockPos from, BlockPos to, ServerPlayer player) {
-        int[] dims = claim.getDimensions();
-        BlockPos opposite = new BlockPos(dims[0] == from.getX() ? dims[1] : dims[0], dims[4], dims[2] == from.getZ() ? dims[3] : dims[2]);
+        ClaimBox dims = claim.getDimensions();
+        int minY = claim.is3d() && dims.minY() == from.getY() ? dims.maxY() : dims.minY();
+        BlockPos opposite = new BlockPos(dims.minX() == from.getX() ? dims.maxX() : dims.minX(),
+                minY, dims.minZ() == from.getZ() ? dims.maxZ() : dims.minZ());
         Claim newClaim = new Claim(opposite, to, player.getUUID(), player.serverLevel());
+        if (claim.is3d()) {
+            if (Math.abs(minY - to.getY()) < ConfigHandler.CONFIG.minHeight) {
+                player.displayClientMessage(PermHelper.translatedText("flan.minClaimHeight", ConfigHandler.CONFIG.minHeight, ChatFormatting.RED), false);
+                return false;
+            }
+            newClaim.withHeight(Math.max(minY, to.getY()));
+        }
         if (newClaim.getPlane() < ConfigHandler.CONFIG.minClaimsize) {
             player.displayClientMessage(PermHelper.translatedText("flan.minClaimSize", ConfigHandler.CONFIG.minClaimsize, ChatFormatting.RED), false);
             return false;
@@ -227,7 +258,7 @@ public class ClaimStorage implements IPermissionStorage {
         boolean enoughBlocks = claim.isAdminClaim() || data.isAdminIgnoreClaim() || newData.canUseClaimBlocks(diff);
         if (enoughBlocks) {
             Flan.log("Resizing claim {}", claim);
-            this.deleteClaim(claim, false, EnumEditMode.DEFAULT, player.serverLevel());
+            this.deleteClaim(claim, false, ClaimEditingMode.DEFAULT, player.serverLevel());
             claim.copySizes(newClaim);
             this.addClaim(claim);
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
@@ -368,12 +399,12 @@ public class ClaimStorage implements IPermissionStorage {
     }
 
     public static int[] getChunkPos(Claim claim) {
-        int[] dim = claim.getDimensions();
+        ClaimBox dim = claim.getDimensions();
         int[] pos = new int[4];
-        pos[0] = dim[0] >> 4;
-        pos[1] = dim[1] >> 4;
-        pos[2] = dim[2] >> 4;
-        pos[3] = dim[3] >> 4;
+        pos[0] = dim.minX() >> 4;
+        pos[1] = dim.maxX() >> 4;
+        pos[2] = dim.minZ() >> 4;
+        pos[3] = dim.maxZ() >> 4;
         return pos;
     }
 
@@ -523,7 +554,7 @@ public class ClaimStorage implements IPermissionStorage {
                     } else {
                         src.sendSuccess(() -> PermHelper.translatedText("flan.readConflict", parent.getName(), conflicts, ChatFormatting.DARK_RED), false);
                         for (DisplayBox claim : conflicts) {
-                            DisplayBox.Box dim = claim.box();
+                            ClaimBox dim = claim.box();
                             MutableComponent text = PermHelper.translatedText(String.format("@[x=%d;z=%d]", dim.minX(), dim.minZ()), ChatFormatting.RED);
                             text.setStyle(text.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + dim.minX() + " ~ " + dim.minZ())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, PermHelper.translatedText("chat.coordinates.tooltip"))));
                             src.sendSuccess(() -> text, false);

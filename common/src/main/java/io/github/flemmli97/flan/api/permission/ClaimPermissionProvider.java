@@ -14,6 +14,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * The provider for datagen runs
+ */
 public abstract class ClaimPermissionProvider implements DataProvider {
 
     private final Map<ResourceLocation, ClaimPermission.Builder> data = new LinkedHashMap<>();

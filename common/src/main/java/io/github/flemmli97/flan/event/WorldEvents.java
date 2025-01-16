@@ -119,6 +119,7 @@ public class WorldEvents {
             return;
         BoundingBox bb = structureStart.getBoundingBox();
         ClaimStorage.get(level)
-                .createAdminClaim(new BlockPos(bb.minX(), bb.minY(), bb.minZ()), new BlockPos(bb.maxX(), bb.minY(), bb.maxZ()), level);
+                .createAdminClaim(new BlockPos(bb.minX(), bb.minY(), bb.minZ()), new BlockPos(bb.maxX(), bb.maxY(), bb.maxZ()), level,
+                        true);
     }
 }

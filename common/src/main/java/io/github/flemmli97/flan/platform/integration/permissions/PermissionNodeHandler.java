@@ -29,6 +29,7 @@ public interface PermissionNodeHandler {
     String cmdListAll = "flan.command.list.all";
 
     String cmdClaimMode = "flan.command.claim.mode";
+    String cmdEditClaimMode = "flan.command.claim.edit.mode";
     String cmdBypassMode = "flan.command.bypass.claim";
     String cmdAdminSet = "flan.command.admin.claim";
     String cmdAdminList = "flan.command.admin.list";
