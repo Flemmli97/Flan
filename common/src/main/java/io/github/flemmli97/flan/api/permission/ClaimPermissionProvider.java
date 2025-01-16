@@ -17,6 +17,9 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The provider for datagen runs
+ */
 public abstract class ClaimPermissionProvider implements DataProvider {
 
     private static final Logger LOGGER = LogManager.getLogger();

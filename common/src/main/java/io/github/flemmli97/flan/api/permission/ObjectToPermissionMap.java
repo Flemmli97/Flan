@@ -55,38 +55,38 @@ import java.util.function.Supplier;
  */
 public class ObjectToPermissionMap {
 
-    private static final Map<Block, ResourceLocation> blockToPermission = new HashMap<>();
-    private static final Map<Predicate<Block>, Supplier<ResourceLocation>> blockPermissionBuilder = new HashMap<>();
+    private static final Map<Block, ResourceLocation> BLOCK_TO_PERMISSION = new HashMap<>();
+    private static final Map<Predicate<Block>, Supplier<ResourceLocation>> BLOCK_PERMISSION_BUILDER = new HashMap<>();
 
-    private static final Map<Item, ResourceLocation> itemToPermission = new HashMap<>();
-    private static final Map<Predicate<Item>, Supplier<ResourceLocation>> itemPermissionBuilder = new HashMap<>();
+    private static final Map<Item, ResourceLocation> ITEM_TO_PERMISSION = new HashMap<>();
+    private static final Map<Predicate<Item>, Supplier<ResourceLocation>> ITEM_PERMISSION_BUILDER = new HashMap<>();
 
-    private static final Map<EntityType<?>, ResourceLocation> entityToPermission = new HashMap<>();
+    private static final Map<EntityType<?>, ResourceLocation> ENTITY_TO_PERMISSION = new HashMap<>();
 
-    private static final Map<Block, ResourceLocation> leftClickBlockPermission = new HashMap<>();
+    private static final Map<Block, ResourceLocation> LEFT_CLICK_BLOCK_PERMISSION = new HashMap<>();
 
     public static void reload(MinecraftServer server) {
-        blockToPermission.clear();
-        itemToPermission.clear();
-        entityToPermission.clear();
-        leftClickBlockPermission.clear();
+        BLOCK_TO_PERMISSION.clear();
+        ITEM_TO_PERMISSION.clear();
+        ENTITY_TO_PERMISSION.clear();
+        LEFT_CLICK_BLOCK_PERMISSION.clear();
         for (Block block : CrossPlatformStuff.INSTANCE.registryBlocks().getIterator()) {
-            blockPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(block)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> blockToPermission.put(block, sub.get()));
+            BLOCK_PERMISSION_BUILDER.entrySet().stream().filter(e -> e.getKey().test(block)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> BLOCK_TO_PERMISSION.put(block, sub.get()));
         }
         for (Item item : CrossPlatformStuff.INSTANCE.registryItems().getIterator()) {
-            itemPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(item)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> itemToPermission.put(item, sub.get()));
+            ITEM_PERMISSION_BUILDER.entrySet().stream().filter(e -> e.getKey().test(item)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> ITEM_TO_PERMISSION.put(item, sub.get()));
         }
-        process(ConfigHandler.CONFIG.itemPermission, Registry.ITEM, itemToPermission);
-        process(ConfigHandler.CONFIG.blockPermission, Registry.BLOCK, blockToPermission);
-        process(ConfigHandler.CONFIG.entityPermission, Registry.ENTITY_TYPE, entityToPermission);
-        process(ConfigHandler.CONFIG.leftClickBlockPermission, Registry.BLOCK, leftClickBlockPermission);
+        process(ConfigHandler.CONFIG.itemPermission, Registry.ITEM, ITEM_TO_PERMISSION);
+        process(ConfigHandler.CONFIG.blockPermission, Registry.BLOCK, BLOCK_TO_PERMISSION);
+        process(ConfigHandler.CONFIG.entityPermission, Registry.ENTITY_TYPE, ENTITY_TO_PERMISSION);
+        process(ConfigHandler.CONFIG.leftClickBlockPermission, Registry.BLOCK, LEFT_CLICK_BLOCK_PERMISSION);
     }
 
     private static <T> void process(List<String> list, Registry<T> registry, Map<T, ResourceLocation> map) {
         for (String s : list) {
             String[] sub = s.split("-");
             boolean remove = sub[1].equals("NONE");
-            if (s.startsWith("@")) {
+            if (s.startsWith("@") || s.startsWith("#")) {
                 ResourceLocation res = new ResourceLocation(sub[0].substring(1));
                 processTag(res, registry, b -> {
                     if (remove)
@@ -120,19 +120,19 @@ public class ObjectToPermissionMap {
     }
 
     public static ResourceLocation getFromBlock(Block block) {
-        return blockToPermission.get(block);
+        return BLOCK_TO_PERMISSION.get(block);
     }
 
     public static ResourceLocation getFromItem(Item item) {
-        return itemToPermission.get(item);
+        return ITEM_TO_PERMISSION.get(item);
     }
 
     public static ResourceLocation getFromEntity(EntityType<?> entity) {
-        return entityToPermission.get(entity);
+        return ENTITY_TO_PERMISSION.get(entity);
     }
 
     public static ResourceLocation getForLeftClickBlock(Block block) {
-        return leftClickBlockPermission.get(block);
+        return LEFT_CLICK_BLOCK_PERMISSION.get(block);
     }
 
     /**
@@ -143,7 +143,7 @@ public class ObjectToPermissionMap {
      * @param perm The given permission
      */
     public static void registerBlockPredicateMap(Predicate<Block> pred, Supplier<ResourceLocation> perm) {
-        blockPermissionBuilder.put(pred, perm);
+        BLOCK_PERMISSION_BUILDER.put(pred, perm);
     }
 
     /**
@@ -154,7 +154,7 @@ public class ObjectToPermissionMap {
      * @param perm The given permission
      */
     public static void registerItemPredicateMap(Predicate<Item> pred, Supplier<ResourceLocation> perm) {
-        itemPermissionBuilder.put(pred, perm);
+        ITEM_PERMISSION_BUILDER.put(pred, perm);
     }
 
     static {
