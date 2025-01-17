@@ -64,7 +64,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
 
     @Override
     public boolean canBreakBlock(Level world, BlockPos pos, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return false;
+        if (!(world instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
@@ -73,7 +73,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
 
     @Override
     public boolean canExplodeBlock(Level world, BlockPos pos, Explosion explosion, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return false;
+        if (!(world instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
@@ -82,7 +82,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
 
     @Override
     public boolean canPlaceBlock(Level world, BlockPos pos, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return false;
+        if (!(world instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
@@ -91,7 +91,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
 
     @Override
     public boolean canInteractBlock(Level world, BlockPos pos, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return false;
+        if (!(world instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
@@ -112,7 +112,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
 
     @Override
     public boolean canInteractEntity(Level world, Entity entity, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return false;
+        if (!(world instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
@@ -130,7 +130,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
 
     @Override
     public boolean canDamageEntity(Level world, Entity entity, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return false;
+        if (!(world instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
