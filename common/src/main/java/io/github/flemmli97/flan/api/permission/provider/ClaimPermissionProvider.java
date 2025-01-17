@@ -1,5 +1,6 @@
 package io.github.flemmli97.flan.api.permission.provider;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -16,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -28,7 +29,7 @@ public abstract class ClaimPermissionProvider implements DataProvider {
 
     private static final Gson GSON = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().disableHtmlEscaping().create();
 
-    private final Map<ResourceLocation, ClaimPermission.Builder> data = new HashMap<>();
+    private final Map<ResourceLocation, ClaimPermission.Builder> data = new LinkedHashMap<>();
 
     private final DataGenerator gen;
 
@@ -59,6 +60,12 @@ public abstract class ClaimPermissionProvider implements DataProvider {
     }
 
     public void addPermission(ResourceLocation res, ClaimPermission.Builder permission) {
-        this.data.put(res, permission);
+        if (this.data.put(res, permission) != null) {
+            throw new IllegalStateException("Permission already registered for " + res);
+        }
+    }
+
+    public Map<ResourceLocation, ClaimPermission.Builder> getData() {
+        return ImmutableMap.copyOf(this.data);
     }
 }

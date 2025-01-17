@@ -2,7 +2,6 @@ package io.github.flemmli97.flan.data;
 
 import com.google.common.collect.ImmutableSet;
 import io.github.flemmli97.flan.Flan;
-import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.gui.CustomInteractListScreenHandler;
 import io.github.flemmli97.linguabib.api.ServerLangGen;
@@ -19,9 +18,11 @@ import java.util.stream.Stream;
 public class ENLangGen extends ServerLangGen {
 
     private final Set<String> keys = new HashSet<>();
+    private final PermissionGen permissionGen;
 
-    public ENLangGen(DataGenerator gen) {
+    public ENLangGen(DataGenerator gen, PermissionGen permissionGen) {
         super(gen, Flan.MODID, "en_us");
+        this.permissionGen = permissionGen;
     }
 
     @Override
@@ -213,11 +214,12 @@ public class ENLangGen extends ServerLangGen {
 
         this.add("flan.wiki", "For more info check out the wiki:");
 
-        for (Map.Entry<ResourceLocation, ClaimPermission.Builder> entry : BuiltinPermission.DATAGEN_DATA.entrySet()) {
+        for (Map.Entry<ResourceLocation, ClaimPermission.Builder> entry : this.permissionGen.getData().entrySet()) {
             ClaimPermission perm = entry.getValue().build(entry.getKey());
             this.add(perm.translationKey(), this.capitalize(perm.getId().getPath()));
             this.add(perm.translationKeyDescription(), perm.desc.toArray(String[]::new));
         }
+
         this.add("flan.command.help", "help <page> | (cmd <command>)", "Shows all available commands or info for the given command.");
         this.add("flan.command.menu", "menu", "When standing in a claim you have permissions for opens the claim menu.");
         this.add("flan.command.claimInfo", "claimInfo", "Prints infos about the claim you're standing in.");

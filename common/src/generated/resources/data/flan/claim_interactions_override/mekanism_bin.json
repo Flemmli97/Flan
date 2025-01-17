@@ -1,5 +1,5 @@
 {
-  "type": "flan:left_click",
+  "type": "flan:block_left_click",
   "values": [
     {
       "entry": "mekanism:basic_bin",

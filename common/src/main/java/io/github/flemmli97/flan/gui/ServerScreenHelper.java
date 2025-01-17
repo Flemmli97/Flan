@@ -58,7 +58,7 @@ public class ServerScreenHelper {
             String permFlag;
             if (group == null) {
                 if (claim.parentClaim() == null)
-                    permFlag = "" + (claim.permEnabled(perm.getId()) == 1);
+                    permFlag = claim.permEnabled(perm.getId()) == 1 ? "flan.screenTrue" : "flan.screenFalse";
                 else {
                     permFlag = switch (claim.permEnabled(perm.getId())) {
                         case -1 -> "flan.screenDefault";

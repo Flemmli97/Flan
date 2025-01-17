@@ -13,9 +13,10 @@ public class DataEvent {
     public static void data(GatherDataEvent event) {
         DataGenerator data = event.getGenerator();
         if (event.includeServer()) {
-            data.addProvider(new PermissionGen(data));
+            PermissionGen permissionGen = new PermissionGen(data);
+            data.addProvider(permissionGen);
             data.addProvider(new InteractionOverrideGen(data));
-            ENLangGen enLang = new ENLangGen(data);
+            ENLangGen enLang = new ENLangGen(data, permissionGen);
             data.addProvider(enLang);
         }
     }
