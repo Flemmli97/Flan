@@ -1,14 +1,6 @@
 package io.github.flemmli97.flan.api.permission;
 
-import com.mojang.datafixers.util.Pair;
-import io.github.flemmli97.flan.Flan;
-import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.platform.CrossPlatformStuff;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.BucketItem;
@@ -43,10 +35,7 @@ import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.TurtleEggBlock;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -55,89 +44,11 @@ import java.util.function.Supplier;
  */
 public class ObjectToPermissionMap {
 
-    private static final Map<Block, ResourceLocation> BLOCK_TO_PERMISSION = new HashMap<>();
-    private static final Map<Predicate<Block>, Supplier<ResourceLocation>> BLOCK_PERMISSION_BUILDER = new HashMap<>();
-
-    private static final Map<Item, ResourceLocation> ITEM_TO_PERMISSION = new HashMap<>();
-    private static final Map<Predicate<Item>, Supplier<ResourceLocation>> ITEM_PERMISSION_BUILDER = new HashMap<>();
-
-    private static final Map<EntityType<?>, ResourceLocation> ENTITY_TO_PERMISSION = new HashMap<>();
-
-    private static final Map<Block, ResourceLocation> LEFT_CLICK_BLOCK_PERMISSION = new HashMap<>();
-
-    public static void reload(MinecraftServer server) {
-        BLOCK_TO_PERMISSION.clear();
-        ITEM_TO_PERMISSION.clear();
-        ENTITY_TO_PERMISSION.clear();
-        LEFT_CLICK_BLOCK_PERMISSION.clear();
-        for (Block block : CrossPlatformStuff.INSTANCE.registryBlocks().getIterator()) {
-            BLOCK_PERMISSION_BUILDER.entrySet().stream().filter(e -> e.getKey().test(block)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> BLOCK_TO_PERMISSION.put(block, sub.get()));
-        }
-        for (Item item : CrossPlatformStuff.INSTANCE.registryItems().getIterator()) {
-            ITEM_PERMISSION_BUILDER.entrySet().stream().filter(e -> e.getKey().test(item)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> ITEM_TO_PERMISSION.put(item, sub.get()));
-        }
-        process(ConfigHandler.CONFIG.itemPermission, Registry.ITEM, ITEM_TO_PERMISSION);
-        process(ConfigHandler.CONFIG.blockPermission, Registry.BLOCK, BLOCK_TO_PERMISSION);
-        process(ConfigHandler.CONFIG.entityPermission, Registry.ENTITY_TYPE, ENTITY_TO_PERMISSION);
-        process(ConfigHandler.CONFIG.leftClickBlockPermission, Registry.BLOCK, LEFT_CLICK_BLOCK_PERMISSION);
-    }
-
-    private static <T> void process(List<String> list, Registry<T> registry, Map<T, ResourceLocation> map) {
-        for (String s : list) {
-            String[] sub = s.split("-");
-            boolean remove = sub[1].equals("NONE");
-            if (s.startsWith("@") || s.startsWith("#")) {
-                ResourceLocation res = new ResourceLocation(sub[0].substring(1));
-                processTag(res, registry, b -> {
-                    if (remove)
-                        map.remove(b);
-                    else {
-                        ResourceLocation id = BuiltinPermission.tryLegacy(sub[1]);
-                        ClaimPermission perm = PermissionManager.INSTANCE.get(id);
-                        if (perm == null)
-                            Flan.error("Configuring custom permission map: No such permission for {}", sub[1]);
-                        map.put(b, id);
-                    }
-                });
-            } else {
-                if (remove)
-                    map.remove(registry.get(new ResourceLocation(sub[0])));
-                else {
-                    ResourceLocation id = BuiltinPermission.tryLegacy(sub[1]);
-                    ClaimPermission perm = PermissionManager.INSTANCE.get(id);
-                    if (perm == null)
-                        Flan.error("Configuring custom permission map: No such permission for {} {}", sub[1], id);
-                    map.put(registry.get(new ResourceLocation(sub[0])), id);
-                }
-            }
-        }
-    }
-
-    private static <T> void processTag(ResourceLocation tag, Registry<T> registry, Consumer<T> action) {
-        Optional<HolderSet.Named<T>> t = registry.getTags().filter(p -> p.getFirst().location().equals(tag))
-                .map(Pair::getSecond).findFirst();
-        t.ifPresent(holders -> holders.forEach(i -> action.accept(i.value())));
-    }
-
-    public static ResourceLocation getFromBlock(Block block) {
-        return BLOCK_TO_PERMISSION.get(block);
-    }
-
-    public static ResourceLocation getFromItem(Item item) {
-        return ITEM_TO_PERMISSION.get(item);
-    }
-
-    public static ResourceLocation getFromEntity(EntityType<?> entity) {
-        return ENTITY_TO_PERMISSION.get(entity);
-    }
-
-    public static ResourceLocation getForLeftClickBlock(Block block) {
-        return LEFT_CLICK_BLOCK_PERMISSION.get(block);
-    }
+    public static final Map<Predicate<Block>, Supplier<ResourceLocation>> BLOCK_PERMISSION_BUILDER = new HashMap<>();
+    public static final Map<Predicate<Item>, Supplier<ResourceLocation>> ITEM_PERMISSION_BUILDER = new HashMap<>();
 
     /**
      * Register a custom permission to check for the given blocks. Used when trying to interact with blocks
-     * Register before ServerLifecycleEvents.SERVER_STARTING
      *
      * @param pred Predicate for blocks that should return the given permission
      * @param perm The given permission
@@ -148,7 +59,6 @@ public class ObjectToPermissionMap {
 
     /**
      * Register a custom permission to check for the given items. Used when trying to use items.
-     * Register before ServerLifecycleEvents.SERVER_STARTING
      *
      * @param pred Predicate for items that should return the given permission
      * @param perm The given permission

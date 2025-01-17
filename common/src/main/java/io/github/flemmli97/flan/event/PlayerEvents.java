@@ -1,6 +1,6 @@
 package io.github.flemmli97.flan.event;
 
-import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
+import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.player.LogoutTracker;
@@ -42,7 +42,7 @@ public class PlayerEvents {
         if (context.getPlayer() instanceof ServerPlayer serverPlayer) {
             BlockState state = serverPlayer.level.getBlockState(context.getClickedPos());
             BlockPos.MutableBlockPos pos = context.getClickedPos().mutable();
-            ResourceLocation perm = ObjectToPermissionMap.getFromItem(context.getItemInHand().getItem());
+            ResourceLocation perm = InteractionOverrideManager.INSTANCE.getItemUse(context.getItemInHand().getItem());
             /**
              * {@link ItemInteractEvents#onItemUseBlock} handles this case already.
              * Sadly need to check again. In case its used in a claim. Less expensive than aoe check

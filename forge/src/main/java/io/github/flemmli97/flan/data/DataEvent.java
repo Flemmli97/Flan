@@ -14,6 +14,7 @@ public class DataEvent {
         DataGenerator data = event.getGenerator();
         if (event.includeServer()) {
             data.addProvider(new PermissionGen(data));
+            data.addProvider(new InteractionOverrideGen(data));
             ENLangGen enLang = new ENLangGen(data);
             data.addProvider(enLang);
         }

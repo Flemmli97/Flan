@@ -90,24 +90,12 @@ public class Config {
             "graves.marker" //vanilla tweaks
     );
 
-    public List<String> itemPermission = Lists.newArrayList(
+    private List<String> legacyOverrides = Lists.newArrayList(
             "@c:wrenches-flan:interact_block",
             "appliedenergistics2:nether_quartz_wrench-flan:interact_block",
             "appliedenergistics2:certus_quartz_wrench-flan:interact_block"
     );
-    public List<String> blockPermission = Lists.newArrayList(
-    );
-    public List<String> entityPermission = Lists.newArrayList(
-            "taterzens:npc-flan:trading"
-    );
 
-    public List<String> leftClickBlockPermission = Lists.newArrayList(
-            "@storagedrawers:drawers-flan:open_container",
-            "mekanism:basic_bin-flan:open_container",
-            "mekanism:advanced_bin-flan:open_container",
-            "mekanism:ultimate_bin-flan:open_container",
-            "mekanism:creative_bin-flan:open_container"
-    );
 
     public int dropTicks = 6000;
 
@@ -231,14 +219,12 @@ public class Config {
             this.entityTagIgnore.clear();
             ConfigHandler.arryFromJson(obj, "entityTagIgnore").forEach(e -> this.entityTagIgnore.add(e.getAsString()));
 
-            this.itemPermission.clear();
-            ConfigHandler.arryFromJson(obj, "customItemPermission").forEach(e -> this.itemPermission.add(e.getAsString()));
-            this.blockPermission.clear();
-            ConfigHandler.arryFromJson(obj, "customBlockPermission").forEach(e -> this.blockPermission.add(e.getAsString()));
-            this.entityPermission.clear();
-            ConfigHandler.arryFromJson(obj, "customEntityPermission").forEach(e -> this.entityPermission.add(e.getAsString()));
-            this.leftClickBlockPermission.clear();
-            ConfigHandler.arryFromJson(obj, "leftClickBlockPermission").forEach(e -> this.leftClickBlockPermission.add(e.getAsString()));
+            this.legacyOverrides.clear();
+            ConfigHandler.arryFromJson(obj, "legacyOverrides").forEach(e -> this.legacyOverrides.add(e.getAsString()));
+            ConfigHandler.arryFromJson(obj, "customItemPermission").forEach(e -> this.legacyOverrides.add(e.getAsString()));
+            ConfigHandler.arryFromJson(obj, "customBlockPermission").forEach(e -> this.legacyOverrides.add(e.getAsString()));
+            ConfigHandler.arryFromJson(obj, "customEntityPermission").forEach(e -> this.legacyOverrides.add(e.getAsString()));
+            ConfigHandler.arryFromJson(obj, "leftClickBlockPermission").forEach(e -> this.legacyOverrides.add(e.getAsString()));
 
             this.dropTicks = ConfigHandler.fromJson(obj, "dropTicks", this.dropTicks);
             this.inactivityTime = ConfigHandler.fromJson(obj, "inactivityTimeDays", this.inactivityTime);
@@ -356,18 +342,9 @@ public class Config {
         this.entityTagIgnore.forEach(entitiesTags::add);
         obj.add("entityTagIgnore", entitiesTags);
 
-        JsonArray itemPerms = new JsonArray();
-        this.itemPermission.forEach(itemPerms::add);
-        obj.add("customItemPermission", itemPerms);
-        JsonArray blockPerms = new JsonArray();
-        this.blockPermission.forEach(blockPerms::add);
-        obj.add("customBlockPermission", blockPerms);
-        JsonArray entityPerms = new JsonArray();
-        this.entityPermission.forEach(entityPerms::add);
-        obj.add("customEntityPermission", entityPerms);
-        JsonArray leftIgnore = new JsonArray();
-        this.leftClickBlockPermission.forEach(leftIgnore::add);
-        obj.add("leftClickBlockPermission", leftIgnore);
+        JsonArray overrides = new JsonArray();
+        this.legacyOverrides.forEach(overrides::add);
+        obj.add("legacyOverrides", overrides);
 
         obj.addProperty("dropTicks", this.dropTicks);
         obj.addProperty("inactivityTimeDays", this.inactivityTime);

@@ -1,10 +1,12 @@
-package io.github.flemmli97.flan.api.permission;
+package io.github.flemmli97.flan.api.permission.provider;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.api.permission.ClaimPermission;
+import io.github.flemmli97.flan.api.permission.PermissionManager;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.HashCache;
