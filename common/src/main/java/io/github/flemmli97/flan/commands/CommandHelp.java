@@ -85,7 +85,6 @@ public class CommandHelp {
 
     private static List<String> lang(CommandContext<CommandSourceStack> context, String key) {
         if (context.getSource().getEntity() instanceof ServerPlayer player) {
-            context.getSource().sendSuccess(new TextComponent("Lang " + LanguageAPI.getPlayerLanguage(player) + " aaa " + LanguageAPI.defaultServerLanguage()), false);
             return LanguageAPI.getFormattedKeys(player, key);
         }
         return LanguageAPI.getFormattedKeys(LanguageAPI.defaultServerLanguage(), key);
