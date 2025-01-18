@@ -23,15 +23,15 @@ import java.util.function.Consumer;
 
 public class BluemapIntegration {
 
-    private static final String MARKER_3D = "flan.claims", MARKER_2D = "flan.claims.2d", CLAIMS = "Claims";
+    private static final String MARKER_3D = "flan.claims", MARKER_2D = "flan.claims.2d";
 
     public static void reg(MinecraftServer server) {
         BlueMapAPI.onEnable(api -> {
             for (ServerLevel level : server.getAllLevels()) {
                 api.getWorld(level).ifPresent(world -> world.getMaps().forEach(map -> {
-                    MarkerSet markerSet = MarkerSet.builder().label(CLAIMS)
+                    MarkerSet markerSet = MarkerSet.builder().label("Claims (3D)")
                             .defaultHidden(true).build();
-                    MarkerSet markerSet2 = MarkerSet.builder().label(CLAIMS).build();
+                    MarkerSet markerSet2 = MarkerSet.builder().label("Claims (2D)").build();
                     map.getMarkerSets().put(MARKER_3D, markerSet);
                     map.getMarkerSets().put(MARKER_2D, markerSet2);
                 }));
