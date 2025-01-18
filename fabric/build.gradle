@@ -76,7 +76,7 @@ dependencies {
     //modRuntimeOnly create_fabric
     //modRuntimeOnly "com.jozufozu.flywheel:flywheel-fabric-${minecraft_version}:${flywheel}"
     //modRuntimeOnly "com.tterrag.registrate_fabric:Registrate:${registrate}"
-    modImplementation include("io.github.flemmli97:lingua_bib:1.18.2-1.0.0-fabric")
+    modImplementation include("io.github.flemmli97:lingua_bib:${lingua_bib}-fabric")
 }
 
 task apiJar(type: Jar, dependsOn: classes) {

@@ -55,7 +55,7 @@ dependencies {
     modRuntimeOnly "com.jozufozu.flywheel:flywheel-forge-${minecraft_version}:${flywheel}"
     modRuntimeOnly "com.tterrag.registrate:Registrate:${registrate}"
 
-    modImplementation include("io.github.flemmli97:lingua_bib:1.18.2-1.0.0-forge")
+    modImplementation include("io.github.flemmli97:lingua_bib:${lingua_bib}-forge")
 }
 
 task apiJar(type: Jar, dependsOn: classes) {

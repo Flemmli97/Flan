@@ -45,7 +45,7 @@ dependencies {
     modCompileOnly create_fabric
     modCompileOnly "com.tterrag.registrate_fabric:Registrate:${registrate}"
 
-    modImplementation "io.github.flemmli97:lingua_bib:1.18.2-1.0.0-common"
+    modImplementation "io.github.flemmli97:lingua_bib:${lingua_bib}-common"
 }
 
 sourceSets.main.resources {
