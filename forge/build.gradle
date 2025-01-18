@@ -28,6 +28,10 @@ repositories {
         name = "minecolonies"
         url "https://ldtteam.jfrog.io/ldtteam/modding/"
     }
+    maven {
+        name = "LinguaBib"
+        url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
+    }
 }
 
 dependencies {

@@ -39,6 +39,10 @@ repositories {
         }
     }
     maven { url "https://maven.nucleoid.xyz/" }
+    maven {
+        name = "LinguaBib"
+        url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
+    }
 }
 
 dependencies {
