@@ -1,6 +1,7 @@
 apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-v1/fabric.gradle"
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven {
         name = 'Fabric-Permission-API'
@@ -58,6 +59,8 @@ dependencies {
 
     modCompileOnly harvest_with_ease_fabric
     modCompileOnly "eu.pb4:common-protection-api:${rootProject.common_prot_api}"
+
+    modImplementation include("io.github.flemmli97:lingua_bib:${lingua_bib}-fabric")
 }
 
 task apiJar(type: Jar, dependsOn: classes) {

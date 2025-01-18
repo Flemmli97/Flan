@@ -12,7 +12,10 @@ public class DataEvent {
     @SubscribeEvent
     public static void data(GatherDataEvent event) {
         DataGenerator data = event.getGenerator();
-        data.addProvider(event.includeServer(), new PermissionGen(data.getPackOutput()));
+        PermissionGen permissionGen = new PermissionGen(data.getPackOutput());
+        data.addProvider(event.includeServer(), permissionGen);
+        ENLangGen enLang = new ENLangGen(data.getPackOutput(), permissionGen);
+        data.addProvider(event.includeServer(), enLang);
     }
 
 }

@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import io.github.flemmli97.flan.Flan;
-import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.ServerScreenHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
@@ -64,7 +63,7 @@ public class AllowedRegistryList<T> {
 
     private ItemStack empty() {
         ItemStack stack = new ItemStack(Items.STICK);
-        ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText(ConfigHandler.LANG_MANAGER.get("allowListEmptyTag"), ChatFormatting.DARK_RED));
+        ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText("flan.allowListEmptyTag", ChatFormatting.DARK_RED));
         return stack;
     }
 

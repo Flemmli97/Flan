@@ -37,12 +37,12 @@ public class BuySellHandler {
 
     public boolean buy(ServerPlayer player, int blocks, Consumer<Component> message) {
         if (this.buyAmount == -1 && this.buyType != Type.ITEM) {
-            message.accept(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("buyDisabled"), ChatFormatting.DARK_RED));
+            message.accept(PermHelper.translatedText("flan.buyDisabled", ChatFormatting.DARK_RED));
             return false;
         }
         PlayerClaimData data = PlayerClaimData.get(player);
         if (ConfigHandler.CONFIG.maxBuyBlocks >= 0 && data.getAdditionalClaims() + blocks > ConfigHandler.CONFIG.maxBuyBlocks) {
-            message.accept(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("buyLimit"), ChatFormatting.DARK_RED));
+            message.accept(PermHelper.translatedText("flan.buyLimit", ChatFormatting.DARK_RED));
             return false;
         }
         switch (this.buyType) {
@@ -51,7 +51,7 @@ public class BuySellHandler {
             }
             case ITEM -> {
                 if (this.buyIngredients.isEmpty()) {
-                    message.accept(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("buyDisabled"), ChatFormatting.DARK_RED));
+                    message.accept(PermHelper.translatedText("flan.buyDisabled", ChatFormatting.DARK_RED));
                     return false;
                 }
                 float payed = 0;
@@ -81,7 +81,7 @@ public class BuySellHandler {
                     }
                 }
                 if (payed < blocks) {
-                    message.accept(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("buyFailItem"), ChatFormatting.DARK_RED));
+                    message.accept(PermHelper.translatedText("flan.buyFailItem", ChatFormatting.DARK_RED));
                     return false;
                 }
                 // Finally remove the items
@@ -91,7 +91,7 @@ public class BuySellHandler {
                     count += stack.getSecond();
                 }
                 data.setAdditionalClaims(data.getAdditionalClaims() + blocks);
-                message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("buySuccessItem"), blocks, count)));
+                message.accept(PermHelper.translatedText("flan.buySuccessItem", blocks, count));
                 return true;
             }
             case XP -> {
@@ -99,10 +99,10 @@ public class BuySellHandler {
                 if (deduct < totalXpPointsForLevel(player.experienceLevel) + player.experienceProgress * xpForLevel(player.experienceLevel + 1)) {
                     player.giveExperiencePoints(-deduct);
                     data.setAdditionalClaims(data.getAdditionalClaims() + blocks);
-                    message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("buySuccessXP"), blocks, deduct)));
+                    message.accept(PermHelper.translatedText("flan.buySuccessXP", blocks, deduct));
                     return true;
                 }
-                message.accept(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("buyFailXP"), ChatFormatting.DARK_RED));
+                message.accept(PermHelper.translatedText("flan.buyFailXP", ChatFormatting.DARK_RED));
                 return false;
             }
         }
@@ -111,12 +111,12 @@ public class BuySellHandler {
 
     public boolean sell(ServerPlayer player, int blocks, Consumer<Component> message) {
         if (this.sellAmount == -1) {
-            message.accept(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("sellDisabled"), ChatFormatting.DARK_RED));
+            message.accept(PermHelper.translatedText("flan.sellDisabled", ChatFormatting.DARK_RED));
             return false;
         }
         PlayerClaimData data = PlayerClaimData.get(player);
         if (data.getAdditionalClaims() - Math.max(0, data.usedClaimBlocks() - data.getClaimBlocks()) < blocks) {
-            message.accept(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("sellFail"), ChatFormatting.DARK_RED));
+            message.accept(PermHelper.translatedText("flan.sellFail", ChatFormatting.DARK_RED));
             return false;
         }
         switch (this.sellType) {
@@ -149,14 +149,14 @@ public class BuySellHandler {
                     }
                 }
                 data.setAdditionalClaims(data.getAdditionalClaims() - blocks);
-                message.accept(Component.translatable(ConfigHandler.LANG_MANAGER.get("sellSuccessItem"), blocks, amount, Component.translatable(stack.getDescriptionId()).withStyle(ChatFormatting.AQUA)));
+                message.accept(PermHelper.translatedText("flan.sellSuccessItem", blocks, amount, PermHelper.translatedText(stack.getDescriptionId()).withStyle(ChatFormatting.AQUA)));
                 return true;
             }
             case XP -> {
                 int amount = Mth.floor(blocks * this.buyAmount);
                 player.giveExperiencePoints(amount);
                 data.setAdditionalClaims(data.getAdditionalClaims() - blocks);
-                message.accept(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("sellSuccessXP"), blocks, amount)));
+                message.accept(PermHelper.translatedText("flan.sellSuccessXP", blocks, amount));
                 return false;
             }
         }

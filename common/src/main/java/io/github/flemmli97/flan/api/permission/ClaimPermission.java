@@ -52,11 +52,11 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
     }
 
     public String translationKey() {
-        return String.format("%s", this.id);
+        return String.format("flan.permission.%s", this.id);
     }
 
     public String translationKeyDescription() {
-        return String.format("%s.desc", this.id);
+        return String.format("flan.permission.%s.desc", this.id);
     }
 
     @Override

@@ -1,468 +1,286 @@
 {
-  "noClaim": "No hay reclamaciones aquí",
-  "inspectBlockOwner": "Esta es la reclamación de %1$s",
-  "inspectNoClaim": "Ningún jugador posee este bloque",
-  "claimBlocksFormat": "Bloques de reclamación: %1$d + (extra) %2$d); Usados: %3$d; Restantes: %4$d",
-  "listClaims": "Listar todas las reclamaciones:",
-  "listAdminClaims": "Listar todas las reclamaciones de administrador en %1$s:",
-  "onlyOnePlayer": "Solo se puede usar un jugador como parámetro",
-  "ownerTransferSuccess": "El nuevo propietario de la reclamación ahora es: %1$s",
-  "ownerTransferFail": "Solo el propietario de la reclamación puede transferir la propiedad",
-  "ownerTransferNoBlocks": "El nuevo propietario de la reclamación no tiene suficientes bloques de reclamación",
-  "ownerTransferNoBlocksAdmin": "Puede desactivarlo cambiando al modo de administrador",
-  "noPermission": "No tienes permiso para hacer esto aquí",
-  "noPermissionSimple": "Lo siento, no puedes hacer esto aquí",
-  "noPermissionTooClose": "Lo siento, esto está demasiado cerca de una reclamación",
-  "tooCloseClaim": "Esto está demasiado cerca de un área protegida",
-  "configReload": "La configuración del complemento se ha recargado",
-  "cantClaimHere": "Lo siento, no puedes reclamar esto aquí",
-  "minClaimSize": "La reclamación es demasiado pequeña. El tamaño mínimo de la reclamación es %d",
-  "maxClaims": "Se ha alcanzado el número máximo de reclamaciones",
-  "landClaimDisabledWorld": "La función de reclamación está desactivada en este mundo",
-  "editMode": "El modo de edición se ha establecido en %1$s",
-  "notEnoughBlocks": "No tienes suficientes bloques de reclamación",
-  "conflictOther": "Esta reclamación entrará en conflicto con otra reclamación existente",
-  "wrongMode": "Modo de reclamación incorrecto. Estás en modo %1$s",
-  "stringScreenReturn": "Haz clic en el papel en tu mano para volver",
-  "groupAdd": "Se ha añadido el grupo %1$s",
-  "groupRemove": "Se ha eliminado el grupo %1$s",
-  "groupExist": "Este grupo ya existe",
-  "uuidFakeAdd": "Se ha añadido un jugador falso con UUID %1$s a la reclamación",
-  "uuidFakeRemove": "Se ha eliminado el jugador falso con UUID %1$s de la reclamación",
-  "uuidFakeModifyNo": "Ya se ha añadido un jugador falso con UUID",
-  "playerModify": "Se han modificado los permisos del grupo %1$s para los siguientes jugadores: %2$s",
-  "playerModifyNo": "No se pueden modificar los permisos de estos jugadores. Puede ser porque ya están en un grupo",
-  "playerGroupAddFail": "No se puede añadir al jugador al grupo. Puede ser porque el jugador ya está en el grupo o porque no se encontró ningún jugador con ese nombre",
-  "resizeClaim": "Redimensionando la reclamación",
-  "resizeSuccess": "Reclamación redimensionada correctamente",
-  "claimCreateSuccess": "Se ha creado una nueva reclamación",
-  "subClaimCreateSuccess": "Se ha creado una nueva subreclamación",
-  "deleteClaim": "Reclamación eliminada",
-  "deleteAllClaimConfirm": "¿Estás seguro de que quieres eliminar todas tus reclamaciones? Por favor, vuelve a escribir para confirmar",
-  "deleteAllClaim": "Todas las reclamaciones han sido eliminadas",
-  "deleteClaimError": "No puedes eliminar esta reclamación aquí",
-  "deleteSubClaim": "Subreclamación eliminada",
-  "deleteSubClaimAll": "Todas las subreclamaciones de la reclamación principal han sido eliminadas",
-  "noSuchPerm": "No tienes suficientes permisos para %1$s",
-  "editPerm": "%1$s ahora está establecido en %2$s",
-  "editPermGroup": "%1$s para %2$s ahora está establecido en %3$s",
-  "editPersonalGroup": "Permiso predeterminado %1$s en el grupo %2$s ahora está establecido en %3$s",
-  "adminMode": "Modo de administrador (excepto reclamaciones) establecido en: %1$s",
-  "adminDeleteAll": "Se han eliminado todas las reclamaciones de los siguientes jugadores: %1$s",
-  "setAdminClaim": "Las reclamaciones de administrador en estas áreas ahora son: %1$s",
-  "readGriefpreventionData": "Leyendo datos del complemento GriefPrevention",
-  "readGriefpreventionClaimDataSuccess": "Datos de reclamación leídos correctamente",
-  "readGriefpreventionPlayerDataSuccess": "Datos de jugador leídos correctamente",
-  "cantFindData": "No se encontraron datos del complemento GriefPrevention en %1$s",
-  "errorFile": "Error al leer el archivo %1$s",
-  "readConflict": "%1$s entra en conflicto con una reclamación existente. ¡No se puede agregar al mundo! Reclamación en conflicto:",
-  "giveClaimBlocks": "Se han dado %2$d bloques de reclamación a los siguientes jugadores: %1$s",
-  "fakePlayerNotification1": "Un jugador falso intentó interactuar con tu reclamación en %2$s como %1$s",
-  "fakePlayerNotification2": "Haz clic en %s para agregar al jugador falso a tu reclamación",
-  "clickableComponent": "aquí",
-  "fakePlayerNotification3": "Haz clic en %s para desactivar esta notificación.",
-  "fakePlayerNotification": "Notificación de jugador falso establecida en %s",
-  "claimBasicInfo": "Propietario de la reclamación: %1$s, Desde: [x=%2$d,z=%3$d] hasta [x=%4$d,z=%5$d]); Número de subreclamaciones: %6$d",
-  "claimBasicInfoNamed": "Reclamación: %7$s, Propietario: %1$s, Desde: [x=%2$d,z=%3$d] hasta [x=%4$d,z=%5$d]); Número de subreclamaciones: %6$d",
-  "claimSubHeader": "==Información de subreclamación==",
-  "claimBasicInfoSub": "Propietario de la reclamación: %1$s, Desde: [x=%2$d,z=%3$d] hasta [x=%4$d,z=%5$d]",
-  "claimBasicInfoSubNamed": "Reclamación: %6$s, Propietario: %1$s, Desde: [x=%2$d,z=%3$d] hasta [x=%4$d,z=%5$d]",
-  "claimInfoPerms": "Permisos: %1$s",
-  "claimGroupInfoHeader": "Grupo: ",
-  "claimGroupPerms": "    Permisos: %1$s",
-  "claimGroupPlayers": "    Jugadores en el grupo: %1$s",
-  "helpHeader": "Los comandos secundarios disponibles son (página %d):",
-  "helpCmdHeader": "====================",
-  "helpCmdSyntax": "Sintaxis: %1$s",
-  "screenEnableText": "¿Habilitar?: %1$s",
-  "screenUneditable": "¡No se puede editar!",
-  "screenClose": "Cerrar",
-  "screenNext": "Siguiente",
-  "screenPrevious": "Anterior",
-  "screenAdd": "Agregar",
-  "screenBack": "Volver",
-  "screenNoPerm": "Sin permisos",
-  "screenFalse": "Desactivado",
-  "screenTrue": "Activado",
-  "screenDefault": "Predeterminado",
-  "screenMenu": "Menú de reclamación",
-  "screenMenuSub": "Menú de subreclamación",
-  "screenMenuGlobal": "Editar permisos globales",
-  "screenMenuGroup": "Editar permisos de grupo",
-  "screenMenuPotion": "Editar efectos adicionales al entrar en la reclamación",
-  "screenMenuClaimText": "Editar texto de notificación al entrar/salir de la reclamación",
-  "screenMenuFakePlayers": "Jugadores falsos",
-  "screenMenuDelete": "Eliminar reclamación",
-  "screenConfirm": "Confirmar",
-  "screenYes": "Sí",
-  "screenNo": "No",
-  "screenGroupPlayers": "%1$s - Jugadores",
-  "screenRemoveMode": "Modo eliminado: %1$s",
-  "screenGlobalPerms": "Permisos globales",
-  "screenGroupName": "%s",
-  "screenGroups": "Grupos de reclamación",
-  "screenGroupPerms": "%1$s - Permisos",
-  "screenPersonalGroups": "Grupos personales",
-  "screenPersonalPermissions": "Grupos personales de %1$s",
-  "screenFakePlayerNameUUID": "%s",
-  "screenPotions": "Efectos adicionales en la reclamación",
-  "screenPotionText": "%s",
-  "screenTitleEditor": "Texto de la reclamación",
-  "screenTitleEditorSub": "Texto de la subreclamación",
-  "screenTextJson": "Haz clic derecho para usar texto JSON. Si no sabes cómo, busca en la Minecraft Wiki",
-  "screenEnterText": "Editar texto principal al entrar en la reclamación",
-  "screenEnterSubText": "Editar texto secundario al entrar en la reclamación",
-  "screenLeaveText": "Editar texto principal al salir de la reclamación",
-  "screenLeaveSubText": "Editar texto secundario al salir de la reclamación",
-  "screenDelete": "Utiliza \"$empty\" para eliminar el texto",
-  "chatClaimTextEdit": "[Haz clic derecho para usar el comando]",
-  "sellDisabled": "La venta de bloques de reclamación está desactivada",
-  "buyDisabled": "La compra de bloques de reclamación está desactivada",
-  "sellFail": "No tienes suficientes bloques de reclamación para vender",
-  "buyFail": "No tienes suficiente dinero",
-  "buyFailItem": "No tienes suficientes objetos",
-  "buyFailXP": "No tienes suficiente experiencia",
-  "sellSuccess": "Has vendido %1$s bloques de reclamación por %2$s monedas",
-  "sellSuccessItem": "Has vendido %1$s bloques de reclamación por %3$s x%2$s",
-  "sellSuccessXP": "Has vendido %1$s bloques de reclamación por %2$s puntos de experiencia",
-  "buySuccess": "Has comprado %1$s bloques de reclamación por %2$s monedas",
-  "buySuccessItem": "Has comprado %1$s bloques de reclamación por %2$s",
-  "buySuccessXP": "Has comprado %1$s bloques de reclamación por %2$s puntos de experiencia",
-  "currencyMissing": "Falta el mod de moneda compatible",
-  "trappedRescue": "Rescatando. Por favor, quédate quieto durante 5 segundos",
-  "trappedFail": "No es necesario ejecutar el rescate mientras ya estás siendo rescatado",
-  "trappedMove": "Te has movido. Cancelando el teletransporte",
-  "unlockDropsCmd": "Tus objetos caídos ahora están protegidos. Usa %1$s para desbloquearlos para otros jugadores",
-  "unlockDrops": "Tus objetos caídos se desbloquearán en %1$s ticks",
-  "unlockDropsMulti": "Se han desbloqueado los objetos caídos para %1$s",
-  "claimNameSet": "El nombre de la reclamación se ha establecido como %1$s",
-  "claimNameUsed": "El propietario de esta reclamación ya tiene una reclamación con el mismo nombre",
-  "claimNameUsedSub": "Una subreclamación de esta reclamación ya está utilizando este nombre",
-  "setHome": "El punto de inicio se ha establecido en [x=%1$s,y=%2$s,z=%3$s]",
-  "teleportHome": "Teletransportándote a casa. Por favor, no te muevas durante 5 segundos",
-  "teleportHomeFail": "Ya estás siendo teletransportado",
-  "setEnterMessage": "El texto de notificación al entrar se ha establecido como %1$s",
-  "setEnterSubMessage": "El texto de notificación al entrar se ha establecido como %1$s",
-  "setLeaveMessage": "El texto de notificación al salir se ha establecido como %1$s",
-  "setLeaveSubMessage": "El texto de notificación al salir se ha establecido como %1$s",
-  "wiki": "Consulta la Wiki de Minecraft para más información:",
-  "EDITCLAIM.desc": [
-    "Permiso para editar (por ejemplo, cambiar el tamaño, eliminar, etc.) una reclamación"
-  ],
-"EDITPERMS.desc": [
-    "Permiso para modificar los permisos de una reclamación"
-  ],
-  "EDITPOTIONS.desc": [
-    "Permiso para modificar los efectos adicionales dentro de una reclamación"
-  ],
-  "BREAK.desc": [
-    "Permiso para romper bloques dentro de una reclamación"
-  ],
-  "PLACE.desc": [
-    "Permiso para colocar bloques dentro de una reclamación"
-  ],
-  "OPENCONTAINER.desc": [
-    "Permiso para abrir contenedores",
-    "(por ejemplo, cofres, hornos, etc.)"
-  ],
-  "INTERACTBLOCK.desc": [
-    "Permiso para interactuar con bloques en general",
-    "se aplica a OPENCONTAINER",
-    "permite que los bloques no verificados en OPENCONTAINER sean utilizables"
-  ],
-  "ANVIL.desc": [
-    "Permiso para usar un yunque"
-  ],
-  "BED.desc": [
-    "Permiso para usar una cama"
-  ],
-  "BEACON.desc": [
-    "Permiso para usar un faro"
-  ],
-  "DOOR.desc": [
-    "Permiso para usar una puerta"
-  ],
-  "FENCEGATE.desc": [
-    "Permiso para usar una puerta de valla"
-  ],
-  "TRAPDOOR.desc": [
-    "Permiso para usar una trampilla"
-  ],
-  "BUTTONLEVER.desc": [
-    "Permiso para activar palancas y botones"
-  ],
-  "PRESSUREPLATE.desc": [
-    "Permiso para activar placas de presión"
-  ],
-  "NOTEBLOCK.desc": [
-    "Permiso para cambiar la nota/timbre de un bloque de notas"
-  ],
-  "REDSTONE.desc": [
-    "Cambiar los permisos de componentes de redstone"
-  ],
-  "JUKEBOX.desc": [
-    "Insertar/retirar discos de música en la caja de música"
-  ],
-  "ENDERCHEST.desc": [
-    "Usar el cofre de ender"
-  ],
-  "ENCHANTMENT.desc": [
-    "Usar la mesa de encantamientos"
-  ],
-  "ITEMFRAMEROTATE.desc": [
-    "Cambiar el ángulo de los objetos en el marco de objetos"
-  ],
-  "LECTERNTAKE.desc": [
-    "Cambiar los libros colocados en el atril"
-  ],
-  "ENDCRYSTALPLACE.desc": [
-    "Colocar cristales de end"
-  ],
-  "TARGETBLOCK.desc": [
-    "Activar bloques objetivo"
-  ],
-  "PROJECTILES.desc": [
-    "Permiso para interactuar con proyectiles",
-    "(por ejemplo, disparar flechas a botones)"
-  ],
-  "TRAMPLE.desc": [
-    "Permiso para pisar bloques",
-    "(por ejemplo, tierra labrada, huevos de tortuga)"
-  ],
-  "FROSTWALKER.desc": [
-    "Permiso para el efecto de caminante de hielo"
-  ],
-  "PORTAL.desc": [
-    "Permiso para usar los portales del End"
-  ],
-  "RAID.desc": [
-    "Permiso para activar incursiones en el territorio",
-    "No impide las incursiones que ocurren fuera del territorio"
-  ],
-  "BOAT.desc": [
-    "Permiso para subirse a un bote"
-  ],
-  "MINECART.desc": [
-    "Permiso para subirse a un carro de minas"
-  ],
-  "BUCKET.desc": [
-    "Permiso para usar un cubo y recoger líquidos"
-  ],
-  "ENDERPEARL.desc": [
-    "Permiso para usar perlas de ender"
-  ],
-  "CHORUSFRUIT.desc": [
-    "Permiso para comer fruta de coro"
-  ],
-  "ANIMALINTERACT.desc": [
-    "Permiso para interactuar con animales",
-    "(por ejemplo, esquilar ovejas)"
-  ],
-  "HURTANIMAL.desc": [
-    "Permiso para dañar animales"
-  ],
-  "XP.desc": [
-    "Permiso para recolectar orbes de experiencia"
-  ],
-  "TRADING.desc": [
-    "Permiso para comerciar con aldeanos"
-  ],
-  "ARMORSTAND.desc": [
-    "Permiso para interactuar con soportes de armaduras"
-  ],
-  "BREAKNONLIVING.desc": [
-    "Permiso para romper entidades no vivas",
-    "(como carros de minas, soportes de armaduras, etc.)"
-  ],
-  "DROP.desc": [
-    "Permiso para tirar objetos"
-  ],
-  "PICKUP.desc": [
-    "Permiso para recoger objetos"
-  ],
-  "FLIGHT.desc": [
-    "Permiso para volar en modo de juego no creativo"
-  ],
-  "CANSTAY.desc": [
-    "Permiso para que los jugadores entren en tu territorio"
-  ],
-  "TELEPORT.desc": [
-    "Permiso para que los jugadores se teletransporten a tu punto de inicio"
-  ],
-  "NOHUNGER.desc": [
-    "Desactivar la disminución del hambre"
-  ],
-  "CLAIMMESSAGE.desc": [
-    "Modificar los mensajes de entrada/salida de la reclamación"
-  ],
-  "PLAYERMOBSPAWN.desc": [
-    "Permiso para afectar a las entidades controladas por jugadores",
-    "como los guardianes sigilosos o los ácaros de la end"
-  ],
-  "SCULK.desc": [
-    "Permiso para afectar a los sensores sigilosos controlados por jugadores",
-    "los sensores sigilosos se manejan bajo PLAYERMOBSPAWN"
-  ],
-  "HURTPLAYER.desc": [
-    "Permiso para dañar a otros jugadores"
-  ],
-  "EXPLOSIONS.desc": [
-    "Permitir explosiones dentro de la reclamación"
-  ],
-  "WITHER.desc": [
-    "Permitir que los wither destruyan bloques dentro de la reclamación"
-  ],
-  "ENDERMAN.desc": [
-    "Permitir que los enderman recojan/colocen bloques dentro de la reclamación"
-  ],
-  "SNOWGOLEM.desc": [
-    "Permitir que los golems de nieve generen alfombras de nieve debajo de ellos"
-  ],
-  "FIRESPREAD.desc": [
-    "Permitir la propagación del fuego dentro de la reclamación"
-  ],
-  "WATERBORDER.desc": [
-    "Permitir que los líquidos atraviesen los límites de la reclamación"
-  ],
-  "PISTONBORDER.desc": [
-    "Permitir que los pistones empujen/tiren de los límites de la reclamación"
-  ],
-  "MOBSPAWN.desc": [
-    "Impedir la generación de entidades hostiles dentro de la reclamación"
-  ],
-  "ANIMALSPAWN.desc": [
-    "Impedir la generación de otras entidades dentro de la reclamación"
-  ],
-  "LIGHTNING.desc": [
-    "Permitir que los bloques de iluminación afecten a los bloques dentro de la reclamación",
-    "por ejemplo, colocar bloques sobre fuego",
-    "o afectar a los animales (excluyendo a las criaturas)"
-  ],
-  "LOCKITEMS.desc": [
-    "Bloquear los objetos al morir del jugador"
-  ],
-  "FAKEPLAYER.desc": [
-    "Permitir la interacción con jugadores falsos dentro de la reclamación",
-    "algunos jugadores falsos con mods pueden tener el UUID del usuario",
-    "para esos mods, este permiso no es necesario"
-  ],
-  "command.help": [
-    "help <page> | (cmd <command>)",
-    "Mostrar todos los comandos disponibles o información sobre un comando específico"
-  ],
-  "command.menu": [
-    "menu",
-    "Permitir el uso del menú de reclamaciones cuando estás dentro de una reclamación"
-  ],
-  "command.claimInfo": [
-    "claimInfo",
-    "Mostrar información sobre la reclamación en la que te encuentras"
-  ],
-  "command.delete": [
-    "delete",
-    "Eliminar la reclamación actual"
-  ],
-  "command.deleteAll": [
-    "deleteAll",
-    "Eliminar todas tus reclamaciones (se requiere confirmación doble para evitar problemas)"
-  ],
-  "command.deleteSubClaim": [
-    "deleteSubClaim",
-    "Eliminar la subreclamación actual"
-  ],
-  "command.deleteAllSubClaims": [
-    "deleteAllSubClaims",
-    "Eliminar todas las subreclamaciones de la reclamación principal actual"
-  ],
-  "command.list": [
-    "list <player>",
-    "Listar todas tus reclamaciones (si se te ha dado permiso para ver las reclamaciones de otros jugadores)"
-  ],
-  "command.switchMode": [
-    "switchMode",
-    "Cambiar entre el modo de reclamación principal y el modo de subreclamación"
-  ],
-  "command.group": [
-    "group (add | remove <name>) | (players add | remove <player> [overwrite])",
-    "- Agregar/Eliminar un grupo con el nombre especificado. También se puede editar desde el menú de reclamaciones.",
-    "- Agregar/Eliminar jugadores del grupo (si se sobrescribe, se reemplazarán los jugadores actuales del grupo, de lo contrario no se realizará ninguna acción)"
-  ],
-  "command.transferClaim": [
-    "transferClaim <player>",
-    "Transferir la propiedad de la reclamación a otro jugador. Solo válido si eres el propietario de la reclamación"
-  ],
-  "command.addClaim": [
-    "addClaim (<x y z> <x y z>) | all | (rect x z)",
-    "Crear una reclamación en la ubicación especificada (igual que usar la herramienta de reclamación)",
-    "<all> Utilizar todos los bloques restantes para obtener una reclamación rectangular centrada en el jugador",
-    "<rect> Crear una reclamación rectangular centrada en el jugador"
-  ],
-  "command.permission": [
-    "permission {global | (group <name>) | (personal <name>)} <permission> true | false | default",
-    "Establecer permisos globales/grupales/personales. También se puede editar desde el menú de reclamaciones (para hacer clic derecho en el menú del grupo)."
-  ],
-  "command.personalGroups": [
-    "personalGroups",
-    "Abrir el menú para editar los grupos personales"
-  ],
-  "command.sellBlocks": [
-    "sellBlocks <amount>",
-    "Vender bloques de reclamación. Se requiere suficiente pólvora como moneda."
-  ],
-  "command.buyBlocks": [
-    "buyBlocks <amount>",
-    "Comprar bloques de reclamación. Se requiere suficiente pólvora como moneda."
-  ],
-  "command.trapped": [
-    "trapped",
-    "Si te encuentras en una reclamación que no te pertenece, puedes usar este comando para intentar liberarte después de 5 segundos."
-  ],
-  "command.unlockDrops": [
-    "unlockDrops <players>",
-    "Desbloquear los objetos que caen al morir para que otros jugadores también puedan recogerlos. O todos los jugadores especificados (se requiere permisos de administrador)"
-  ],
-  "command.setHome": [
-    "setHome",
-    "Establecer la ubicación de tu hogar dentro de una reclamación con permisos suficientes"
-  ],
-  "command.teleport": [
-    "teleport self | admin | (other <player>) (<claim name> | <claim uuid>)",
-    "Teletransportarse a la ubicación del hogar de la reclamación especificada. Usar 'admin' para teletransportarse a una reclamación de administrador"
-  ],
-  "command.name": [
-    "name self <name>",
-    "Establecer el nombre de la reclamación actual"
-  ],
-  "command.claimMessage": [
-    "claimMessage (enter | leave) (title | subtitle) (string | text) <value>",
-    "Establecer los mensajes de la reclamación. Usar \"$empty\" para eliminar el mensaje"
-  ],
-  "command.reload": [
-    "reload",
-    "Restablecer la configuración del complemento en el juego"
-  ],
-  "command.adminMode": [
-    "adminMode",
-    "Cambiar al modo de administrador, ignorando todas las reclamaciones"
-  ],
-  "command.readGriefPrevention": [
-    "readGriefPreventionData",
-    "Analizar los datos del complemento GriefPrevention en Flan"
-  ],
-  "command.setAdminClaim": [
-    "setAdminClaim",
-    "Establecer una reclamación como reclamación de administrador"
-  ],
-  "command.listAdminClaims": [
-    "listAdminClaim",
-    "Listar todas las reclamaciones de administrador en el mundo actual"
-  ],
-  "command.adminDelete": [
-    "adminDelete [all <player>]",
-    "Eliminar forzosamente la reclamación actual o eliminar todas las reclamaciones del jugador especificado."
-  ],
-  "command.giveClaimBlocks": [
-    "giveClaimBlocks <amount>",
-    "Dar a un jugador bloques de reclamación adicionales."
-  ]
+  "flan.noClaim": "No hay reclamaciones aquí",
+  "flan.inspectBlockOwner": "Esta es la reclamación de %1$s",
+  "flan.inspectNoClaim": "Ningún jugador posee este bloque",
+  "flan.claimBlocksFormat": "Bloques de reclamación: %1$s + (extra) %2$s; Usados: %3$s; Restantes: %4$s",
+  "flan.listClaims": "Listar todas las reclamaciones:",
+  "flan.listAdminClaims": "Listar todas las reclamaciones de administrador en %1$s:",
+  "flan.onlyOnePlayer": "Solo se puede usar un jugador como parámetro",
+  "flan.ownerTransferSuccess": "El nuevo propietario de la reclamación ahora es: %1$s",
+  "flan.ownerTransferFail": "Solo el propietario de la reclamación puede transferir la propiedad",
+  "flan.ownerTransferNoBlocks": "El nuevo propietario de la reclamación no tiene suficientes bloques de reclamación",
+  "flan.ownerTransferNoBlocksAdmin": "Puede desactivarlo cambiando al modo de administrador",
+  "flan.noPermission": "No tienes permiso para hacer esto aquí",
+  "flan.noPermissionSimple": "Lo siento, no puedes hacer esto aquí",
+  "flan.noPermissionTooClose": "Lo siento, esto está demasiado cerca de una reclamación",
+  "flan.tooCloseClaim": "Esto está demasiado cerca de un área protegida",
+  "flan.configReload": "La configuración del complemento se ha recargado",
+  "flan.cantClaimHere": "Lo siento, no puedes reclamar esto aquí",
+  "flan.minClaimSize": "La reclamación es demasiado pequeña. El tamaño mínimo de la reclamación es %d",
+  "flan.maxClaims": "Se ha alcanzado el número máximo de reclamaciones",
+  "flan.landClaimDisabledWorld": "La función de reclamación está desactivada en este mundo",
+  "flan.editMode": "El modo de edición se ha establecido en %1$s",
+  "flan.notEnoughBlocks": "No tienes suficientes bloques de reclamación",
+  "flan.conflictOther": "Esta reclamación entrará en conflicto con otra reclamación existente",
+  "flan.wrongMode": "Modo de reclamación incorrecto. Estás en modo %1$s",
+  "flan.stringScreenReturn": "Haz clic en el papel en tu mano para volver",
+  "flan.groupAdd": "Se ha añadido el grupo %1$s",
+  "flan.groupRemove": "Se ha eliminado el grupo %1$s",
+  "flan.groupExist": "Este grupo ya existe",
+  "flan.uuidFakeAdd": "Se ha añadido un jugador falso con UUID %1$s a la reclamación",
+  "flan.uuidFakeRemove": "Se ha eliminado el jugador falso con UUID %1$s de la reclamación",
+  "flan.uuidFakeModifyNo": "Ya se ha añadido un jugador falso con UUID",
+  "flan.playerModify": "Se han modificado los permisos del grupo %1$s para los siguientes jugadores: %2$s",
+  "flan.playerModifyNo": "No se pueden modificar los permisos de estos jugadores. Puede ser porque ya están en un grupo",
+  "flan.playerGroupAddFail": "No se puede añadir al jugador al grupo. Puede ser porque el jugador ya está en el grupo o porque no se encontró ningún jugador con ese nombre",
+  "flan.resizeClaim": "Redimensionando la reclamación",
+  "flan.resizeSuccess": "Reclamación redimensionada correctamente",
+  "flan.claimCreateSuccess": "Se ha creado una nueva reclamación",
+  "flan.subClaimCreateSuccess": "Se ha creado una nueva subreclamación",
+  "flan.deleteClaim": "Reclamación eliminada",
+  "flan.deleteAllClaimConfirm": "¿Estás seguro de que quieres eliminar todas tus reclamaciones? Por favor, vuelve a escribir para confirmar",
+  "flan.deleteAllClaim": "Todas las reclamaciones han sido eliminadas",
+  "flan.deleteClaimError": "No puedes eliminar esta reclamación aquí",
+  "flan.deleteSubClaim": "Subreclamación eliminada",
+  "flan.deleteSubClaimAll": "Todas las subreclamaciones de la reclamación principal han sido eliminadas",
+  "flan.noSuchPerm": "No tienes suficientes permisos para %1$s",
+  "flan.editPerm": "%1$s ahora está establecido en %2$s",
+  "flan.editPermGroup": "%1$s para %2$s ahora está establecido en %3$s",
+  "flan.editPersonalGroup": "Permiso predeterminado %1$s en el grupo %2$s ahora está establecido en %3$s",
+  "flan.adminMode": "Modo de administrador (excepto reclamaciones) establecido en: %1$s",
+  "flan.adminDeleteAll": "Se han eliminado todas las reclamaciones de los siguientes jugadores: %1$s",
+  "flan.setAdminClaim": "Las reclamaciones de administrador en estas áreas ahora son: %1$s",
+  "flan.readGriefpreventionData": "Leyendo datos del complemento GriefPrevention",
+  "flan.readGriefpreventionClaimDataSuccess": "Datos de reclamación leídos correctamente",
+  "flan.readGriefpreventionPlayerDataSuccess": "Datos de jugador leídos correctamente",
+  "flan.cantFindData": "No se encontraron datos del complemento GriefPrevention en %1$s",
+  "flan.errorFile": "Error al leer el archivo %1$s",
+  "flan.readConflict": "%1$s entra en conflicto con una reclamación existente. ¡No se puede agregar al mundo! Reclamación en conflicto:",
+  "flan.giveClaimBlocks": "Se han dado %2$s bloques de reclamación a los siguientes jugadores: %1$s",
+  "flan.fakePlayerNotification1": "Un jugador falso intentó interactuar con tu reclamación en %2$s como %1$s",
+  "flan.fakePlayerNotification2": "Haz clic en %s para agregar al jugador falso a tu reclamación",
+  "flan.clickableComponent": "aquí",
+  "flan.fakePlayerNotification3": "Haz clic en %s para desactivar esta notificación.",
+  "flan.fakePlayerNotification": "Notificación de jugador falso establecida en %s",
+  "flan.claimBasicInfo": "Propietario de la reclamación: %1$s, Desde: [x=%2$s,z=%3$s] hasta [x=%4$s,z=%5$s]); Número de subreclamaciones: %6$s",
+  "flan.claimBasicInfoNamed": "Reclamación: %7$s, Propietario: %1$s, Desde: [x=%2$s,z=%3$s] hasta [x=%4$s,z=%5$s]); Número de subreclamaciones: %6$s",
+  "flan.claimSubHeader": "==Información de subreclamación==",
+  "flan.claimBasicInfoSub": "Propietario de la reclamación: %1$s, Desde: [x=%2$s,z=%3$s] hasta [x=%4$s,z=%5$s]",
+  "flan.claimBasicInfoSubNamed": "Reclamación: %6$s, Propietario: %1$s, Desde: [x=%2$s,z=%3$s] hasta [x=%4$s,z=%5$s]",
+  "flan.claimInfoPerms": "Permisos: %1$s",
+  "flan.claimGroupInfoHeader": "Grupo: ",
+  "flan.claimGroupPerms": "    Permisos: %1$s",
+  "flan.claimGroupPlayers": "    Jugadores en el grupo: %1$s",
+  "flan.helpHeader": "Los comandos secundarios disponibles son (página %d):",
+  "flan.helpCmdHeader": "====================",
+  "flan.helpCmdSyntax": "Sintaxis: %1$s",
+  "flan.screenEnableText": "¿Habilitar?: %1$s",
+  "flan.screenUneditable": "¡No se puede editar!",
+  "flan.screenClose": "Cerrar",
+  "flan.screenNext": "Siguiente",
+  "flan.screenPrevious": "Anterior",
+  "flan.screenAdd": "Agregar",
+  "flan.screenBack": "Volver",
+  "flan.screenNoPerm": "Sin permisos",
+  "flan.screenFalse": "Desactivado",
+  "flan.screenTrue": "Activado",
+  "flan.screenDefault": "Predeterminado",
+  "flan.screenMenu": "Menú de reclamación",
+  "flan.screenMenuSub": "Menú de subreclamación",
+  "flan.screenMenuGlobal": "Editar permisos globales",
+  "flan.screenMenuGroup": "Editar permisos de grupo",
+  "flan.screenMenuPotion": "Editar efectos adicionales al entrar en la reclamación",
+  "flan.screenMenuClaimText": "Editar texto de notificación al entrar/salir de la reclamación",
+  "flan.screenMenuFakePlayers": "Jugadores falsos",
+  "flan.screenMenuDelete": "Eliminar reclamación",
+  "flan.screenConfirm": "Confirmar",
+  "flan.screenYes": "Sí",
+  "flan.screenNo": "No",
+  "flan.screenGroupPlayers": "%1$s - Jugadores",
+  "flan.screenRemoveMode": "Modo eliminado: %1$s",
+  "flan.screenGlobalPerms": "Permisos globales",
+  "flan.screenGroupName": "%s",
+  "flan.screenGroups": "Grupos de reclamación",
+  "flan.screenGroupPerms": "%1$s - Permisos",
+  "flan.screenPersonalGroups": "Grupos personales",
+  "flan.screenPersonalPermissions": "Grupos personales de %1$s",
+  "flan.screenFakePlayerNameUUID": "%s",
+  "flan.screenPotions": "Efectos adicionales en la reclamación",
+  "flan.screenPotionText": "%s",
+  "flan.screenTitleEditor": "Texto de la reclamación",
+  "flan.screenTitleEditorSub": "Texto de la subreclamación",
+  "flan.screenTextJson": "Haz clic derecho para usar texto JSON. Si no sabes cómo, busca en la Minecraft Wiki",
+  "flan.screenEnterText": "Editar texto principal al entrar en la reclamación",
+  "flan.screenEnterSubText": "Editar texto secundario al entrar en la reclamación",
+  "flan.screenLeaveText": "Editar texto principal al salir de la reclamación",
+  "flan.screenLeaveSubText": "Editar texto secundario al salir de la reclamación",
+  "flan.screenDelete": "Utiliza \"$empty\" para eliminar el texto",
+  "flan.chatClaimTextEdit": "[Haz clic derecho para usar el comando]",
+  "flan.sellDisabled": "La venta de bloques de reclamación está desactivada",
+  "flan.buyDisabled": "La compra de bloques de reclamación está desactivada",
+  "flan.sellFail": "No tienes suficientes bloques de reclamación para vender",
+  "flan.buyFail": "No tienes suficiente dinero",
+  "flan.buyFailItem": "No tienes suficientes objetos",
+  "flan.buyFailXP": "No tienes suficiente experiencia",
+  "flan.sellSuccess": "Has vendido %1$s bloques de reclamación por %2$s monedas",
+  "flan.sellSuccessItem": "Has vendido %1$s bloques de reclamación por %3$s x%2$s",
+  "flan.sellSuccessXP": "Has vendido %1$s bloques de reclamación por %2$s puntos de experiencia",
+  "flan.buySuccess": "Has comprado %1$s bloques de reclamación por %2$s monedas",
+  "flan.buySuccessItem": "Has comprado %1$s bloques de reclamación por %2$s",
+  "flan.buySuccessXP": "Has comprado %1$s bloques de reclamación por %2$s puntos de experiencia",
+  "flan.currencyMissing": "Falta el mod de moneda compatible",
+  "flan.trappedRescue": "Rescatando. Por favor, quédate quieto durante 5 segundos",
+  "flan.trappedFail": "No es necesario ejecutar el rescate mientras ya estás siendo rescatado",
+  "flan.trappedMove": "Te has movido. Cancelando el teletransporte",
+  "flan.unlockDropsCmd": "Tus objetos caídos ahora están protegidos. Usa %1$s para desbloquearlos para otros jugadores",
+  "flan.unlockDrops": "Tus objetos caídos se desbloquearán en %1$s ticks",
+  "flan.unlockDropsMulti": "Se han desbloqueado los objetos caídos para %1$s",
+  "flan.claimNameSet": "El nombre de la reclamación se ha establecido como %1$s",
+  "flan.claimNameUsed": "El propietario de esta reclamación ya tiene una reclamación con el mismo nombre",
+  "flan.claimNameUsedSub": "Una subreclamación de esta reclamación ya está utilizando este nombre",
+  "flan.setHome": "El punto de inicio se ha establecido en [x=%1$s,y=%2$s,z=%3$s]",
+  "flan.teleportHome": "Teletransportándote a casa. Por favor, no te muevas durante 5 segundos",
+  "flan.teleportHomeFail": "Ya estás siendo teletransportado",
+  "flan.setEnterMessage": "El texto de notificación al entrar se ha establecido como %1$s",
+  "flan.setEnterSubMessage": "El texto de notificación al entrar se ha establecido como %1$s",
+  "flan.setLeaveMessage": "El texto de notificación al salir se ha establecido como %1$s",
+  "flan.setLeaveSubMessage": "El texto de notificación al salir se ha establecido como %1$s",
+  "flan.wiki": "Consulta la Wiki de Minecraft para más información:",
+  "flan.permission.flan:edit_claim.desc.0": "Permiso para editar (por ejemplo, cambiar el tamaño, eliminar, etc.) una reclamación",
+  "flan.permission.flan:edit_perms.desc.0": "Permiso para modificar los permisos de una reclamación",
+  "flan.permission.flan:edit_potions.desc.0": "Permiso para modificar los efectos adicionales dentro de una reclamación",
+  "flan.permission.flan:break.desc.0": "Permiso para romper bloques dentro de una reclamación",
+  "flan.permission.flan:place.desc.0": "Permiso para colocar bloques dentro de una reclamación",
+  "flan.permission.flan:open_container.desc.0": "Permiso para abrir contenedores",
+  "flan.permission.flan:open_container.desc.1": "(por ejemplo, cofres, hornos, etc.)",
+  "flan.permission.flan:interact_block.desc.0": "Permiso para interactuar con bloques en general",
+  "flan.permission.flan:interact_block.desc.1": "se aplica a OPENCONTAINER",
+  "flan.permission.flan:interact_block.desc.2": "permite que los bloques no verificados en OPENCONTAINER sean utilizables",
+  "flan.permission.flan:anvil.desc.0": "Permiso para usar un yunque",
+  "flan.permission.flan:bed.desc.0": "Permiso para usar una cama",
+  "flan.permission.flan:beacon.desc.0": "Permiso para usar un faro",
+  "flan.permission.flan:door.desc.0": "Permiso para usar una puerta",
+  "flan.permission.flan:fence_gate.desc.0": "Permiso para usar una puerta de valla",
+  "flan.permission.flan:trapdoor.desc.0": "Permiso para usar una trampilla",
+  "flan.permission.flan:button_lever.desc.0": "Permiso para activar palancas y botones",
+  "flan.permission.flan:pressure_plate.desc.0": "Permiso para activar placas de presión",
+  "flan.permission.flan:noteblock.desc.0": "Permiso para cambiar la nota/timbre de un bloque de notas",
+  "flan.permission.flan:redstone.desc.0": "Cambiar los permisos de componentes de redstone",
+  "flan.permission.flan:jukebox.desc.0": "Insertar/retirar discos de música en la caja de música",
+  "flan.permission.flan:enderchest.desc.0": "Usar el cofre de ender",
+  "flan.permission.flan:enchantment.desc.0": "Usar la mesa de encantamientos",
+  "flan.permission.flan:itemframe_rotate.desc.0": "Cambiar el ángulo de los objetos en el marco de objetos",
+  "flan.permission.flan:lectern_take.desc.0": "Cambiar los libros colocados en el atril",
+  "flan.permission.flan:endcrystal_place.desc.0": "Colocar cristales de end",
+  "flan.permission.flan:target_block.desc.0": "Activar bloques objetivo",
+  "flan.permission.flan:projectiles.desc.0": "Permiso para interactuar con proyectiles",
+  "flan.permission.flan:projectiles.desc.1": "(por ejemplo, disparar flechas a botones)",
+  "flan.permission.flan:trample.desc.0": "Permiso para pisar bloques",
+  "flan.permission.flan:trample.desc.1": "(por ejemplo, tierra labrada, huevos de tortuga)",
+  "flan.permission.flan:frost_walker.desc.0": "Permiso para el efecto de caminante de hielo",
+  "flan.permission.flan:portal.desc.0": "Permiso para usar los portales del End",
+  "flan.permission.flan:raid.desc.0": "Permiso para activar incursiones en el territorio",
+  "flan.permission.flan:raid.desc.1": "No impide las incursiones que ocurren fuera del territorio",
+  "flan.permission.flan:boat.desc.0": "Permiso para subirse a un bote",
+  "flan.permission.flan:minecart.desc.0": "Permiso para subirse a un carro de minas",
+  "flan.permission.flan:bucket.desc.0": "Permiso para usar un cubo y recoger líquidos",
+  "flan.permission.flan:ender_pearl.desc.0": "Permiso para usar perlas de ender",
+  "flan.permission.flan:chorus_fruit.desc.0": "Permiso para comer fruta de coro",
+  "flan.permission.flan:animal_interact.desc.0": "Permiso para interactuar con animales",
+  "flan.permission.flan:animal_interact.desc.1": "(por ejemplo, esquilar ovejas)",
+  "flan.permission.flan:hurt_animal.desc.0": "Permiso para dañar animales",
+  "flan.permission.flan:xp.desc.0": "Permiso para recolectar orbes de experiencia",
+  "flan.permission.flan:trading.desc.0": "Permiso para comerciar con aldeanos",
+  "flan.permission.flan:armorstand.desc.0": "Permiso para interactuar con soportes de armaduras",
+  "flan.permission.flan:break_non_living.desc.0": "Permiso para romper entidades no vivas",
+  "flan.permission.flan:break_non_living.desc.1": "(como carros de minas, soportes de armaduras, etc.)",
+  "flan.permission.flan:drop.desc.0": "Permiso para tirar objetos",
+  "flan.permission.flan:pickup.desc.0": "Permiso para recoger objetos",
+  "flan.permission.flan:flight.desc.0": "Permiso para volar en modo de juego no creativo",
+  "flan.permission.flan:can_stay.desc.0": "Permiso para que los jugadores entren en tu territorio",
+  "flan.permission.flan:teleport.desc.0": "Permiso para que los jugadores se teletransporten a tu punto de inicio",
+  "flan.permission.flan:no_hunger.desc.0": "Desactivar la disminución del hambre",
+  "flan.permission.flan:claim_message.desc.0": "Modificar los mensajes de entrada/salida de la reclamación",
+  "flan.permission.flan:player_mob_spawn.desc.0": "Permiso para afectar a las entidades controladas por jugadores",
+  "flan.permission.flan:player_mob_spawn.desc.1": "como los guardianes sigilosos o los ácaros de la end",
+  "flan.permission.flan:sculk.desc.0": "Permiso para afectar a los sensores sigilosos controlados por jugadores",
+  "flan.permission.flan:sculk.desc.1": "los sensores sigilosos se manejan bajo PLAYERMOBSPAWN",
+  "flan.permission.flan:hurt_player.desc.0": "Permiso para dañar a otros jugadores",
+  "flan.permission.flan:explosions.desc.0": "Permitir explosiones dentro de la reclamación",
+  "flan.permission.flan:wither.desc.0": "Permitir que los wither destruyan bloques dentro de la reclamación",
+  "flan.permission.flan:enderman.desc.0": "Permitir que los enderman recojan/colocen bloques dentro de la reclamación",
+  "flan.permission.flan:snow_golem.desc.0": "Permitir que los golems de nieve generen alfombras de nieve debajo de ellos",
+  "flan.permission.flan:fire_spread.desc.0": "Permitir la propagación del fuego dentro de la reclamación",
+  "flan.permission.flan:water_border.desc.0": "Permitir que los líquidos atraviesen los límites de la reclamación",
+  "flan.permission.flan:piston_border.desc.0": "Permitir que los pistones empujen/tiren de los límites de la reclamación",
+  "flan.permission.flan:mob_spawn.desc.0": "Impedir la generación de entidades hostiles dentro de la reclamación",
+  "flan.permission.flan:animal_spawn.desc.0": "Impedir la generación de otras entidades dentro de la reclamación",
+  "flan.permission.flan:lightning.desc.0": "Permitir que los bloques de iluminación afecten a los bloques dentro de la reclamación",
+  "flan.permission.flan:lightning.desc.1": "por ejemplo, colocar bloques sobre fuego",
+  "flan.permission.flan:lightning.desc.2": "o afectar a los animales (excluyendo a las criaturas)",
+  "flan.permission.flan:lock_items.desc.0": "Bloquear los objetos al morir del jugador",
+  "flan.permission.flan:fake_player.desc.0": "Permitir la interacción con jugadores falsos dentro de la reclamación",
+  "flan.permission.flan:fake_player.desc.1": "algunos jugadores falsos con mods pueden tener el UUID del usuario",
+  "flan.permission.flan:fake_player.desc.2": "para esos mods, este permiso no es necesario",
+  "flan.command.help.0": "help <page> | (cmd <command>)",
+  "flan.command.help.1": "Mostrar todos los comandos disponibles o información sobre un comando específico",
+  "flan.command.menu.0": "menu",
+  "flan.command.menu.1": "Permitir el uso del menú de reclamaciones cuando estás dentro de una reclamación",
+  "flan.command.claimInfo.0": "claimInfo",
+  "flan.command.claimInfo.1": "Mostrar información sobre la reclamación en la que te encuentras",
+  "flan.command.delete.0": "delete",
+  "flan.command.delete.1": "Eliminar la reclamación actual",
+  "flan.command.deleteAll.0": "deleteAll",
+  "flan.command.deleteAll.1": "Eliminar todas tus reclamaciones (se requiere confirmación doble para evitar problemas)",
+  "flan.command.deleteSubClaim.0": "deleteSubClaim",
+  "flan.command.deleteSubClaim.1": "Eliminar la subreclamación actual",
+  "flan.command.deleteAllSubClaims.0": "deleteAllSubClaims",
+  "flan.command.deleteAllSubClaims.1": "Eliminar todas las subreclamaciones de la reclamación principal actual",
+  "flan.command.list.0": "list <player>",
+  "flan.command.list.1": "Listar todas tus reclamaciones (si se te ha dado permiso para ver las reclamaciones de otros jugadores)",
+  "flan.command.switchMode.0": "switchMode",
+  "flan.command.switchMode.1": "Cambiar entre el modo de reclamación principal y el modo de subreclamación",
+  "flan.command.group.0": "group (add | remove <name>) | (players add | remove <player> [overwrite])",
+  "flan.command.group.1": "- Agregar/Eliminar un grupo con el nombre especificado. También se puede editar desde el menú de reclamaciones.",
+  "flan.command.group.2": "- Agregar/Eliminar jugadores del grupo (si se sobrescribe, se reemplazarán los jugadores actuales del grupo, de lo contrario no se realizará ninguna acción)",
+  "flan.command.transferClaim.0": "transferClaim <player>",
+  "flan.command.transferClaim.1": "Transferir la propiedad de la reclamación a otro jugador. Solo válido si eres el propietario de la reclamación",
+  "flan.command.addClaim.0": "addClaim (<x y z> <x y z>) | all | (rect x z)",
+  "flan.command.addClaim.1": "Crear una reclamación en la ubicación especificada (igual que usar la herramienta de reclamación)",
+  "flan.command.addClaim.2": "<all> Utilizar todos los bloques restantes para obtener una reclamación rectangular centrada en el jugador",
+  "flan.command.addClaim.3": "<rect> Crear una reclamación rectangular centrada en el jugador",
+  "flan.command.permission.0": "permission {global | (group <name>) | (personal <name>)} <permission> true | false | default",
+  "flan.command.permission.1": "Establecer permisos globales/grupales/personales. También se puede editar desde el menú de reclamaciones (para hacer clic derecho en el menú del grupo).",
+  "flan.command.personalGroups.0": "personalGroups",
+  "flan.command.personalGroups.1": "Abrir el menú para editar los grupos personales",
+  "flan.command.sellBlocks.0": "sellBlocks <amount>",
+  "flan.command.sellBlocks.1": "Vender bloques de reclamación. Se requiere suficiente pólvora como moneda.",
+  "flan.command.buyBlocks.0": "buyBlocks <amount>",
+  "flan.command.buyBlocks.1": "Comprar bloques de reclamación. Se requiere suficiente pólvora como moneda.",
+  "flan.command.trapped.0": "trapped",
+  "flan.command.trapped.1": "Si te encuentras en una reclamación que no te pertenece, puedes usar este comando para intentar liberarte después de 5 segundos.",
+  "flan.command.unlockDrops.0": "unlockDrops <players>",
+  "flan.command.unlockDrops.1": "Desbloquear los objetos que caen al morir para que otros jugadores también puedan recogerlos. O todos los jugadores especificados (se requiere permisos de administrador)",
+  "flan.command.setHome.0": "setHome",
+  "flan.command.setHome.1": "Establecer la ubicación de tu hogar dentro de una reclamación con permisos suficientes",
+  "flan.command.teleport.0": "teleport self | admin | (other <player>) (<claim name> | <claim uuid>)",
+  "flan.command.teleport.1": "Teletransportarse a la ubicación del hogar de la reclamación especificada. Usar 'admin' para teletransportarse a una reclamación de administrador",
+  "flan.command.name.0": "name self <name>",
+  "flan.command.name.1": "Establecer el nombre de la reclamación actual",
+  "flan.command.claimMessage.0": "claimMessage (enter | leave) (title | subtitle) (string | text) <value>",
+  "flan.command.claimMessage.1": "Establecer los mensajes de la reclamación. Usar \"$empty\" para eliminar el mensaje",
+  "flan.command.reload.0": "reload",
+  "flan.command.reload.1": "Restablecer la configuración del complemento en el juego",
+  "flan.command.adminMode.0": "adminMode",
+  "flan.command.adminMode.1": "Cambiar al modo de administrador, ignorando todas las reclamaciones",
+  "flan.command.readGriefPrevention.0": "readGriefPreventionData",
+  "flan.command.readGriefPrevention.1": "Analizar los datos del complemento GriefPrevention en Flan",
+  "flan.command.setAdminClaim.0": "setAdminClaim",
+  "flan.command.setAdminClaim.1": "Establecer una reclamación como reclamación de administrador",
+  "flan.command.listAdminClaims.0": "listAdminClaim",
+  "flan.command.listAdminClaims.1": "Listar todas las reclamaciones de administrador en el mundo actual",
+  "flan.command.adminDelete.0": "adminDelete [all <player>]",
+  "flan.command.adminDelete.1": "Eliminar forzosamente la reclamación actual o eliminar todas las reclamaciones del jugador especificado.",
+  "flan.command.giveClaimBlocks.0": "giveClaimBlocks <amount>",
+  "flan.command.giveClaimBlocks.1": "Dar a un jugador bloques de reclamación adicionales."
 }

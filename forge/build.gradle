@@ -14,6 +14,7 @@ loom {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven {
         name = "FTB"
@@ -37,6 +38,8 @@ dependencies {
 
     //CompileOnly cause dependencies
     modCompileOnly "com.ldtteam:minecolonies:${minecolonies}"
+
+    modImplementation include("io.github.flemmli97:lingua_bib:${lingua_bib}-forge")
 }
 
 task apiJar(type: Jar, dependsOn: classes) {

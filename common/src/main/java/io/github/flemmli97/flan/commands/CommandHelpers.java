@@ -12,6 +12,7 @@ import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
+import io.github.flemmli97.flan.claim.PermHelper;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.CustomInteractListScreenHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
@@ -21,7 +22,6 @@ import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.commands.arguments.ResourceOrTagKeyArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -48,7 +48,7 @@ public class CommandHelpers {
     public static GameProfile singleProfile(CommandContext<CommandSourceStack> context, String arg) throws CommandSyntaxException {
         Collection<GameProfile> profs = GameProfileArgument.getGameProfiles(context, arg);
         if (profs.size() != 1) {
-            throw new SimpleCommandExceptionType(() -> ConfigHandler.LANG_MANAGER.get("onlyOnePlayer")).create();
+            throw new SimpleCommandExceptionType(PermHelper.translatedText("flan.onlyOnePlayer")).create();
         }
         return profs.stream().findFirst().get();
     }
@@ -113,7 +113,7 @@ public class CommandHelpers {
         ResourceOrTagKeyArgument.Result<?> result = (ResourceOrTagKeyArgument.Result<T>) context.getArgument(name, ResourceOrTagKeyArgument.Result.class);
         Optional<ResourceOrTagKeyArgument.Result<T>> optional = result.cast(registryKey);
         return optional.orElseThrow(() -> new DynamicCommandExceptionType((object) ->
-                Component.translatable("No such entry %1$s", object)).create(result));
+                PermHelper.translatedText("No such entry %1$s", object)).create(result));
     }
 
     public static CompletableFuture<Suggestions> claimEntryListSuggestion(CommandContext<CommandSourceStack> context, SuggestionsBuilder build, CustomInteractListScreenHandler.Type type) throws CommandSyntaxException {

@@ -332,8 +332,8 @@ public class PlayerClaimData implements IPlayerData {
         } else if (!this.claimBlockMessage) {
             this.claimBlockMessage = true;
             if (this.shouldDisplayClaimToolMessage()) {
-                this.player.displayClientMessage(PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("claimBlocksFormat"),
-                        this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks(), this.remainingClaimBlocks()), ChatFormatting.GOLD), false);
+                this.player.displayClientMessage(PermHelper.translatedText("flan.claimBlocksFormat",
+                        this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks(), this.remainingClaimBlocks(), ChatFormatting.GOLD), false);
                 this.addDisplayClaim(currentClaim, EnumDisplayType.MAIN, this.player.blockPosition().getY());
             }
         }
@@ -370,7 +370,7 @@ public class PlayerClaimData implements IPlayerData {
             } else if (this.player.position().distanceToSqr(this.trappedPos) > 0.15) {
                 this.trappedTick = -1;
                 this.trappedPos = null;
-                this.player.displayClientMessage(PermHelper.simpleColoredText(ConfigHandler.LANG_MANAGER.get("trappedMove"), ChatFormatting.RED), false);
+                this.player.displayClientMessage(PermHelper.translatedText("flan.trappedMove", ChatFormatting.RED), false);
             }
         }
         this.deathPickupTick--;
@@ -397,9 +397,7 @@ public class PlayerClaimData implements IPlayerData {
         this.defaultGroups.clear();
         this.defaultGroups.putAll(data.defaultGroups);
         if (data.setDeathItemOwner()) {
-            String msg = ConfigHandler.LANG_MANAGER.get("unlockDropsCmd");
-            if (!msg.isEmpty())
-                this.player.displayClientMessage(PermHelper.simpleColoredText(String.format(msg, "/flan unlockDrops"), ChatFormatting.GOLD), false);
+            this.player.displayClientMessage(PermHelper.translatedText("flan.unlockDropsCmd", "/flan unlockDrops", ChatFormatting.GOLD), false);
         }
     }
 
@@ -462,21 +460,21 @@ public class PlayerClaimData implements IPlayerData {
         Map<UUID, Long> map = this.fakePlayerNotif.computeIfAbsent(claim.getClaimID(), o -> new HashMap<>());
         Long last = map.get(fakePlayer.getUUID());
         if (last == null || this.player.serverLevel().getGameTime() - 1200 > last) {
-            Component claimMsg = Component.literal(String.format(ConfigHandler.LANG_MANAGER.get("fakePlayerNotification1"), claim.getWorld().dimension().location().toString(), pos)).withStyle(ChatFormatting.DARK_RED);
+            Component claimMsg = PermHelper.translatedText("flan.fakePlayerNotification1", claim.getWorld().dimension().location().toString(), pos, ChatFormatting.DARK_RED);
             this.player.sendSystemMessage(claimMsg);
-            String cmdStr = String.format("/flan fakePlayer add %s", fakePlayer.getUUID().toString());
-            Component cmd = Component.literal(ConfigHandler.LANG_MANAGER.get("clickableComponent"))
+            String cmdStr = String.format("/flan fakePlayer add %s", fakePlayer.getUUID());
+            Component cmd = PermHelper.translatedText("flan.clickableComponent")
                     .withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)
                             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, cmdStr))
                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(cmdStr))));
-            Component msg = Component.translatable(ConfigHandler.LANG_MANAGER.get("fakePlayerNotification2"), cmd);
+            Component msg = PermHelper.translatedText("flan.fakePlayerNotification2", cmd);
             this.player.sendSystemMessage(msg);
             cmdStr = "/flan fakePlayer";
-            cmd = Component.literal(ConfigHandler.LANG_MANAGER.get("clickableComponent"))
+            cmd = PermHelper.translatedText("flan.clickableComponent")
                     .withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)
                             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, cmdStr))
                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(cmdStr))));
-            msg = Component.translatable(ConfigHandler.LANG_MANAGER.get("fakePlayerNotification3"), cmd);
+            msg = PermHelper.translatedText("flan.fakePlayerNotification3", cmd);
             this.player.sendSystemMessage(msg);
             map.put(fakePlayer.getUUID(), this.player.serverLevel().getGameTime());
         }
@@ -583,7 +581,7 @@ public class PlayerClaimData implements IPlayerData {
         Flan.log("Reading grief prevention data");
         File griefPrevention = server.getWorldPath(LevelResource.ROOT).resolve("plugins/GriefPreventionData/PlayerData").toFile();
         if (!griefPrevention.exists()) {
-            src.sendSuccess(() -> PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("cantFindData"), griefPrevention.getAbsolutePath()), ChatFormatting.DARK_RED), false);
+            src.sendSuccess(() -> PermHelper.translatedText("flan.cantFindData", griefPrevention.getAbsolutePath(), ChatFormatting.DARK_RED), false);
             return false;
         }
         for (File f : griefPrevention.listFiles()) {
@@ -618,7 +616,7 @@ public class PlayerClaimData implements IPlayerData {
                     reader.close();
                 }
             } catch (Exception e) {
-                src.sendSuccess(() -> PermHelper.simpleColoredText(String.format(ConfigHandler.LANG_MANAGER.get("errorFile"), f.getName(), ChatFormatting.RED)), false);
+                src.sendSuccess(() -> PermHelper.translatedText("flan.errorFile", f.getName(), ChatFormatting.RED), false);
             }
         }
         return true;

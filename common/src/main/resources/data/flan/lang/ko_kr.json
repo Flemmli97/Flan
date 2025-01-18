@@ -1,467 +1,285 @@
 {
-  "noClaim": "여기에 영토가 없습니다",
-  "inspectBlockOwner": "이곳은 %1$s의 영토입니다",
-  "inspectNoClaim": "이 블록을 소유한 플레이어가 없습니다",
-  "claimBlocksFormat": "영토 내 블록: %1$d + (추가) %2$d); 사용된 블록: %3$d; 남은 블록: %4$d",
-  "listClaims": "모든 영토 목록:",
-  "listAdminClaims": "%1$s의 모든 관리자 영토 목록:",
-  "onlyOnePlayer": "매개변수로 하나의 플레이어만 사용할 수 있습니다",
-  "ownerTransferSuccess": "이제 새 영토 소유자는 %1$s입니다",
-  "ownerTransferFail": "영토 소유자만이 영토를 양도할 수 있습니다",
-  "ownerTransferNoBlocks": "새 영토 소유자에게 충분한 영토 블록이 없습니다",
-  "ownerTransferNoBlocksAdmin": "관리자 모드로 전환하여 이 기능을 비활성화할 수 있습니다",
-  "noPermission": "여기에서 이 작업을 수행할 권한이 없습니다!",
-  "noPermissionSimple": "죄송합니다. 여기에서 이 작업을 수행할 수 없습니다!",
-  "noPermissionTooClose": "죄송합니다. 이곳은 영토에 너무 가깝습니다!",
-  "tooCloseClaim": "이곳은 보호된 지역에 너무 가깝습니다!",
-  "configReload": "플러그인 구성이 다시 로드되었습니다",
-  "cantClaimHere": "죄송합니다. 이곳을 영토로 설정할 수 없습니다",
-  "minClaimSize": "영토가 너무 작습니다. 최소 영토 크기는 %d입니다",
-  "maxClaims": "최대 영토 수에 도달했습니다",
-  "landClaimDisabledWorld": "이 세계에서는 영토 기능이 비활성화되었습니다",
-  "editMode": "편집 모드가 %1$s로 설정되었습니다",
-  "notEnoughBlocks": "충분한 영토 블록이 없습니다",
-  "conflictOther": "이 영토는 다른 영토와 겹칩니다",
-  "wrongMode": "잘못된 영토 모드입니다. 현재 %1$s 모드에 있습니다",
-  "stringScreenReturn": "손에 든 종이를 클릭하여 돌아가기",
-  "groupAdd": "그룹 %1$s이(가) 추가되었습니다",
-  "groupRemove": "그룹 %1$s이(가) 삭제되었습니다",
-  "groupExist": "이 그룹은 이미 존재합니다",
-  "uuidFakeAdd": "영토에 uuid %1$s의 가짜 플레이어가 추가되었습니다",
-  "uuidFakeRemove": "영토에서 uuid %1$s의 가짜 플레이어가 삭제되었습니다",
-  "uuidFakeModifyNo": "uuid가 있는 가짜 플레이어가 이미 추가되었습니다",
-  "playerModify": "다음 플레이어의 권한 그룹이 수정되었습니다: %1$s: %2$s",
-  "playerModifyNo": "이 플레이어의 권한 그룹을 수정할 수 없습니다. 플레이어가 이미 그룹에 속해 있을 수 있습니다",
-  "playerGroupAddFail": "이 플레이어를 그룹에 추가할 수 없습니다. 플레이어가 이미 그룹에 속해 있거나 해당 이름과 일치하는 플레이어를 찾을 수 없기 때문일 수 있습니다",
-  "resizeClaim": "영토 크기를 재설정 중입니다",
-  "resizeSuccess": "영토 크기가 재설정되었습니다",
-  "claimCreateSuccess": "새 영토가 생성되었습니다",
-  "subClaimCreateSuccess": "새 하위 영토가 생성되었습니다",
-  "deleteClaim": "영토가 삭제되었습니다",
-  "deleteAllClaimConfirm": "모든 영토를 삭제하시겠습니까? 확인하려면 다시 입력하세요",
-  "deleteAllClaim": "모든 영토가 삭제되었습니다",
-  "deleteClaimError": "여기에서 이 영토를 삭제할 수 없습니다",
-  "deleteSubClaim": "하위 영토가 삭제되었습니다",
-  "deleteSubClaimAll": "모든 주 영토 아래의 하위 영토가 삭제되었습니다",
-  "noSuchPerm": "충분한 권한이 없습니다: %1$s",
-  "editPerm": "%1$s이(가) 이제 %2$s로 설정되었습니다",
-  "editPermGroup": "%1$s의 %2$s이(가) 이제 %3$s로 설정되었습니다",
-  "editPersonalGroup": "%2$s 그룹의 기본 권한 %1$s이(가) 이제 %3$s로 설정되었습니다",
-  "adminMode": "관리자 모드 (영토 제외)가: %1$s로 설정되었습니다",
-  "adminDeleteAll": "다음 플레이어의 모든 영토가 삭제되었습니다: %1$s",
-  "setAdminClaim": "이 영토의 관리자는 이제: %1$s",
-  "readGriefpreventionData": "GriefPrevention 플러그인에서 데이터를 읽어옴",
-  "readGriefpreventionClaimDataSuccess": "영토 데이터를 성공적으로 읽어왔습니다",
-  "readGriefpreventionPlayerDataSuccess": "플레이어 데이터를 성공적으로 읽어왔습니다",
-  "cantFindData": "%1$s에서 Griefprevention 플러그인 데이터를 찾을 수 없습니다",
-  "errorFile": "파일 읽기 오류: %1$s",
-  "readConflict": "%1$s이(가) 기존 영토와 충돌합니다. 세계에 추가할 수 없습니다! 충돌하는 영토:",
-  "giveClaimBlocks": "다음 플레이어에게 %2$d 영토 블록을 부여했습니다: %1$s",
-  "fakePlayerNotification1": "가짜 플레이어가 %2$s에서 %1$s와(과) 상호작용하려 했습니다",
-  "fakePlayerNotification2": "영토에 가짜 플레이어를 추가하려면 %s를 클릭하세요",
-  "clickableComponent": "여기",
-  "fakePlayerNotification3": "이 알림을 비활성화하려면 %s를 클릭하세요.",
-  "fakePlayerNotification": "가짜 플레이어 알림이 %s로 설정되었습니다",
-  "claimBasicInfo": "영토 소유자: %1$s, 시작: [x=%2$d,z=%3$d] 끝: [x=%4$d,z=%5$d]); 하위 영토 수: %6$d",
-  "claimBasicInfoNamed": "영토: %7$s, 소유자: %1$s, 시작: [x=%2$d,z=%3$d] 끝: [x=%4$d,z=%5$d]); 하위 영토 수: %6$d",
-  "claimSubHeader": "==하위 영토 정보==",
-  "claimBasicInfoSub": "영토 소유자: %1$s, 시작: [x=%2$d,z=%3$d] 끝: [x=%4$d,z=%5$d]",
-  "claimBasicInfoSubNamed": "영토: %6$s, 소유자: %1$s, 시작: [x=%2$d,z=%3$d] 끝: [x=%4$d,z=%5$d]",
-  "claimInfoPerms": "권한: %1$s",
-  "claimGroupInfoHeader": "그룹: ",
-  "claimGroupPerms": "    권한: %1$s",
-  "claimGroupPlayers": "    그룹 내 플레이어: %1$s",
-  "helpHeader": "사용 가능한 하위 명령어 (페이지 %d):",
-  "helpCmdHeader": "====================",
-  "helpCmdSyntax": "구문: %1$s",
-  "screenEnableText": "사용 여부: %1$s",
-  "screenUneditable": "편집할 수 없습니다!",
-  "screenClose": "닫기",
-  "screenNext": "다음 페이지",
-  "screenPrevious": "이전 페이지",
-  "screenAdd": "추가",
-  "screenBack": "뒤로",
-  "screenNoPerm": "권한 없음",
-  "screenFalse": "비활성화",
-  "screenTrue": "활성화",
-  "screenDefault": "기본값",
-  "screenMenu": "영토 메뉴",
-  "screenMenuSub": "하위 영토 메뉴",
-  "screenMenuGlobal": "전역 권한 편집",
-  "screenMenuGroup": "권한 그룹 편집",
-  "screenMenuPotion": "영토 내 플레이어에 대한 추가 효과 편집",
-  "screenMenuClaimText": "영토 입/퇴장 시 표시되는 텍스트 편집",
-  "screenMenuFakePlayers": "가짜 플레이어",
-  "screenMenuDelete": "영토 삭제",
-  "screenConfirm": "확인",
-  "screenYes": "예",
-  "screenNo": "아니오",
-  "screenGroupPlayers": "%1$s-플레이어",
-  "screenRemoveMode": "삭제 모드: %1$s",
-  "screenGlobalPerms": "전역 권한",
-  "screenGroupName": "%s",
-  "screenGroups": "영토 그룹",
-  "screenGroupPerms": "%1$s-권한",
-  "screenPersonalGroups": "개인 그룹",
-  "screenPersonalPermissions": "%1$s의 개인 그룹",
-  "screenFakePlayerNameUUID": "%s",
-  "screenPotions": "영토 추가 효과",
-  "screenPotionText": "%s",
-  "screenTitleEditor": "영토 텍스트",
-  "screenTitleEditorSub": "하위 영토 텍스트",
-  "screenTextJson": "JSON 텍스트를 사용하려면 마우스 오른쪽 버튼을 클릭하세요. 사용 방법을 모르겠다면 Minecraft Wiki에서 검색하세요",
-  "screenEnterText": "영토 입장 시 주 텍스트 편집",
-  "screenEnterSubText": "영토 입장 시 부 텍스트 편집",
-  "screenLeaveText": "영토 퇴장 시 주 텍스트 편집",
-  "screenLeaveSubText": "영토 입장 시 부 텍스트 편집",
-  "screenDelete": "\"$empty\"를 사용하여 텍스트를 삭제하세요",
-  "chatClaimTextEdit": "[명령어를 사용하려면 마우스 오른쪽 버튼을 클릭하세요]",
-  "sellDisabled": "영토 블록 판매가 현재 비활성화되었습니다",
-  "buyDisabled": "영토 블록 구매가 현재 비활성화되었습니다",
-  "sellFail": "판매할 영토 블록이 충분하지 않습니다",
-  "buyFail": "충분한 돈이 없습니다",
-  "buyFailItem": "충분한 아이템이 없습니다",
-  "buyFailXP": "충분한 경험치가 없습니다",
-  "sellSuccess": "%2$s의 통화로 %1$s의 영토 블록을 판매했습니다",
-  "sellSuccessItem": "%3$s x%2$s의 아이템으로 %1$s의 영토 블록을 판매했습니다",
-  "sellSuccessXP": "%2$s의 경험치로 %1$s의 영토 블록을 판매했습니다",
-  "buySuccess": "%2$s의 통화로 %1$s의 영토 블록을 구매했습니다",
-  "buySuccessItem": "%2$s의 아이템으로 %1$s의 영토 블록을 구매했습니다",
-  "buySuccessXP": "%2$s의 경험치로 %1$s의 영토 블록을 구매했습니다",
-  "currencyMissing": "지원되는 통화 모듈이 없습니다",
-  "trappedRescue": "구조 중입니다. 5초 동안 제자리에 있으세요",
-  "trappedFail": "구조 중에 다시 구조를 실행할 필요가 없습니다",
-  "trappedMove": "이동했습니다. 텔레포트를 거부합니다",
-  "unlockDropsCmd": "현재 떨어진 아이템이 보호되었습니다. %1$s를 사용하여 다른 플레이어가 이 아이템을 잠금 해제할 수 있습니다",
-  "unlockDrops": "떨어진 아이템이 %1$s 틱 내에 잠금 해제되었습니다",
-  "unlockDropsMulti": "%1$s의 떨어진 아이템을 잠금 해제했습니다",
-  "claimNameSet": "영토 이름이 이제 %1$s로 설정되었습니다",
-  "claimNameUsed": "이 영토의 소유자는 이미 같은 이름의 영토를 가지고 있습니다",
-  "claimNameUsedSub": "이 영토의 하위 영토 중 하나가 이미 이 이름을 사용 중입니다",
-  "setHome": "집 영토가 [x=%1$s,y=%2$s,z=%3$s]로 설정되었습니다",
-  "teleportHome": "집으로 텔레포트 중입니다. 5초 동안 이동하지 마세요",
-  "teleportHomeFail": "이미 텔레포트 중입니다",
-  "setEnterMessage": "영토 입장 시 제목 텍스트가 %1$s로 설정되었습니다",
-  "setEnterSubMessage": "영토 입장 시 부제목 텍스트가 %1$s로 설정되었습니다",
-  "setLeaveMessage": "영토 퇴장 시 제목 텍스트가 %1$s로 설정되었습니다",
-  "setLeaveSubMessage": "영토 퇴장 시 부제목 텍스트가 %1$s로 설정되었습니다",
-  "wiki": "위키를 참조하세요:",
-  "EDITCLAIM.desc": [
-    "영토 편집 (예: 크기 재설정, 삭제 등) 권한 부여"
-  ],
-  "EDITPERMS.desc": [
-    "영토 권한 수정 권한 부여"
-  ],
-  "EDITPOTIONS.desc": [
-    "영토 내 추가 효과 수정 권한 부여"
-  ],
-  "BREAK.desc": [
-    "영토 내 블록 파괴 권한 부여"
-  ],
-  "PLACE.desc": [
-    "영토 내 블록 설치 권한 부여"
-  ],
-  "OPENCONTAINER.desc": [
-    "컨테이너 열기 권한",
-    "(예: 상자, 용광로 등)"
-  ],
-  "INTERACTBLOCK.desc": [
-    "블록 상호작용 일반 권한",
-    "OPENCONTAINER에 해당",
-    "OPENCONTAINER에서 검사되지 않는 블록을 사용 가능 상태로 설정"
-  ],
-  "ANVIL.desc": [
-    "모루 사용 권한"
-  ],
-  "BED.desc": [
-    "침대 사용 권한"
-  ],
-  "BEACON.desc": [
-    "비콘 사용 권한"
-  ],
-  "DOOR.desc": [
-    "문 사용 권한"
-  ],
-  "FENCEGATE.desc": [
-    "울타리 문 사용 권한"
-  ],
-  "TRAPDOOR.desc": [
-    "함정 문 사용 권한"
-  ],
-  "BUTTONLEVER.desc": [
-    "레버 및 버튼 사용 권한"
-  ],
-  "PRESSUREPLATE.desc": [
-    "압력판 사용 권한"
-  ],
-  "NOTEBLOCK.desc": [
-    "노트 블록 음색/음조 변경 권한"
-  ],
-  "REDSTONE.desc": [
-    "레드스톤 구성 요소 변경 권한"
-  ],
-  "JUKEBOX.desc": [
-    "음악 디스크 삽입/제거 권한"
-  ],
-  "ENDERCHEST.desc": [
-    "엔더 상자 사용 권한"
-  ],
-  "ENCHANTMENT.desc": [
-    "마법 부여대 사용 권한"
-  ],
-  "ITEMFRAMEROTATE.desc": [
-    "아이템 액자 내 아이템 각도 변경 권한"
-  ],
-  "LECTERNTAKE.desc": [
-    "독서대에서 책을 변경할 권한"
-  ],
-  "ENDCRYSTALPLACE.desc": [
-    "엔드 크리스탈 설치 권한"
-  ],
-  "TARGETBLOCK.desc": [
-    "표적 블록 활성화 권한"
-  ],
-  "PROJECTILES.desc": [
-    "발사체 권한",
-    "블록 상호작용 (예: 화살로 버튼 쏘기)"
-  ],
-  "TRAMPLE.desc": [
-    "밟을 수 있는 블록 권한",
-    "(예: 밭, 거북알)"
-  ],
-  "FROSTWALKER.desc": [
-    "프로스트 워커 마법 부여 효과 권한"
-  ],
-  "PORTAL.desc": [
-    "네더 포탈 사용 권한"
-  ],
-  "RAID.desc": [
-    "영토 내에서 마을 습격 발생 권한",
-    "영토 외부에서 발생하는 마을 습격은 방지되지 않습니다"
-  ],
-  "BOAT.desc": [
-    "보트 탑승 권한"
-  ],
-  "MINECART.desc": [
-    "광산 수레 탑승 권한"
-  ],
-  "BUCKET.desc": [
-    "버킷을 사용하여 액체를 담는 권한"
-  ],
-  "ENDERPEARL.desc": [
-    "엔더 진주 사용 권한"
-  ],
-  "CHORUSFRUIT.desc": [
-    "코러스 과일 섭취 권한"
-  ],
-  "ANIMALINTERACT.desc": [
-    "동물과 상호작용 권한",
-    "(예: 양털 깎기)"
-  ],
-  "HURTANIMAL.desc": [
-    "동물 공격 권한"
-  ],
-  "XP.desc": [
-    "경험치 구슬 흡수 권한"
-  ],
-  "TRADING.desc": [
-    "마을 주민과 거래 권한"
-  ],
-  "ARMORSTAND.desc": [
-    "갑옷 거치대와 상호작용 권한"
-  ],
-  "BREAKNONLIVING.desc": [
-    "광산 수레, 갑옷 거치대와 같은 비생물 개체 파괴 권한"
-  ],
-  "DROP.desc": [
-    "아이템 버리기 권한"
-  ],
-  "PICKUP.desc": [
-    "아이템 줍기 권한"
-  ],
-  "FLIGHT.desc": [
-    "크리에이티브 모드가 아닌 상태에서 비행 허용"
-  ],
-  "CANSTAY.desc": [
-    "플레이어가 영토에 들어올 수 있도록 허용"
-  ],
-  "TELEPORT.desc": [
-    "플레이어가 영토의 집 텔레포트 지점으로 이동할 수 있도록 허용"
-  ],
-  "NOHUNGER.desc": [
-    "배고픔 감소 비활성화"
-  ],
-  "CLAIMMESSAGE.desc": [
-    "영토 입/퇴장 시 표시되는 메시지 수정 권한"
-  ],
-  "PLAYERMOBSPAWN.desc": [
-    "플레이어에 의해 소환된 개체 권한",
-    "예: 가디언, 엔더마이트"
-  ],
-  "SCULK.desc": [
-    "플레이어에 의해 활성화된 스컬크 센서 권한",
-    "스컬크 센서는 PLAYERMOBSPAWN 하에 처리됩니다"
-  ],
-  "HURTPLAYER.desc": [
-    "플레이어 공격 권한"
-  ],
-  "EXPLOSIONS.desc": [
-    "영토 내에서 폭발 허용"
-  ],
-  "WITHER.desc": [
-    "영토 내에서 위더가 블록을 파괴하도록 허용"
-  ],
-  "ENDERMAN.desc": [
-    "영토 내에서 엔더맨이 블록을 줍고 놓을 수 있도록 허용"
-  ],
-  "SNOWGOLEM.desc": [
-    "눈 골렘이 발 밑에 눈 깔기 허용"
-  ],
-  "FIRESPREAD.desc": [
-    "영토 내에서 불이 번지도록 허용"
-  ],
-  "WATERBORDER.desc": [
-    "액체가 영토 경계를 넘어 흐르도록 허용"
-  ],
-  "PISTONBORDER.desc": [
-    "피스톤이 영토 경계를 넘어서 밀고 당기도록 허용"
-  ],
-  "MOBSPAWN.desc": [
-    "영토 내에서 적대적 개체 생성 방지"
-  ],
-  "ANIMALSPAWN.desc": [
-    "영토 내에서 기타 개체 생성 방지"
-  ],
-  "LIGHTNING.desc": [
-    "조명 블록이 영토 내 블록에 영향을 미치도록 허용",
-    "예: 불이 번지게 하기",
-    "또는 동물에 영향을 미치기 (개체 제외)"
-  ],
-  "LOCKITEMS.desc": [
-    "플레이어가 사망한 후 아이템 잠금 여부"
-  ],
-  "FAKEPLAYER.desc": [
-    "영토 내에서 가짜 플레이어와 상호작용 허용",
-    "일부 모드에서 가짜 플레이어는 사용자의 uuid를 가질 수 있습니다",
-    "이 경우 이 권한이 필요하지 않습니다"
-  ],
-  "command.help": [
-    "help <page> | (cmd <command>)",
-    "지정된 명령어에 대한 모든 사용 가능한 명령어 또는 정보 표시"
-  ],
-  "command.menu": [
-    "menu",
-    "영토 메뉴에 대한 권한이 있을 때 사용"
-  ],
-  "command.claimInfo": [
-    "claimInfo",
-    "현재 위치한 영토의 정보를 표시"
-  ],
-  "command.delete": [
-    "delete",
-    "현재 영토 삭제"
-  ],
-  "command.deleteAll": [
-    "deleteAll",
-    "모든 영토 삭제 (안전한 삭제를 위해 두 번 입력해야 합니다)"
-  ],
-  "command.deleteSubClaim": [
-    "deleteSubClaim",
-    "현재 하위 영토 삭제"
-  ],
-  "command.deleteAllSubClaims": [
-    "deleteAllSubClaims",
-    "현재 주 영토 아래의 모든 하위 영토 삭제"
-  ],
-  "command.list": [
-    "list <player>",
-    "모든 소유 영토 목록 표시. (서버 관리자는 다른 플레이어의 영토를 볼 수 있음)"
-  ],
-  "command.switchMode": [
-    "switchMode",
-    "주/하위 영토 모드 간 전환"
-  ],
-  "command.group": [
-    "group (add | remove <name>) | (players add | remove <player> [overwrite])",
-    "- 이름으로 그룹 추가/제거. 영토 메뉴에서 편집할 수도 있음",
-    "- 그룹 내 플레이어 추가/제거 (덮어쓰기를 선택하면 현재 그룹의 플레이어를 덮어씀, 그렇지 않으면 아무 작업도 하지 않음)"
-  ],
-  "command.transferClaim": [
-    "transferClaim <player>",
-    "지정된 플레이어에게 영토 소유권을 양도. 소유자만 사용할 수 있음"
-  ],
-  "command.addClaim": [
-    "addClaim (<x y z> <x y z>) | all | (rect x z)",
-    "지정된 위치에 영토 생성 (영토 도구 사용과 동일한 효과)",
-    "<all> 남은 모든 블록을 사용하여 플레이어 중심의 직사각형 영토 생성",
-    "<rect> 플레이어 중심의 직사각형 영토 생성"
-  ],
-  "command.permission": [
-    "permission {global | (group <name>) | (personal <name>)} <permission> true | false | default",
-    "전역/그룹/개인 권한 설정. 영토 메뉴에서 편집 가능 (그룹 편집의 경우)"
-  ],
-  "command.personalGroups": [
-    "personalGroups",
-    "개인 그룹 편집 메뉴 열기"
-  ],
-  "command.sellBlocks": [
-    "sellBlocks <amount>",
-    "<amount> 만큼의 영토 블록 판매. 화약을 통화로 사용"
-  ],
-  "command.buyBlocks": [
-    "buyBlocks <amount>",
-    "<amount> 만큼의 영토 블록 구매. 화약을 통화로 사용"
-  ],
-  "command.trapped": [
-    "trapped",
-    "플레이어가 자신의 영토가 아닌 곳에 갇힌 경우, 5초 후 탈출 시도"
-  ],
-  "command.unlockDrops": [
-    "unlockDrops <players>",
-    "사망 시 떨어진 아이템의 잠금을 해제하여 다른 플레이어가 주울 수 있도록 함. 또는 지정된 모든 플레이어 (관리자 권한 필요)"
-  ],
-  "command.setHome": [
-    "setHome",
-    "충분한 권한이 있는 영토에서 집 위치 설정"
-  ],
-  "command.teleport": [
-    "teleport self | admin | (other <player>) (<claim name> | <claim uuid>)",
-    "지정된 영토 집 위치로 텔레포트. admin을 사용하여 관리자 영토로 이동"
-  ],
-  "command.name": [
-    "name self <name>",
-    "현재 영토 이름 설정"
-  ],
-  "command.claimMessage": [
-    "claimMessage (enter | leave) (title | subtitle) (string | text) <value>",
-    "영토 메시지 설정. \"$empty\"를 사용하여 메시지 삭제"
-  ],
-  "command.reload": [
-    "reload",
-    "게임 내 플러그인 구성 재설정"
-  ],
-  "command.adminMode": [
-    "adminMode",
-    "관리자 모드로 전환, 모든 영토 무시"
-  ],
-  "command.readGriefPrevention": [
-    "readGriefPreventionData",
-    "GriefPrevention 플러그인 데이터를 flan으로 변환"
-  ],
-  "command.setAdminClaim": [
-    "setAdminClaim",
-    "영토를 관리자 영토로 설정"
-  ],
-  "command.listAdminClaims": [
-    "listAdminClaim",
-    "현재 세계의 모든 관리자 영토 목록"
-  ],
-  "command.adminDelete": [
-    "adminDelete [all <player>]",
-    "현재 영토를 강제로 삭제하거나 지정된 플레이어의 모든 영토를 삭제"
-  ],
-  "command.giveClaimBlocks": [
-    "giveClaimBlocks <amount>",
-    "플레이어에게 추가 영토 블록 부여"
-  ]
+  "flan.noClaim": "여기에 영토가 없습니다",
+  "flan.inspectBlockOwner": "이곳은 %1$s의 영토입니다",
+  "flan.inspectNoClaim": "이 블록을 소유한 플레이어가 없습니다",
+  "flan.claimBlocksFormat": "영토 내 블록: %1$s + (추가) %2$s; 사용된 블록: %3$s; 남은 블록: %4$s",
+  "flan.listClaims": "모든 영토 목록:",
+  "flan.listAdminClaims": "%1$s의 모든 관리자 영토 목록:",
+  "flan.onlyOnePlayer": "매개변수로 하나의 플레이어만 사용할 수 있습니다",
+  "flan.ownerTransferSuccess": "이제 새 영토 소유자는 %1$s입니다",
+  "flan.ownerTransferFail": "영토 소유자만이 영토를 양도할 수 있습니다",
+  "flan.ownerTransferNoBlocks": "새 영토 소유자에게 충분한 영토 블록이 없습니다",
+  "flan.ownerTransferNoBlocksAdmin": "관리자 모드로 전환하여 이 기능을 비활성화할 수 있습니다",
+  "flan.noPermission": "여기에서 이 작업을 수행할 권한이 없습니다!",
+  "flan.noPermissionSimple": "죄송합니다. 여기에서 이 작업을 수행할 수 없습니다!",
+  "flan.noPermissionTooClose": "죄송합니다. 이곳은 영토에 너무 가깝습니다!",
+  "flan.tooCloseClaim": "이곳은 보호된 지역에 너무 가깝습니다!",
+  "flan.configReload": "플러그인 구성이 다시 로드되었습니다",
+  "flan.cantClaimHere": "죄송합니다. 이곳을 영토로 설정할 수 없습니다",
+  "flan.minClaimSize": "영토가 너무 작습니다. 최소 영토 크기는 %d입니다",
+  "flan.maxClaims": "최대 영토 수에 도달했습니다",
+  "flan.landClaimDisabledWorld": "이 세계에서는 영토 기능이 비활성화되었습니다",
+  "flan.editMode": "편집 모드가 %1$s로 설정되었습니다",
+  "flan.notEnoughBlocks": "충분한 영토 블록이 없습니다",
+  "flan.conflictOther": "이 영토는 다른 영토와 겹칩니다",
+  "flan.wrongMode": "잘못된 영토 모드입니다. 현재 %1$s 모드에 있습니다",
+  "flan.stringScreenReturn": "손에 든 종이를 클릭하여 돌아가기",
+  "flan.groupAdd": "그룹 %1$s이(가) 추가되었습니다",
+  "flan.groupRemove": "그룹 %1$s이(가) 삭제되었습니다",
+  "flan.groupExist": "이 그룹은 이미 존재합니다",
+  "flan.uuidFakeAdd": "영토에 uuid %1$s의 가짜 플레이어가 추가되었습니다",
+  "flan.uuidFakeRemove": "영토에서 uuid %1$s의 가짜 플레이어가 삭제되었습니다",
+  "flan.uuidFakeModifyNo": "uuid가 있는 가짜 플레이어가 이미 추가되었습니다",
+  "flan.playerModify": "다음 플레이어의 권한 그룹이 수정되었습니다: %1$s: %2$s",
+  "flan.playerModifyNo": "이 플레이어의 권한 그룹을 수정할 수 없습니다. 플레이어가 이미 그룹에 속해 있을 수 있습니다",
+  "flan.playerGroupAddFail": "이 플레이어를 그룹에 추가할 수 없습니다. 플레이어가 이미 그룹에 속해 있거나 해당 이름과 일치하는 플레이어를 찾을 수 없기 때문일 수 있습니다",
+  "flan.resizeClaim": "영토 크기를 재설정 중입니다",
+  "flan.resizeSuccess": "영토 크기가 재설정되었습니다",
+  "flan.claimCreateSuccess": "새 영토가 생성되었습니다",
+  "flan.subClaimCreateSuccess": "새 하위 영토가 생성되었습니다",
+  "flan.deleteClaim": "영토가 삭제되었습니다",
+  "flan.deleteAllClaimConfirm": "모든 영토를 삭제하시겠습니까? 확인하려면 다시 입력하세요",
+  "flan.deleteAllClaim": "모든 영토가 삭제되었습니다",
+  "flan.deleteClaimError": "여기에서 이 영토를 삭제할 수 없습니다",
+  "flan.deleteSubClaim": "하위 영토가 삭제되었습니다",
+  "flan.deleteSubClaimAll": "모든 주 영토 아래의 하위 영토가 삭제되었습니다",
+  "flan.noSuchPerm": "충분한 권한이 없습니다: %1$s",
+  "flan.editPerm": "%1$s이(가) 이제 %2$s로 설정되었습니다",
+  "flan.editPermGroup": "%1$s의 %2$s이(가) 이제 %3$s로 설정되었습니다",
+  "flan.editPersonalGroup": "%2$s 그룹의 기본 권한 %1$s이(가) 이제 %3$s로 설정되었습니다",
+  "flan.adminMode": "관리자 모드 (영토 제외)가: %1$s로 설정되었습니다",
+  "flan.adminDeleteAll": "다음 플레이어의 모든 영토가 삭제되었습니다: %1$s",
+  "flan.setAdminClaim": "이 영토의 관리자는 이제: %1$s",
+  "flan.readGriefpreventionData": "GriefPrevention 플러그인에서 데이터를 읽어옴",
+  "flan.readGriefpreventionClaimDataSuccess": "영토 데이터를 성공적으로 읽어왔습니다",
+  "flan.readGriefpreventionPlayerDataSuccess": "플레이어 데이터를 성공적으로 읽어왔습니다",
+  "flan.cantFindData": "%1$s에서 Griefprevention 플러그인 데이터를 찾을 수 없습니다",
+  "flan.errorFile": "파일 읽기 오류: %1$s",
+  "flan.readConflict": "%1$s이(가) 기존 영토와 충돌합니다. 세계에 추가할 수 없습니다! 충돌하는 영토:",
+  "flan.giveClaimBlocks": "다음 플레이어에게 %2$s 영토 블록을 부여했습니다: %1$s",
+  "flan.fakePlayerNotification1": "가짜 플레이어가 %2$s에서 %1$s와(과) 상호작용하려 했습니다",
+  "flan.fakePlayerNotification2": "영토에 가짜 플레이어를 추가하려면 %s를 클릭하세요",
+  "flan.clickableComponent": "여기",
+  "flan.fakePlayerNotification3": "이 알림을 비활성화하려면 %s를 클릭하세요.",
+  "flan.fakePlayerNotification": "가짜 플레이어 알림이 %s로 설정되었습니다",
+  "flan.claimBasicInfo": "영토 소유자: %1$s, 시작,x=%2$s,z=%3$s] 끝,x=%4$s,z=%5$s]); 하위 영토 수: %6$s",
+  "flan.claimBasicInfoNamed": "영토: %7$s, 소유자: %1$s, 시작,x=%2$s,z=%3$s] 끝,x=%4$s,z=%5$s]); 하위 영토 수: %6$s",
+  "flan.claimSubHeader": "==하위 영토 정보==",
+  "flan.claimBasicInfoSub": "영토 소유자: %1$s, 시작,x=%2$s,z=%3$s] 끝,x=%4$s,z=%5$s]",
+  "flan.claimBasicInfoSubNamed": "영토: %6$s, 소유자: %1$s, 시작,x=%2$s,z=%3$s] 끝,x=%4$s,z=%5$s]",
+  "flan.claimInfoPerms": "권한: %1$s",
+  "flan.claimGroupInfoHeader": "그룹: ",
+  "flan.claimGroupPerms": "    권한: %1$s",
+  "flan.claimGroupPlayers": "    그룹 내 플레이어: %1$s",
+  "flan.helpHeader": "사용 가능한 하위 명령어 (페이지 %d):",
+  "flan.helpCmdHeader": "====================",
+  "flan.helpCmdSyntax": "구문: %1$s",
+  "flan.screenEnableText": "사용 여부: %1$s",
+  "flan.screenUneditable": "편집할 수 없습니다!",
+  "flan.screenClose": "닫기",
+  "flan.screenNext": "다음 페이지",
+  "flan.screenPrevious": "이전 페이지",
+  "flan.screenAdd": "추가",
+  "flan.screenBack": "뒤로",
+  "flan.screenNoPerm": "권한 없음",
+  "flan.screenFalse": "비활성화",
+  "flan.screenTrue": "활성화",
+  "flan.screenDefault": "기본값",
+  "flan.screenMenu": "영토 메뉴",
+  "flan.screenMenuSub": "하위 영토 메뉴",
+  "flan.screenMenuGlobal": "전역 권한 편집",
+  "flan.screenMenuGroup": "권한 그룹 편집",
+  "flan.screenMenuPotion": "영토 내 플레이어에 대한 추가 효과 편집",
+  "flan.screenMenuClaimText": "영토 입/퇴장 시 표시되는 텍스트 편집",
+  "flan.screenMenuFakePlayers": "가짜 플레이어",
+  "flan.screenMenuDelete": "영토 삭제",
+  "flan.screenConfirm": "확인",
+  "flan.screenYes": "예",
+  "flan.screenNo": "아니오",
+  "flan.screenGroupPlayers": "%1$s-플레이어",
+  "flan.screenRemoveMode": "삭제 모드: %1$s",
+  "flan.screenGlobalPerms": "전역 권한",
+  "flan.screenGroupName": "%s",
+  "flan.screenGroups": "영토 그룹",
+  "flan.screenGroupPerms": "%1$s-권한",
+  "flan.screenPersonalGroups": "개인 그룹",
+  "flan.screenPersonalPermissions": "%1$s의 개인 그룹",
+  "flan.screenFakePlayerNameUUID": "%s",
+  "flan.screenPotions": "영토 추가 효과",
+  "flan.screenPotionText": "%s",
+  "flan.screenTitleEditor": "영토 텍스트",
+  "flan.screenTitleEditorSub": "하위 영토 텍스트",
+  "flan.screenTextJson": "JSON 텍스트를 사용하려면 마우스 오른쪽 버튼을 클릭하세요. 사용 방법을 모르겠다면 Minecraft Wiki에서 검색하세요",
+  "flan.screenEnterText": "영토 입장 시 주 텍스트 편집",
+  "flan.screenEnterSubText": "영토 입장 시 부 텍스트 편집",
+  "flan.screenLeaveText": "영토 퇴장 시 주 텍스트 편집",
+  "flan.screenLeaveSubText": "영토 입장 시 부 텍스트 편집",
+  "flan.screenDelete": "\"$empty\"를 사용하여 텍스트를 삭제하세요",
+  "flan.chatClaimTextEdit": "[명령어를 사용하려면 마우스 오른쪽 버튼을 클릭하세요]",
+  "flan.sellDisabled": "영토 블록 판매가 현재 비활성화되었습니다",
+  "flan.buyDisabled": "영토 블록 구매가 현재 비활성화되었습니다",
+  "flan.sellFail": "판매할 영토 블록이 충분하지 않습니다",
+  "flan.buyFail": "충분한 돈이 없습니다",
+  "flan.buyFailItem": "충분한 아이템이 없습니다",
+  "flan.buyFailXP": "충분한 경험치가 없습니다",
+  "flan.sellSuccess": "%2$s의 통화로 %1$s의 영토 블록을 판매했습니다",
+  "flan.sellSuccessItem": "%3$s x%2$s의 아이템으로 %1$s의 영토 블록을 판매했습니다",
+  "flan.sellSuccessXP": "%2$s의 경험치로 %1$s의 영토 블록을 판매했습니다",
+  "flan.buySuccess": "%2$s의 통화로 %1$s의 영토 블록을 구매했습니다",
+  "flan.buySuccessItem": "%2$s의 아이템으로 %1$s의 영토 블록을 구매했습니다",
+  "flan.buySuccessXP": "%2$s의 경험치로 %1$s의 영토 블록을 구매했습니다",
+  "flan.currencyMissing": "지원되는 통화 모듈이 없습니다",
+  "flan.trappedRescue": "구조 중입니다. 5초 동안 제자리에 있으세요",
+  "flan.trappedFail": "구조 중에 다시 구조를 실행할 필요가 없습니다",
+  "flan.trappedMove": "이동했습니다. 텔레포트를 거부합니다",
+  "flan.unlockDropsCmd": "현재 떨어진 아이템이 보호되었습니다. %1$s를 사용하여 다른 플레이어가 이 아이템을 잠금 해제할 수 있습니다",
+  "flan.unlockDrops": "떨어진 아이템이 %1$s 틱 내에 잠금 해제되었습니다",
+  "flan.unlockDropsMulti": "%1$s의 떨어진 아이템을 잠금 해제했습니다",
+  "flan.claimNameSet": "영토 이름이 이제 %1$s로 설정되었습니다",
+  "flan.claimNameUsed": "이 영토의 소유자는 이미 같은 이름의 영토를 가지고 있습니다",
+  "flan.claimNameUsedSub": "이 영토의 하위 영토 중 하나가 이미 이 이름을 사용 중입니다",
+  "flan.setHome": "집 영토가 [x=%1$s,y=%2$s,z=%3$s]로 설정되었습니다",
+  "flan.teleportHome": "집으로 텔레포트 중입니다. 5초 동안 이동하지 마세요",
+  "flan.teleportHomeFail": "이미 텔레포트 중입니다",
+  "flan.setEnterMessage": "영토 입장 시 제목 텍스트가 %1$s로 설정되었습니다",
+  "flan.setEnterSubMessage": "영토 입장 시 부제목 텍스트가 %1$s로 설정되었습니다",
+  "flan.setLeaveMessage": "영토 퇴장 시 제목 텍스트가 %1$s로 설정되었습니다",
+  "flan.setLeaveSubMessage": "영토 퇴장 시 부제목 텍스트가 %1$s로 설정되었습니다",
+  "flan.wiki": "위키를 참조하세요:",
+  "flan.permission.flan:edit_claim.desc.0": "영토 편집 (예: 크기 재설정, 삭제 등) 권한 부여",
+  "flan.permission.flan:edit_perms.desc.0": "영토 권한 수정 권한 부여",
+  "flan.permission.flan:edit_potions.desc.0": "영토 내 추가 효과 수정 권한 부여",
+  "flan.permission.flan:break.desc.0": "영토 내 블록 파괴 권한 부여",
+  "flan.permission.flan:place.desc.0": "영토 내 블록 설치 권한 부여",
+  "flan.permission.flan:open_container.desc.0": "컨테이너 열기 권한",
+  "flan.permission.flan:open_container.desc.1": "(예: 상자, 용광로 등)",
+  "flan.permission.flan:interact_block.desc.0": "블록 상호작용 일반 권한",
+  "flan.permission.flan:interact_block.desc.1": "OPENCONTAINER에 해당",
+  "flan.permission.flan:interact_block.desc.2": "OPENCONTAINER에서 검사되지 않는 블록을 사용 가능 상태로 설정",
+  "flan.permission.flan:anvil.desc.0": "모루 사용 권한",
+  "flan.permission.flan:bed.desc.0": "침대 사용 권한",
+  "flan.permission.flan:beacon.desc.0": "비콘 사용 권한",
+  "flan.permission.flan:door.desc.0": "문 사용 권한",
+  "flan.permission.flan:fence_gate.desc.0": "울타리 문 사용 권한",
+  "flan.permission.flan:trapdoor.desc.0": "함정 문 사용 권한",
+  "flan.permission.flan:button_lever.desc.0": "레버 및 버튼 사용 권한",
+  "flan.permission.flan:pressure_plate.desc.0": "압력판 사용 권한",
+  "flan.permission.flan:noteblock.desc.0": "노트 블록 음색/음조 변경 권한",
+  "flan.permission.flan:redstone.desc.0": "레드스톤 구성 요소 변경 권한",
+  "flan.permission.flan:jukebox.desc.0": "음악 디스크 삽입/제거 권한",
+  "flan.permission.flan:enderchest.desc.0": "엔더 상자 사용 권한",
+  "flan.permission.flan:enchantment.desc.0": "마법 부여대 사용 권한",
+  "flan.permission.flan:itemframe_rotate.desc.0": "아이템 액자 내 아이템 각도 변경 권한",
+  "flan.permission.flan:lectern_take.desc.0": "독서대에서 책을 변경할 권한",
+  "flan.permission.flan:endcrystal_place.desc.0": "엔드 크리스탈 설치 권한",
+  "flan.permission.flan:target_block.desc.0": "표적 블록 활성화 권한",
+  "flan.permission.flan:projectiles.desc.0": "발사체 권한",
+  "flan.permission.flan:projectiles.desc.1": "블록 상호작용 (예: 화살로 버튼 쏘기)",
+  "flan.permission.flan:trample.desc.0": "밟을 수 있는 블록 권한",
+  "flan.permission.flan:trample.desc.1": "(예: 밭, 거북알)",
+  "flan.permission.flan:frost_walker.desc.0": "프로스트 워커 마법 부여 효과 권한",
+  "flan.permission.flan:portal.desc.0": "네더 포탈 사용 권한",
+  "flan.permission.flan:raid.desc.0": "영토 내에서 마을 습격 발생 권한",
+  "flan.permission.flan:raid.desc.1": "영토 외부에서 발생하는 마을 습격은 방지되지 않습니다",
+  "flan.permission.flan:boat.desc.0": "보트 탑승 권한",
+  "flan.permission.flan:minecart.desc.0": "광산 수레 탑승 권한",
+  "flan.permission.flan:bucket.desc.0": "버킷을 사용하여 액체를 담는 권한",
+  "flan.permission.flan:ender_pearl.desc.0": "엔더 진주 사용 권한",
+  "flan.permission.flan:chorus_fruit.desc.0": "코러스 과일 섭취 권한",
+  "flan.permission.flan:animal_interact.desc.0": "동물과 상호작용 권한",
+  "flan.permission.flan:animal_interact.desc.1": "(예: 양털 깎기)",
+  "flan.permission.flan:hurt_animal.desc.0": "동물 공격 권한",
+  "flan.permission.flan:xp.desc.0": "경험치 구슬 흡수 권한",
+  "flan.permission.flan:trading.desc.0": "마을 주민과 거래 권한",
+  "flan.permission.flan:armorstand.desc.0": "갑옷 거치대와 상호작용 권한",
+  "flan.permission.flan:break_non_living.desc.0": "광산 수레, 갑옷 거치대와 같은 비생물 개체 파괴 권한",
+  "flan.permission.flan:drop.desc.0": "아이템 버리기 권한",
+  "flan.permission.flan:pickup.desc.0": "아이템 줍기 권한",
+  "flan.permission.flan:flight.desc.0": "크리에이티브 모드가 아닌 상태에서 비행 허용",
+  "flan.permission.flan:can_stay.desc.0": "플레이어가 영토에 들어올 수 있도록 허용",
+  "flan.permission.flan:teleport.desc.0": "플레이어가 영토의 집 텔레포트 지점으로 이동할 수 있도록 허용",
+  "flan.permission.flan:no_hunger.desc.0": "배고픔 감소 비활성화",
+  "flan.permission.flan:claim_message.desc.0": "영토 입/퇴장 시 표시되는 메시지 수정 권한",
+  "flan.permission.flan:player_mob_spawn.desc.0": "플레이어에 의해 소환된 개체 권한",
+  "flan.permission.flan:player_mob_spawn.desc.1": "예: 가디언, 엔더마이트",
+  "flan.permission.flan:sculk.desc.0": "플레이어에 의해 활성화된 스컬크 센서 권한",
+  "flan.permission.flan:sculk.desc.1": "스컬크 센서는 PLAYERMOBSPAWN 하에 처리됩니다",
+  "flan.permission.flan:hurt_player.desc.0": "플레이어 공격 권한",
+  "flan.permission.flan:explosions.desc.0": "영토 내에서 폭발 허용",
+  "flan.permission.flan:wither.desc.0": "영토 내에서 위더가 블록을 파괴하도록 허용",
+  "flan.permission.flan:enderman.desc.0": "영토 내에서 엔더맨이 블록을 줍고 놓을 수 있도록 허용",
+  "flan.permission.flan:snow_golem.desc.0": "눈 골렘이 발 밑에 눈 깔기 허용",
+  "flan.permission.flan:fire_spread.desc.0": "영토 내에서 불이 번지도록 허용",
+  "flan.permission.flan:water_border.desc.0": "액체가 영토 경계를 넘어 흐르도록 허용",
+  "flan.permission.flan:piston_border.desc.0": "피스톤이 영토 경계를 넘어서 밀고 당기도록 허용",
+  "flan.permission.flan:mob_spawn.desc.0": "영토 내에서 적대적 개체 생성 방지",
+  "flan.permission.flan:animal_spawn.desc.0": "영토 내에서 기타 개체 생성 방지",
+  "flan.permission.flan:lightning.desc.0": "조명 블록이 영토 내 블록에 영향을 미치도록 허용",
+  "flan.permission.flan:lightning.desc.1": "예: 불이 번지게 하기",
+  "flan.permission.flan:lightning.desc.2": "또는 동물에 영향을 미치기 (개체 제외)",
+  "flan.permission.flan:lock_items.desc.0": "플레이어가 사망한 후 아이템 잠금 여부",
+  "flan.permission.flan:fake_player.desc.0": "영토 내에서 가짜 플레이어와 상호작용 허용",
+  "flan.permission.flan:fake_player.desc.1": "일부 모드에서 가짜 플레이어는 사용자의 uuid를 가질 수 있습니다",
+  "flan.permission.flan:fake_player.desc.2": "이 경우 이 권한이 필요하지 않습니다",
+  "flan.command.help.0": "help <page> | (cmd <command>)",
+  "flan.command.help.1": "지정된 명령어에 대한 모든 사용 가능한 명령어 또는 정보 표시",
+  "flan.command.menu.0": "menu",
+  "flan.command.menu.1": "영토 메뉴에 대한 권한이 있을 때 사용",
+  "flan.command.claimInfo.0": "claimInfo",
+  "flan.command.claimInfo.1": "현재 위치한 영토의 정보를 표시",
+  "flan.command.delete.0": "delete",
+  "flan.command.delete.1": "현재 영토 삭제",
+  "flan.command.deleteAll.0": "deleteAll",
+  "flan.command.deleteAll.1": "모든 영토 삭제 (안전한 삭제를 위해 두 번 입력해야 합니다)",
+  "flan.command.deleteSubClaim.0": "deleteSubClaim",
+  "flan.command.deleteSubClaim.1": "현재 하위 영토 삭제",
+  "flan.command.deleteAllSubClaims.0": "deleteAllSubClaims",
+  "flan.command.deleteAllSubClaims.1": "현재 주 영토 아래의 모든 하위 영토 삭제",
+  "flan.command.list.0": "list <player>",
+  "flan.command.list.1": "모든 소유 영토 목록 표시. (서버 관리자는 다른 플레이어의 영토를 볼 수 있음)",
+  "flan.command.switchMode.0": "switchMode",
+  "flan.command.switchMode.1": "주/하위 영토 모드 간 전환",
+  "flan.command.group.0": "group (add | remove <name>) | (players add | remove <player> [overwrite])",
+  "flan.command.group.1": "- 이름으로 그룹 추가/제거. 영토 메뉴에서 편집할 수도 있음",
+  "flan.command.group.2": "- 그룹 내 플레이어 추가/제거 (덮어쓰기를 선택하면 현재 그룹의 플레이어를 덮어씀, 그렇지 않으면 아무 작업도 하지 않음)",
+  "flan.command.transferClaim.0": "transferClaim <player>",
+  "flan.command.transferClaim.1": "지정된 플레이어에게 영토 소유권을 양도. 소유자만 사용할 수 있음",
+  "flan.command.addClaim.0": "addClaim (<x y z> <x y z>) | all | (rect x z)",
+  "flan.command.addClaim.1": "지정된 위치에 영토 생성 (영토 도구 사용과 동일한 효과)",
+  "flan.command.addClaim.2": "<all> 남은 모든 블록을 사용하여 플레이어 중심의 직사각형 영토 생성",
+  "flan.command.addClaim.3": "<rect> 플레이어 중심의 직사각형 영토 생성",
+  "flan.command.permission.0": "permission {global | (group <name>) | (personal <name>)} <permission> true | false | default",
+  "flan.command.permission.1": "전역/그룹/개인 권한 설정. 영토 메뉴에서 편집 가능 (그룹 편집의 경우)",
+  "flan.command.personalGroups.0": "personalGroups",
+  "flan.command.personalGroups.1": "개인 그룹 편집 메뉴 열기",
+  "flan.command.sellBlocks.0": "sellBlocks <amount>",
+  "flan.command.sellBlocks.1": "<amount> 만큼의 영토 블록 판매. 화약을 통화로 사용",
+  "flan.command.buyBlocks.0": "buyBlocks <amount>",
+  "flan.command.buyBlocks.1": "<amount> 만큼의 영토 블록 구매. 화약을 통화로 사용",
+  "flan.command.trapped.0": "trapped",
+  "flan.command.trapped.1": "플레이어가 자신의 영토가 아닌 곳에 갇힌 경우, 5초 후 탈출 시도",
+  "flan.command.unlockDrops.0": "unlockDrops <players>",
+  "flan.command.unlockDrops.1": "사망 시 떨어진 아이템의 잠금을 해제하여 다른 플레이어가 주울 수 있도록 함. 또는 지정된 모든 플레이어 (관리자 권한 필요)",
+  "flan.command.setHome.0": "setHome",
+  "flan.command.setHome.1": "충분한 권한이 있는 영토에서 집 위치 설정",
+  "flan.command.teleport.0": "teleport self | admin | (other <player>) (<claim name> | <claim uuid>)",
+  "flan.command.teleport.1": "지정된 영토 집 위치로 텔레포트. admin을 사용하여 관리자 영토로 이동",
+  "flan.command.name.0": "name self <name>",
+  "flan.command.name.1": "현재 영토 이름 설정",
+  "flan.command.claimMessage.0": "claimMessage (enter | leave) (title | subtitle) (string | text) <value>",
+  "flan.command.claimMessage.1": "영토 메시지 설정. \"$empty\"를 사용하여 메시지 삭제",
+  "flan.command.reload.0": "reload",
+  "flan.command.reload.1": "게임 내 플러그인 구성 재설정",
+  "flan.command.adminMode.0": "adminMode",
+  "flan.command.adminMode.1": "관리자 모드로 전환, 모든 영토 무시",
+  "flan.command.readGriefPrevention.0": "readGriefPreventionData",
+  "flan.command.readGriefPrevention.1": "GriefPrevention 플러그인 데이터를 flan으로 변환",
+  "flan.command.setAdminClaim.0": "setAdminClaim",
+  "flan.command.setAdminClaim.1": "영토를 관리자 영토로 설정",
+  "flan.command.listAdminClaims.0": "listAdminClaim",
+  "flan.command.listAdminClaims.1": "현재 세계의 모든 관리자 영토 목록",
+  "flan.command.adminDelete.0": "adminDelete [all <player>]",
+  "flan.command.adminDelete.1": "현재 영토를 강제로 삭제하거나 지정된 플레이어의 모든 영토를 삭제",
+  "flan.command.giveClaimBlocks.0": "giveClaimBlocks <amount>",
+  "flan.command.giveClaimBlocks.1": "플레이어에게 추가 영토 블록 부여"
 }
