@@ -193,6 +193,19 @@ public class ItemInteractEvents {
         return null;
     }
 
+    public static boolean canPlayerClaim(ServerLevel level, ServerPlayer player) {
+        PlayerClaimData data = PlayerClaimData.get(player);
+        if (data.isAdminIgnoreClaim())
+            return true;
+        if (!PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.claimCreate, false)) {
+            return false;
+        }
+        if (ConfigHandler.CONFIG.worldWhitelist) {
+            return cantClaimInWorld(level);
+        }
+        return !cantClaimInWorld(level);
+    }
+
     public static void claimLandHandling(ServerPlayer player, BlockPos target) {
         if (!PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.claimCreate, false)) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), true);
