@@ -1,3 +1,26 @@
+Flan 1.11.0
+================
+- Reworked how language/translations are handled
+  - Will now respect the players language on the client. At least if the server also has the language
+- Add patrol and phantom to mob spawn check on fabric
+- Added 3d claims (both main and subclaims)! woo
+  - 3d and 2d claims cannot overlap regardless what height the 3d claim would be
+  - Switch to 3d claim mode via `/flan use3d`
+  - 3d claim height to NOT use up claimblocks
+  - 3d claims will NOT auto extend down like 2d claims
+  - All current claims are 2d and untouched by this change
+- Added pointer indicator when holding claim tool making it more clear where you are aiming
+- Moved custom permission config to a datapack system. Allows mods to change this without depending on flan
+  - Affects following config options: `customItemPermission`, `customBlockPermission`, `customEntityPermission`, `leftClickBlockPermission`
+  - To use define a file under `data/claim_interactions_override`. 
+  - Define a mapping of entry - permission. Use `#`-prefix for tags. See the builtin overrides for examples
+  - Supported types: 
+    - `flan:block_left_click`: Left clicking blocks
+    - `flan:block_interact`: Interacting with a block (not just right click but collision etc. too) 
+    - `flan:item_use`, `flan:entity_attack`, `flan:entity_interact`
+  - Non tag entries take priority over tags 
+- Fix BlueMap claim indicator bounds
+
 Flan 1.10.10
 ================
 - Fix nullpointer with claim name and admin claims
