@@ -42,7 +42,8 @@ public class ClientBlockDisplayTracker {
         Set<DisplayData> diff;
         if (current != null) {
             diff = Sets.difference(current, blocks);
-            diff.forEach(d -> this.player.connection.send(new ClientboundBlockUpdatePacket(d.pos, this.player.level().getBlockState(d.pos))));
+            if (!diff.isEmpty())
+                this.resetBlocks(id, diff);
         }
         for (DisplayData data : blocks) {
             this.player.connection.send(new ClientboundBlockUpdatePacket(data.pos, data.state));
@@ -55,30 +56,34 @@ public class ClientBlockDisplayTracker {
     public void resetFakeBlocks(UUID id) {
         Set<DisplayData> current = this.fakeBlocks.remove(id);
         if (current != null) {
-            current.forEach(d -> {
-                List<UUID> stateLookup = this.lookup.get(d.pos);
-                BlockState state = null;
-                // Restore overwritten fakeblocks if possible
-                if (stateLookup != null) {
-                    stateLookup.removeIf(i -> i.equals(id));
-                    if (!stateLookup.isEmpty()) {
-                        Set<DisplayData> others = this.fakeBlocks.get(stateLookup.get(stateLookup.size() - 1));
-                        if (others != null) {
-                            for (DisplayData o : others) {
-                                if (o.pos.equals(d.pos)) {
-                                    state = o.state;
-                                    break;
-                                }
+            this.resetBlocks(id, current);
+        }
+    }
+
+    private void resetBlocks(UUID id, Set<DisplayData> blocks) {
+        blocks.forEach(d -> {
+            List<UUID> stateLookup = this.lookup.get(d.pos);
+            BlockState state = null;
+            // Restore overwritten fakeblocks if possible
+            if (stateLookup != null) {
+                stateLookup.removeIf(i -> i.equals(id));
+                if (!stateLookup.isEmpty()) {
+                    Set<DisplayData> others = this.fakeBlocks.get(stateLookup.get(stateLookup.size() - 1));
+                    if (others != null) {
+                        for (DisplayData o : others) {
+                            if (o.pos.equals(d.pos)) {
+                                state = o.state;
+                                break;
                             }
                         }
                     }
-                    if (stateLookup.isEmpty()) {
-                        this.lookup.remove(d.pos);
-                    }
                 }
-                this.player.connection.send(new ClientboundBlockUpdatePacket(d.pos, state == null ? this.player.level().getBlockState(d.pos) : state));
-            });
-        }
+                if (stateLookup.isEmpty()) {
+                    this.lookup.remove(d.pos);
+                }
+            }
+            this.player.connection.send(new ClientboundBlockUpdatePacket(d.pos, state == null ? this.player.level().getBlockState(d.pos) : state));
+        });
     }
 
     public record DisplayData(BlockPos pos, BlockState state) {
