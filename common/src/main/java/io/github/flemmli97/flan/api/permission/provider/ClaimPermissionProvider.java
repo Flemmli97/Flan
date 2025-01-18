@@ -1,9 +1,11 @@
-package io.github.flemmli97.flan.api.permission;
+package io.github.flemmli97.flan.api.permission.provider;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.api.permission.ClaimPermission;
+import io.github.flemmli97.flan.api.permission.PermissionManager;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;

@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import eu.pb4.common.protection.api.CommonProtection;
 import eu.pb4.common.protection.api.ProtectionProvider;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
-import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
+import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
@@ -96,7 +96,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
-        ResourceLocation perm = ObjectToPermissionMap.getFromBlock(sl.getBlockState(pos).getBlock());
+        ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract(sl.getBlockState(pos).getBlock());
 
         if (perm != null && perm.equals(BuiltinPermission.PROJECTILES))
             perm = BuiltinPermission.OPENCONTAINER;

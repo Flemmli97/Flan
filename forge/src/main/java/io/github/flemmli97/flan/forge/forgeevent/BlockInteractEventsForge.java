@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.forge.forgeevent;
 
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
-import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
+import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.event.BlockInteractEvents;
@@ -75,7 +75,7 @@ public class BlockInteractEventsForge {
         IPermissionContainer claim = storage.getForPermissionCheck(placePos);
         if (claim == null)
             return false;
-        ResourceLocation perm = ObjectToPermissionMap.getFromBlock(placedBlock.getBlock());
+        ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract(placedBlock.getBlock());
         if (perm != null) {
             if (!claim.canInteract(player, perm, placePos, false)) {
                 player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);

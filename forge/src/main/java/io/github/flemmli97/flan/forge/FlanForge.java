@@ -1,6 +1,7 @@
 package io.github.flemmli97.flan.forge;
 
 import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.forge.forgeevent.BlockInteractEventsForge;
 import io.github.flemmli97.flan.forge.forgeevent.EntityInteractEventsForge;
@@ -68,5 +69,6 @@ public class FlanForge {
 
     public void addReloadListener(AddReloadListenerEvent event) {
         event.addListener(PermissionManager.INSTANCE);
+        event.addListener(InteractionOverrideManager.INSTANCE);
     }
 }

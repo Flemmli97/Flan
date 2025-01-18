@@ -1,0 +1,21 @@
+{
+  "type": "flan:block_left_click",
+  "values": [
+    {
+      "entry": "mekanism:basic_bin",
+      "permission": "flan:open_container"
+    },
+    {
+      "entry": "mekanism:advanced_bin",
+      "permission": "flan:open_container"
+    },
+    {
+      "entry": "mekanism:ultimate_bin",
+      "permission": "flan:open_container"
+    },
+    {
+      "entry": "mekanism:creative_bin",
+      "permission": "flan:open_container"
+    }
+  ]
+}

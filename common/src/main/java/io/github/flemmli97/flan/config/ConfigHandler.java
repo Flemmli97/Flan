@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -26,9 +25,8 @@ public class ConfigHandler {
     private static final Map<ResourceKey<Level>, Path> CLAIM_SAVE_PATH = new HashMap<>();
     private static Path playerSavePath;
 
-    public static void reloadConfigs(MinecraftServer server) {
+    public static void reloadConfigs() {
         CONFIG.load();
-        ObjectToPermissionMap.reload(server);
     }
 
     public static Path getClaimSavePath(MinecraftServer server, ResourceKey<Level> reg) {

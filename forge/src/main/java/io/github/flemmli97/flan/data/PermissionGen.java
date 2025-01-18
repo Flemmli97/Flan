@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.data;
 
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
-import io.github.flemmli97.flan.api.permission.ClaimPermissionProvider;
+import io.github.flemmli97.flan.api.permission.provider.ClaimPermissionProvider;
 import io.github.flemmli97.flan.platform.integration.create.CreateCompat;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;

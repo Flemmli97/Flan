@@ -1,15 +1,6 @@
 package io.github.flemmli97.flan.api.permission;
 
-import com.mojang.datafixers.util.Pair;
-import io.github.flemmli97.flan.Flan;
-import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.platform.CrossPlatformStuff;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.BrushItem;
@@ -46,10 +37,7 @@ import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.TurtleEggBlock;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -58,106 +46,27 @@ import java.util.function.Supplier;
  */
 public class ObjectToPermissionMap {
 
-    private static final Map<Block, ResourceLocation> blockToPermission = new HashMap<>();
-    private static final Map<Predicate<Block>, Supplier<ResourceLocation>> blockPermissionBuilder = new HashMap<>();
-
-    private static final Map<Item, ResourceLocation> itemToPermission = new HashMap<>();
-    private static final Map<Predicate<Item>, Supplier<ResourceLocation>> itemPermissionBuilder = new HashMap<>();
-
-    private static final Map<EntityType<?>, ResourceLocation> entityToPermission = new HashMap<>();
-
-    private static final Map<Block, ResourceLocation> leftClickBlockPermission = new HashMap<>();
-
-    public static void reload(MinecraftServer server) {
-        blockToPermission.clear();
-        itemToPermission.clear();
-        entityToPermission.clear();
-        leftClickBlockPermission.clear();
-        for (Block block : CrossPlatformStuff.INSTANCE.registryBlocks().getIterator()) {
-            blockPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(block)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> blockToPermission.put(block, sub.get()));
-        }
-        for (Item item : CrossPlatformStuff.INSTANCE.registryItems().getIterator()) {
-            itemPermissionBuilder.entrySet().stream().filter(e -> e.getKey().test(item)).map(Map.Entry::getValue).findFirst().ifPresent(sub -> itemToPermission.put(item, sub.get()));
-        }
-        process(ConfigHandler.CONFIG.itemPermission, BuiltInRegistries.ITEM, itemToPermission);
-        process(ConfigHandler.CONFIG.blockPermission, BuiltInRegistries.BLOCK, blockToPermission);
-        process(ConfigHandler.CONFIG.entityPermission, BuiltInRegistries.ENTITY_TYPE, entityToPermission);
-        process(ConfigHandler.CONFIG.leftClickBlockPermission, BuiltInRegistries.BLOCK, leftClickBlockPermission);
-    }
-
-    private static <T> void process(List<String> list, Registry<T> registry, Map<T, ResourceLocation> map) {
-        for (String s : list) {
-            String[] sub = s.split("-");
-            boolean remove = sub[1].equals("NONE");
-            if (s.startsWith("@")) {
-                ResourceLocation res = new ResourceLocation(sub[0].substring(1));
-                processTag(res, registry, b -> {
-                    if (remove)
-                        map.remove(b);
-                    else {
-                        ResourceLocation id = BuiltinPermission.tryLegacy(sub[1]);
-                        ClaimPermission perm = PermissionManager.INSTANCE.get(id);
-                        if (perm == null)
-                            Flan.error("Configuring custom permission map: No such permission for {}", sub[1]);
-                        map.put(b, id);
-                    }
-                });
-            } else {
-                if (remove)
-                    map.remove(registry.get(new ResourceLocation(sub[0])));
-                else {
-                    ResourceLocation id = BuiltinPermission.tryLegacy(sub[1]);
-                    ClaimPermission perm = PermissionManager.INSTANCE.get(id);
-                    if (perm == null)
-                        Flan.error("Configuring custom permission map: No such permission for {} {}", sub[1], id);
-                    map.put(registry.get(new ResourceLocation(sub[0])), id);
-                }
-            }
-        }
-    }
-
-    private static <T> void processTag(ResourceLocation tag, Registry<T> registry, Consumer<T> action) {
-        Optional<HolderSet.Named<T>> t = registry.getTags().filter(p -> p.getFirst().location().equals(tag))
-                .map(Pair::getSecond).findFirst();
-        t.ifPresent(holders -> holders.forEach(i -> action.accept(i.value())));
-    }
-
-    public static ResourceLocation getFromBlock(Block block) {
-        return blockToPermission.get(block);
-    }
-
-    public static ResourceLocation getFromItem(Item item) {
-        return itemToPermission.get(item);
-    }
-
-    public static ResourceLocation getFromEntity(EntityType<?> entity) {
-        return entityToPermission.get(entity);
-    }
-
-    public static ResourceLocation getForLeftClickBlock(Block block) {
-        return leftClickBlockPermission.get(block);
-    }
+    public static final Map<Predicate<Block>, Supplier<ResourceLocation>> BLOCK_PERMISSION_BUILDER = new HashMap<>();
+    public static final Map<Predicate<Item>, Supplier<ResourceLocation>> ITEM_PERMISSION_BUILDER = new HashMap<>();
 
     /**
      * Register a custom permission to check for the given blocks. Used when trying to interact with blocks
-     * Register before ServerLifecycleEvents.SERVER_STARTING
      *
      * @param pred Predicate for blocks that should return the given permission
      * @param perm The given permission
      */
     public static void registerBlockPredicateMap(Predicate<Block> pred, Supplier<ResourceLocation> perm) {
-        blockPermissionBuilder.put(pred, perm);
+        BLOCK_PERMISSION_BUILDER.put(pred, perm);
     }
 
     /**
      * Register a custom permission to check for the given items. Used when trying to use items.
-     * Register before ServerLifecycleEvents.SERVER_STARTING
      *
      * @param pred Predicate for items that should return the given permission
      * @param perm The given permission
      */
     public static void registerItemPredicateMap(Predicate<Item> pred, Supplier<ResourceLocation> perm) {
-        itemPermissionBuilder.put(pred, perm);
+        ITEM_PERMISSION_BUILDER.put(pred, perm);
     }
 
     static {

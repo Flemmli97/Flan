@@ -2,6 +2,7 @@ package io.github.flemmli97.flan.fabric;
 
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.fabric.ItemUseBlockFlags;
+import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -51,14 +52,14 @@ import java.util.concurrent.Executor;
 
 public class FlanFabric implements ModInitializer {
 
-    public static final ResourceLocation EventPhase = new ResourceLocation("flan", "events");
+    public static final ResourceLocation EVENT_PHASE = new ResourceLocation("flan", "events");
 
     @Override
     public void onInitialize() {
         PlayerBlockBreakEvents.BEFORE.register(BlockInteractEvents::breakBlocks);
         AttackBlockCallback.EVENT.register(BlockInteractEvents::startBreakBlocks);
-        UseBlockCallback.EVENT.addPhaseOrdering(EventPhase, Event.DEFAULT_PHASE);
-        UseBlockCallback.EVENT.register(EventPhase, FlanFabric::useBlocks);
+        UseBlockCallback.EVENT.addPhaseOrdering(EVENT_PHASE, Event.DEFAULT_PHASE);
+        UseBlockCallback.EVENT.register(EVENT_PHASE, FlanFabric::useBlocks);
         UseEntityCallback.EVENT.register(((player, world, hand, entity, hitResult) -> {
             if (hitResult != null)
                 return EntityInteractEvents.useAtEntity(player, world, hand, entity, null);
@@ -80,7 +81,19 @@ public class FlanFabric implements ModInitializer {
 
             @Override
             public ResourceLocation getFabricId() {
-                return new ResourceLocation(Flan.MODID, "permission_gen");
+                return new ResourceLocation(Flan.MODID, "permissions");
+            }
+        });
+
+        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new IdentifiableResourceReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
+                return InteractionOverrideManager.INSTANCE.reload(preparationBarrier, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor);
+            }
+
+            @Override
+            public ResourceLocation getFabricId() {
+                return new ResourceLocation(Flan.MODID, "interaction_overrides");
             }
         });
 
@@ -106,7 +119,7 @@ public class FlanFabric implements ModInitializer {
     }
 
     public static void serverLoad(MinecraftServer server) {
-        ConfigHandler.reloadConfigs(server);
+        ConfigHandler.reloadConfigs();
         if (FabricLoader.getInstance().isModLoaded("bluemap"))
             BluemapIntegration.reg(server);
     }

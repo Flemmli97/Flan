@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.event;
 
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
-import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
+import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -76,7 +76,7 @@ public class EntityInteractEvents {
         if (claim != null) {
             if (claim instanceof Claim real && real.canInteractWithEntity(entity))
                 return InteractionResult.PASS;
-            ResourceLocation perm = ObjectToPermissionMap.getFromEntity(entity.getType());
+            ResourceLocation perm = InteractionOverrideManager.INSTANCE.getEntityInteract(entity.getType());
             if (perm != null) {
                 return claim.canInteract(serverPlayer, perm, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             }
@@ -101,7 +101,7 @@ public class EntityInteractEvents {
         if (claim != null) {
             if (claim instanceof Claim real && real.canInteractWithEntity(entity))
                 return InteractionResult.PASS;
-            ResourceLocation perm = ObjectToPermissionMap.getFromEntity(entity.getType());
+            ResourceLocation perm = InteractionOverrideManager.INSTANCE.getEntityInteract(entity.getType());
             if (perm != null) {
                 return claim.canInteract(player, perm, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             }
@@ -147,7 +147,7 @@ public class EntityInteractEvents {
                 else if (proj instanceof ThrownEgg || proj instanceof ThrownPotion)
                     perm = BuiltinPermission.PROJECTILES;
                 else
-                    perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
+                    perm = InteractionOverrideManager.INSTANCE.getBlockInteract(state.getBlock());
                 if (perm != BuiltinPermission.ENDERPEARL && perm != BuiltinPermission.TARGETBLOCK && perm != BuiltinPermission.PROJECTILES)
                     return false;
                 ClaimStorage storage = ClaimStorage.get((ServerLevel) proj.level());
@@ -220,13 +220,16 @@ public class EntityInteractEvents {
         if (claim != null) {
             if (claim instanceof Claim real && real.canAttackEntity(entity))
                 return InteractionResult.PASS;
+            if (entity.hasCustomName() && !claim.canInteract(player, BuiltinPermission.HURTNAMED, pos, message)) {
+                return InteractionResult.FAIL;
+            }
+            ResourceLocation perm = InteractionOverrideManager.INSTANCE.getEntityAttack(entity.getType());
+            if (perm != null)
+                return claim.canInteract(player, perm, pos, message) ? InteractionResult.PASS : InteractionResult.FAIL;
             if (entity instanceof ArmorStand || !(entity instanceof LivingEntity))
                 return claim.canInteract(player, BuiltinPermission.BREAKNONLIVING, pos, message) ? InteractionResult.PASS : InteractionResult.FAIL;
             if (entity instanceof Player)
                 return claim.canInteract(player, BuiltinPermission.HURTPLAYER, pos, message) ? InteractionResult.PASS : InteractionResult.FAIL;
-            if (entity.hasCustomName() && !claim.canInteract(player, BuiltinPermission.HURTNAMED, pos, message)) {
-                return InteractionResult.FAIL;
-            }
             return claim.canInteract(player, BuiltinPermission.HURTANIMAL, pos, message) ? InteractionResult.PASS : InteractionResult.FAIL;
         }
         return InteractionResult.PASS;

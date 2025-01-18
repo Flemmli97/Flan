@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.event;
 
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
-import io.github.flemmli97.flan.api.permission.ObjectToPermissionMap;
+import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -28,6 +28,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -77,7 +78,7 @@ public class BlockInteractEvents {
             if (contains(id, world.getBlockEntity(pos), ConfigHandler.CONFIG.breakBlockBlacklist, ConfigHandler.CONFIG.breakBETagBlacklist))
                 return true;
             if (attempt) {
-                ResourceLocation perm = ObjectToPermissionMap.getForLeftClickBlock(state.getBlock());
+                ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockLeftClick(state.getBlock());
                 if (perm != null) {
                     if (!claim.canInteract(player, perm, pos, true)) {
                         PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
@@ -117,7 +118,7 @@ public class BlockInteractEvents {
             BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
             if (contains(id, blockEntity, ConfigHandler.CONFIG.interactBlockBlacklist, ConfigHandler.CONFIG.interactBETagBlacklist))
                 return InteractionResult.PASS;
-            ResourceLocation perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
+            ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract(state.getBlock());
             if (perm != null && perm.equals(BuiltinPermission.PROJECTILES))
                 perm = BuiltinPermission.OPENCONTAINER;
             //Pressureplate handled elsewhere
@@ -187,7 +188,7 @@ public class BlockInteractEvents {
     }
 
     public static boolean cancelEntityBlockCollision(BlockState state, Level world, BlockPos pos, Entity entity) {
-        if (world.isClientSide)
+        if (world.isClientSide || state.is(Blocks.AIR))
             return false;
         ServerPlayer player = null;
         if (entity instanceof ServerPlayer)
@@ -203,7 +204,7 @@ public class BlockInteractEvents {
         }
         if (player == null)
             return false;
-        ResourceLocation perm = ObjectToPermissionMap.getFromBlock(state.getBlock());
+        ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract(state.getBlock());
         if (perm == null)
             return false;
         if (!perm.equals(BuiltinPermission.PRESSUREPLATE) && !perm.equals(BuiltinPermission.PORTAL))
@@ -219,7 +220,7 @@ public class BlockInteractEvents {
         if (entity.level().isClientSide)
             return false;
         if (entity instanceof ServerPlayer) {
-            ResourceLocation perm = ObjectToPermissionMap.getFromBlock(landedState.getBlock());
+            ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract(landedState.getBlock());
             if (perm == null || !perm.equals(BuiltinPermission.TRAMPLE))
                 return false;
             ClaimStorage storage = ClaimStorage.get((ServerLevel) entity.level());
@@ -230,7 +231,7 @@ public class BlockInteractEvents {
         } else if (entity instanceof Projectile) {
             Entity owner = ((Projectile) entity).getOwner();
             if (owner instanceof ServerPlayer) {
-                ResourceLocation perm = ObjectToPermissionMap.getFromBlock(landedState.getBlock());
+                ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract(landedState.getBlock());
                 if (perm == null || !perm.equals(BuiltinPermission.TRAMPLE))
                     return false;
                 ClaimStorage storage = ClaimStorage.get((ServerLevel) entity.level());

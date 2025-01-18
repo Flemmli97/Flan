@@ -1,0 +1,9 @@
+{
+  "type": "flan:block_left_click",
+  "values": [
+    {
+      "entry": "#storagedrawers:drawers",
+      "permission": "flan:open_container"
+    }
+  ]
+}

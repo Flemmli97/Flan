@@ -1,0 +1,9 @@
+{
+  "type": "flan:entity_interact",
+  "values": [
+    {
+      "entry": "taterzens:npc",
+      "permission": "flan:trading"
+    }
+  ]
+}
