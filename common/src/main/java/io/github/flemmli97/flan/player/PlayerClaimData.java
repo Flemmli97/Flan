@@ -336,7 +336,7 @@ public class PlayerClaimData implements IPlayerData {
             this.addClaimBlocks(1);
             this.lastBlockTick = 0;
         }
-        if (tool) {
+        if (tool && ItemInteractEvents.canPlayerClaim(this.player.getLevel(), this.player)) {
             this.claimingRange = this.getClaimingMode() == ClaimingMode.DIMENSION_3D && this.editingCorner() != null ? 10 : 64;
             BlockPos pos = ItemInteractEvents.rayTargetPos(this.player);
             if (pos != null && !pos.equals(this.firstCorner)) {
