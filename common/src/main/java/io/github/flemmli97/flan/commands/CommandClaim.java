@@ -209,7 +209,7 @@ public class CommandClaim {
     }
 
     private static int reloadConfig(CommandContext<CommandSourceStack> context) {
-        ConfigHandler.reloadConfigs(context.getSource().getServer());
+        ConfigHandler.reloadConfigs();
         context.getSource().sendSuccess(ClaimUtils.translatedText("flan.configReload"), true);
         return Command.SINGLE_SUCCESS;
     }

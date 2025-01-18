@@ -25,9 +25,8 @@ public class ConfigHandler {
     private static final Map<ResourceKey<Level>, Path> CLAIM_SAVE_PATH = new HashMap<>();
     private static Path playerSavePath;
 
-    public static void reloadConfigs(MinecraftServer server) {
+    public static void reloadConfigs() {
         CONFIG.load();
-//        ObjectToPermissionMap.reload(server);
     }
 
     public static Path getClaimSavePath(MinecraftServer server, ResourceKey<Level> reg) {

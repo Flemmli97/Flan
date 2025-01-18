@@ -63,11 +63,7 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
                 ItemStack close = new ItemStack(Items.TNT);
                 close.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
                 inv.updateStack(i, close);
-            } else if (page == 1 && i == 47) {
-                ItemStack close = new ItemStack(Items.ARROW);
-                close.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenPrevious", ChatFormatting.WHITE));
-                inv.updateStack(i, close);
-            } else if (page == 0 && i == 51) {
+            } else if (i == 51) {
                 ItemStack close = new ItemStack(Items.ARROW);
                 close.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenNext", ChatFormatting.WHITE));
                 inv.updateStack(i, close);

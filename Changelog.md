@@ -13,7 +13,7 @@ Flan 1.11.0
 - Moved custom permission config to a datapack system. Allows mods to change this without depending on flan
   - Affects following config options: `customItemPermission`, `customBlockPermission`, `customEntityPermission`, `leftClickBlockPermission`
   - To use define a file under `data/claim_interactions_override`. 
-  - Define there a mapping of entry - permission. Use `#`-prefix for tags. See the builtin overrides for examples
+  - Define a mapping of entry - permission. Use `#`-prefix for tags. See the builtin overrides for examples
   - Supported types: 
     - `flan:block_left_click`: Left clicking blocks
     - `flan:block_interact`: Interacting with a block (not just right click but collision etc. too) 
