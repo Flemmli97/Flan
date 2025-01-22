@@ -1,3 +1,9 @@
+Flan 1.11.1
+================
+- Fix player nullpointer with translation
+- Fix some wrong formatting in translations
+- Fix nullpointer with claimdisplay
+
 Flan 1.11.0
 ================
 - Reworked how language/translations are handled
