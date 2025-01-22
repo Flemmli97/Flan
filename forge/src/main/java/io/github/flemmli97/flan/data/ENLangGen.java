@@ -50,11 +50,11 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.configReload", "Configs reloaded");
 
         this.add("flan.cantClaimHere", "Sorry you cant claim here");
-        this.add("flan.minClaimSize", "This is too small. Minimum claimsize is %d");
+        this.add("flan.minClaimSize", "This is too small. Minimum claimsize is %s");
         this.add("flan.maxClaims", "Maximum amount of claims reached");
         this.add("flan.landClaimDisabledWorld", "Claiming is disabled in this world");
         this.add("flan.claimingMode", "Claiming mode set to %1$s");
-        this.add("flan.minClaimHeight", "Minimum required height is %d");
+        this.add("flan.minClaimHeight", "Minimum required height is %s");
         this.add("flan.editMode", "Editing mode set to %1$s");
         this.add("flan.notEnoughBlocks", "Not enough claim blocks. Required: %s, Current: %s");
         this.add("flan.conflictOther", "Claim would overlap other claims");
@@ -117,7 +117,7 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.claimGroupInfoHeader", "Groups: ");
         this.add("flan.claimGroupPerms", "    Permissions: %1$s");
         this.add("flan.claimGroupPlayers", "    Players: %1$s");
-        this.add("flan.helpHeader", "Available subcommands are (page %d):");
+        this.add("flan.helpHeader", "Available subcommands are (page %s):");
         this.add("flan.helpCmdHeader", "====================");
         this.add("flan.helpCmdSyntax", "Syntax: %1$s");
 
