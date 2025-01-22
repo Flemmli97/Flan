@@ -55,12 +55,24 @@ public class ClaimDisplay {
         boolean is3d = display.is3d();
         ChunkCache chunkCache = new ChunkCache(level);
         ClaimBox box = display.box();
-        List<BlockPos> vertices = boxVertices(box, is3d, height, chunkCache);
+        List<BlockPos> vertices = boxVertices(box, is3d);
         List<BlockPos> edges = boxEdges(box, display.excludedSides(), is3d, height, vertices, chunkCache);
+        if (!is3d) {
+            List<BlockPos> verticesNew = new ArrayList<>();
+            for (BlockPos pos : vertices) {
+                Height heightPos = getHeight(pos.getX(), pos.getZ(), height, chunkCache);
+                if (heightPos != null) {
+                    if (heightPos.solid != heightPos.water)
+                        verticesNew.add(new BlockPos(box.minX(), heightPos.water, box.minZ()));
+                    verticesNew.add(new BlockPos(box.minX(), heightPos.solid, box.minZ()));
+                }
+            }
+            vertices = verticesNew;
+        }
         return new DisplayBoxPos(vertices, edges);
     }
 
-    private static List<BlockPos> boxVertices(ClaimBox box, boolean is3d, int height, ChunkCache chunkCache) {
+    private static List<BlockPos> boxVertices(ClaimBox box, boolean is3d) {
         List<BlockPos> vertices = new ArrayList<>();
         if (is3d) {
             vertices.add(new BlockPos(box.minX(), box.minY(), box.minZ()));
@@ -73,32 +85,10 @@ public class ClaimDisplay {
             vertices.add(new BlockPos(box.maxX(), box.maxY(), box.maxZ()));
             vertices.add(new BlockPos(box.minX(), box.maxY(), box.maxZ()));
         } else {
-            List<BlockPos> water = new ArrayList<>();
-            Height pos = getHeight(box.minX(), box.minZ(), height, chunkCache);
-            if (pos != null) {
-                if (pos.solid != pos.water)
-                    water.add(new BlockPos(box.minX(), pos.water, box.minZ()));
-                vertices.add(new BlockPos(box.minX(), pos.solid, box.minZ()));
-            }
-            pos = getHeight(box.maxX(), box.minZ(), height, chunkCache);
-            if (pos != null) {
-                if (pos.solid != pos.water)
-                    water.add(new BlockPos(box.maxX(), pos.water, box.minZ()));
-                vertices.add(new BlockPos(box.maxX(), pos.solid, box.minZ()));
-            }
-            pos = getHeight(box.maxX(), box.maxZ(), height, chunkCache);
-            if (pos != null) {
-                if (pos.solid != pos.water)
-                    water.add(new BlockPos(box.maxX(), pos.water, box.maxZ()));
-                vertices.add(new BlockPos(box.maxX(), pos.solid, box.maxZ()));
-            }
-            pos = getHeight(box.minX(), box.maxZ(), height, chunkCache);
-            if (pos != null) {
-                if (pos.solid != pos.water)
-                    water.add(new BlockPos(box.minX(), pos.water, box.maxZ()));
-                vertices.add(new BlockPos(box.minX(), pos.solid, box.maxZ()));
-            }
-            vertices.addAll(water);
+            vertices.add(new BlockPos(box.minX(), 0, box.minZ()));
+            vertices.add(new BlockPos(box.maxX(), 0, box.minZ()));
+            vertices.add(new BlockPos(box.maxX(), 0, box.maxZ()));
+            vertices.add(new BlockPos(box.minX(), 0, box.maxZ()));
         }
         return vertices;
     }
