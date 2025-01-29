@@ -1,3 +1,8 @@
+Flan 1.11.2
+================
+- Fix string input screen not working (group perm screen etc.)
+- Add option to disable claim depth. Set claimdepth to -1 in config
+
 Flan 1.11.1
 ================
 - Fix player nullpointer with translation
