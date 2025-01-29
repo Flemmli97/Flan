@@ -15,6 +15,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 
 import java.util.List;
 import java.util.UUID;
@@ -67,6 +68,7 @@ public class FakePlayerScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 int id = (i % 9) + row * 7 - 1;
                 if (id < players.size()) {
                     ItemStack fakePlayer = new ItemStack(Items.ZOMBIE_HEAD);
+                    CustomData.update(DataComponents.CUSTOM_DATA, fakePlayer, t -> t.putString("FlanFakePlayer", players.get(id)));
                     fakePlayer.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenFakePlayerNameUUID", players.get(id), ChatFormatting.YELLOW));
                     inv.updateStack(i, fakePlayer);
                 }
@@ -119,7 +121,8 @@ public class FakePlayerScreenHandler extends ServerOnlyScreenHandler<Claim> {
         if (!stack.isEmpty()) {
             UUID uuid = null;
             try {
-                uuid = UUID.fromString(stack.getHoverName().getString());
+                uuid = UUID.fromString(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+                        .copyTag().getString("FlanFakePlayer"));
             } catch (IllegalArgumentException ignored) {
             }
             if (this.removeMode && uuid != null) {

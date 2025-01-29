@@ -128,7 +128,7 @@ public class StringResultScreenHandler extends AnvilMenu {
             if (StringUtils.isBlank(this.name))
                 out.remove(DataComponents.CUSTOM_NAME);
             else if (!this.name.equals(out.getHoverName().getString())) {
-                out.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText(this.name));
+                out.set(DataComponents.CUSTOM_NAME, Component.literal(this.name));
             }
         }
         this.broadcastChanges();

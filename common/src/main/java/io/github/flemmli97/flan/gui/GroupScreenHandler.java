@@ -16,6 +16,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 
 import java.util.List;
 
@@ -68,6 +69,7 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 int id = (i % 9) + row * 7 - 1;
                 if (id < groups.size()) {
                     ItemStack group = new ItemStack(Items.PAPER);
+                    CustomData.update(DataComponents.CUSTOM_DATA, group, t -> t.putString("FlanGroup", groups.get(id)));
                     group.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenGroupName", groups.get(id), ChatFormatting.DARK_BLUE));
                     inv.updateStack(i, group);
                 }
@@ -113,7 +115,8 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler<Claim> {
         }
         ItemStack stack = slot.getItem();
         if (!stack.isEmpty()) {
-            String name = stack.getHoverName().getString();
+            String name = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+                    .copyTag().getString("FlanGroup");
             if (this.removeMode) {
                 this.claim.removePermGroup(player, name);
                 slot.set(ItemStack.EMPTY);

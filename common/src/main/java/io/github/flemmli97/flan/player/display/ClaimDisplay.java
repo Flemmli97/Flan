@@ -211,6 +211,7 @@ public class ClaimDisplay {
     /**
      * Returns a height instance with
      */
+    @SuppressWarnings("deprecation")
     public static Height getHeight(int x, int z, int y, ChunkCache chunkCache) {
         LevelChunk chunk = chunkCache.fetchChunk(x, z);
         if (chunk == null)
