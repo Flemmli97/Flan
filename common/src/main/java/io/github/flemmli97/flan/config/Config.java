@@ -260,12 +260,10 @@ public class Config {
                         ClaimPermission perm = PermissionManager.INSTANCE.get(id);
                         if (perm == null)
                             Flan.error("Global Perms: No such permission for {}", jperm.getKey());
-                        else {
-                            if (jperm.getValue().isJsonPrimitive() && jperm.getValue().getAsJsonPrimitive().isBoolean())
-                                perms.put(id, jperm.getValue().getAsBoolean() ? GlobalType.ALLTRUE : GlobalType.ALLFALSE);
-                            else
-                                perms.put(id, GlobalType.valueOf(jperm.getValue().getAsString()));
-                        }
+                        if (jperm.getValue().isJsonPrimitive() && jperm.getValue().getAsJsonPrimitive().isBoolean())
+                            perms.put(id, jperm.getValue().getAsBoolean() ? GlobalType.ALLTRUE : GlobalType.ALLFALSE);
+                        else
+                            perms.put(id, GlobalType.valueOf(jperm.getValue().getAsString()));
                     });
                 }
                 this.globalDefaultPerms.put(e.getKey(), perms);
