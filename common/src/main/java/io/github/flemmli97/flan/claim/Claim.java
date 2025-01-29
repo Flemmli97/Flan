@@ -259,7 +259,9 @@ public class Claim implements IPermissionContainer {
     }
 
     public ClaimBox getDimensions() {
-        return new ClaimBox(this.minX, this.minY, this.minZ, this.maxX, this.maxY != null ? this.maxY : (this.getLevel().getMaxBuildHeight() + 10), this.maxZ);
+        boolean is3d = this.is3d();
+        return new ClaimBox(this.minX, is3d || ConfigHandler.CONFIG.defaultClaimDepth != -1 ? this.minY
+                : this.getLevel().getMinBuildHeight() - 10, this.minZ, this.maxX, is3d ? this.maxY : (this.getLevel().getMaxBuildHeight() + 10), this.maxZ);
     }
 
     public boolean is3d() {
@@ -267,13 +269,11 @@ public class Claim implements IPermissionContainer {
     }
 
     public boolean insideClaim(BlockPos pos) {
-        return this.minX <= pos.getX() && this.maxX >= pos.getX() && this.minZ <= pos.getZ() && this.maxZ >= pos.getZ() && this.minY <= pos.getY()
-                && (this.maxY == null || this.maxY >= pos.getY());
+        return this.getDimensions().insideClaim(pos);
     }
 
     public boolean intersects(Claim other) {
-        ClaimBox collisionBox = new ClaimBox(this.minX, this.maxY != null ? this.minY : this.getLevel().getMinBuildHeight() - 10, this.minZ, this.maxX, this.maxY != null ? this.maxY : (this.getLevel().getMaxBuildHeight() + 10), this.maxZ);
-        return collisionBox.intersects(other.getDimensions());
+        return this.getDimensions().intersects(other.getDimensions());
     }
 
     public boolean intersects(AABB box) {
