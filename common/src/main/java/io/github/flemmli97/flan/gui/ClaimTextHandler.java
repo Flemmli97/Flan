@@ -1,6 +1,5 @@
 package io.github.flemmli97.flan.gui;
 
-import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
@@ -9,7 +8,6 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.MenuProvider;
@@ -149,16 +147,5 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
             }
         }
         return true;
-    }
-
-    private boolean hasEditPerm(Claim claim, ServerPlayer player) {
-        return ((claim.parentClaim() != null && claim.parentClaim().canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition()))
-                || claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition()));
-    }
-
-    private boolean hasPerm(Claim claim, ServerPlayer player, ResourceLocation perm) {
-        if (claim.parentClaim() != null)
-            return claim.parentClaim().canInteract(player, perm, player.blockPosition());
-        return claim.canInteract(player, perm, player.blockPosition());
     }
 }

@@ -67,6 +67,7 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 int id = (i % 9) + row * 7 - 1;
                 if (id < groups.size()) {
                     ItemStack group = new ItemStack(Items.PAPER);
+                    group.getOrCreateTag().putString("FlanGroup", groups.get(id));
                     group.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenGroupName", groups.get(id), ChatFormatting.DARK_BLUE));
                     inv.updateStack(i, group);
                 }
@@ -112,7 +113,7 @@ public class GroupScreenHandler extends ServerOnlyScreenHandler<Claim> {
         }
         ItemStack stack = slot.getItem();
         if (!stack.isEmpty()) {
-            String name = stack.getHoverName().getString();
+            String name = stack.getOrCreateTag().getString("FlanGroup");
             if (this.removeMode) {
                 this.claim.removePermGroup(player, name);
                 slot.set(ItemStack.EMPTY);

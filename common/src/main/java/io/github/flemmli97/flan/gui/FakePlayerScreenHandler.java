@@ -66,6 +66,7 @@ public class FakePlayerScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 int id = (i % 9) + row * 7 - 1;
                 if (id < players.size()) {
                     ItemStack fakePlayer = new ItemStack(Items.ZOMBIE_HEAD);
+                    fakePlayer.getOrCreateTag().putString("FlanFakePlayer", players.get(id));
                     fakePlayer.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenFakePlayerNameUUID", players.get(id), ChatFormatting.YELLOW));
                     inv.updateStack(i, fakePlayer);
                 }
@@ -118,7 +119,7 @@ public class FakePlayerScreenHandler extends ServerOnlyScreenHandler<Claim> {
         if (!stack.isEmpty()) {
             UUID uuid = null;
             try {
-                uuid = UUID.fromString(stack.getHoverName().getString());
+                uuid = UUID.fromString(stack.getOrCreateTag().getString("FlanFakePlayer"));
             } catch (IllegalArgumentException ignored) {
             }
             if (this.removeMode && uuid != null) {
