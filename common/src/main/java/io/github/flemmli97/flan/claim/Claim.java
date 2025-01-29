@@ -263,8 +263,9 @@ public class Claim implements IPermissionContainer {
 
     public ClaimBox getDimensions() {
         boolean is3d = this.is3d();
-        return new ClaimBox(this.minX, is3d || ConfigHandler.CONFIG.defaultClaimDepth != -1 ? this.minY
-                : this.getLevel().getMinBuildHeight() - 10, this.minZ, this.maxX, is3d ? this.maxY : (this.getLevel().getMaxBuildHeight() + 10), this.maxZ);
+        int minY = is3d || ConfigHandler.CONFIG.defaultClaimDepth != -1 ? this.minY
+                : this.getLevel().getMinBuildHeight() - 10;
+        return new ClaimBox(this.minX, minY, this.minZ, this.maxX, Math.max(minY + 1, is3d ? this.maxY : (this.getLevel().getMaxBuildHeight() + 10)), this.maxZ);
     }
 
     public boolean is3d() {
