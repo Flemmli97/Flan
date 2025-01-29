@@ -127,7 +127,7 @@ public class StringResultScreenHandler extends AnvilMenu {
             if (StringUtils.isBlank(this.name))
                 out.resetHoverName();
             else if (!this.name.equals(out.getHoverName().getString())) {
-                out.setHoverName(ServerScreenHelper.coloredGuiText(this.name));
+                out.setHoverName(new TextComponent(this.name));
             }
         }
         this.broadcastChanges();
