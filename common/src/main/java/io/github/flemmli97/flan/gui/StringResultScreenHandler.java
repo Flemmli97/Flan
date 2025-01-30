@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.gui;
 import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.mixin.AbstractContainerAccessor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.LiteralContents;
 import net.minecraft.network.protocol.game.ClientboundSetExperiencePacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -17,7 +18,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.apache.commons.lang3.StringUtils;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -80,8 +80,8 @@ public class StringResultScreenHandler extends AnvilMenu {
             this.ret.run();
         else if (i == 2) {
             Component s = slot.getItem().hasCustomHoverName() ? slot.getItem().getHoverName() : null;
-            if (s != null && s.getContents() instanceof TextComponent text) {
-                this.cons.accept(text.getText());
+            if (s != null && s.getContents() instanceof LiteralContents text) {
+                this.cons.accept(text.text());
             }
             player.connection.send(new ClientboundSetExperiencePacket(player.experienceProgress, player.totalExperience, player.experienceLevel));
         }
@@ -97,8 +97,8 @@ public class StringResultScreenHandler extends AnvilMenu {
         else if (index == 2) {
             Slot slot = this.slots.get(index);
             Component s = slot.getItem().hasCustomHoverName() ? slot.getItem().getHoverName() : null;
-            if (s != null && s.getContents() instanceof TextComponent text) {
-                this.cons.accept(text.getText());
+            if (s != null && s.getContents() instanceof LiteralContents text) {
+                this.cons.accept(text.text());
             }
             ((ServerPlayer) player).connection.send(new ClientboundSetExperiencePacket(player.experienceProgress, player.totalExperience, player.experienceLevel));
         }
