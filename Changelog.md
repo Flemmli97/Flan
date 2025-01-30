@@ -1,3 +1,7 @@
+Flan 1.11.3
+================
+- Fix string input screen for real now
+
 Flan 1.11.2
 ================
 - Fix string input screen not working (group perm screen etc.)
