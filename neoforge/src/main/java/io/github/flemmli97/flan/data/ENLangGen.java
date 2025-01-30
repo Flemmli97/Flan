@@ -71,6 +71,8 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.uuidFakeModifyNo", "Fakeplayer with given uuid is already added");
         this.add("flan.playerModify", "Modified permission group for following players to %1$s: %2$s");
         this.add("flan.playerModifyNo", "Couldn't set permission group for the players. Probably cause they already belong to a group");
+        this.add("flan.playerRemove", "Removed players %1$s from their groups");
+        this.add("flan.playerRemoveNo", "Couldn't remove permission groups for the players!");
         this.add("flan.playerGroupAddFail", "Couldn't add that player to the group either cause the player " +
                 "is already in a group or no player matching the name was found");
         this.add("flan.resizeClaim", "Resizing claim");

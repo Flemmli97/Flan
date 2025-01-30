@@ -134,7 +134,7 @@ public class CommandClaim {
                                             ClaimStorage storage = ClaimStorage.get(src.getLevel());
                                             Claim claim = storage.getClaimAt(src.getPlayerOrException().blockPosition());
                                             if (claim != null && claim.canInteract(src.getPlayerOrException(), BuiltinPermission.EDITPERMS, src.getPlayerOrException().blockPosition())) {
-                                                list = claim.playersFromGroup(player.getServer(), group);
+                                                list = claim.playersFromGroup(player.getServer(), group).stream().map(GameProfile::getName).toList();
                                             }
                                             return SharedSuggestionProvider.suggest(list, build);
                                         }).executes(CommandClaim::removePlayer))))))
@@ -762,10 +762,17 @@ public class CommandClaim {
             if (claim.setPlayerGroup(prof.getId(), group, force))
                 modified.add(prof.getName());
         }
-        if (!modified.isEmpty())
-            player.displayClientMessage(ClaimUtils.translatedText("flan.playerModify", group, modified, ChatFormatting.GOLD), false);
-        else
-            player.displayClientMessage(ClaimUtils.translatedText("flan.playerModifyNo", group, ChatFormatting.RED), false);
+        if (group == null) {
+            if (!modified.isEmpty())
+                player.displayClientMessage(ClaimUtils.translatedText("flan.playerRemove", modified, ChatFormatting.GOLD), false);
+            else
+                player.displayClientMessage(ClaimUtils.translatedText("flan.playerRemoveNo", ChatFormatting.RED), false);
+        } else {
+            if (!modified.isEmpty())
+                player.displayClientMessage(ClaimUtils.translatedText("flan.playerModify", group, modified, ChatFormatting.GOLD), false);
+            else
+                player.displayClientMessage(ClaimUtils.translatedText("flan.playerModifyNo", group, ChatFormatting.RED), false);
+        }
         return modified.size();
     }
 

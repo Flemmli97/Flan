@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
@@ -48,6 +49,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -499,16 +501,16 @@ public class Claim implements IPermissionContainer {
         return this.fakePlayers.add(uuid);
     }
 
-    public List<String> playersFromGroup(MinecraftServer server, String group) {
+    public List<GameProfile> playersFromGroup(MinecraftServer server, String group) {
         List<UUID> l = new ArrayList<>();
         this.playersGroups.forEach((uuid, g) -> {
             if (g.equals(group))
                 l.add(uuid);
         });
-        List<String> names = new ArrayList<>();
-        l.forEach(uuid -> ClaimUtils.fetchUsername(uuid, server).ifPresent(names::add));
-        names.sort(null);
-        return names;
+        List<GameProfile> profs = new ArrayList<>();
+        l.forEach(uuid -> server.getProfileCache().get(uuid).ifPresent(profs::add));
+        profs.sort(Comparator.comparing(GameProfile::getName));
+        return profs;
     }
 
     public List<String> getAllowedFakePlayerUUID() {

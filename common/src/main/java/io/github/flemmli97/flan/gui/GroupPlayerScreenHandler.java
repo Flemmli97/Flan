@@ -1,6 +1,6 @@
 package io.github.flemmli97.flan.gui;
 
-import com.mojang.authlib.properties.PropertyMap;
+import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.gui.inv.SeparateInv;
@@ -19,7 +19,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
 
 import java.util.List;
-import java.util.Optional;
 
 public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup> {
 
@@ -62,7 +61,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
     @Override
     protected void fillInventoryWith(Player player, SeparateInv inv, ClaimGroup additionalData) {
         Claim claim = additionalData.getClaim();
-        List<String> players = claim.playersFromGroup(player.getServer(), additionalData.getGroup());
+        List<GameProfile> players = claim.playersFromGroup(player.getServer(), additionalData.getGroup());
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
@@ -83,7 +82,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
                 int id = (i % 9) + row * 7 - 1;
                 if (id < players.size()) {
                     ItemStack group = new ItemStack(Items.PLAYER_HEAD);
-                    group.set(DataComponents.PROFILE, new ResolvableProfile(Optional.of(players.get(id)), Optional.empty(), new PropertyMap()));
+                    group.set(DataComponents.PROFILE, new ResolvableProfile(players.get(id)));
                     inv.updateStack(i, group);
                 }
             }
@@ -134,7 +133,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
         ItemStack stack = slot.getItem();
         if (!stack.isEmpty()) {
             ResolvableProfile profile = stack.get(DataComponents.PROFILE);
-            if (this.removeMode && profile != null && profile.isResolved()) {
+            if (this.removeMode && profile != null && profile.id().isPresent()) {
                 this.claim.setPlayerGroup(profile.gameProfile().getId(), null, false);
                 slot.set(ItemStack.EMPTY);
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.BAT_DEATH, 1, 1f);

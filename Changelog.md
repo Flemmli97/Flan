@@ -1,3 +1,9 @@
+Flan 1.11.3
+================
+- Fix string input screen for real now
+- Fix unable to remove non existing players
+- Fix player remove command result error
+
 Flan 1.11.2
 ================
 - Fix string input screen not working (group perm screen etc.)
