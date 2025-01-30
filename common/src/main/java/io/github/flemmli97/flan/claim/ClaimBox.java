@@ -2,6 +2,7 @@ package io.github.flemmli97.flan.claim;
 
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 
 public record ClaimBox(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
@@ -12,7 +13,9 @@ public record ClaimBox(int minX, int minY, int minZ, int maxX, int maxY, int max
     }
 
     public boolean intersects(ClaimBox other) {
-        return this.intersects(other.minX, other.minY, other.minZ, other.maxX, other.maxY, other.maxZ);
+        return this.minX <= other.maxX && this.maxX >= other.minX
+                && this.minY <= other.maxY && this.maxY >= other.minY
+                && this.minZ <= other.maxZ && this.maxZ >= other.minZ;
     }
 
     public boolean intersects(AABB other) {
@@ -20,7 +23,9 @@ public record ClaimBox(int minX, int minY, int minZ, int maxX, int maxY, int max
     }
 
     public boolean intersects(double x, double y, double z, double X, double Y, double Z) {
-        return this.minX < X && this.maxX > x && this.minY < Y && this.maxY > y && this.minZ < Z && this.maxZ > z;
+        return this.minX <= Mth.ceil(X) && this.maxX >= Mth.floor(x)
+                && this.minY <= Mth.ceil(Y) && this.maxY >= Mth.floor(y)
+                && this.minZ <= Mth.ceil(Z) && this.maxZ >= Mth.floor(z);
     }
 
     @Override
