@@ -181,7 +181,7 @@ public class Claim implements IPermissionContainer {
     public void extendDownwards(BlockPos pos) {
         if (this.maxY != null)
             return;
-        this.minY = pos.getY();
+        this.minY = Math.min(this.minY, pos.getY());
         this.setDirty(true);
         WebmapCalls.onExtendDownwards(this);
     }
