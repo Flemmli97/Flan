@@ -1,3 +1,8 @@
+Flan 1.11.3
+================
+- Fix claim downwards extension. Should fix disappearing claim issue
+- Remove save path caching (notable in single player)
+
 Flan 1.11.2
 ================
 - Fix string input screen not working (group perm screen etc.)
