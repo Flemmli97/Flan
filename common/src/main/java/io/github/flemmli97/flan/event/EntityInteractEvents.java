@@ -398,9 +398,10 @@ public class EntityInteractEvents {
             Claim sub = claim != null ? claim.getSubClaim(rounded) : null;
             if (sub != null)
                 claim = sub;
-            if (claim != null)
+            if (claim != null) {
                 claim.displayEnterTitle(player);
-            CrossBorderEvent.EVENT.invoker().crossClaimBorder(player, claim, null);
+                CrossBorderEvent.EVENT.invoker().crossClaimBorder(player, claim, null);
+            }
             cons.accept(claim);
         }
     }
