@@ -1,3 +1,9 @@
+Flan 1.11.4
+================
+- Fix claim downwards extension. Should fix disappearing claim issue
+- Remove save path caching (notable in single player)
+- Fix translatable component args
+
 Flan 1.11.3
 ================
 - Fix string input screen for real now
