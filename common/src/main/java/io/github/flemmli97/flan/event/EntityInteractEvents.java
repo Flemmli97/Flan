@@ -1,6 +1,7 @@
 package io.github.flemmli97.flan.event;
 
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
+import io.github.flemmli97.flan.api.events.CrossBorderEvent;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.claim.Claim;
@@ -340,9 +341,10 @@ public class EntityInteractEvents {
             if (!currentClaim.intersects(player.getBoundingBox())) {
                 boolean isSub = currentClaim.parentClaim() != null;
                 Claim claim = isSub ? storage.getClaimAt(rounded) : currentClaim.parentClaim();
-                if (claim == null)
+                if (claim == null) {
                     currentClaim.displayLeaveTitle(player);
-                else {
+                    CrossBorderEvent.EVENT.invoker().crossClaimBorder(player, null, currentClaim);
+                } else {
                     Claim sub = claim.getSubClaim(rounded);
                     boolean display = true;
                     if (sub != null)
@@ -354,12 +356,14 @@ public class EntityInteractEvents {
                     }
                     if (display)
                         claim.displayEnterTitle(player);
+                    CrossBorderEvent.EVENT.invoker().crossClaimBorder(player, claim, currentClaim);
                 }
                 cons.accept(claim);
             } else {
                 if (currentClaim.parentClaim() == null) {
                     Claim sub = currentClaim.getSubClaim(rounded);
                     if (sub != null) {
+                        CrossBorderEvent.EVENT.invoker().crossClaimBorder(player, sub, currentClaim);
                         currentClaim = sub;
                         currentClaim.displayEnterTitle(player);
                         cons.accept(currentClaim);
@@ -396,6 +400,7 @@ public class EntityInteractEvents {
                 claim = sub;
             if (claim != null)
                 claim.displayEnterTitle(player);
+            CrossBorderEvent.EVENT.invoker().crossClaimBorder(player, claim, null);
             cons.accept(claim);
         }
     }
