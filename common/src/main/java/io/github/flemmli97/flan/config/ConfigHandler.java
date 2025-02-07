@@ -15,8 +15,6 @@ import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelResource;
 
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class ConfigHandler {
@@ -24,21 +22,17 @@ public class ConfigHandler {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     public static final Config CONFIG = new Config();
-    private static final Map<ResourceKey<Level>, Path> CLAIM_SAVE_PATH = new HashMap<>();
-    private static Path playerSavePath;
 
     public static void reloadConfigs() {
         CONFIG.load();
     }
 
     public static Path getClaimSavePath(MinecraftServer server, ResourceKey<Level> reg) {
-        return CLAIM_SAVE_PATH.computeIfAbsent(reg, r -> DimensionType.getStorageFolder(r, server.getWorldPath(LevelResource.ROOT)).resolve("data").resolve("claims"));
+        return DimensionType.getStorageFolder(reg, server.getWorldPath(LevelResource.ROOT)).resolve("data").resolve("claims");
     }
 
     public static Path getPlayerSavePath(MinecraftServer server) {
-        if (playerSavePath == null)
-            playerSavePath = server.getWorldPath(LevelResource.PLAYER_DATA_DIR).resolve("claimData");
-        return playerSavePath;
+        return server.getWorldPath(LevelResource.PLAYER_DATA_DIR).resolve("claimData");
     }
 
     public static boolean isClaimingTool(ItemStack stack) {
