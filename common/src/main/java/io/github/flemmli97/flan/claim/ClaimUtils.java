@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -54,8 +55,12 @@ public class ClaimUtils {
         for (Object obj : compArgs) {
             if (obj instanceof ChatFormatting formatting)
                 formattings.add(formatting);
-            else
-                args.add(obj);
+            else {
+                if (obj instanceof Component || TranslatableContents.isAllowedPrimitiveArgument(obj))
+                    args.add(obj);
+                else
+                    args.add(obj.toString());
+            }
         }
         return Component.translatable(key,
                 args.toArray()).setStyle(Style.EMPTY.applyFormats(formattings.toArray(ChatFormatting[]::new)));

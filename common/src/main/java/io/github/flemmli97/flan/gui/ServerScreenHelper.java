@@ -15,6 +15,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -128,8 +129,12 @@ public class ServerScreenHelper {
         for (Object obj : compArgs) {
             if (obj instanceof ChatFormatting formatting)
                 formattings.add(formatting);
-            else
-                args.add(obj);
+            else {
+                if (obj instanceof Component || TranslatableContents.isAllowedPrimitiveArgument(obj))
+                    args.add(obj);
+                else
+                    args.add(obj.toString());
+            }
         }
         return Component.translatable(key,
                 args.toArray()).setStyle(Style.EMPTY.withItalic(false).applyFormats(formattings.toArray(ChatFormatting[]::new)));
