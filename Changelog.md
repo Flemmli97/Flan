@@ -1,4 +1,4 @@
-Flan 1.11.3
+Flan 1.11.4
 ================
 - Fix claim downwards extension. Should fix disappearing claim issue
 - Remove save path caching (notable in single player)
