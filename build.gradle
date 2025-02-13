@@ -3,4 +3,4 @@ plugins {
     id "dev.architectury.loom" version "1.6-SNAPSHOT" apply false
 }
 
-apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-fabric-neoforge/main.gradle"
+apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/arch-loom-v2/main.gradle"
