@@ -1,16 +1,11 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:trident",
     "tag": {
       "Damage": 0
     }
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": true,
-  "order": 59,
-  "defaultDescription": [
-    "Allow lightning to affect claims",
-    "e.g. set blocks on fire",
-    "or affect animals (mobs are excluded)"
-  ]
+  "order": 59
 }

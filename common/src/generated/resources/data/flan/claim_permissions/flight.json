@@ -1,11 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:feather"
   },
-  "defaultVal": true,
+  "default_value": true,
   "global": false,
-  "order": 44,
-  "defaultDescription": [
-    "Allow non creative flight"
-  ]
+  "order": 44
 }

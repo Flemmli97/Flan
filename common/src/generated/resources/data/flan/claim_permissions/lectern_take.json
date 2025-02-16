@@ -1,11 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:lectern"
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "order": 22,
-  "defaultDescription": [
-    "Permission to change books in a lectern"
-  ]
+  "order": 22
 }

@@ -1,11 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:stone_pressure_plate"
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "order": 15,
-  "defaultDescription": [
-    "Permission to trigger pressure plates"
-  ]
+  "order": 15
 }

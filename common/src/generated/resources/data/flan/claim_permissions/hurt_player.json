@@ -1,14 +1,11 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:diamond_sword",
     "tag": {
       "Damage": 0
     }
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": true,
-  "order": 49,
-  "defaultDescription": [
-    "Permission to hurt other players"
-  ]
+  "order": 49
 }

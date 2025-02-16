@@ -1,11 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:redstone"
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "order": 17,
-  "defaultDescription": [
-    "Permission to change redstone components"
-  ]
+  "order": 17
 }

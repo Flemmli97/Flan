@@ -1,5 +1,5 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:white_banner",
     "tag": {
       "HideFlags": 32,
@@ -45,11 +45,7 @@
       }
     }
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "order": 29,
-  "defaultDescription": [
-    "Permission to trigger raids in claim.",
-    "Wont prevent raids (just) outside"
-  ]
+  "order": 29
 }

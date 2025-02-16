@@ -1,11 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:emerald"
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "order": 39,
-  "defaultDescription": [
-    "Permission to trade with villagers"
-  ]
+  "order": 39
 }

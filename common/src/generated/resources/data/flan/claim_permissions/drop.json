@@ -1,11 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:bowl"
   },
-  "defaultVal": true,
+  "default_value": true,
   "global": false,
-  "order": 42,
-  "defaultDescription": [
-    "Allow the drop of items"
-  ]
+  "order": 42
 }

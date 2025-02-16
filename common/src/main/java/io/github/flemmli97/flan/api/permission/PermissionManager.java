@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.Flan;
 import net.minecraft.resources.ResourceLocation;
@@ -12,6 +13,7 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -59,16 +61,40 @@ public class PermissionManager extends SimpleJsonResourceReloadListener {
         ImmutableMap.Builder<ResourceLocation, ClaimPermission> builder = ImmutableMap.builder();
         data.forEach((res, el) -> {
             try {
-                ClaimPermission.Builder props = ClaimPermission.Builder.CODEC.parse(JsonOps.INSTANCE, el)
+                ClaimPermission.Builder props = ClaimPermission.Builder.CODEC.parse(JsonOps.INSTANCE, parseLegacy(res, el))
                         .getOrThrow(false, Flan.LOGGER::error);
                 if (props.verify())
                     builder.put(res, props.build(res));
             } catch (Exception ex) {
-                Flan.LOGGER.error("Couldnt parse claim permission json {} {}", res, ex);
+                Flan.LOGGER.error("Couldn't parse claim permission json {} {}", res, ex);
                 ex.fillInStackTrace();
             }
         });
         this.permissions = builder.build();
         this.sorted = this.permissions.values().stream().sorted().toList();
+    }
+
+    private static final Map<String, String> LEGACY = Map.of("requiredMod", "required_mod",
+            "guiItem", "gui_item",
+            "defaultVal", "default_value");
+
+    private static JsonElement parseLegacy(ResourceLocation id, JsonElement element) {
+        if (element.isJsonObject()) {
+            JsonObject obj = element.getAsJsonObject();
+            List<String> legacy = new ArrayList<>();
+            obj.keySet().forEach(key -> {
+                if (LEGACY.containsKey(key))
+                    legacy.add(key);
+            });
+            legacy.forEach(key -> {
+                JsonElement e = obj.get(key);
+                obj.remove(key);
+                obj.add(LEGACY.get(key), e);
+            });
+            if (!legacy.isEmpty())
+                Flan.LOGGER.warn("Legacy claim_permission {}. Following keys are outdated {}. Please update them! Refer to the documentations", id, legacy);
+            return obj;
+        }
+        return element;
     }
 }

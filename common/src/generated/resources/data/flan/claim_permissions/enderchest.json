@@ -1,11 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:ender_chest"
   },
-  "defaultVal": true,
+  "default_value": true,
   "global": false,
-  "order": 19,
-  "defaultDescription": [
-    "Permission to use enderchests"
-  ]
+  "order": 19
 }

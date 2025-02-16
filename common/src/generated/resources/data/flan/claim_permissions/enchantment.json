@@ -1,11 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:enchanting_table"
   },
-  "defaultVal": true,
+  "default_value": true,
   "global": false,
-  "order": 20,
-  "defaultDescription": [
-    "Permission to use enchanting tables"
-  ]
+  "order": 20
 }

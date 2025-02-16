@@ -1,13 +1,9 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "create:cart_assembler"
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
   "order": 62,
-  "defaultDescription": [
-    "Gives permission to allow minecart contraptions to pass through claim border.",
-    "Note if this is disabled and your contraption goes out of the claim it can't go back in!"
-  ],
-  "requiredMod": "create"
+  "required_mod": "create"
 }

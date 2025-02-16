@@ -1,11 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:snow_block"
   },
-  "defaultVal": true,
+  "default_value": true,
   "global": true,
-  "order": 53,
-  "defaultDescription": [
-    "Allow snowgolems snowlayer"
-  ]
+  "order": 53
 }

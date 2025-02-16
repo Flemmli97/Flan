@@ -1,11 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:beef"
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "order": 36,
-  "defaultDescription": [
-    "Permission to hurt animals"
-  ]
+  "order": 36
 }

@@ -1,12 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:farmland"
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "order": 26,
-  "defaultDescription": [
-    "Permission to enable block trampling",
-    "(farmland, turtle eggs)"
-  ]
+  "order": 26
 }

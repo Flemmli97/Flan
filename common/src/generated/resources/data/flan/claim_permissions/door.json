@@ -1,11 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:oak_door"
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "order": 11,
-  "defaultDescription": [
-    "Permission to use doors"
-  ]
+  "order": 11
 }

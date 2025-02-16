@@ -21,7 +21,6 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
      * Item to show in the gui
      */
     private final ItemStack guiItem;
-    public final List<String> desc;
     private final ResourceLocation id;
     public final boolean defaultVal;
     /**
@@ -34,11 +33,10 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
      */
     public final int order;
 
-    private ClaimPermission(ResourceLocation id, ItemStack guiItem, boolean defaultVal, boolean global, int order, List<String> defaultDescription) {
+    private ClaimPermission(ResourceLocation id, ItemStack guiItem, boolean defaultVal, boolean global, int order) {
         this.id = id;
         this.guiItem = guiItem;
         this.order = order;
-        this.desc = defaultDescription;
         this.defaultVal = defaultVal;
         this.global = global;
     }
@@ -91,16 +89,16 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
         public static final Codec<ClaimPermission.Builder> CODEC = RecordCodecBuilder.create((instance) ->
                 instance.group(
                         Codec.INT.fieldOf("order").forGetter(d -> d.order),
-                        Codec.STRING.listOf().fieldOf("defaultDescription").forGetter(d -> d.desc),
-                        Codec.STRING.optionalFieldOf("requiredMod").forGetter(d -> Optional.ofNullable(d.requiredMod)),
+                        Codec.STRING.optionalFieldOf("required_mod").forGetter(d -> Optional.ofNullable(d.requiredMod)),
 
-                        ItemStackHolder.CODEC.fieldOf("guiItem").forGetter(d -> d.guiItem),
-                        Codec.BOOL.fieldOf("defaultVal").forGetter(d -> d.defaultVal),
+                        ItemStackHolder.CODEC.fieldOf("gui_item").forGetter(d -> d.guiItem),
+                        Codec.BOOL.fieldOf("default_value").forGetter(d -> d.defaultVal),
                         Codec.BOOL.fieldOf("global").forGetter(d -> d.global)
-                ).apply(instance, (order, desc, requiredMod, item, val, global) -> new ClaimPermission.Builder(item, val, global, order, requiredMod.orElse(null), desc)));
+                ).apply(instance, (order, requiredMod, item, val, global) -> new ClaimPermission.Builder(item, val, global, order, requiredMod.orElse(null), null)));
 
         private final ItemStackHolder guiItem;
-        private final List<String> desc;
+        // Only used for datagen
+        public final List<String> desc;
         private final boolean defaultVal;
         private final boolean global;
         private final String requiredMod;
@@ -133,7 +131,7 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
         }
 
         public ClaimPermission build(ResourceLocation id) {
-            return new ClaimPermission(id, this.guiItem.toStack(), this.defaultVal, this.global, this.order, this.desc);
+            return new ClaimPermission(id, this.guiItem.toStack(), this.defaultVal, this.global, this.order);
         }
 
         public record ItemStackHolder(ResourceLocation item, int count, CompoundTag tag) {

@@ -1,11 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:ender_pearl"
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "order": 33,
-  "defaultDescription": [
-    "Permission to use enderpearls"
-  ]
+  "order": 33
 }

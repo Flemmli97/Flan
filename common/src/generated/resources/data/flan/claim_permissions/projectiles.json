@@ -1,12 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:arrow"
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "order": 25,
-  "defaultDescription": [
-    "Permission to let shot projectiles",
-    "interact with blocks (e.g. arrow on button)"
-  ]
+  "order": 25
 }

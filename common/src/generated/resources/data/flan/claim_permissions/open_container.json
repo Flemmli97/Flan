@@ -1,12 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:chest"
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "order": 5,
-  "defaultDescription": [
-    "Permission to open containers",
-    "(chest, furnace etc.)"
-  ]
+  "order": 5
 }

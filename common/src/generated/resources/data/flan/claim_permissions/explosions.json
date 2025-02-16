@@ -1,11 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:tnt"
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": true,
-  "order": 50,
-  "defaultDescription": [
-    "Toggle explosions in claim"
-  ]
+  "order": 50
 }

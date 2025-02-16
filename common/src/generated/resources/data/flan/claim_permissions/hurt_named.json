@@ -1,11 +1,8 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:name_tag"
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "order": 37,
-  "defaultDescription": [
-    "Permission to hurt named mobs"
-  ]
+  "order": 37
 }
