@@ -1,12 +1,7 @@
 {
-  "defaultDescription": [
-    "Allow fakeplayers to interact in this claim",
-    "Some mods fakeplayer has the users uuid",
-    "For those mods this permission is not needed"
-  ],
-  "defaultVal": false,
+  "default_value": false,
   "global": true,
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:carrot_on_a_stick"
   },
   "order": 61

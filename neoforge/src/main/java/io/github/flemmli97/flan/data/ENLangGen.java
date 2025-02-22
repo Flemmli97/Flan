@@ -219,7 +219,7 @@ public class ENLangGen extends ServerLangGen {
         for (Map.Entry<ResourceLocation, ClaimPermission.Builder> entry : this.permissionGen.getData().entrySet()) {
             ClaimPermission perm = entry.getValue().build(entry.getKey());
             this.add(perm.translationKey(), this.capitalize(perm.getId().getPath()));
-            this.add(perm.translationKeyDescription(), perm.desc.toArray(String[]::new));
+            this.add(perm.translationKeyDescription(), entry.getValue().desc.toArray(String[]::new));
         }
 
         this.add("flan.command.help", "help <page> | (cmd <command>)", "Shows all available commands or info for the given command.");

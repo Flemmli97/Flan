@@ -1,10 +1,7 @@
 {
-  "defaultDescription": [
-    "Permission to use nether portals"
-  ],
-  "defaultVal": true,
+  "default_value": true,
   "global": false,
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:obsidian"
   },
   "order": 27

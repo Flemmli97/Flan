@@ -1,10 +1,7 @@
 {
-  "defaultDescription": [
-    "Permission to break blocks in the claim"
-  ],
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:diamond_pickaxe"
   },
   "order": 3

@@ -1,10 +1,7 @@
 {
-  "defaultDescription": [
-    "Toggle piston pull/push across claim borders"
-  ],
-  "defaultVal": false,
+  "default_value": false,
   "global": true,
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:piston"
   },
   "order": 56

@@ -1,10 +1,7 @@
 {
-  "defaultDescription": [
-    "Permission to sit in minecarts"
-  ],
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:minecart"
   },
   "order": 30
