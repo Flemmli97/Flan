@@ -17,8 +17,7 @@ import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.integration.claiming.OtherClaimingModCheck;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.platform.integration.webmap.WebmapCalls;
-import io.github.flemmli97.flan.player.ClaimEditingMode;
-import io.github.flemmli97.flan.player.ClaimingMode;
+import io.github.flemmli97.flan.player.ClaimMode;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.player.PlayerDataHandler;
@@ -109,7 +108,7 @@ public class ClaimStorage implements IPermissionStorage {
     }
 
     public boolean createClaim(BlockPos pos1, BlockPos pos2, ServerPlayer player) {
-        boolean use3D = PlayerClaimData.get(player).getClaimingMode() == ClaimingMode.DIMENSION_3D;
+        boolean use3D = PlayerClaimData.get(player).getEditMode().is3d;
         if (!use3D) {
             if (pos1.getY() < pos2.getY())
                 pos1 = pos1.below(ConfigHandler.CONFIG.defaultClaimDepth);
@@ -187,8 +186,8 @@ public class ClaimStorage implements IPermissionStorage {
         return conflicted;
     }
 
-    public boolean deleteClaim(Claim claim, boolean updateClaim, ClaimEditingMode mode, ServerLevel world) {
-        if (mode == ClaimEditingMode.SUBCLAIM) {
+    public boolean deleteClaim(Claim claim, boolean updateClaim, ClaimMode mode, ServerLevel world) {
+        if (mode.isSubclaim) {
             if (claim.parentClaim() != null)
                 return claim.parentClaim().deleteSubClaim(claim);
             return false;
@@ -216,7 +215,7 @@ public class ClaimStorage implements IPermissionStorage {
 
     public void toggleAdminClaim(ServerPlayer player, Claim claim, boolean toggle) {
         Flan.log("Set claim {} to an admin claim", claim);
-        this.deleteClaim(claim, false, ClaimEditingMode.DEFAULT, player.serverLevel());
+        this.deleteClaim(claim, false, ClaimMode.DEFAULT, player.serverLevel());
         if (toggle)
             claim.getOwnerPlayer().ifPresent(o -> PlayerClaimData.get(o).updateScoreboard());
         claim.toggleAdminClaim(player, toggle);
@@ -258,7 +257,7 @@ public class ClaimStorage implements IPermissionStorage {
         boolean enoughBlocks = claim.isAdminClaim() || data.isAdminIgnoreClaim() || newData.canUseClaimBlocks(diff);
         if (enoughBlocks) {
             Flan.log("Resizing claim {}", claim);
-            this.deleteClaim(claim, false, ClaimEditingMode.DEFAULT, player.serverLevel());
+            this.deleteClaim(claim, false, ClaimMode.DEFAULT, player.serverLevel());
             claim.copySizes(newClaim);
             this.addClaim(claim);
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
