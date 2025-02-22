@@ -1,10 +1,7 @@
 {
-  "defaultDescription": [
-    "Permission to pick up xp orbs"
-  ],
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:experience_bottle"
   },
   "order": 38

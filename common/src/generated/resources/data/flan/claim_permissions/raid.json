@@ -1,11 +1,7 @@
 {
-  "defaultDescription": [
-    "Permission to trigger raids in claim.",
-    "Wont prevent raids (just) outside"
-  ],
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:white_banner",
     "tag": {
       "BlockEntityTag": {

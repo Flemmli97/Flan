@@ -1,10 +1,7 @@
 {
-  "defaultDescription": [
-    "Permission to break things like minecarts or armor stands"
-  ],
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:command_block_minecart"
   },
   "order": 41

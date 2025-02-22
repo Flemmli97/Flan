@@ -1,10 +1,7 @@
 {
-  "defaultDescription": [
-    "Toggle firespread in claim"
-  ],
-  "defaultVal": false,
+  "default_value": false,
   "global": true,
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:blaze_powder"
   },
   "order": 55

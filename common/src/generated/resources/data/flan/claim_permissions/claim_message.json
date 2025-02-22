@@ -1,10 +1,7 @@
 {
-  "defaultDescription": [
-    "Permission to edit the enter/leave message"
-  ],
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:oak_sign"
   },
   "order": 48
