@@ -108,7 +108,7 @@ public class ClaimStorage implements IPermissionStorage {
     }
 
     public boolean createClaim(BlockPos pos1, BlockPos pos2, ServerPlayer player) {
-        boolean use3D = PlayerClaimData.get(player).getEditMode().is3d;
+        boolean use3D = PlayerClaimData.get(player).getClaimMode().is3d;
         if (!use3D) {
             if (pos1.getY() < pos2.getY())
                 pos1 = pos1.below(ConfigHandler.CONFIG.defaultClaimDepth);

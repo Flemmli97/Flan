@@ -219,7 +219,7 @@ public class PlayerClaimData implements IPlayerData {
             this.displayToAdd.add(new ClaimDisplay(display, this.player.getLevel(), type, height));
     }
 
-    public ClaimMode getEditMode() {
+    public ClaimMode getClaimMode() {
         if (this.editingClaim != null && this.editingClaim.is3d())
             return this.editMode.isSubclaim ? ClaimMode.SUBCLAIM_3D : ClaimMode.DEFAULT_3D;
         if (!ConfigHandler.CONFIG.main3dClaims && !this.editMode.isSubclaim)
@@ -327,7 +327,7 @@ public class PlayerClaimData implements IPlayerData {
             this.lastBlockTick = 0;
         }
         if (tool && ItemInteractEvents.canPlayerClaim(this.player.getLevel(), this.player)) {
-            this.claimingRange = this.getEditMode().is3d && this.editingCorner() != null ? 10 : 64;
+            this.claimingRange = this.getClaimMode().is3d && this.editingCorner() != null ? 10 : 64;
             BlockPos pos = ItemInteractEvents.rayTargetPos(this.player);
             if (pos != null && !pos.equals(this.firstCorner)) {
                 this.clientBlockDisplayTracker.displayFakeBlocks(this.display3D,
@@ -358,7 +358,7 @@ public class PlayerClaimData implements IPlayerData {
                 this.player.displayClientMessage(ClaimUtils.translatedText("flan.claimBlocksFormat",
                         this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks(), this.remainingClaimBlocks(), ChatFormatting.GOLD), false);
                 this.player.displayClientMessage(ClaimUtils.translatedText("flan.claimModeFormat",
-                        new TranslatableComponent(this.getEditMode().translationKey).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD), ChatFormatting.GOLD), true);
+                        new TranslatableComponent(this.getClaimMode().translationKey).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD), ChatFormatting.GOLD), true);
             }
             this.addDisplayClaim(currentClaim, EnumDisplayType.MAIN, this.player.blockPosition().getY());
         }

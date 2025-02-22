@@ -178,7 +178,7 @@ public class ItemInteractEvents {
 
     public static BlockPos rayTargetPos(ServerPlayer player) {
         PlayerClaimData data = PlayerClaimData.get(player);
-        return rayTargetPos(player, data.claimingRange, data.getEditMode().is3d && data.editingCorner() != null);
+        return rayTargetPos(player, data.claimingRange, data.getClaimMode().is3d && data.editingCorner() != null);
     }
 
     public static BlockPos rayTargetPos(ServerPlayer player, int range, boolean allowMiss) {
@@ -222,7 +222,7 @@ public class ItemInteractEvents {
         data.setClaimActionCooldown();
         if (claim != null) {
             if (claim.canInteract(player, BuiltinPermission.EDITCLAIM, target)) {
-                if (data.getEditMode().isSubclaim) {
+                if (data.getClaimMode().isSubclaim) {
                     Claim subClaim = claim.getSubClaim(target);
                     if (subClaim != null && data.currentEdit() == null) {
                         if (subClaim.isCorner(target)) {
@@ -246,7 +246,7 @@ public class ItemInteractEvents {
                             }
                         } else if (data.editingCorner() != null) {
                             if (!data.editingCorner().equals(target)) {
-                                Set<Claim> fl = claim.tryCreateSubClaim(data.editingCorner(), target);
+                                Set<Claim> fl = claim.tryCreateSubClaim(data.editingCorner(), target, data.getClaimMode().is3d);
                                 data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
                                 if (!fl.isEmpty()) {
                                     fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.CONFLICT, player.blockPosition().getY()));
@@ -277,9 +277,9 @@ public class ItemInteractEvents {
                 data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
                 player.displayClientMessage(ClaimUtils.translatedText("flan.cantClaimHere", ChatFormatting.RED), false);
             }
-        } else if (data.getEditMode().isSubclaim) {
+        } else if (data.getClaimMode().isSubclaim) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.wrongMode",
-                    new TranslatableComponent(data.getEditMode().translationKey)
+                    new TranslatableComponent(data.getClaimMode().translationKey)
                             .withStyle(ChatFormatting.AQUA), ChatFormatting.RED), false);
         } else {
             if (data.currentEdit() != null) {
