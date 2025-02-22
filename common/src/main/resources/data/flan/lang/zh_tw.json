@@ -22,7 +22,7 @@
   "flan.minClaimSize": "這太小了。最小領地大小為 %s",
   "flan.maxClaims": "已達到最大領地數量",
   "flan.landClaimDisabledWorld": "此世界已停用領地功能",
-  "flan.claimingMode": "領地模式設定為 %1$s",
+  "flan.claimMode": "領地模式設定為 %1$s",
   "flan.minClaimHeight": "最低需求高度為 %s",
   "flan.editMode": "編輯模式設定為 %1$s",
   "flan.notEnoughBlocks": "領地方塊不足",
