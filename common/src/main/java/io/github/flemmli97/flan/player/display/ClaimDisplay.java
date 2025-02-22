@@ -189,7 +189,7 @@ public class ClaimDisplay {
             for (BlockPos pos : this.pos.vertices) {
                 player.connection.send(new ClientboundLevelParticlesPacket(this.type.cornerParticle, true, pos.getX() + 0.5, pos.getY() + 0.5 + player.serverLevel().getRandom().nextDouble() * 1.5, pos.getZ() + 0.5, 0, 1, 0, 1, 0));
             }
-            for (BlockPos pos : this.pos.vertices) {
+            for (BlockPos pos : this.pos.edges) {
                 player.connection.send(new ClientboundLevelParticlesPacket(this.type.middleParticle, true, pos.getX() + 0.5, pos.getY() + 0.5 + player.serverLevel().getRandom().nextDouble() * 1.5, pos.getZ() + 0.5, 0, 1, 0, 1, 0));
             }
         }

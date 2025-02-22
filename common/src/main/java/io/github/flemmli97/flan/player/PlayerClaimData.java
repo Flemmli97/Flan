@@ -348,16 +348,21 @@ public class PlayerClaimData implements IPlayerData {
         if (!tool) {
             this.setEditingCorner(null);
             this.setEditClaim(null, 0);
+        }
+        if (!tool && !stick) {
             this.claimBlockMessage = false;
         } else if (!this.claimBlockMessage) {
             this.claimBlockMessage = true;
-            if (this.shouldDisplayClaimToolMessage()) {
+            if (tool && this.shouldDisplayClaimToolMessage()) {
                 this.player.displayClientMessage(ClaimUtils.translatedText("flan.claimBlocksFormat",
                         this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks(), this.remainingClaimBlocks(), ChatFormatting.GOLD), false);
                 this.player.displayClientMessage(ClaimUtils.translatedText("flan.claimModeFormat",
                         Component.translatable(this.getClaimMode().translationKey).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD), ChatFormatting.GOLD), true);
             }
-            this.addDisplayClaim(currentClaim, EnumDisplayType.MAIN, this.player.blockPosition().getY());
+            this.displayClaims(currentClaim);
+        }
+        if ((tool || stick) && this.player.tickCount % 20 == 0) {
+            this.displayClaims(currentClaim);
         }
         this.actionCooldown--;
         if (--this.trappedTick >= 0) {
@@ -398,6 +403,17 @@ public class PlayerClaimData implements IPlayerData {
         this.deathPickupTick--;
         if (!this.player.isDeadOrDying())
             this.calculateShouldDrop = true;
+    }
+
+    private void displayClaims(Claim currentClaim) {
+        if (ConfigHandler.CONFIG.nearbyClaimsToolDisplay > 0) {
+            for (Claim claim : ClaimStorage.get(this.player.serverLevel())
+                    .getNearbyClaims(this.player.serverLevel(), this.player.blockPosition(), ConfigHandler.CONFIG.nearbyClaimsToolDisplay, ConfigHandler.CONFIG.nearbyClaimsToolDisplay)) {
+                this.addDisplayClaim(claim, EnumDisplayType.MAIN, this.player.blockPosition().getY());
+            }
+        } else {
+            this.addDisplayClaim(currentClaim, EnumDisplayType.MAIN, this.player.blockPosition().getY());
+        }
     }
 
     private boolean shouldDisplayClaimToolMessage() {

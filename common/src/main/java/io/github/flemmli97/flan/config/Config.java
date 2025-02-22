@@ -53,6 +53,7 @@ public class Config {
     public CompoundTag inspectionNBT = new CompoundTag();
     public boolean main3dClaims = true;
     public int minHeight = 10;
+    public int nearbyClaimsToolDisplay = 24;
 
     public int claimDisplayTime = 600;
     public boolean particleDisplay = false;
@@ -191,6 +192,7 @@ public class Config {
                     .getOrThrow();
             this.main3dClaims = ConfigHandler.fromJson(obj, "main3dClaims", this.main3dClaims);
             this.minHeight = ConfigHandler.fromJson(obj, "minHeight3d", this.minHeight);
+            this.nearbyClaimsToolDisplay = ConfigHandler.fromJson(obj, "nearbyClaimsToolDisplay", this.nearbyClaimsToolDisplay);
 
             this.claimDisplayTime = ConfigHandler.fromJson(obj, "claimDisplayTime", this.claimDisplayTime);
             this.particleDisplay = ConfigHandler.fromJson(obj, "particleDisplay", this.particleDisplay);
@@ -306,6 +308,7 @@ public class Config {
                 .getOrThrow());
         obj.addProperty("main3dClaims", this.main3dClaims);
         obj.addProperty("minHeight3d", this.minHeight);
+        obj.addProperty("nearbyClaimsToolDisplay", this.nearbyClaimsToolDisplay);
 
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
         obj.addProperty("particleDisplay", this.particleDisplay);

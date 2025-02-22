@@ -31,7 +31,7 @@ public class CreateCompat {
             int rZ = Mth.ceil(aabb.getZsize() * 0.5);
 
             // All claims different from the current one
-            Set<Claim> claims = storage.getNearbyClaims(pos, rX, rZ);
+            Set<Claim> claims = storage.getNearbyClaims(serverLevel, pos, rX, rZ);
             claims.remove(storage.getClaimAt(pos));
             if (claims.isEmpty())
                 return true;
