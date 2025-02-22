@@ -247,7 +247,7 @@ public class CommandClaim {
         BlockPos from = BlockPosArgument.getLoadedBlockPos(context, "from");
         BlockPos to = BlockPosArgument.getLoadedBlockPos(context, "to");
         Claim claim = storage.createAdminClaim(from, to, level, context.getSource().getEntity() instanceof ServerPlayer player && PlayerClaimData.get(player)
-                .getEditMode().is3d);
+                .getClaimMode().is3d);
         if (claim == null) {
             context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.claimCreationFailCommand"), true);
             return 0;
@@ -324,7 +324,7 @@ public class CommandClaim {
             ClaimUtils.noClaimMessage(player);
             return 0;
         }
-        if (!data.getEditMode().isSubclaim) {
+        if (!data.getClaimMode().isSubclaim) {
             ClaimMenuScreenHandler.openClaimMenu(player, claim);
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
         } else {
@@ -352,7 +352,7 @@ public class CommandClaim {
     private static int nameClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         PlayerClaimData data = PlayerClaimData.get(player);
-        if (!data.getEditMode().isSubclaim) {
+        if (!data.getClaimMode().isSubclaim) {
             Claim claim = ClaimUtils.checkReturn(player, BuiltinPermission.EDITPERMS, ClaimUtils.genericNoPermMessage(player));
             if (claim == null)
                 return 0;
@@ -435,7 +435,7 @@ public class CommandClaim {
             player.displayClientMessage(ClaimUtils.translatedText("flan.noClaim", ChatFormatting.RED), false);
             return 0;
         }
-        if (data.getEditMode().isSubclaim) {
+        if (data.getClaimMode().isSubclaim) {
             Claim sub = claim.getSubClaim(player.blockPosition());
             if (sub != null) {
                 List<Component> info = sub.infoString(player, infoType);
@@ -463,7 +463,7 @@ public class CommandClaim {
         });
         if (!check)
             return 0;
-        if (!storage.deleteClaim(claim, true, PlayerClaimData.get(player).getEditMode(), player.serverLevel())) {
+        if (!storage.deleteClaim(claim, true, PlayerClaimData.get(player).getClaimMode(), player.serverLevel())) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.deleteSubClaimError", ChatFormatting.DARK_RED), false);
         } else {
             player.displayClientMessage(ClaimUtils.translatedText("flan.deleteClaim", ChatFormatting.RED), false);
@@ -477,7 +477,7 @@ public class CommandClaim {
         if (data.confirmedDeleteAll()) {
             for (ServerLevel world : player.getServer().getAllLevels()) {
                 ClaimStorage storage = ClaimStorage.get(world);
-                storage.allClaimsFromPlayer(player.getUUID()).forEach((claim) -> storage.deleteClaim(claim, true, PlayerClaimData.get(player).getEditMode(), player.serverLevel()));
+                storage.allClaimsFromPlayer(player.getUUID()).forEach((claim) -> storage.deleteClaim(claim, true, PlayerClaimData.get(player).getClaimMode(), player.serverLevel()));
             }
             player.displayClientMessage(ClaimUtils.translatedText("flan.deleteAllClaim", ChatFormatting.GOLD), false);
             data.setConfirmDeleteAll(false);
@@ -578,7 +578,7 @@ public class CommandClaim {
         }
         PlayerClaimData data = PlayerClaimData.get(player);
         data.setEditMode(mode);
-        context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.claimMode", Component.translatable(data.getEditMode().translationKey)
+        context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.claimMode", Component.translatable(data.getClaimMode().translationKey)
                 .withStyle(ChatFormatting.AQUA), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
@@ -699,7 +699,7 @@ public class CommandClaim {
             ClaimUtils.noClaimMessage(player);
             return 0;
         }
-        if (PlayerClaimData.get(player).getEditMode().isSubclaim) {
+        if (PlayerClaimData.get(player).getClaimMode().isSubclaim) {
             Claim sub = claim.getSubClaim(player.blockPosition());
             if (sub != null)
                 claim = sub;
@@ -747,7 +747,7 @@ public class CommandClaim {
             ClaimUtils.noClaimMessage(player);
             return 0;
         }
-        if (PlayerClaimData.get(player).getEditMode().isSubclaim) {
+        if (PlayerClaimData.get(player).getClaimMode().isSubclaim) {
             Claim sub = claim.getSubClaim(player.blockPosition());
             if (sub != null)
                 claim = sub;
@@ -799,7 +799,7 @@ public class CommandClaim {
             ClaimUtils.noClaimMessage(player);
             return 0;
         }
-        if (PlayerClaimData.get(player).getEditMode().isSubclaim) {
+        if (PlayerClaimData.get(player).getClaimMode().isSubclaim) {
             Claim sub = claim.getSubClaim(player.blockPosition());
             if (sub != null)
                 claim = sub;
@@ -842,7 +842,7 @@ public class CommandClaim {
         ServerPlayer player = context.getSource().getPlayerOrException();
         Claim claim = ClaimStorage.get(player.serverLevel()).getClaimAt(player.blockPosition());
         PlayerClaimData data = PlayerClaimData.get(player);
-        if (data.getEditMode().isSubclaim) {
+        if (data.getClaimMode().isSubclaim) {
             Claim sub = claim.getSubClaim(player.blockPosition());
             if (sub != null)
                 claim = sub;
@@ -986,7 +986,7 @@ public class CommandClaim {
         Claim rootClaim = ClaimUtils.checkReturn(player, BuiltinPermission.CLAIMMESSAGE, ClaimUtils.genericNoPermMessage(player));
         if (rootClaim == null)
             return 0;
-        Claim claim = data.getEditMode().isSubclaim ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
+        Claim claim = data.getClaimMode().isSubclaim ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
         if (claim == null)
             return 0;
         boolean sub = StringArgumentType.getString(context, "title").equals("subtitle");
@@ -1020,7 +1020,7 @@ public class CommandClaim {
         Claim rootClaim = ClaimUtils.checkReturn(player, BuiltinPermission.CLAIMMESSAGE, ClaimUtils.genericNoPermMessage(player));
         if (rootClaim == null)
             return 0;
-        Claim claim = data.getEditMode().isSubclaim ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
+        Claim claim = data.getClaimMode().isSubclaim ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
         if (claim == null)
             return 0;
         String result = switch (type) {
@@ -1041,7 +1041,7 @@ public class CommandClaim {
         Claim rootClaim = ClaimUtils.checkReturn(player, BuiltinPermission.CLAIMMESSAGE, ClaimUtils.genericNoPermMessage(player));
         if (rootClaim == null)
             return 0;
-        Claim claim = data.getEditMode().isSubclaim ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
+        Claim claim = data.getClaimMode().isSubclaim ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
         if (claim == null)
             return 0;
         String value = context.getArgument("entry", ResourceOrTagKeyArgument.Result.class).asPrintable();
