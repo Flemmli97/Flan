@@ -6,9 +6,17 @@
 
 Server side land claiming mod for fabric.
 
-You can now PR translations into the mod. Translations should go under `common/src/main/resources/data/flan/lang`
+### Translations
 
-To use flan in your dependencies add the following snippet to your build.gradle
+Translations for Flan depends on the community. Submitting a translation to the mod is simple:
+1. Fork this repository
+2. Create a translation `.json`-file under `common/src/main/resources/data/flan/lang`.  
+   Use the english translation under `common/src/generated/resources/data/flan/lang` as reference.
+3. Create a PR to submit your translation
+
+### Devs
+
+If you want to add integration to flan first add the following snippet to your build.gradle
 ```groovy
 repositories {
     maven {
@@ -31,3 +39,5 @@ dependencies {
     runtimeOnly fg.deobf("io.github.flemmli97:flan:${minecraft_version}-${flan_version}-${mod_loader}")
 }
 ```
+
+To check if an action can be done simply call `ClaimHandler#canInteract(ServerPlayer player, BlockPos pos, ResourceLocation permission)`
