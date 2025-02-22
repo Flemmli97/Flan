@@ -10,7 +10,6 @@ Flan 1.11.5
 - Fix 3d subclaims not possible
 - Update command formatting and translations
 - Fix particle display not showing claim edges
-- Particle edges follow player height now
 - Claim tools now show nearby claims instead of only the one the player is currently in
 
 Flan 1.11.4
