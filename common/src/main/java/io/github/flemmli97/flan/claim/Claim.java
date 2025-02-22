@@ -405,11 +405,13 @@ public class Claim implements IPermissionContainer {
         return uuid;
     }
 
-    public Set<Claim> tryCreateSubClaim(BlockPos pos1, BlockPos pos2) {
+    public Set<Claim> tryCreateSubClaim(BlockPos pos1, BlockPos pos2, boolean is3d) {
         //No sub sub claims
         if (this.parentClaim() != null)
             return Set.of(this.parentClaim());
-        Claim sub = new Claim(pos1, new BlockPos(pos2.getX(), 0, pos2.getZ()), this.owner, this.level);
+        Claim sub = new Claim(pos1, pos2, this.owner, this.level);
+        if (is3d)
+            sub.withHeight(Math.max(pos1.getY(), pos2.getY()));
         sub.setClaimID(this.generateUUID());
         Set<Claim> conflicts = new HashSet<>();
         for (Claim other : this.subClaims)
