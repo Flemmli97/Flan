@@ -68,7 +68,6 @@ public class CommandHelp {
     public static int helpCmd(CommandContext<CommandSourceStack> context, String command) {
         List<String> cmdHelp = lang(context, "flan.command." + command);
         List<String> header = lang(context, "flan.commands.syntaxHeader");
-
         for (int i = 0; i < cmdHelp.size(); i++) {
             if (i == 0) {
                 for (String headerTxt : header) {
