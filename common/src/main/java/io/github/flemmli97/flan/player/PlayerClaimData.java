@@ -31,6 +31,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -74,8 +75,7 @@ public class PlayerClaimData implements IPlayerData {
     private int lastBlockTick, trappedTick = -1, deathPickupTick;
     private Vec3 trappedPos;
     private BlockPos tpPos;
-    private ClaimEditingMode editMode = ClaimEditingMode.DEFAULT;
-    private ClaimingMode claimingMode = ClaimingMode.DEFAULT;
+    private ClaimMode editMode = ClaimMode.DEFAULT;
     private Claim editingClaim;
     private ClaimDisplay displayEditing;
 
@@ -219,26 +219,16 @@ public class PlayerClaimData implements IPlayerData {
             this.displayToAdd.add(new ClaimDisplay(display, this.player.getLevel(), type, height));
     }
 
-    public ClaimEditingMode getEditMode() {
+    public ClaimMode getEditMode() {
+        if (this.editingClaim != null && this.editingClaim.is3d())
+            return this.editMode.isSubclaim ? ClaimMode.SUBCLAIM_3D : ClaimMode.DEFAULT_3D;
+        if (!ConfigHandler.CONFIG.main3dClaims && !this.editMode.isSubclaim)
+            return ClaimMode.DEFAULT;
         return this.editMode;
     }
 
-    public void setEditMode(ClaimEditingMode mode) {
+    public void setEditMode(ClaimMode mode) {
         this.editMode = mode;
-        this.setEditClaim(null, 0);
-        this.setEditingCorner(null);
-    }
-
-    public ClaimingMode getClaimingMode() {
-        if (this.editingClaim != null && this.editingClaim.is3d())
-            return ClaimingMode.DIMENSION_3D;
-        if (!ConfigHandler.CONFIG.main3dClaims && this.editMode == ClaimEditingMode.DEFAULT)
-            return ClaimingMode.DEFAULT;
-        return this.claimingMode;
-    }
-
-    public void setClaimingMode(ClaimingMode claimingMode) {
-        this.claimingMode = claimingMode;
         this.setEditClaim(null, 0);
         this.setEditingCorner(null);
     }
@@ -337,7 +327,7 @@ public class PlayerClaimData implements IPlayerData {
             this.lastBlockTick = 0;
         }
         if (tool && ItemInteractEvents.canPlayerClaim(this.player.getLevel(), this.player)) {
-            this.claimingRange = this.getClaimingMode() == ClaimingMode.DIMENSION_3D && this.editingCorner() != null ? 10 : 64;
+            this.claimingRange = this.getEditMode().is3d && this.editingCorner() != null ? 10 : 64;
             BlockPos pos = ItemInteractEvents.rayTargetPos(this.player);
             if (pos != null && !pos.equals(this.firstCorner)) {
                 this.clientBlockDisplayTracker.displayFakeBlocks(this.display3D,
@@ -367,8 +357,10 @@ public class PlayerClaimData implements IPlayerData {
             if (this.shouldDisplayClaimToolMessage()) {
                 this.player.displayClientMessage(ClaimUtils.translatedText("flan.claimBlocksFormat",
                         this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks(), this.remainingClaimBlocks(), ChatFormatting.GOLD), false);
-                this.addDisplayClaim(currentClaim, EnumDisplayType.MAIN, this.player.blockPosition().getY());
+                this.player.displayClientMessage(ClaimUtils.translatedText("flan.claimModeFormat",
+                        new TranslatableComponent(this.getEditMode().translationKey).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD), ChatFormatting.GOLD), true);
             }
+            this.addDisplayClaim(currentClaim, EnumDisplayType.MAIN, this.player.blockPosition().getY());
         }
         this.actionCooldown--;
         if (--this.trappedTick >= 0) {
