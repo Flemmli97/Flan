@@ -9,8 +9,6 @@ import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
-import io.github.flemmli97.flan.player.ClaimEditingMode;
-import io.github.flemmli97.flan.player.ClaimingMode;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.player.display.EnumDisplayType;
 import net.minecraft.ChatFormatting;
@@ -179,7 +177,7 @@ public class ItemInteractEvents {
 
     public static BlockPos rayTargetPos(ServerPlayer player) {
         PlayerClaimData data = PlayerClaimData.get(player);
-        return rayTargetPos(player, data.claimingRange, data.getClaimingMode() == ClaimingMode.DIMENSION_3D && data.editingCorner() != null);
+        return rayTargetPos(player, data.claimingRange, data.getEditMode().is3d && data.editingCorner() != null);
     }
 
     public static BlockPos rayTargetPos(ServerPlayer player, int range, boolean allowMiss) {
@@ -223,7 +221,7 @@ public class ItemInteractEvents {
         data.setClaimActionCooldown();
         if (claim != null) {
             if (claim.canInteract(player, BuiltinPermission.EDITCLAIM, target)) {
-                if (data.getEditMode() == ClaimEditingMode.SUBCLAIM) {
+                if (data.getEditMode().isSubclaim) {
                     Claim subClaim = claim.getSubClaim(target);
                     if (subClaim != null && data.currentEdit() == null) {
                         if (subClaim.isCorner(target)) {
@@ -278,8 +276,10 @@ public class ItemInteractEvents {
                 data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
                 player.displayClientMessage(ClaimUtils.translatedText("flan.cantClaimHere", ChatFormatting.RED), false);
             }
-        } else if (data.getEditMode() == ClaimEditingMode.SUBCLAIM) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.wrongMode", data.getEditMode(), ChatFormatting.RED), false);
+        } else if (data.getEditMode().isSubclaim) {
+            player.displayClientMessage(ClaimUtils.translatedText("flan.wrongMode",
+                    Component.translatable(data.getEditMode().translationKey)
+                            .withStyle(ChatFormatting.AQUA), ChatFormatting.RED), false);
         } else {
             if (data.currentEdit() != null) {
                 storage.resizeClaim(data.currentEdit(), data.editingCorner(), target, player);

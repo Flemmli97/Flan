@@ -14,7 +14,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.flemmli97.flan.Flan;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -75,7 +74,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
                 r -> {
                     if (r.startsWith("#"))
                         return DataResult.success(TagKey.create(key, new ResourceLocation(r.substring(1))));
-                    return DataResult.error(()-> "Not a tag value" + r);
+                    return DataResult.error(() -> "Not a tag value" + r);
                 },
                 l -> DataResult.success("#" + l.location())
         ), codec);
