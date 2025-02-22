@@ -299,7 +299,7 @@ public class ClaimStorage implements IPermissionStorage {
     /**
      * Gets claims in a radius around the position.
      */
-    public Set<Claim> getNearbyClaims(BlockPos pos, int rX, int rZ) {
+    public Set<Claim> getNearbyClaims(ServerLevel level, BlockPos pos, int rX, int rZ) {
         ChunkPos c = new ChunkPos(new BlockPos(pos.getX() - rX, pos.getY(), pos.getZ() - rZ));
         Set<Claim> affected = new HashSet<>();
         int posX;
@@ -313,7 +313,7 @@ public class ClaimStorage implements IPermissionStorage {
                     int maxX = Math.min(posX + 15, pos.getX() + rX);
                     int maxZ = Math.min(posZ + 15, pos.getZ() + rZ);
                     // AABB that defines the area for this chunk
-                    AABB bb = new AABB(minX, 0, minZ, maxX, 0, maxZ);
+                    AABB bb = new AABB(minX, level.getMinBuildHeight(), minZ, maxX, level.getMaxBuildHeight(), maxZ);
                     list.stream().filter(claim -> claim.intersects(bb)).forEach(affected::add);
                 }
             }
@@ -324,7 +324,7 @@ public class ClaimStorage implements IPermissionStorage {
     public boolean canInteract(BlockPos pos, int radius, ServerPlayer player, ResourceLocation perm, boolean message) {
         boolean realPlayer = player != null && player.getClass().equals(ServerPlayer.class);
         message = message && realPlayer;
-        Set<Claim> affected = this.getNearbyClaims(pos, radius, radius);
+        Set<Claim> affected = this.getNearbyClaims(player.getLevel(), pos, radius, radius);
         affected.remove(this.getClaimAt(pos));
         for (BlockPos ipos : BlockPos.betweenClosed(pos.getX() - radius, pos.getY(), pos.getZ() - radius,
                 pos.getX() + radius, pos.getY(), pos.getZ() + radius)) {
