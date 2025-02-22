@@ -1,3 +1,18 @@
+Flan 1.11.5
+================
+- Claim permission fields now use snake_case:
+  - Old permission json will still work but throw a warning
+  - Removed description field as thats done via a language file
+    - name key is `flan.permission.<id>`
+    - description key is `flan.permission.<id>.desc`. see the mods language file for examples
+- Removed `use3d` command. Its now merged with `switchMode`
+- Show mode when holding tool
+- Fix 3d subclaims not possible
+- Update command formatting and translations
+- Fix particle display not showing claim edges
+- Particle edges follow player height now
+- Claim tools now show nearby claims instead of only the one the player is currently in
+
 Flan 1.11.4
 ================
 - Fix claim downwards extension. Should fix disappearing claim issue
