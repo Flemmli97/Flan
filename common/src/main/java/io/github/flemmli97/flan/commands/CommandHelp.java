@@ -10,6 +10,7 @@ import io.github.flemmli97.linguabib.api.LanguageAPI;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,26 +31,34 @@ public class CommandHelp {
         subCommands.remove("?");
         int max = subCommands.size() / 8;
         int page = Math.min(pageC, max);
-        context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.helpHeader", page, ChatFormatting.GOLD), false);
+        List<String> header = lang(context, "flan.commands.helpHeader");
+        for (String headerTxt : header) {
+            context.getSource().sendSuccess(() -> ClaimUtils.translatedText(headerTxt, page, ChatFormatting.GREEN), false);
+        }
         for (int i = 8 * page; i < 8 * (page + 1); i++)
             if (i < subCommands.size()) {
                 String sub = subCommands.get(i);
-                MutableComponent cmdText = ClaimUtils.translatedText("- " + sub, ChatFormatting.GRAY);
+                MutableComponent cmdText = ClaimUtils.translatedText("flan.commands.helpCmdEntry", subCommands.get(i), ChatFormatting.GRAY);
                 context.getSource().sendSuccess(() -> cmdText.withStyle(cmdText.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flan help cmd " + sub))), false);
             }
-        MutableComponent txt = ClaimUtils.translatedText((page > 0 ? "  " : "") + " ", ChatFormatting.DARK_GREEN);
+        MutableComponent pageText = null;
         if (page > 0) {
-            MutableComponent pageTextBack = ClaimUtils.translatedText("<<", ChatFormatting.DARK_GREEN);
+            MutableComponent pageTextBack = ClaimUtils.translatedText("flan.commands.help.previous", ChatFormatting.DARK_GREEN);
             pageTextBack.withStyle(pageTextBack.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flan help " + (page - 1))));
-            txt = pageTextBack.append(txt);
+            pageText = pageTextBack;
         }
         if (page < max) {
-            MutableComponent pageTextNext = ClaimUtils.translatedText(">>");
+            MutableComponent pageTextNext = ClaimUtils.translatedText("flan.commands.help.next", ChatFormatting.DARK_GREEN);
             pageTextNext.withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flan help " + (page + 1))));
-            txt = txt.append(pageTextNext);
+            if (pageText != null) {
+                pageText = pageText.append(Component.literal(" | ").withStyle(ChatFormatting.DARK_GRAY)).append(pageTextNext);
+            } else
+                pageText = pageTextNext;
         }
-        MutableComponent pageText = txt;
-        context.getSource().sendSuccess(() -> pageText, false);
+        if (pageText != null) {
+            MutableComponent txt = pageText;
+            context.getSource().sendSuccess(() -> txt, false);
+        }
         return Command.SINGLE_SUCCESS;
     }
 
@@ -60,13 +69,14 @@ public class CommandHelp {
 
     public static int helpCmd(CommandContext<CommandSourceStack> context, String command) {
         List<String> cmdHelp = lang(context, "flan.command." + command);
-        context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.helpCmdHeader", ChatFormatting.DARK_GREEN), false);
+        List<String> header = lang(context, "flan.commands.syntaxHeader");
         for (int i = 0; i < cmdHelp.size(); i++) {
             String cmp = cmdHelp.get(i);
             if (i == 0) {
-                context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.helpCmdSyntax",
-                        ClaimUtils.translatedText(cmp), ChatFormatting.GOLD), false);
-                context.getSource().sendSuccess(() -> ClaimUtils.translatedText(""), false);
+                for (String headerTxt : header) {
+                    context.getSource().sendSuccess(() -> ClaimUtils.translatedText(headerTxt,
+                            ClaimUtils.translatedText(cmp), ChatFormatting.GREEN), false);
+                }
             } else {
                 context.getSource().sendSuccess(() -> ClaimUtils.translatedText(cmp, ChatFormatting.GOLD), false);
             }

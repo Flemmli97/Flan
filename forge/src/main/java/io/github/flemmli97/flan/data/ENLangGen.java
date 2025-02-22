@@ -9,6 +9,7 @@ import io.github.flemmli97.linguabib.api.ServerLangGen;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -122,9 +123,6 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.claimGroupInfoHeader", "Groups: ");
         this.add("flan.claimGroupPerms", "    Permissions: %1$s");
         this.add("flan.claimGroupPlayers", "    Players: %1$s");
-        this.add("flan.helpHeader", "Available subcommands are (page %s):");
-        this.add("flan.helpCmdHeader", "====================");
-        this.add("flan.helpCmdSyntax", "Syntax: %1$s");
 
         this.add("flan.screenEnableText", "Enabled: %1$s");
         this.add("flan.screenUneditable", "Non Editable!");
@@ -225,37 +223,56 @@ public class ENLangGen extends ServerLangGen {
             this.add(perm.translationKeyDescription(), entry.getValue().desc.toArray(String[]::new));
         }
 
+        this.add("flan.commands.helpHeader", "====================",
+                "  Available Subcommands (Page %s)", "====================");
+        this.add("flan.commands.helpCmdEntry", "▶ %1$s");
+        this.add("flan.commands.help.next", "Next >>");
+        this.add("flan.commands.help.previous", "<< Previous");
+        this.add("flan.commands.syntaxHeader", "====================", "  Syntax: %1$s", "====================");
+
         this.add("flan.command.help", "help <page> | (cmd <command>)", "Shows all available commands or info for the given command.");
-        this.add("flan.command.menu", "menu", "When standing in a claim you have permissions for opens the claim menu.");
-        this.add("flan.command.claimInfo", "claimInfo", "Prints infos about the claim you're standing in.");
-        this.add("flan.command.delete", "delete", "Deletes the current claim.");
-        this.add("flan.command.deleteAll", "deleteAll", "Deletes all your claims (you need to double type to confirm it so no accidents).");
-        this.add("flan.command.deleteSubClaim", "deleteSubClaim", "Deletes the current subclaim.");
-        this.add("flan.command.deleteAllSubClaims", "deleteAllSubClaims", "Deletes all subclaim of the current claim.");
-        this.add("flan.command.list", "list <player>", "Lists all claims you have. If op also gives ability to list other players claims.");
-        this.add("flan.command.switchMode", "switchMode", "Switch between normal and subclaim mode.");
-        this.add("flan.command.group", "group (add | remove <name>) | (players add | remove <player> [overwrite])", "- Adds/removes the group with that name. Also editable via the claim menu.", "- Adds/remove a player to the group. If overwrite then will overwrite the players current group else does nothing. Also editable via the claim menu.");
-        this.add("flan.command.transferClaim", "transferClaim <player>", "Gives ownership of the claim to the specified player. Only works if you're the claim owner.");
-        this.add("flan.command.addClaim", "addClaim (<x y z> <x y z>) | all | (rect x z)", "Creates a claim with the given positions. Same as using the claim tool.", "<all> uses up all remaining blocks for a squared claim centered around the player", "<rect> creates a rectangular claim centered around the player");
-        this.add("flan.command.permission", "permission {global | (group <name>) | (personal <name>)} <permission> true | false | default", " Sets global/group/personal permissions. Also editable via the claim menu (for group perm right click on the group in the menu).");
-        this.add("flan.command.personalGroups", "personalGroups", "Opens the gui to edit personal groups.");
-        this.add("flan.command.sellBlocks", "sellBlocks <amount>", "Sells <amount> claimblocks. Needs gunpowder currency installed.");
-        this.add("flan.command.buyBlocks", "buyBlocks <amount>", "Buys <amount> claimblocks. Needs gunpowder currency installed.");
-        this.add("flan.command.trapped", "trapped", "If in a claim not owned by the player attempts to teleport the player out of it after 5 seconds.");
-        this.add("flan.command.unlockDrops", "unlockDrops <players>", "Unlocks dropped items from death so other players can pick them up too. Or all of the given players (needs OP)");
+        this.add("flan.command.add", "add { <from> <to> [dimension] [player] } | all | { rect <x> <z> }",
+                "Creates a claim with the given positions. Same as using the claim tool.",
+                "▶ all: Uses up all remaining blocks for a squared claim centered around the player",
+                "▶ rect: Creates a rectangular claim of given size centered around the player");
+        this.add("flan.command.expand", "expand <amount>", "Expands the current claim by the given amount in the direction the player is looking");
+        this.add("flan.command.menu", "menu", "Opens the claim menu at the players position");
         this.add("flan.command.setHome", "setHome", "Standing in a claim with sufficient permission sets that claims home to the players position");
-        this.add("flan.command.teleport", "teleport self | admin | (other <player>) (<claim name> | <claim uuid>)", "Teleport to the given claims home position. Use admin to teleport to admin claims");
-        this.add("flan.command.name", "name self <name>", "Sets the current claims name");
-        this.add("flan.command.claimMessage", "claimMessage (enter | leave) (title | subtitle) (string | text) <value>", "Sets the claims message. Use \"$empty\" to remove the message");
-        this.add("flan.command.ignoreList", "ignoreList (add | remove) <type> <value>", "Adds/Removes an entry to the claim specific ignore list");
+        this.add("flan.command.trapped", "trapped", "If in a claim not owned by the player attempts to teleport the player out of it after 5 seconds.");
+        this.add("flan.command.name", "name <name>", "Sets the current claims name");
+        this.add("flan.command.unlockDrops", "unlockDrops [players]", "Unlocks dropped items from death so other players can pick them up too. Or all of the given players (needs OP)");
+        this.add("flan.command.personalGroups", "personalGroups", "Opens the gui to edit personal groups.");
+        this.add("flan.command.info", "info [type]", "Prints infos about the claim at the current position");
+        this.add("flan.command.transferClaim", "transferClaim <player>", "Gives ownership of the claim to the specified player. Only works if you're the claim owner.");
+        this.add("flan.command.delete", "delete", "Deletes the current claim.");
+        this.add("flan.command.deleteAll", "deleteAll", "Deletes all your claims (requires confirmation).");
+        this.add("flan.command.deleteSubClaim", "deleteSubClaim", "Deletes the current subclaim.");
+        this.add("flan.command.deleteAllSubClaims", "deleteAllSubClaims", "Deletes all subclaims of the current claim.");
+        this.add("flan.command.list", "list [player]", "Lists all claims you have. If op also gives ability to list other players claims.");
+        this.add("flan.command.switchMode", "switchMode <mode>", "Switch the claiming mode");
+        this.add("flan.command.buy", "buy <amount>", "Buys <amount> claimblocks. Needs gunpowder currency installed.");
+        this.add("flan.command.sell", "sell <amount>", "Sells <amount> claimblocks. Needs gunpowder currency installed.");
+        this.add("flan.command.claimMessage", "claimMessage <enter | leave> <title | subtitle> <string | text> <value>", "Sets the claims message. Use \"$empty\" to remove the message",
+                "▶ string: Simple string only",
+                "▶ text: Allows minecrafts formatted text");
+        this.add("flan.command.group", "group { <add | remove> <name> } | { players <add | remove> <group> <player> [overwrite] }",
+                "▶ add|remove: Adds/removes the group with that name. Also editable via the claim menu.",
+                "▶ players: Adds/remove a player to/from the group. If overwrite then will overwrite the players current group else does nothing. Also editable via the claim menu.");
+        this.add("flan.command.fakePlayer", "fakePlayer <add | remove> <uuid>", "Adds/remove a fakeplayer to/from the claim");
+        this.add("flan.command.teleport", "teleport { <self | global> <claim name | claim uuid> } | { other <player> <claim name | claim uuid> }", "Teleport to the given claims home position. Use global to teleport to admin claims");
+        this.add("flan.command.permission", "permission { global | (<group | personal> <name>) } <permission> <true | false | default>", " Sets global/group/personal permissions. Also editable via the claim menu (for group perm right click on the group in the menu).");
+        this.add("flan.command.ignoreList", "ignoreList <add | remove> <" + Arrays.stream(CustomInteractListScreenHandler.Type.values()).map(t -> t.commandKey)
+                        .collect(Collectors.joining(" | ")) + "> <value>",
+                "Add/remove an entry to/from the claims ignore list. Interactions in this list bypass permission checks");
 
         this.add("flan.command.reload", "reload", "Reloads the config ingame.");
-        this.add("flan.command.adminMode", "adminMode", "Switches to admin mode ignoring all claims.");
+        this.add("flan.command.bypass", "bypass", "Switches to admin mode ignoring all claims and permissions.");
         this.add("flan.command.readGriefPrevention", "readGriefPreventionData", "Parses data from the GriefPrevention plugin to Flan");
-        this.add("flan.command.setAdminClaim", "setAdminClaim", "Sets a claim to an admin claim.");
-        this.add("flan.command.listAdminClaims", "listAdminClaim", "Lists all admin claims in the current world.");
+        this.add("flan.command.setAdminClaim", "setAdminClaim <true | false>", "Sets a claim to an admin claim.");
+        this.add("flan.command.listAdminClaims", "listAdminClaims", "Lists all admin claims in the current world.");
         this.add("flan.command.adminDelete", "adminDelete [all <player>]", "Force deletes the current claim or deletes all claims from the specified player.");
-        this.add("flan.command.giveClaimBlocks", "giveClaimBlocks <amount>", "Gives a player additional claim blocks.");
+        this.add("flan.command.giveClaimBlocks", "giveClaimBlocks <amount> | { base <amount> }", "Gives a player additional claim blocks.",
+                "▶ base: Gives base blocks instead of additional blocks");
     }
 
     @Override
