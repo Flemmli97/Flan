@@ -19,7 +19,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -36,10 +35,9 @@ public class BuySellHandler {
 
     public static final Codec<ItemStack> ITEM_STACK_CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(BuiltInRegistries.ITEM.byNameCodec().fieldOf("id").forGetter(ItemStack::getItem),
-                    ExtraCodecs.POSITIVE_INT.optionalFieldOf("Count").forGetter(stack -> stack.getCount() == 1 ? Optional.empty() : Optional.of(stack.getCount())),
                     CompoundTag.CODEC.optionalFieldOf("tag").forGetter((itemStack) -> Optional.ofNullable(itemStack.getTag()))
-            ).apply(instance, (item, count, tag) -> {
-                ItemStack stack = new ItemStack(item, count.orElse(1));
+            ).apply(instance, (item, tag) -> {
+                ItemStack stack = new ItemStack(item, 1);
                 tag.ifPresent(stack::setTag);
                 return stack;
             }));
