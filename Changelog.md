@@ -1,6 +1,7 @@
 Flan 1.11.6
 ================
 - Update buy/sell handler. Old configs will be auto converted. Check the wiki for new format
+  - https://github.com/Flemmli97/Flan/wiki/Config#buysell-handler
 
 Flan 1.11.5
 ================
