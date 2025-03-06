@@ -92,15 +92,11 @@ public class BuySellHandler {
                 check:
                 for (BuyItem ing : this.buyItems) {
                     for (ItemStack stack : player.getInventory().items) {
-                        if (ing.predicate().matches(stack)) {
+                        if (this.matches(ing.predicate(), stack)) {
                             if (stack.isDamageableItem()) {
                                 if (stack.getDamageValue() != 0) {
                                     continue;
                                 }
-                            }
-                            //Ignore "special" items
-                            if (!this.isJustRenamedItem(stack)) {
-                                continue;
                             }
                             float toPay = blocks - payed;
                             int count = Math.min(stack.getCount(), (int) (toPay / ing.amount()));
@@ -124,8 +120,8 @@ public class BuySellHandler {
                     stack.getFirst().shrink(stack.getSecond());
                 }
                 Component items = Component.translatable("flan.buy_sell.items")
-                                .withStyle(Style.EMPTY.applyFormat(ChatFormatting.AQUA)
-                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(fromResults(bought)))));
+                        .withStyle(Style.EMPTY.applyFormat(ChatFormatting.AQUA)
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(fromResults(bought)))));
                 data.setAdditionalClaims(data.getAdditionalClaims() + payed);
                 message.accept(ClaimUtils.translatedText("flan.buySuccessItem", payed, items));
                 return true;
@@ -211,15 +207,21 @@ public class BuySellHandler {
         return false;
     }
 
-    private boolean isJustRenamedItem(ItemStack stack) {
-        if (!stack.hasTag())
-            return true;
-        if (stack.getTag().getAllKeys()
-                .stream().allMatch(s -> s.equals("Damage") || s.equals("RepairCost") || s.equals("display"))) {
-            CompoundTag tag = stack.getTag().getCompound("display");
-            return tag.contains("Name") && tag.size() == 1;
+    private boolean matches(ItemPredicate predicate, ItemStack stack) {
+        ItemStack def = new ItemStack(stack.getItem());
+        boolean onlyRenamed = true;
+        // If predicate is simple this should match the default too.
+        // Then check further elements
+        if (predicate.matches(def) && stack.hasTag()) {
+            if (stack.getTag().getAllKeys()
+                    .stream().allMatch(s -> s.equals("Damage") || s.equals("RepairCost") || s.equals("display"))) {
+                CompoundTag tag = stack.getTag().getCompound("display");
+                onlyRenamed = tag.contains("Name") && tag.size() == 1;
+            } else {
+                onlyRenamed = false;
+            }
         }
-        return true;
+        return onlyRenamed && predicate.matches(stack);
     }
 
     private static int totalXpPointsForLevel(int level) {
@@ -317,5 +319,6 @@ public class BuySellHandler {
         }
     }
 
-    record ItemResult(ItemStack stack, int amount, float value) {}
+    record ItemResult(ItemStack stack, int amount, float value) {
+    }
 }
