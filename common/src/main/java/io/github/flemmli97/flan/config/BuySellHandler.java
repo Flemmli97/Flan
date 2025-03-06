@@ -2,27 +2,60 @@ package io.github.flemmli97.flan.config;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.gui.ServerScreenHelper;
 import io.github.flemmli97.flan.platform.integration.currency.CommandCurrency;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class BuySellHandler {
+
+    public static final Codec<ItemStack> ITEM_STACK_CODEC = RecordCodecBuilder.create((instance) ->
+            instance.group(BuiltInRegistries.ITEM.byNameCodec().fieldOf("id").forGetter(ItemStack::getItem),
+                    ExtraCodecs.POSITIVE_INT.optionalFieldOf("Count").forGetter(stack -> stack.getCount() == 1 ? Optional.empty() : Optional.of(stack.getCount())),
+                    CompoundTag.CODEC.optionalFieldOf("tag").forGetter((itemStack) -> Optional.ofNullable(itemStack.getTag()))
+            ).apply(instance, (item, count, tag) -> {
+                ItemStack stack = new ItemStack(item, count.orElse(1));
+                tag.ifPresent(stack::setTag);
+                return stack;
+            }));
+
+    private static ItemStack fromResults(List<ItemResult> stacks) {
+        ItemStack stack = new ItemStack(Items.EMERALD);
+        stack.setHoverName(Component.translatable("flan.buy_sell.item")
+                .setStyle(Style.EMPTY.withItalic(false).applyFormat(ChatFormatting.AQUA)));
+        List<Component> stackComp = new ArrayList<>();
+        for (ItemResult r : stacks) {
+            stackComp.add(Component.translatable("flan.buy_sell.item.amount", Component.translatable(r.stack().getDescriptionId()), r.amount(), r.value())
+                    .setStyle(Style.EMPTY.withItalic(false).applyFormat(ChatFormatting.GREEN)));
+        }
+        ServerScreenHelper.addLore(stack, stackComp);
+        return stack;
+    }
 
     private static int[] xpCalc;
 
@@ -30,10 +63,10 @@ public class BuySellHandler {
     private Type sellType = Type.MONEY;
 
     private float buyAmount = -1;
-    private final List<BuyIngredient> buyIngredients = new ArrayList<>();
+    private final List<BuyItem> buyItems = new ArrayList<>();
 
     private float sellAmount = -1;
-    private Ingredient sellIngredient = Ingredient.EMPTY;
+    private final List<SellItem> sellItems = new ArrayList<>();
 
     public boolean buy(ServerPlayer player, int blocks, Consumer<Component> message) {
         if (this.buyAmount == -1 && this.buyType != Type.ITEM) {
@@ -50,17 +83,18 @@ public class BuySellHandler {
                 return CommandCurrency.INSTANCE.buyClaimBlocks(player, blocks, this.buyAmount, message);
             }
             case ITEM -> {
-                if (this.buyIngredients.isEmpty()) {
+                if (this.buyItems.isEmpty()) {
                     message.accept(ClaimUtils.translatedText("flan.buyDisabled", ChatFormatting.DARK_RED));
                     return false;
                 }
-                float payed = 0;
+                int payed = 0;
+                List<ItemResult> bought = new ArrayList<>();
                 List<Pair<ItemStack, Integer>> matching = new ArrayList<>();
                 // Check if player can pay the amount
                 check:
-                for (BuyIngredient ing : this.buyIngredients) {
+                for (BuyItem ing : this.buyItems) {
                     for (ItemStack stack : player.getInventory().items) {
-                        if (ing.ingredient().test(stack)) {
+                        if (ing.predicate().matches(stack)) {
                             if (stack.isDamageableItem()) {
                                 if (stack.getDamageValue() != 0) {
                                     continue;
@@ -71,27 +105,31 @@ public class BuySellHandler {
                                 continue;
                             }
                             float toPay = blocks - payed;
-                            int count = Math.min(stack.getCount(), Mth.ceil(toPay / ing.amount()));
+                            int count = Math.min(stack.getCount(), (int) (toPay / ing.amount()));
                             float amount = count * ing.amount();
                             payed += amount;
-                            matching.add(Pair.of(stack, count));
+                            if (count > 0) {
+                                bought.add(new ItemResult(stack.copy(), count, ing.amount()));
+                                matching.add(Pair.of(stack, count));
+                            }
                             if (payed >= blocks)
                                 break check;
                         }
                     }
                 }
-                if (payed < blocks) {
+                if (payed == 0 || matching.isEmpty()) {
                     message.accept(ClaimUtils.translatedText("flan.buyFailItem", ChatFormatting.DARK_RED));
                     return false;
                 }
                 // Finally remove the items
-                int count = 0;
                 for (Pair<ItemStack, Integer> stack : matching) {
                     stack.getFirst().shrink(stack.getSecond());
-                    count += stack.getSecond();
                 }
-                data.setAdditionalClaims(data.getAdditionalClaims() + blocks);
-                message.accept(ClaimUtils.translatedText("flan.buySuccessItem", blocks, count));
+                Component items = Component.translatable("flan.buy_sell.items")
+                                .withStyle(Style.EMPTY.applyFormat(ChatFormatting.AQUA)
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(fromResults(bought)))));
+                data.setAdditionalClaims(data.getAdditionalClaims() + payed);
+                message.accept(ClaimUtils.translatedText("flan.buySuccessItem", payed, items));
                 return true;
             }
             case XP -> {
@@ -110,7 +148,7 @@ public class BuySellHandler {
     }
 
     public boolean sell(ServerPlayer player, int blocks, Consumer<Component> message) {
-        if (this.sellAmount == -1) {
+        if (this.sellAmount == -1 && this.sellType != Type.ITEM) {
             message.accept(ClaimUtils.translatedText("flan.sellDisabled", ChatFormatting.DARK_RED));
             return false;
         }
@@ -124,32 +162,44 @@ public class BuySellHandler {
                 return CommandCurrency.INSTANCE.sellClaimBlocks(player, blocks, this.sellAmount, message);
             }
             case ITEM -> {
-                ItemStack[] stacks = this.sellIngredient.getItems();
-                if (this.sellIngredient.isEmpty()) {
+                if (this.sellItems.isEmpty()) {
+                    message.accept(ClaimUtils.translatedText("flan.sellDisabled", ChatFormatting.DARK_RED));
                     return false;
                 }
-                int amount = Mth.floor(blocks * this.sellAmount);
-                ItemStack stack = stacks[0];
-                while (amount > 0) {
-                    ItemStack toGive = stack.copy();
-                    if (amount > 64) {
-                        toGive.setCount(64);
-                        amount -= 64;
-                    } else {
-                        toGive.setCount(amount);
-                        amount = 0;
-                    }
-                    boolean bl = player.getInventory().add(toGive);
-                    if (!bl || !toGive.isEmpty()) {
-                        ItemEntity itemEntity = player.drop(toGive, false);
-                        if (itemEntity != null) {
-                            itemEntity.setNoPickUpDelay();
-                            itemEntity.setTarget(player.getUUID());
+                int toSell = blocks;
+                List<ItemResult> soldStacks = new ArrayList<>();
+                for (SellItem item : this.sellItems) {
+                    int count = (int) (toSell / item.amount());
+                    float amount = count * item.amount();
+                    toSell -= amount;
+                    while (count > 0) {
+                        ItemStack toGive = item.item().copy();
+                        if (count > 64) {
+                            toGive.setCount(64);
+                            count -= 64;
+                        } else {
+                            toGive.setCount(count);
+                            count = 0;
+                        }
+                        soldStacks.add(new ItemResult(toGive.copy(), toGive.getCount(), item.amount()));
+                        boolean bl = player.getInventory().add(toGive);
+                        if (!bl || !toGive.isEmpty()) {
+                            ItemEntity itemEntity = player.drop(toGive, false);
+                            if (itemEntity != null) {
+                                itemEntity.setNoPickUpDelay();
+                                itemEntity.setTarget(player.getUUID());
+                            }
                         }
                     }
+                    if (toSell <= 0)
+                        break;
                 }
-                data.setAdditionalClaims(data.getAdditionalClaims() - blocks);
-                message.accept(ClaimUtils.translatedText("flan.sellSuccessItem", blocks, amount, ClaimUtils.translatedText(stack.getDescriptionId()).withStyle(ChatFormatting.AQUA)));
+                int sold = (blocks - toSell);
+                Component items = Component.translatable("flan.buy_sell.items")
+                        .withStyle(Style.EMPTY.applyFormat(ChatFormatting.AQUA)
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(fromResults(soldStacks)))));
+                data.setAdditionalClaims(data.getAdditionalClaims() - sold);
+                message.accept(ClaimUtils.translatedText("flan.sellSuccessItem", sold, items));
                 return true;
             }
             case XP -> {
@@ -204,49 +254,49 @@ public class BuySellHandler {
         obj.addProperty("buyType", this.buyType.toString());
         obj.addProperty("buyValue", this.buyAmount);
         JsonArray buyArr = new JsonArray();
-        this.buyIngredients.forEach((b -> {
+        this.buyItems.forEach((b -> {
             JsonObject buyObj = new JsonObject();
             buyObj.addProperty("amount", b.amount());
-            buyObj.add("ingredient", b.ingredient().toJson());
+            buyObj.add("predicate", b.predicate().serializeToJson());
             buyArr.add(buyObj);
         }));
-        obj.add("buyIngredients", buyArr);
+        obj.add("buyItems", buyArr);
 
         obj.addProperty("sellType", this.sellType.toString());
         obj.addProperty("sellValue", this.sellAmount);
-        obj.add("sellIngredient", this.sellIngredient.toJson());
+        JsonArray sellArr = new JsonArray();
+        this.sellItems.forEach((b -> {
+            JsonObject buyObj = new JsonObject();
+            buyObj.addProperty("amount", b.amount());
+            buyObj.add("item", ITEM_STACK_CODEC.encodeStart(JsonOps.INSTANCE, b.item)
+                    .getOrThrow(false, Flan.LOGGER::error));
+            sellArr.add(buyObj);
+        }));
+        obj.add("sellItems", sellArr);
         return obj;
     }
 
     public void fromJson(JsonObject object) {
         this.buyType = Type.valueOf(ConfigHandler.fromJson(object, "buyType", this.buyType.toString()));
         this.buyAmount = object.has("buyValue") ? object.get("buyValue").getAsFloat() : this.buyAmount;
-        this.buyIngredients.clear();
-        JsonArray obj = ConfigHandler.arryFromJson(object, "buyIngredients");
-        obj.forEach(k -> {
+        this.buyItems.clear();
+        JsonArray buyArr = ConfigHandler.arryFromJson(object, "buyItems");
+        buyArr.forEach(k -> {
             JsonObject o = k.getAsJsonObject();
-            try {
-                Ingredient ingredient = o.has("ingredient") ? Ingredient.fromJson(o.get("ingredient"))
-                        : Ingredient.EMPTY;
-                if (ingredient != Ingredient.EMPTY) {
-                    float amount = o.get("amount").getAsFloat();
-                    this.buyIngredients.add(new BuyIngredient(amount, ingredient));
-                }
-            } catch (JsonParseException ignored) {
-            }
+            this.buyItems.add(new BuyItem(o.get("amount").getAsFloat(), ItemPredicate.fromJson(o.get("predicate"))));
         });
-        this.buyIngredients.sort(BuyIngredient::compareTo);
+        this.buyItems.sort(BuyItem::compareTo);
 
         this.sellType = Type.valueOf(ConfigHandler.fromJson(object, "sellType", this.sellType.toString()));
         this.sellAmount = object.has("sellValue") ? object.get("sellValue").getAsFloat() : this.sellAmount;
-        try {
-            Ingredient legacy = object.has("ingredient") ? Ingredient.fromJson(object.get("ingredient"))
-                    : Ingredient.EMPTY;
-            this.sellIngredient = object.has("sellIngredient") ? Ingredient.fromJson(object.get("sellIngredient"))
-                    : legacy;
-        } catch (JsonParseException e) {
-            this.sellIngredient = Ingredient.EMPTY;
-        }
+        this.sellItems.clear();
+        JsonArray sellArr = ConfigHandler.arryFromJson(object, "sellItems");
+        sellArr.forEach(k -> {
+            JsonObject o = k.getAsJsonObject();
+            this.sellItems.add(new SellItem(o.get("amount").getAsFloat(), ITEM_STACK_CODEC.parse(JsonOps.INSTANCE, o.get("item"))
+                    .getOrThrow(false, Flan.LOGGER::error)));
+        });
+        this.sellItems.sort(SellItem::compareTo);
     }
 
     enum Type {
@@ -255,10 +305,19 @@ public class BuySellHandler {
         XP
     }
 
-    record BuyIngredient(float amount, Ingredient ingredient) implements Comparable<BuyIngredient> {
+    record BuyItem(float amount, ItemPredicate predicate) implements Comparable<BuyItem> {
         @Override
-        public int compareTo(@NotNull BuySellHandler.BuyIngredient buyIngredient) {
-            return Float.compare(buyIngredient.amount, this.amount);
+        public int compareTo(@NotNull BuyItem buyItem) {
+            return Float.compare(buyItem.amount, this.amount);
         }
     }
+
+    record SellItem(float amount, ItemStack item) implements Comparable<SellItem> {
+        @Override
+        public int compareTo(@NotNull SellItem item) {
+            return Float.compare(item.amount, this.amount);
+        }
+    }
+
+    record ItemResult(ItemStack stack, int amount, float value) {}
 }

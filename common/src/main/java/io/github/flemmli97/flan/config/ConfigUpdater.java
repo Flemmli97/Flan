@@ -1,50 +1,85 @@
 package io.github.flemmli97.flan.config;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.Flan;
-import io.github.flemmli97.flan.api.permission.BuiltinPermission;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class ConfigUpdater {
 
     private static final Map<Integer, Updater> UPDATER = Config.createHashMap(map -> {
-        map.put(2, old -> {
-            Flan.debug("Updating config to version 2");
-            ConfigHandler.CONFIG.globalDefaultPerms.compute("*", (k, v) -> {
-                if (v == null) {
-                    return Config.createHashMap(map1 -> map1.put(BuiltinPermission.LOCKITEMS, Config.GlobalType.ALLTRUE));
-                } else {
-                    v.put(BuiltinPermission.LOCKITEMS, Config.GlobalType.ALLTRUE);
-                    return v;
+        map.put(5, config -> {
+            Flan.debug("Updating config to version 5");
+            JsonObject buySellHandler = ConfigHandler.fromJson(config, "buySellHandler");
+            JsonArray buyItems = ConfigHandler.arryFromJson(buySellHandler, "buyIngredients");
+            List<JsonElement> toRemove = new ArrayList<>();
+            buyItems.forEach(k -> {
+                JsonObject o = k.getAsJsonObject();
+                if (o.has("ingredient")) {
+                    try {
+                        Ingredient ingredient = Ingredient.fromJson(o.get("ingredient"));
+                        ItemPredicate pred = ItemPredicate.Builder.item()
+                                .of(Arrays.stream(ingredient.getItems()).map(ItemStack::getItem).toArray(ItemLike[]::new))
+                                .build();
+                        o.add("predicate", pred.serializeToJson());
+                        o.remove("ingredient");
+                    } catch (JsonParseException ignored) {
+                    }
+                }
+                if (!o.has("predicate") || !o.has("amount")) {
+                    Flan.error("Unable to update buy handler ", o);
+                    toRemove.add(k);
                 }
             });
-        });
-        map.put(3, old -> {
-            Flan.debug("Updating config to version 3");
-            ConfigHandler.arryFromJson(old, "ignoredBlocks").forEach(e -> {
-                if (!ConfigHandler.CONFIG.breakBlockBlacklist.contains(e.getAsString()))
-                    ConfigHandler.CONFIG.breakBlockBlacklist.add(e.getAsString());
-            });
-            ConfigHandler.arryFromJson(old, "ignoredBlocks").forEach(e -> {
-                if (!ConfigHandler.CONFIG.interactBlockBlacklist.contains(e.getAsString()))
-                    ConfigHandler.CONFIG.interactBlockBlacklist.add(e.getAsString());
-            });
-            ConfigHandler.arryFromJson(old, "blockEntityTagIgnore").forEach(e -> {
-                if (!ConfigHandler.CONFIG.interactBlockEntityTagBlacklist.contains(e.getAsString()))
-                    ConfigHandler.CONFIG.interactBlockEntityTagBlacklist.add(e.getAsString());
-            });
+            toRemove.forEach(buyItems::remove);
+            buySellHandler.add("buyItems", buyItems);
+
+            if (buySellHandler.has("ingredient") || buySellHandler.has("sellIngredient")) {
+                Ingredient legacy = buySellHandler.has("ingredient") ? Ingredient.fromJson(buySellHandler.get("ingredient"))
+                        : Ingredient.EMPTY;
+                legacy = buySellHandler.has("sellIngredient") ? Ingredient.fromJson(buySellHandler.get("sellIngredient"))
+                        : legacy;
+                if (!legacy.isEmpty() && !legacy.getItems()[0].isEmpty()) {
+                    buySellHandler.add("sellItems", BuySellHandler.ITEM_STACK_CODEC.encodeStart(JsonOps.INSTANCE, legacy.getItems()[0])
+                            .result().map(e -> {
+                                JsonArray arr = new JsonArray();
+                                JsonObject val = new JsonObject();
+                                val.add("amount", buySellHandler.get("sellValue"));
+                                val.add("item", e);
+                                arr.add(val);
+                                return arr;
+                            }).orElse(new JsonArray()));
+                } else {
+                    buySellHandler.add("sellItems", new JsonArray());
+                }
+            }
+            return config;
         });
     });
 
-    public static void updateConfig(int preVersion, JsonObject oldVals) {
-        UPDATER.entrySet().stream().filter(e -> e.getKey() > preVersion).map(Map.Entry::getValue)
-                .forEach(u -> u.configUpdater(oldVals));
+    public static JsonObject updateConfig(int preVersion, JsonObject config) {
+        for (Map.Entry<Integer, Updater> updater : UPDATER.entrySet()) {
+            if (updater.getKey() > preVersion) {
+                config = updater.getValue().configUpdater(config);
+            }
+        }
+        return config;
     }
 
     interface Updater {
 
-        void configUpdater(JsonObject oldVals);
+        JsonObject configUpdater(JsonObject oldVals);
 
     }
 }
