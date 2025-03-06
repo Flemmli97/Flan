@@ -76,7 +76,7 @@ public class BlockInteractEvents {
             if (claim instanceof Claim real && real.canBreakBlockItem(state))
                 return true;
             ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
-            if (contains(id, world.getBlockEntity(pos), ConfigHandler.CONFIG.breakBlockBlacklist, ConfigHandler.CONFIG.breakBETagBlacklist))
+            if (contains(id, world.getBlockEntity(pos), ConfigHandler.CONFIG.breakBlockBlacklist, ConfigHandler.CONFIG.breakBlockEntityTagBlacklist))
                 return true;
             if (attempt) {
                 ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockLeftClick(state.getBlock());
@@ -117,7 +117,7 @@ public class BlockInteractEvents {
                 return InteractionResult.PASS;
             ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
             BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
-            if (contains(id, blockEntity, ConfigHandler.CONFIG.interactBlockBlacklist, ConfigHandler.CONFIG.interactBETagBlacklist))
+            if (contains(id, blockEntity, ConfigHandler.CONFIG.interactBlockBlacklist, ConfigHandler.CONFIG.interactBlockEntityTagBlacklist))
                 return InteractionResult.PASS;
             ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract(state.getBlock());
             if (perm != null && perm.equals(BuiltinPermission.PROJECTILES))

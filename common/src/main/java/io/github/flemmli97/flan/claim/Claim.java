@@ -379,7 +379,7 @@ public class Claim implements IPermissionContainer {
         if (player == null)
             return true;
         if (PlayerClaimData.get(player).isAdminIgnoreClaim())
-            return !this.isAdminClaim() || PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.cmdAdminBypass, true);
+            return !this.isAdminClaim() || PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.adminBypass, true);
         return this.isAdminClaim() && player.hasPermissions(2);
     }
 
