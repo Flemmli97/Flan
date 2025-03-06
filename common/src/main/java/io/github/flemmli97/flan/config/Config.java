@@ -114,7 +114,7 @@ public class Config {
 
     public boolean log;
 
-    public int configVersion = 4;
+    public int configVersion = 5;
     public int preConfigVersion;
 
     public Map<String, Map<ResourceLocation, Boolean>> defaultGroups = createHashMap(map -> {
@@ -164,6 +164,7 @@ public class Config {
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
             reader.close();
             this.preConfigVersion = ConfigHandler.fromJson(obj, "configVersion", 0);
+            obj = ConfigUpdater.updateConfig(this.preConfigVersion, obj);
             this.startingBlocks = ConfigHandler.fromJson(obj, "startingBlocks", this.startingBlocks);
             this.maxClaimBlocks = ConfigHandler.fromJson(obj, "maxClaimBlocks", this.maxClaimBlocks);
             this.ticksForNextBlock = ConfigHandler.fromJson(obj, "ticksForNextBlock", this.ticksForNextBlock);
@@ -271,7 +272,6 @@ public class Config {
                 }
                 this.globalDefaultPerms.put(e.getKey(), perms);
             });
-            ConfigUpdater.updateConfig(this.preConfigVersion, obj);
         } catch (IOException e) {
             e.printStackTrace();
         }
