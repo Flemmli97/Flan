@@ -184,11 +184,14 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.buyFailItem", "Not enough items");
         this.add("flan.buyFailXP", "Not enough experience points");
         this.add("flan.sellSuccess", "Sold %1$s claimblocks for %2$s");
-        this.add("flan.sellSuccessItem", "Sold %1$s claimblocks for %3$s x%2$s");
+        this.add("flan.sellSuccessItem", "Sold %1$s claimblocks for %2$s");
         this.add("flan.sellSuccessXP", "Sold %1$s claimblocks for %2$s experience points");
         this.add("flan.buySuccess", "Bought %1$s claimblocks for %2$s");
-        this.add("flan.buySuccessItem", "Bought %1$s claimblocks with %2$s items");
+        this.add("flan.buySuccessItem", "Bought %1$s claimblocks with %2$s");
         this.add("flan.buySuccessXP", "Bought %1$s claimblocks with %2$s experience points");
+        this.add("flan.buy_sell.items", "[Following Items]");
+        this.add("flan.buy_sell.item", "Items:");
+        this.add("flan.buy_sell.item.amount", "▶ %2$s %1$s (at $%3$s)");
 
         this.add("flan.currencyMissing", "Missing a supported currency mod");
 
