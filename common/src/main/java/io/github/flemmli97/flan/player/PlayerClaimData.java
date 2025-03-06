@@ -171,7 +171,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public long nextClaimCooldown() {
-        return ConfigHandler.CONFIG.nextClaimCooldown <= 0 ? 0 : Math.max(0, this.player.getLevel().getGameTime() - this.lastClaimTime - ConfigHandler.CONFIG.nextClaimCooldown);
+        return ConfigHandler.CONFIG.claimingCooldown <= 0 ? 0 : Math.max(0, this.player.getLevel().getGameTime() - this.lastClaimTime - ConfigHandler.CONFIG.claimingCooldown);
     }
 
     public void updateLastClaim() {

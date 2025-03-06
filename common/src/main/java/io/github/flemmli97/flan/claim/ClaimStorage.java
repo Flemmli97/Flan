@@ -114,14 +114,14 @@ public class ClaimStorage implements IPermissionStorage {
                 pos1 = pos1.below(ConfigHandler.CONFIG.defaultClaimDepth);
             else
                 pos2 = pos2.below(ConfigHandler.CONFIG.defaultClaimDepth);
-        } else if (Math.abs(pos1.getY() - pos2.getY()) < ConfigHandler.CONFIG.minHeight) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.minClaimHeight", ConfigHandler.CONFIG.minHeight, ChatFormatting.RED), false);
+        } else if (Math.abs(pos1.getY() - pos2.getY()) < ConfigHandler.CONFIG.minHeight3d) {
+            player.displayClientMessage(ClaimUtils.translatedText("flan.minClaimHeight", ConfigHandler.CONFIG.minHeight3d, ChatFormatting.RED), false);
             return false;
         }
         Claim claim = new Claim(pos1, pos2, player);
         if (use3D)
             claim.withHeight(Math.max(pos1.getY(), pos2.getY()));
-        if (ConfigHandler.CONFIG.spawnProtection && player.level.dimension() == Level.OVERWORLD && player.getServer().getSpawnProtectionRadius() > 0) {
+        if (ConfigHandler.CONFIG.noSpawnClaim && player.getLevel().dimension() == Level.OVERWORLD && player.getServer().getSpawnProtectionRadius() > 0) {
             AABB aabb = new AABB(player.getLevel().getSharedSpawnPos()).inflate(player.getServer().getSpawnProtectionRadius());
             ClaimBox dim = claim.getDimensions();
             if (dim.minX() <= aabb.maxX && dim.maxX() >= aabb.minX && dim.minZ() <= aabb.maxZ && dim.maxZ() >= aabb.minZ) {
@@ -231,8 +231,8 @@ public class ClaimStorage implements IPermissionStorage {
                 minY, dims.minZ() == from.getZ() ? dims.maxZ() : dims.minZ());
         Claim newClaim = new Claim(opposite, to, player.getUUID(), player.getLevel());
         if (claim.is3d()) {
-            if (Math.abs(minY - to.getY()) < ConfigHandler.CONFIG.minHeight) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.minClaimHeight", ConfigHandler.CONFIG.minHeight, ChatFormatting.RED), false);
+            if (Math.abs(minY - to.getY()) < ConfigHandler.CONFIG.minHeight3d) {
+                player.displayClientMessage(ClaimUtils.translatedText("flan.minClaimHeight", ConfigHandler.CONFIG.minHeight3d, ChatFormatting.RED), false);
                 return false;
             }
             newClaim.withHeight(Math.max(minY, to.getY()));

@@ -13,6 +13,7 @@ import io.github.flemmli97.flan.player.display.EnumDisplayType;
 import io.github.flemmli97.flan.utils.BlockBreakAttemptHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -74,8 +75,8 @@ public class BlockInteractEvents {
         if (claim != null) {
             if (claim instanceof Claim real && real.canBreakBlockItem(state))
                 return true;
-            ResourceLocation id = CrossPlatformStuff.INSTANCE.registryBlocks().getIDFrom(state.getBlock());
-            if (contains(id, world.getBlockEntity(pos), ConfigHandler.CONFIG.breakBlockBlacklist, ConfigHandler.CONFIG.breakBETagBlacklist))
+            ResourceLocation id = Registry.BLOCK.getKey(state.getBlock());
+            if (contains(id, world.getBlockEntity(pos), ConfigHandler.CONFIG.breakBlockBlacklist, ConfigHandler.CONFIG.breakBlockEntityTagBlacklist))
                 return true;
             if (attempt) {
                 ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockLeftClick(state.getBlock());
@@ -114,9 +115,9 @@ public class BlockInteractEvents {
             BlockState state = world.getBlockState(hitResult.getBlockPos());
             if (claim instanceof Claim real && real.canUseBlockItem(state))
                 return InteractionResult.PASS;
-            ResourceLocation id = CrossPlatformStuff.INSTANCE.registryBlocks().getIDFrom(state.getBlock());
+            ResourceLocation id = Registry.BLOCK.getKey(state.getBlock());
             BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
-            if (contains(id, blockEntity, ConfigHandler.CONFIG.interactBlockBlacklist, ConfigHandler.CONFIG.interactBETagBlacklist))
+            if (contains(id, blockEntity, ConfigHandler.CONFIG.interactBlockBlacklist, ConfigHandler.CONFIG.interactBlockEntityTagBlacklist))
                 return InteractionResult.PASS;
             ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract(state.getBlock());
             if (perm != null && perm.equals(BuiltinPermission.PROJECTILES))
