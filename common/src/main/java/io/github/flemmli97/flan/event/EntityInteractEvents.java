@@ -8,13 +8,13 @@ import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.mixin.IHungerAccessor;
 import io.github.flemmli97.flan.mixin.IPersistentProjectileVars;
-import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.utils.IOwnedItem;
 import io.github.flemmli97.flan.utils.TeleportUtils;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -112,7 +112,7 @@ public class EntityInteractEvents {
                     return claim.canInteract(player, BuiltinPermission.OPENCONTAINER, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
                 return claim.canInteract(player, BuiltinPermission.MINECART, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             }
-            if (entity instanceof AbstractVillager || CrossPlatformStuff.INSTANCE.registryEntities().getIDFrom(entity.getType()).equals(TATERZEN))
+            if (entity instanceof AbstractVillager || BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).equals(TATERZEN))
                 return claim.canInteract(player, BuiltinPermission.TRADING, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             if (entity instanceof ItemFrame)
                 return claim.canInteract(player, BuiltinPermission.ITEMFRAMEROTATE, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
@@ -126,7 +126,7 @@ public class EntityInteractEvents {
     }
 
     public static boolean canInteract(Entity entity) {
-        ResourceLocation id = CrossPlatformStuff.INSTANCE.registryEntities().getIDFrom(entity.getType());
+        ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
         return ConfigHandler.CONFIG.ignoredEntityTypes.contains(id.getNamespace())
                 || ConfigHandler.CONFIG.ignoredEntityTypes.contains(id.toString())
                 || entity.getTags().stream().anyMatch(ConfigHandler.CONFIG.entityTagIgnore::contains);

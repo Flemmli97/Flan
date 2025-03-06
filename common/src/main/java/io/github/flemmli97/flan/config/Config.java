@@ -9,6 +9,7 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -40,8 +41,8 @@ public class Config {
     public String defaultClaimName = "";
     public String defaultEnterMessage = "";
     public String defaultLeaveMessage = "";
-    public boolean spawnProtection;
-    public int nextClaimCooldown;
+    public boolean noSpawnClaim;
+    public int claimingCooldown;
 
     public String[] blacklistedWorlds = new String[0];
     public boolean worldWhitelist;
@@ -51,7 +52,7 @@ public class Config {
     public Item inspectionItem = Items.STICK;
     public CompoundTag inspectionNBT = new CompoundTag();
     public boolean main3dClaims = true;
-    public int minHeight = 10;
+    public int minHeight3d = 10;
     public int nearbyClaimsToolDisplay = 24;
 
     public int claimDisplayTime = 600;
@@ -60,6 +61,10 @@ public class Config {
     public int permissionLevel = 2;
 
     public boolean autoClaimStructures;
+
+    public boolean ftbChunksCheck = true;
+    public boolean gomlReservedCheck = true;
+    public boolean mineColoniesCheck = true;
 
     public BuySellHandler buySellHandler = new BuySellHandler();
     public int maxBuyBlocks = -1;
@@ -76,9 +81,9 @@ public class Config {
             "universal_shops:trade_block"
     );
 
-    public List<String> breakBETagBlacklist = Lists.newArrayList(
+    public List<String> breakBlockEntityTagBlacklist = Lists.newArrayList(
     );
-    public List<String> interactBETagBlacklist = Lists.newArrayList(
+    public List<String> interactBlockEntityTagBlacklist = Lists.newArrayList(
             "IsDeathChest", //vanilla death chest
             "gunpowder.owner", //gunpowder
             "shop-activated" //dicemc-money
@@ -111,10 +116,6 @@ public class Config {
 
     public int configVersion = 4;
     public int preConfigVersion;
-
-    public boolean ftbChunksCheck = true;
-    public boolean gomlReservedCheck = true;
-    public boolean mineColoniesCheck = true;
 
     public Map<String, Map<ResourceLocation, Boolean>> defaultGroups = createHashMap(map -> {
         map.put("Co-Owner", createLinkedHashMap(perms -> PermissionManager.INSTANCE.getAll().forEach(p -> perms.put(p.getId(), true))));
@@ -172,8 +173,8 @@ public class Config {
             this.defaultClaimName = ConfigHandler.fromJson(obj, "defaultClaimName", this.defaultClaimName);
             this.defaultEnterMessage = ConfigHandler.fromJson(obj, "defaultEnterMessage", this.defaultEnterMessage);
             this.defaultLeaveMessage = ConfigHandler.fromJson(obj, "defaultLeaveMessage", this.defaultLeaveMessage);
-            this.spawnProtection = ConfigHandler.fromJson(obj, "noSpawnClaim", this.spawnProtection);
-            this.nextClaimCooldown = ConfigHandler.fromJson(obj, "claimingCooldown", this.nextClaimCooldown);
+            this.noSpawnClaim = ConfigHandler.fromJson(obj, "noSpawnClaim", this.noSpawnClaim);
+            this.claimingCooldown = ConfigHandler.fromJson(obj, "claimingCooldown", this.claimingCooldown);
 
             JsonArray arr = ConfigHandler.arryFromJson(obj, "blacklistedWorlds");
             this.blacklistedWorlds = new String[arr.size()];
@@ -182,15 +183,15 @@ public class Config {
             this.worldWhitelist = ConfigHandler.fromJson(obj, "worldWhitelist", this.worldWhitelist);
 
             if (obj.has("claimingItem"))
-                this.claimingItem = CrossPlatformStuff.INSTANCE.registryItems().getFromId(new ResourceLocation((obj.get("claimingItem").getAsString())));
+                this.claimingItem = BuiltInRegistries.ITEM.get(new ResourceLocation((obj.get("claimingItem").getAsString())));
             this.claimingNBT = CompoundTag.CODEC.parse(JsonOps.INSTANCE, GsonHelper.getAsJsonObject(obj, "claimingNBT", new JsonObject()))
                     .getOrThrow(true, Flan::error);
             if (obj.has("inspectionItem"))
-                this.inspectionItem = CrossPlatformStuff.INSTANCE.registryItems().getFromId(new ResourceLocation((obj.get("inspectionItem").getAsString())));
+                this.inspectionItem = BuiltInRegistries.ITEM.get(new ResourceLocation((obj.get("inspectionItem").getAsString())));
             this.inspectionNBT = CompoundTag.CODEC.parse(JsonOps.INSTANCE, GsonHelper.getAsJsonObject(obj, "inspectionNBT", new JsonObject()))
                     .getOrThrow(true, Flan::error);
             this.main3dClaims = ConfigHandler.fromJson(obj, "main3dClaims", this.main3dClaims);
-            this.minHeight = ConfigHandler.fromJson(obj, "minHeight3d", this.minHeight);
+            this.minHeight3d = ConfigHandler.fromJson(obj, "minHeight3d", this.minHeight3d);
             this.nearbyClaimsToolDisplay = ConfigHandler.fromJson(obj, "nearbyClaimsToolDisplay", this.nearbyClaimsToolDisplay);
 
             this.claimDisplayTime = ConfigHandler.fromJson(obj, "claimDisplayTime", this.claimDisplayTime);
@@ -212,10 +213,10 @@ public class Config {
             ConfigHandler.arryFromJson(obj, "breakBlockBlacklist").forEach(e -> this.breakBlockBlacklist.add(e.getAsString()));
             this.interactBlockBlacklist.clear();
             ConfigHandler.arryFromJson(obj, "interactBlockBlacklist").forEach(e -> this.interactBlockBlacklist.add(e.getAsString()));
-            this.breakBETagBlacklist.clear();
-            ConfigHandler.arryFromJson(obj, "breakBlockEntityTagBlacklist").forEach(e -> this.breakBETagBlacklist.add(e.getAsString()));
-            this.interactBETagBlacklist.clear();
-            ConfigHandler.arryFromJson(obj, "interactBlockEntityTagBlacklist").forEach(e -> this.interactBETagBlacklist.add(e.getAsString()));
+            this.breakBlockEntityTagBlacklist.clear();
+            ConfigHandler.arryFromJson(obj, "breakBlockEntityTagBlacklist").forEach(e -> this.breakBlockEntityTagBlacklist.add(e.getAsString()));
+            this.interactBlockEntityTagBlacklist.clear();
+            ConfigHandler.arryFromJson(obj, "interactBlockEntityTagBlacklist").forEach(e -> this.interactBlockEntityTagBlacklist.add(e.getAsString()));
             this.ignoredEntityTypes.clear();
             ConfigHandler.arryFromJson(obj, "ignoredEntities").forEach(e -> this.ignoredEntityTypes.add(e.getAsString()));
             this.entityTagIgnore.clear();
@@ -290,8 +291,8 @@ public class Config {
         obj.addProperty("defaultClaimName", this.defaultClaimName);
         obj.addProperty("defaultEnterMessage", this.defaultEnterMessage);
         obj.addProperty("defaultLeaveMessage", this.defaultLeaveMessage);
-        obj.addProperty("noSpawnClaim", this.spawnProtection);
-        obj.addProperty("claimingCooldown", this.nextClaimCooldown);
+        obj.addProperty("noSpawnClaim", this.noSpawnClaim);
+        obj.addProperty("claimingCooldown", this.claimingCooldown);
 
         JsonArray arr = new JsonArray();
         for (String blacklistedWorld : this.blacklistedWorlds)
@@ -299,14 +300,14 @@ public class Config {
         obj.add("blacklistedWorlds", arr);
         obj.addProperty("worldWhitelist", this.worldWhitelist);
 
-        obj.addProperty("claimingItem", CrossPlatformStuff.INSTANCE.registryItems().getIDFrom(this.claimingItem).toString());
+        obj.addProperty("claimingItem", BuiltInRegistries.ITEM.getKey(this.claimingItem).toString());
         obj.add("claimingNBT", CompoundTag.CODEC.encodeStart(JsonOps.INSTANCE, this.claimingNBT)
                 .getOrThrow(true, Flan::error));
-        obj.addProperty("inspectionItem", CrossPlatformStuff.INSTANCE.registryItems().getIDFrom(this.inspectionItem).toString());
+        obj.addProperty("inspectionItem", BuiltInRegistries.ITEM.getKey(this.inspectionItem).toString());
         obj.add("inspectionNBT", CompoundTag.CODEC.encodeStart(JsonOps.INSTANCE, this.inspectionNBT)
                 .getOrThrow(true, Flan::error));
         obj.addProperty("main3dClaims", this.main3dClaims);
-        obj.addProperty("minHeight3d", this.minHeight);
+        obj.addProperty("minHeight3d", this.minHeight3d);
         obj.addProperty("nearbyClaimsToolDisplay", this.nearbyClaimsToolDisplay);
 
         obj.addProperty("claimDisplayTime", this.claimDisplayTime);
@@ -331,10 +332,10 @@ public class Config {
         this.interactBlockBlacklist.forEach(blocksInteract::add);
         obj.add("interactBlockBlacklist", blocksInteract);
         JsonArray blocksEntities = new JsonArray();
-        this.breakBETagBlacklist.forEach(blocksEntities::add);
+        this.breakBlockEntityTagBlacklist.forEach(blocksEntities::add);
         obj.add("breakBlockEntityTagBlacklist", blocksEntities);
         JsonArray blocksEntitiesInteract = new JsonArray();
-        this.interactBETagBlacklist.forEach(blocksEntitiesInteract::add);
+        this.interactBlockEntityTagBlacklist.forEach(blocksEntitiesInteract::add);
         obj.add("interactBlockEntityTagBlacklist", blocksEntitiesInteract);
         JsonArray entities = new JsonArray();
         this.ignoredEntityTypes.forEach(entities::add);

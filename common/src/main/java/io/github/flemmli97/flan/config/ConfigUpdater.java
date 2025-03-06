@@ -31,8 +31,8 @@ public class ConfigUpdater {
                     ConfigHandler.CONFIG.interactBlockBlacklist.add(e.getAsString());
             });
             ConfigHandler.arryFromJson(old, "blockEntityTagIgnore").forEach(e -> {
-                if (!ConfigHandler.CONFIG.interactBETagBlacklist.contains(e.getAsString()))
-                    ConfigHandler.CONFIG.interactBETagBlacklist.add(e.getAsString());
+                if (!ConfigHandler.CONFIG.interactBlockEntityTagBlacklist.contains(e.getAsString()))
+                    ConfigHandler.CONFIG.interactBlockEntityTagBlacklist.add(e.getAsString());
             });
         });
     });

@@ -11,7 +11,6 @@ import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.ClaimPermissionCheck;
-import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.platform.integration.webmap.WebmapCalls;
 import io.github.flemmli97.flan.player.LogoutTracker;
@@ -377,7 +376,7 @@ public class Claim implements IPermissionContainer {
         if (player == null)
             return true;
         if (PlayerClaimData.get(player).isAdminIgnoreClaim())
-            return !this.isAdminClaim() || PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.cmdAdminBypass, true);
+            return !this.isAdminClaim() || PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.adminBypass, true);
         return this.isAdminClaim() && player.hasPermissions(2);
     }
 
@@ -757,7 +756,7 @@ public class Claim implements IPermissionContainer {
             else
                 this.leaveSubtitle = null;
             JsonObject potion = ConfigHandler.fromJson(obj, "Potions");
-            potion.entrySet().forEach(e -> this.potions.put(CrossPlatformStuff.INSTANCE.registryStatusEffects().getFromId(new ResourceLocation(e.getKey())), e.getValue().getAsInt()));
+            potion.entrySet().forEach(e -> this.potions.put(BuiltInRegistries.MOB_EFFECT.get(new ResourceLocation(e.getKey())), e.getValue().getAsInt()));
             if (ConfigHandler.fromJson(obj, "AdminClaim", false))
                 this.owner = null;
             else
@@ -826,7 +825,7 @@ public class Claim implements IPermissionContainer {
         obj.addProperty("LeaveTitle", this.leaveTitle == null ? "" : Component.Serializer.toJson(this.leaveTitle));
         obj.addProperty("LeaveSubtitle", this.leaveSubtitle == null ? "" : Component.Serializer.toJson(this.leaveSubtitle));
         JsonObject potions = new JsonObject();
-        this.potions.forEach((effect, amp) -> potions.addProperty(CrossPlatformStuff.INSTANCE.registryStatusEffects().getIDFrom(effect).toString(), amp));
+        this.potions.forEach((effect, amp) -> potions.addProperty(BuiltInRegistries.MOB_EFFECT.getKey(effect).toString(), amp));
         obj.add("Potions", potions);
         if (this.parent != null)
             obj.addProperty("Parent", this.parent.toString());
