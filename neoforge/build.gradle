@@ -15,7 +15,7 @@ repositories {
     mavenCentral()
     maven {
         name = "FTB"
-        url = "https://maven.saps.dev/minecraft"
+        url = "https://maven.ftb.dev/releases"
     }
     maven {
         name = "CurseMaven"
