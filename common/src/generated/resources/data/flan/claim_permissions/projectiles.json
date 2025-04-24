@@ -1,11 +1,7 @@
 {
-  "defaultDescription": [
-    "Permission to let shot projectiles",
-    "interact with blocks (e.g. arrow on button)"
-  ],
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:arrow"
   },
   "order": 25

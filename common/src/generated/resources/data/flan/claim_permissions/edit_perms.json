@@ -1,10 +1,7 @@
 {
-  "defaultDescription": [
-    "Gives permission to change the claims permissions"
-  ],
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:command_block"
   },
   "order": 1

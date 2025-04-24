@@ -1,12 +1,7 @@
 {
-  "defaultDescription": [
-    "Generic permission for block interaction.",
-    "Fallback to OPENCONTAINER",
-    "Gets used for all blocks OPENCONTAINER doesn't check for"
-  ],
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:gold_nugget"
   },
   "order": 6

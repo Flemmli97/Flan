@@ -1,10 +1,7 @@
 {
-  "defaultDescription": [
-    "Permission to place end crystals"
-  ],
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:end_crystal"
   },
   "order": 23
