@@ -1,6 +1,7 @@
 Flan 1.11.7
 ================
 - Update translation lib
+- Fix buy/sell permission node being swapped
 
 Flan 1.11.6
 ================
