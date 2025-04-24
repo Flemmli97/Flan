@@ -12,6 +12,7 @@ import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
@@ -102,7 +103,6 @@ public class Config {
             "appliedenergistics2:certus_quartz_wrench-flan:interact_block"
     );
 
-
     public int dropTicks = 6000;
 
     public int inactivityTime = -1;
@@ -145,20 +145,20 @@ public class Config {
 
     public Config() {
         File configDir = CrossPlatformStuff.INSTANCE.configPath().resolve("flan").toFile();
-        try {
-            if (!configDir.exists())
-                configDir.mkdirs();
-            this.config = new File(configDir, "flan_config.json");
-            if (!this.config.exists()) {
-                this.config.createNewFile();
-                this.save();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        if (!configDir.exists())
+            configDir.mkdirs();
+        this.config = new File(configDir, "flan_config.json");
     }
 
-    public void load() {
+    public void load(MinecraftServer server) {
+        if (!this.config.exists()) {
+            try {
+                this.config.createNewFile();
+            } catch (IOException e) {
+                Flan.LOGGER.error(e);
+            }
+            this.save(server);
+        }
         try {
             FileReader reader = new FileReader(this.config);
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
@@ -206,7 +206,7 @@ public class Config {
             this.gomlReservedCheck = ConfigHandler.fromJson(obj, "gomlReservedCheck", this.gomlReservedCheck);
             this.mineColoniesCheck = ConfigHandler.fromJson(obj, "mineColoniesCheck", this.mineColoniesCheck);
 
-            this.buySellHandler.fromJson(ConfigHandler.fromJson(obj, "buySellHandler"));
+            this.buySellHandler.fromJson(ConfigHandler.fromJson(obj, "buySellHandler"), server);
             this.maxBuyBlocks = ConfigHandler.fromJson(obj, "maxBuyBlocks", this.maxBuyBlocks);
 
             this.lenientBlockEntityCheck = ConfigHandler.fromJson(obj, "lenientBlockEntityCheck", this.lenientBlockEntityCheck);
@@ -273,12 +273,12 @@ public class Config {
                 this.globalDefaultPerms.put(e.getKey(), perms);
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            Flan.LOGGER.error(e);
         }
-        this.save();
+        this.save(server);
     }
 
-    private void save() {
+    private void save(MinecraftServer server) {
         JsonObject obj = new JsonObject();
         obj.addProperty("__comment", "For help with the config refer to https://github.com/Flemmli97/Flan/wiki/Config");
         obj.addProperty("configVersion", this.configVersion);
@@ -321,7 +321,7 @@ public class Config {
         obj.addProperty("gomlReservedCheck", this.gomlReservedCheck);
         obj.addProperty("mineColoniesCheck", this.mineColoniesCheck);
 
-        obj.add("buySellHandler", this.buySellHandler.toJson());
+        obj.add("buySellHandler", this.buySellHandler.toJson(server));
         obj.addProperty("maxBuyBlocks", this.maxBuyBlocks);
 
         obj.addProperty("lenientBlockEntityCheck", this.lenientBlockEntityCheck);
@@ -375,7 +375,7 @@ public class Config {
             ConfigHandler.GSON.toJson(obj, writer);
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Flan.LOGGER.error(e);
         }
     }
 

@@ -23,8 +23,8 @@ public class ConfigHandler {
 
     public static final Config CONFIG = new Config();
 
-    public static void reloadConfigs() {
-        CONFIG.load();
+    public static void reloadConfigs(MinecraftServer server) {
+        CONFIG.load(server);
     }
 
     public static Path getClaimSavePath(MinecraftServer server, ResourceKey<Level> reg) {

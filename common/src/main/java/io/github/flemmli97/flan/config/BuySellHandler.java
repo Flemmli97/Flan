@@ -1,9 +1,11 @@
 package io.github.flemmli97.flan.config;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.flemmli97.flan.claim.ClaimUtils;
@@ -18,6 +20,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -211,7 +214,8 @@ public class BuySellHandler {
         if (predicate.components().alwaysMatches() || predicate.subPredicates().isEmpty()) {
             if (stack.getComponentsPatch()
                     .entrySet().stream()
-                    .noneMatch(e -> e.getKey() != DataComponents.CUSTOM_NAME)) {
+                    .anyMatch(e -> e.getKey() != DataComponents.CUSTOM_NAME
+                            && e.getKey() != DataComponents.REPAIR_COST && e.getKey() != DataComponents.DAMAGE)) {
                 return false;
             }
         }
@@ -243,15 +247,16 @@ public class BuySellHandler {
         return 7 + level * 2;
     }
 
-    public JsonObject toJson() {
+    public JsonObject toJson(MinecraftServer server) {
         JsonObject obj = new JsonObject();
         obj.addProperty("buyType", this.buyType.toString());
         obj.addProperty("buyValue", this.buyAmount);
         JsonArray buyArr = new JsonArray();
+        DynamicOps<JsonElement> ops = server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
         this.buyItems.forEach((b -> {
             JsonObject buyObj = new JsonObject();
             buyObj.addProperty("amount", b.amount());
-            buyObj.add("predicate", ItemPredicate.CODEC.encodeStart(JsonOps.INSTANCE, b.predicate()).getOrThrow());
+            buyObj.add("predicate", ItemPredicate.CODEC.encodeStart(ops, b.predicate()).getOrThrow());
             buyArr.add(buyObj);
         }));
         obj.add("buyItems", buyArr);
@@ -262,7 +267,7 @@ public class BuySellHandler {
         this.sellItems.forEach((b -> {
             JsonObject buyObj = new JsonObject();
             buyObj.addProperty("amount", b.amount());
-            buyObj.add("item", ITEM_STACK_CODEC.encodeStart(JsonOps.INSTANCE, b.item)
+            buyObj.add("item", ITEM_STACK_CODEC.encodeStart(ops, b.item)
                     .getOrThrow());
             sellArr.add(buyObj);
         }));
@@ -270,14 +275,15 @@ public class BuySellHandler {
         return obj;
     }
 
-    public void fromJson(JsonObject object) {
+    public void fromJson(JsonObject object, MinecraftServer server) {
         this.buyType = Type.valueOf(ConfigHandler.fromJson(object, "buyType", this.buyType.toString()));
         this.buyAmount = object.has("buyValue") ? object.get("buyValue").getAsFloat() : this.buyAmount;
         this.buyItems.clear();
         JsonArray buyArr = ConfigHandler.arryFromJson(object, "buyItems");
+        DynamicOps<JsonElement> ops = server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
         buyArr.forEach(k -> {
             JsonObject o = k.getAsJsonObject();
-            this.buyItems.add(new BuyItem(o.get("amount").getAsFloat(), ItemPredicate.CODEC.parse(JsonOps.INSTANCE, o.get("predicate")).getOrThrow()));
+            this.buyItems.add(new BuyItem(o.get("amount").getAsFloat(), ItemPredicate.CODEC.parse(ops, o.get("predicate")).getOrThrow()));
         });
         this.buyItems.sort(BuyItem::compareTo);
 
@@ -287,7 +293,7 @@ public class BuySellHandler {
         JsonArray sellArr = ConfigHandler.arryFromJson(object, "sellItems");
         sellArr.forEach(k -> {
             JsonObject o = k.getAsJsonObject();
-            this.sellItems.add(new SellItem(o.get("amount").getAsFloat(), ITEM_STACK_CODEC.parse(JsonOps.INSTANCE, o.get("item"))
+            this.sellItems.add(new SellItem(o.get("amount").getAsFloat(), ITEM_STACK_CODEC.parse(ops, o.get("item"))
                     .getOrThrow()));
         });
         this.sellItems.sort(SellItem::compareTo);

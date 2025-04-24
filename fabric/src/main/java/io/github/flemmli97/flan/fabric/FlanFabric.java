@@ -119,7 +119,7 @@ public class FlanFabric implements ModInitializer {
     }
 
     public static void serverLoad(MinecraftServer server) {
-        ConfigHandler.reloadConfigs();
+        ConfigHandler.reloadConfigs(server);
         if (FabricLoader.getInstance().isModLoaded("bluemap"))
             BluemapIntegration.reg(server);
     }
