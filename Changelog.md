@@ -1,3 +1,7 @@
+Flan 1.11.7
+================
+- Update translation lib
+
 Flan 1.11.6
 ================
 - Update buy/sell handler. Old configs will be auto converted. Check the wiki for new format
