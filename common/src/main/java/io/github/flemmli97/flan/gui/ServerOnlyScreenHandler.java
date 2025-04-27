@@ -82,14 +82,14 @@ public abstract class ServerOnlyScreenHandler<T> extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int i, int j, ClickType actionType, Player playerEntity) {
+    public void clicked(int i, int j, ClickType clickType, Player player) {
         if (i < 0)
             return;
         Slot slot = this.slots.get(i);
-        if (this.isRightSlot(i)) {
+        if (clickType != ClickType.PICKUP_ALL && this.isRightSlot(i)) {
             if (((AbstractContainerAccessor) this).containerSync() != null)
                 ((AbstractContainerAccessor) this).containerSync().sendCarriedChange(this, this.getCarried().copy());
-            this.handleSlotClicked((ServerPlayer) playerEntity, i, slot, j);
+            this.handleSlotClicked((ServerPlayer) player, i, slot, j);
         }
         ItemStack stack = slot.getItem().copy();
         for (ContainerListener listener : ((AbstractContainerAccessor) this).listeners())
