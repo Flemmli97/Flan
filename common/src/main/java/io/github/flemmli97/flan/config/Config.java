@@ -114,7 +114,7 @@ public class Config {
 
     public boolean log;
 
-    public int configVersion = 5;
+    public int configVersion = 6;
     public int preConfigVersion;
 
     public Map<String, Map<ResourceLocation, Boolean>> defaultGroups = createHashMap(map -> {
@@ -135,7 +135,8 @@ public class Config {
     });
 
     protected final Map<String, Map<ResourceLocation, GlobalType>> globalDefaultPerms = createHashMap(map -> map.put("*", createHashMap(perms -> {
-        perms.put(BuiltinPermission.FLIGHT, GlobalType.ALLTRUE);
+        perms.put(BuiltinPermission.ALLOW_FLIGHT, GlobalType.ALLTRUE);
+        perms.put(BuiltinPermission.MAY_FLIGHT, GlobalType.ALLFALSE);
         perms.put(BuiltinPermission.MOBSPAWN, GlobalType.ALLFALSE);
         perms.put(BuiltinPermission.TELEPORT, GlobalType.ALLFALSE);
         perms.put(BuiltinPermission.NOHUNGER, GlobalType.ALLFALSE);
@@ -272,6 +273,7 @@ public class Config {
                 }
                 this.globalDefaultPerms.put(e.getKey(), perms);
             });
+            ConfigUpdater.postUpdateConfig(this.preConfigVersion, this);
         } catch (IOException e) {
             Flan.LOGGER.error(e);
         }

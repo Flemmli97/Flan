@@ -1,8 +1,11 @@
 package io.github.flemmli97.flan.fabric.platform;
 
+import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.fabric.platform.integration.playerability.PlayerAbilityEvents;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -29,5 +32,14 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     @Override
     public boolean blockDataContains(CompoundTag nbt, String tag) {
         return nbt.contains(tag);
+    }
+
+    @Override
+    public void toggleCreativeFlight(ServerPlayer player, boolean flag) {
+        if (Flan.playerAbilityLib) {
+            PlayerAbilityEvents.toggleCreativeFlight(player, flag);
+            return;
+        }
+        CrossPlatformStuff.super.toggleCreativeFlight(player, flag);
     }
 }

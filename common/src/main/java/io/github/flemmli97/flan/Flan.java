@@ -1,6 +1,7 @@
 package io.github.flemmli97.flan;
 
 import io.github.flemmli97.flan.config.ConfigHandler;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +23,8 @@ public class Flan {
     public static final DateTimeFormatter ONLINE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public static final BlockPredicate NONE_PREDICATE = BlockPredicate.not(BlockPredicate.alwaysTrue());
+
+    public static final ResourceLocation CLAIM_FLIGHT_ID = ResourceLocation.fromNamespaceAndPath(Flan.MODID, "claim_creative_flight");
 
     public static void log(String msg, Object... o) {
         if (ConfigHandler.CONFIG.log)

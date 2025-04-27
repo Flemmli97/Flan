@@ -2,7 +2,7 @@
   "default_value": true,
   "global": false,
   "gui_item": {
-    "id": "minecraft:feather"
+    "id": "minecraft:iron_block"
   },
   "order": 43
 }

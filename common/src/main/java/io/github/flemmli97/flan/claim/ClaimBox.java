@@ -16,7 +16,7 @@ public record ClaimBox(int minX, int minY, int minZ, int maxX, int maxY, int max
     }
 
     public boolean intersects(AABB other) {
-        return this.intersects(other.minX, other.minY, other.minZ, other.maxX, other.maxY, other.maxZ);
+        return this.intersects(other.minX - 1, other.minY, other.minZ - 1, other.maxX, other.maxY, other.maxZ);
     }
 
     public boolean intersects(double x, double y, double z, double X, double Y, double Z) {

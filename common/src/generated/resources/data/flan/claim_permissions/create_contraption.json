@@ -4,6 +4,6 @@
   "gui_item": {
     "id": "create:cart_assembler"
   },
-  "order": 64,
+  "order": 65,
   "required_mod": "create"
 }

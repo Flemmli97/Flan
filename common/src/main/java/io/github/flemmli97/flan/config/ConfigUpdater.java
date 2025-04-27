@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -18,6 +19,21 @@ import java.util.Map;
 public class ConfigUpdater {
 
     private static final Map<Integer, Updater> UPDATER = Config.createHashMap(map -> {
+        map.put(6, new Updater() {
+            @Override
+            public JsonObject configUpdater(JsonObject oldVals) {
+                return oldVals;
+            }
+
+            @Override
+            public void postUpdater(Config config) {
+                config.globalDefaultPerms.computeIfPresent("*", (k, v) -> {
+                    v.put(BuiltinPermission.ALLOW_FLIGHT, Config.GlobalType.ALLTRUE);
+                    v.put(BuiltinPermission.MAY_FLIGHT, Config.GlobalType.ALLFALSE);
+                    return v;
+                });
+            }
+        });
         map.put(5, config -> {
             Flan.debug("Updating config to version 5");
             JsonObject buySellHandler = ConfigHandler.fromJson(config, "buySellHandler");
@@ -77,9 +93,19 @@ public class ConfigUpdater {
         return config;
     }
 
+    public static void postUpdateConfig(int preVersion, Config config) {
+        for (Map.Entry<Integer, Updater> updater : UPDATER.entrySet()) {
+            if (updater.getKey() > preVersion) {
+                updater.getValue().postUpdater(config);
+            }
+        }
+    }
+
     interface Updater {
 
         JsonObject configUpdater(JsonObject oldVals);
 
+        default void postUpdater(Config config) {
+        }
     }
 }

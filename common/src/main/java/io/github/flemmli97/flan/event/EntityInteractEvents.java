@@ -8,6 +8,7 @@ import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.mixin.IHungerAccessor;
 import io.github.flemmli97.flan.mixin.IPersistentProjectileVars;
+import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.utils.IOwnedItem;
 import io.github.flemmli97.flan.utils.TeleportUtils;
@@ -48,14 +49,13 @@ import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.AbstractMinecartContainer;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.function.Consumer;
 
 public class EntityInteractEvents {
 
@@ -332,17 +332,20 @@ public class EntityInteractEvents {
         ((IOwnedItem) entity).setOriginPlayer((player));
     }
 
-    public static void updateClaim(ServerPlayer player, Claim currentClaim, Consumer<Claim> cons) {
+    public static Claim currentClaimTick(ServerPlayer player, Claim currentClaim) {
         Vec3 pos = player.position();
         BlockPos rounded = TeleportUtils.roundedBlockPos(pos.add(0, player.getEyeHeight(player.getPose()), 0));
         ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        Claim newClaim = currentClaim;
         if (currentClaim != null) {
             if (!currentClaim.intersects(player.getBoundingBox())) {
                 boolean isSub = currentClaim.parentClaim() != null;
                 Claim claim = isSub ? storage.getClaimAt(rounded) : currentClaim.parentClaim();
-                if (claim == null)
+                if (claim == null) {
                     currentClaim.displayLeaveTitle(player);
-                else {
+                    if (!gameModeCanFly(player.gameMode.getGameModeForPlayer()))
+                        CrossPlatformStuff.INSTANCE.toggleCreativeFlight(player, false);
+                } else {
                     Claim sub = claim.getSubClaim(rounded);
                     boolean display = true;
                     if (sub != null)
@@ -355,14 +358,14 @@ public class EntityInteractEvents {
                     if (display)
                         claim.displayEnterTitle(player);
                 }
-                cons.accept(claim);
+                newClaim = claim;
             } else {
                 if (currentClaim.parentClaim() == null) {
                     Claim sub = currentClaim.getSubClaim(rounded);
                     if (sub != null) {
                         currentClaim = sub;
                         currentClaim.displayEnterTitle(player);
-                        cons.accept(currentClaim);
+                        newClaim = currentClaim;
                     }
                 }
                 if (!player.isSpectator()) {
@@ -379,9 +382,11 @@ public class EntityInteractEvents {
                         }
                         player.teleportTo(tp.x(), tp.y(), tp.z());
                     }
-                    if (player.getAbilities().flying && !player.isCreative() && !mainClaim.canInteract(player, BuiltinPermission.FLIGHT, rounded, true)) {
+                    if (player.getAbilities().flying && !gameModeCanFly(player.gameMode.getGameModeForPlayer()) && !mainClaim.canInteract(player, BuiltinPermission.ALLOW_FLIGHT, rounded, true)) {
                         player.getAbilities().flying = false;
                         player.connection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
+                    } else if (!gameModeCanFly(player.gameMode.getGameModeForPlayer())) {
+                        CrossPlatformStuff.INSTANCE.toggleCreativeFlight(player, currentClaim.canInteract(player, BuiltinPermission.MAY_FLIGHT, rounded, false));
                     }
                     if (player.getFoodData().getSaturationLevel() < 2 && mainClaim.canInteract(player, BuiltinPermission.NOHUNGER, bPos, false)) {
                         ((IHungerAccessor) player.getFoodData()).setSaturation(2);
@@ -394,10 +399,16 @@ public class EntityInteractEvents {
             Claim sub = claim != null ? claim.getSubClaim(rounded) : null;
             if (sub != null)
                 claim = sub;
-            if (claim != null)
+            if (claim != null) {
                 claim.displayEnterTitle(player);
-            cons.accept(claim);
+            }
+            newClaim = claim;
         }
+        return newClaim;
+    }
+
+    protected static boolean gameModeCanFly(GameType gameType) {
+        return gameType == GameType.CREATIVE || gameType == GameType.SPECTATOR;
     }
 
     public static boolean canFrostwalkerFreeze(ServerLevel world, BlockPos pos, LivingEntity entity) {
