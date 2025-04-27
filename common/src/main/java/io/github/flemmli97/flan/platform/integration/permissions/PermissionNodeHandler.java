@@ -41,8 +41,8 @@ public interface PermissionNodeHandler {
     String cmdPermission = "flan.command.permission";
     String cmdClaimIgnore = "flan.command.claim.ignore";
 
-    String cmdSell = "flan.command.buy";
-    String cmdBuy = "flan.command.sell";
+    String cmdSell = "flan.command.sell";
+    String cmdBuy = "flan.command.buy";
 
     String cmdUnlockAll = "flan.command.unlock.all";
     String cmdName = "flan.command.name";
