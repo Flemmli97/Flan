@@ -66,6 +66,6 @@ public class FlanForge {
 
     public void addReloadListener(AddReloadListenerEvent event) {
         event.addListener(PermissionManager.INSTANCE = new PermissionManager(event.getRegistryAccess()));
-        event.addListener(InteractionOverrideManager.INSTANCE);
+        event.addListener(InteractionOverrideManager.INSTANCE = new InteractionOverrideManager(event.getRegistryAccess()));
     }
 }

@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.Flan;
 import net.minecraft.core.HolderLookup;
@@ -63,9 +64,10 @@ public class PermissionManager extends SimpleJsonResourceReloadListener {
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> data, ResourceManager manager, ProfilerFiller profiler) {
         ImmutableMap.Builder<ResourceLocation, ClaimPermission> builder = ImmutableMap.builder();
+        DynamicOps<JsonElement> ops = this.provider.createSerializationContext(JsonOps.INSTANCE);
         data.forEach((res, el) -> {
             try {
-                ClaimPermission.Builder props = ClaimPermission.Builder.CODEC.parse(JsonOps.INSTANCE, parseLegacy(res, el))
+                ClaimPermission.Builder props = ClaimPermission.Builder.CODEC.parse(ops, parseLegacy(res, el))
                         .getOrThrow();
                 if (props.verify())
                     builder.put(res, props.build(res));

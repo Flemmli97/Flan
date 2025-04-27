@@ -9,9 +9,11 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.flemmli97.flan.Flan;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
@@ -56,12 +58,15 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
     public static final InteractionType<EntityType<?>> ENTITY_ATTACK = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "entity_attack"), () -> new InteractionHolder<>(BuiltInRegistries.ENTITY_TYPE, ENTITY_CODEC));
     public static final InteractionType<EntityType<?>> ENTITY_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "entity_interact"), () -> new InteractionHolder<>(BuiltInRegistries.ENTITY_TYPE, ENTITY_CODEC));
 
-    public static final InteractionOverrideManager INSTANCE = new InteractionOverrideManager();
+    public static InteractionOverrideManager INSTANCE;
 
     private final Map<InteractionType<?>, InteractionHolder<?>> overrides = new HashMap<>();
 
-    private InteractionOverrideManager() {
+    private final HolderLookup.Provider provider;
+
+    public InteractionOverrideManager(HolderLookup.Provider provider) {
         super(GSON, DIRECTORY);
+        this.provider = provider;
     }
 
     public static <T> Codec<Pair<Either<TagKey<T>, T>, ResourceLocation>> tagOrEntryCodec(Registry<T> registry) {
@@ -136,6 +141,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
             ObjectToPermissionMap.ITEM_PERMISSION_BUILDER.entrySet().stream().filter(e -> e.getKey().test(item))
                     .map(Map.Entry::getValue).findFirst().ifPresent(sub -> map.defaults.put(item, sub.get()));
         }
+        DynamicOps<JsonElement> ops = this.provider.createSerializationContext(JsonOps.INSTANCE);
         data.forEach((res, el) -> {
             try {
                 JsonObject obj = el.getAsJsonObject();
@@ -143,7 +149,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
                 if (type == null)
                     throw new JsonParseException("InteractionType of value " + obj.get("type").getAsString() + " does not exist");
                 JsonElement values = obj.get("values");
-                this.appendTo(this.getHolder(type), values);
+                this.appendTo(this.getHolder(type), values, ops);
             } catch (Exception ex) {
                 Flan.LOGGER.error("Couldnt parse claim permission json {} {}", res, ex);
                 ex.fillInStackTrace();
@@ -151,8 +157,8 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
         });
     }
 
-    private <T> void appendTo(InteractionHolder<T> map, JsonElement element) {
-        List<Pair<Either<TagKey<T>, T>, ResourceLocation>> elements = map.codec.parse(JsonOps.INSTANCE, element)
+    private <T> void appendTo(InteractionHolder<T> map, JsonElement element, DynamicOps<JsonElement> ops) {
+        List<Pair<Either<TagKey<T>, T>, ResourceLocation>> elements = map.codec.parse(ops, element)
                 .getOrThrow();
         elements.forEach(pair -> pair.getFirst().ifLeft(tag -> map.unresolvedTags.put(tag, pair.getSecond()))
                 .ifRight(val -> map.direct.put(val, pair.getSecond())));
