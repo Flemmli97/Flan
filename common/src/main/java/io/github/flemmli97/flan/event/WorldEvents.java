@@ -26,15 +26,6 @@ import net.minecraft.world.level.levelgen.structure.StructureStart;
 
 public class WorldEvents {
 
-    public static void modifyExplosion(Explosion explosion, ServerLevel world) {
-        ClaimStorage storage = ClaimStorage.get(world);
-        explosion.getToBlow().removeIf(pos -> {
-            IPermissionContainer claim = storage.getForPermissionCheck(pos);
-            if (claim != null)
-                return !claim.canInteract(null, BuiltinPermission.EXPLOSIONS, pos);
-            return false;
-        });
-    }
 
     public static boolean pistonCanPush(BlockState state, Level world, BlockPos blockPos, Direction direction, Direction pistonDir) {
         if (world.isClientSide)

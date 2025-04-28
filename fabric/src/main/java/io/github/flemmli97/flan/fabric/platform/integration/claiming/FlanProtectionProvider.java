@@ -96,7 +96,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
-        ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract(sl.getBlockState(pos).getBlock());
+        ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract(sl.getBlockState(pos).getBlock());
 
         if (perm != null && perm.equals(BuiltinPermission.PROJECTILES))
             perm = BuiltinPermission.OPENCONTAINER;

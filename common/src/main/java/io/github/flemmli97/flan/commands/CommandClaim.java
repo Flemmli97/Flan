@@ -856,11 +856,11 @@ public class CommandClaim {
             return 0;
         }
         ResourceLocation perm = ResourceLocationArgument.getId(context, "permission");
-        if (group != null && PermissionManager.INSTANCE.isGlobalPermission(perm)) {
+        if (group != null && PermissionManager.getInstance().isGlobalPermission(perm)) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.nonGlobalOnly", perm, ChatFormatting.DARK_RED), false);
             return 0;
         }
-        if (PermissionManager.INSTANCE.get(perm) == null) {
+        if (PermissionManager.getInstance().get(perm) == null) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.noSuchPerm", perm, ChatFormatting.DARK_RED), false);
             return 0;
         }
@@ -884,11 +884,11 @@ public class CommandClaim {
             default -> 0;
         };
         ResourceLocation perm = ResourceLocationArgument.getId(context, "permission");
-        if (PermissionManager.INSTANCE.isGlobalPermission(perm)) {
+        if (PermissionManager.getInstance().isGlobalPermission(perm)) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.nonGlobalOnly", perm, ChatFormatting.DARK_RED), false);
             return 0;
         }
-        if (PermissionManager.INSTANCE.get(perm) == null) {
+        if (PermissionManager.getInstance().get(perm) == null) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.noSuchPerm", perm, ChatFormatting.DARK_RED), false);
             return 0;
         }
@@ -1071,7 +1071,7 @@ public class CommandClaim {
     private static <T> String addClaimListEntry(CommandContext<CommandSourceStack> context, Registry<T> registry, AllowedRegistryList<T> list) throws CommandSyntaxException {
         ResourceOrTagKeyArgument.Result<T> value = CommandHelpers.getRegistryType(context, "entry", (ResourceKey<Registry<T>>) registry.key());
         value.unwrap().ifRight(tag -> list.addAllowedItem(Either.right(tag))).ifLeft(id -> {
-            T entry = registry.get(id);
+            T entry = registry.getValue(id);
             if (entry != Items.AIR)
                 list.addAllowedItem(Either.left(entry));
         });

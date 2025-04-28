@@ -118,7 +118,7 @@ public class Config {
     public int preConfigVersion;
 
     public Map<String, Map<ResourceLocation, Boolean>> defaultGroups = createHashMap(map -> {
-        map.put("Co-Owner", createLinkedHashMap(perms -> PermissionManager.INSTANCE.getAll().forEach(p -> perms.put(p.getId(), true))));
+        map.put("Co-Owner", createLinkedHashMap(perms -> PermissionManager.getInstance().getAll().forEach(p -> perms.put(p.getId(), true))));
         map.put("Visitor", createLinkedHashMap(perms -> {
             perms.put(BuiltinPermission.BED, true);
             perms.put(BuiltinPermission.DOOR, true);
@@ -185,11 +185,11 @@ public class Config {
             this.worldWhitelist = ConfigHandler.fromJson(obj, "worldWhitelist", this.worldWhitelist);
 
             if (obj.has("claimingItem"))
-                this.claimingItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse((obj.get("claimingItem").getAsString())));
+                this.claimingItem = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse((obj.get("claimingItem").getAsString())));
             this.claimingNBT = CompoundTag.CODEC.parse(JsonOps.INSTANCE, GsonHelper.getAsJsonObject(obj, "claimingNBT", new JsonObject()))
                     .getOrThrow();
             if (obj.has("inspectionItem"))
-                this.inspectionItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse((obj.get("inspectionItem").getAsString())));
+                this.inspectionItem = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse((obj.get("inspectionItem").getAsString())));
             this.inspectionNBT = CompoundTag.CODEC.parse(JsonOps.INSTANCE, GsonHelper.getAsJsonObject(obj, "inspectionNBT", new JsonObject()))
                     .getOrThrow();
             this.main3dClaims = ConfigHandler.fromJson(obj, "main3dClaims", this.main3dClaims);
@@ -246,7 +246,7 @@ public class Config {
                 if (e.getValue().isJsonObject()) {
                     e.getValue().getAsJsonObject().entrySet().forEach(jperm -> {
                         ResourceLocation id = BuiltinPermission.tryLegacy(jperm.getKey());
-                        ClaimPermission perm = PermissionManager.INSTANCE.get(id);
+                        ClaimPermission perm = PermissionManager.getInstance().get(id);
                         if (perm == null)
                             Flan.error("Default groups: No such permission for {}", jperm.getKey());
                         else
@@ -262,7 +262,7 @@ public class Config {
                 if (e.getValue().isJsonObject()) {
                     e.getValue().getAsJsonObject().entrySet().forEach(jperm -> {
                         ResourceLocation id = BuiltinPermission.tryLegacy(jperm.getKey());
-                        ClaimPermission perm = PermissionManager.INSTANCE.get(id);
+                        ClaimPermission perm = PermissionManager.getInstance().get(id);
                         if (perm == null)
                             Flan.error("Global Perms: No such permission for {}", jperm.getKey());
                         if (jperm.getValue().isJsonPrimitive() && jperm.getValue().getAsJsonPrimitive().isBoolean())

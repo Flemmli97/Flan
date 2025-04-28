@@ -1,14 +1,13 @@
 package io.github.flemmli97.flan.api.permission;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.Flan;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -20,27 +19,39 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.flemmli97.flan.Flan.MODID;
+import static net.minecraft.resources.ResourceLocation.fromNamespaceAndPath;
+import static net.minecraft.util.ExtraCodecs.JSON;
+
 /**
  * The permission manager which holds all registered permissions from datapacks
  */
-public class PermissionManager extends SimpleJsonResourceReloadListener {
+public class PermissionManager extends SimpleJsonResourceReloadListener<JsonElement> {
 
     public static final String DIRECTORY = "claim_permissions";
-    private static final Gson GSON = new GsonBuilder().create();
+
+    private static PermissionManager INSTANCE;
+    public static final ResourceLocation RESOURCE_LOCATION = fromNamespaceAndPath(MODID, DIRECTORY);
+
+    private Map<ResourceLocation, ClaimPermission> permissions = ImmutableMap.of();
+    private List<ClaimPermission> sorted = List.of();
+    private final HolderLookup.Provider provider;
+
+    public static PermissionManager create(HolderLookup.Provider provider) {
+        PermissionManager.INSTANCE = new PermissionManager(provider);
+        return getInstance();
+    }
+
+    private PermissionManager(HolderLookup.Provider provider) {
+        super(JSON, FileToIdConverter.json(DIRECTORY));
+        this.provider = provider;
+    }
 
     /**
      * The permission manager instance. This will be null if datapacks are not loaded yet.
      */
-    public static PermissionManager INSTANCE;
-
-    private Map<ResourceLocation, ClaimPermission> permissions = ImmutableMap.of();
-    private List<ClaimPermission> sorted = List.of();
-
-    private final HolderLookup.Provider provider;
-
-    public PermissionManager(HolderLookup.Provider provider) {
-        super(GSON, DIRECTORY);
-        this.provider = provider;
+    public static PermissionManager getInstance() {
+        return INSTANCE;
     }
 
     @Nullable

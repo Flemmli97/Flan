@@ -25,7 +25,7 @@ public class FTBChunks {
                         int blockX = x << 4;
                         int blockZ = z << 4;
                         //There is no reason to display it since ftb chunks has a map
-                        set.add(new DisplayBox(blockX, level.getMinBuildHeight(), blockZ, blockX + 15, level.getMaxBuildHeight(), blockZ + 15, () -> true));
+                        set.add(new DisplayBox(blockX, level.getMinY(), blockZ, blockX + 15, level.getMaxY(), blockZ + 15, () -> true));
                     }
                 }
         }

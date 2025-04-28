@@ -112,7 +112,7 @@ public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<Cus
                         if (s.startsWith("#"))
                             this.claim.allowedItems.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse(s.substring(1)))));
                         else {
-                            Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(s));
+                            Item item = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(s));
                             if (item != Items.AIR)
                                 this.claim.allowedItems.addAllowedItem(Either.left(item));
                         }
@@ -121,7 +121,7 @@ public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<Cus
                         if (s.startsWith("#"))
                             this.claim.allowedBreakBlocks.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.BLOCK.key(), ResourceLocation.parse(s.substring(1)))));
                         else {
-                            Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(s));
+                            Block block = BuiltInRegistries.BLOCK.getValue(ResourceLocation.parse(s));
                             if (block != Blocks.AIR)
                                 this.claim.allowedBreakBlocks.addAllowedItem(Either.left(block));
                         }
@@ -130,7 +130,7 @@ public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<Cus
                         if (s.startsWith("#"))
                             this.claim.allowedUseBlocks.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.BLOCK.key(), ResourceLocation.parse(s.substring(1)))));
                         else {
-                            Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(s));
+                            Block block = BuiltInRegistries.BLOCK.getValue(ResourceLocation.parse(s));
                             if (block != Blocks.AIR)
                                 this.claim.allowedUseBlocks.addAllowedItem(Either.left(block));
                         }
@@ -139,7 +139,7 @@ public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<Cus
                         if (s.startsWith("#"))
                             this.claim.allowedEntityAttack.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), ResourceLocation.parse(s.substring(1)))));
                         else {
-                            EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(s));
+                            EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.getValue(ResourceLocation.parse(s));
                             if (entityType != EntityType.PIG || s.equals("minecraft:pig"))
                                 this.claim.allowedEntityAttack.addAllowedItem(Either.left(entityType));
                         }
@@ -148,7 +148,7 @@ public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<Cus
                         if (s.startsWith("#"))
                             this.claim.allowedEntityUse.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), ResourceLocation.parse(s.substring(1)))));
                         else {
-                            EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(s));
+                            EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.getValue(ResourceLocation.parse(s));
                             if (entityType != EntityType.PIG || s.equals("minecraft:pig"))
                                 this.claim.allowedEntityUse.addAllowedItem(Either.left(entityType));
                         }
