@@ -65,7 +65,7 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler<ClaimGroup>
 
     @Override
     protected void fillInventoryWith(Player player, SeparateInv inv, ClaimGroup additionalData) {
-        this.perms = new ArrayList<>(PermissionManager.INSTANCE.getAll());
+        this.perms = new ArrayList<>(PermissionManager.getInstance().getAll());
         if (additionalData.getGroup() != null)
             this.perms.removeIf(p -> p.global);
         this.maxPages = (this.perms.size() - 1) / 28;
@@ -78,13 +78,13 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler<ClaimGroup>
                 ItemStack close = new ItemStack(Items.ARROW);
                 close.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenNext", ChatFormatting.WHITE));
                 inv.updateStack(i, close);
-            } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
+            } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8) {
                 inv.updateStack(i, ServerScreenHelper.emptyFiller());
-            else {
+            } else {
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1;
                 if (id < this.perms.size())
-                    inv.updateStack(i, ServerScreenHelper.fromPermission(additionalData.getClaim(), (ServerPlayer) player, this.perms.get(id), additionalData.getGroup() == null ? null : additionalData.getGroup()));
+                    inv.updateStack(i, ServerScreenHelper.fromPermission(additionalData.getClaim(), (ServerPlayer) player, this.perms.get(id), additionalData.getGroup()));
             }
         }
     }
@@ -149,7 +149,7 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler<ClaimGroup>
         ItemStack stack = slot.getItem();
         ClaimPermission perm;
         try {
-            perm = PermissionManager.INSTANCE.get(ResourceLocation.parse(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+            perm = PermissionManager.getInstance().get(ResourceLocation.parse(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
                     .copyTag().getString(ServerScreenHelper.PERMISSION_KEY)));
             if (perm == null)
                 return false;

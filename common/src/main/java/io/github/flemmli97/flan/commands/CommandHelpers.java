@@ -58,7 +58,7 @@ public class CommandHelpers {
         Claim claim = ClaimStorage.get(world).getClaimAt(BlockPos.containing(context.getSource().getPosition()));
         boolean admin = claim != null && claim.isAdminClaim();
         List<String> allowedPerms = new ArrayList<>();
-        for (ClaimPermission perm : PermissionManager.INSTANCE.getAll()) {
+        for (ClaimPermission perm : PermissionManager.getInstance().getAll()) {
             if (!admin && ConfigHandler.CONFIG.globallyDefined(world, perm.getId())) {
                 continue;
             }

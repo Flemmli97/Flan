@@ -44,6 +44,8 @@ public class ServerScreenHelper {
     public static ItemStack fromPermission(Claim claim, ServerPlayer player, ClaimPermission perm, String group) {
         ItemStack stack = perm.getItem();
         stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText(perm.translationKey(), ChatFormatting.GOLD));
+        stack.remove(DataComponents.ATTRIBUTE_MODIFIERS);
+        stack.remove(DataComponents.POTION_CONTENTS);
         List<Component> lore = new ArrayList<>();
         for (String pdesc : LanguageAPI.getFormattedKeys(player, perm.translationKeyDescription())) {
             Component trans = ServerScreenHelper.coloredGuiText(pdesc, ChatFormatting.YELLOW);

@@ -51,7 +51,7 @@ public class BuySellHandler {
                 .setStyle(Style.EMPTY.withItalic(false).applyFormat(ChatFormatting.AQUA)));
         List<Component> stackComp = new ArrayList<>();
         for (ItemResult r : stacks) {
-            stackComp.add(Component.translatable("flan.buy_sell.item.amount", Component.translatable(r.stack().getDescriptionId()), r.amount(), r.value())
+            stackComp.add(Component.translatable("flan.buy_sell.item.amount", r.stack().getItemName(), r.amount(), r.value())
                     .setStyle(Style.EMPTY.withItalic(false).applyFormat(ChatFormatting.GREEN)));
         }
         ServerScreenHelper.addLore(stack, stackComp);

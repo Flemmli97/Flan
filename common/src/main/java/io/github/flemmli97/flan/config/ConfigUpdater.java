@@ -7,12 +7,11 @@ import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +45,7 @@ public class ConfigUpdater {
                         Ingredient ingredient = Ingredient.CODEC.parse(JsonOps.INSTANCE, buySellHandler.get("ingredient"))
                                 .getOrThrow();
                         ItemPredicate pred = ItemPredicate.Builder.item()
-                                .of(Arrays.stream(ingredient.getItems()).map(ItemStack::getItem).toArray(ItemLike[]::new))
+                                .of(null, ingredient.items().map(Holder::value).toArray(ItemLike[]::new))
                                 .build();
                         o.add("predicate", ItemPredicate.CODEC.encodeStart(JsonOps.INSTANCE, pred).getOrThrow());
                         o.remove("ingredient");
@@ -61,13 +60,16 @@ public class ConfigUpdater {
             toRemove.forEach(buyItems::remove);
             buySellHandler.add("buyItems", buyItems);
 
-            if (buySellHandler.has("ingredient") || buySellHandler.has("sellIngredient")) {
-                Ingredient legacy = buySellHandler.has("ingredient") ? Ingredient.CODEC.parse(JsonOps.INSTANCE, buySellHandler.get("ingredient"))
-                        .getOrThrow() : Ingredient.EMPTY;
-                legacy = buySellHandler.has("sellIngredient") ? Ingredient.CODEC.parse(JsonOps.INSTANCE, buySellHandler.get("sellIngredient"))
-                        .getOrThrow() : legacy;
-                if (!legacy.isEmpty() && !legacy.getItems()[0].isEmpty()) {
-                    buySellHandler.add("sellItems", BuySellHandler.ITEM_STACK_CODEC.encodeStart(JsonOps.INSTANCE, legacy.getItems()[0])
+            boolean hasSell = buySellHandler.has("sellIngredient");
+            boolean hasIng = buySellHandler.has("ingredient");
+            if (hasIng || hasSell) {
+                Ingredient legacy = Ingredient.CODEC
+                        .parse(JsonOps.INSTANCE, buySellHandler.get(hasSell ? "sellIngredient" : "ingredient"))
+                        .getOrThrow();
+
+                if (!legacy.isEmpty()) {
+                    var itemStack = legacy.items().findFirst().get().value().getDefaultInstance();
+                    buySellHandler.add("sellItems", BuySellHandler.ITEM_STACK_CODEC.encodeStart(JsonOps.INSTANCE, itemStack)
                             .result().map(e -> {
                                 JsonArray arr = new JsonArray();
                                 JsonObject val = new JsonObject();

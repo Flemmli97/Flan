@@ -79,7 +79,7 @@ public class BlockInteractEvents {
             if (contains(id, world.getBlockEntity(pos), ConfigHandler.CONFIG.breakBlockBlacklist, ConfigHandler.CONFIG.breakBlockEntityTagBlacklist))
                 return true;
             if (attempt) {
-                ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockLeftClick(state.getBlock());
+                ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockLeftClick(state.getBlock());
                 if (perm != null) {
                     if (!claim.canInteract(player, perm, pos, true)) {
                         PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
@@ -119,7 +119,7 @@ public class BlockInteractEvents {
             BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
             if (contains(id, blockEntity, ConfigHandler.CONFIG.interactBlockBlacklist, ConfigHandler.CONFIG.interactBlockEntityTagBlacklist))
                 return InteractionResult.PASS;
-            ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract(state.getBlock());
+            ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract(state.getBlock());
             if (perm != null && perm.equals(BuiltinPermission.PROJECTILES))
                 perm = BuiltinPermission.OPENCONTAINER;
             //Pressureplate handled elsewhere
@@ -205,7 +205,7 @@ public class BlockInteractEvents {
         }
         if (player == null)
             return false;
-        ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract(state.getBlock());
+        ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract(state.getBlock());
         if (perm == null)
             return false;
         if (!perm.equals(BuiltinPermission.PRESSUREPLATE) && !perm.equals(BuiltinPermission.PORTAL))
@@ -221,7 +221,7 @@ public class BlockInteractEvents {
         if (entity.level().isClientSide)
             return false;
         if (entity instanceof ServerPlayer) {
-            ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract(landedState.getBlock());
+            ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract(landedState.getBlock());
             if (perm == null || !perm.equals(BuiltinPermission.TRAMPLE))
                 return false;
             ClaimStorage storage = ClaimStorage.get((ServerLevel) entity.level());
@@ -232,7 +232,7 @@ public class BlockInteractEvents {
         } else if (entity instanceof Projectile) {
             Entity owner = ((Projectile) entity).getOwner();
             if (owner instanceof ServerPlayer) {
-                ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract(landedState.getBlock());
+                ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract(landedState.getBlock());
                 if (perm == null || !perm.equals(BuiltinPermission.TRAMPLE))
                     return false;
                 ClaimStorage storage = ClaimStorage.get((ServerLevel) entity.level());

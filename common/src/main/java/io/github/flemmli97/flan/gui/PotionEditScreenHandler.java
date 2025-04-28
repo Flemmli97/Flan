@@ -87,7 +87,8 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
                     ItemStack effectStack = new ItemStack(Items.POTION);
                     MutableComponent txt = ClaimUtils.translatedText(effect.value().getDescriptionId());
                     Collection<MobEffectInstance> inst = Collections.singleton(new MobEffectInstance(effect, 0, potions.get(effect)));
-                    effectStack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.of(PotionContents.getColor(inst)), List.of()));
+                    var color = PotionContents.getColorOptional(inst).stream().boxed().findFirst();
+                    effectStack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), color, List.of(), Optional.empty()));
                     CustomData.update(DataComponents.CUSTOM_DATA, effectStack, tag -> tag.putString("FlanEffect", effect.getRegisteredName()));
                     txt.append(Component.literal("-" + potions.get(effect)));
                     Component comp = ServerScreenHelper.coloredGuiText("flan.screenPotionText", txt, ChatFormatting.DARK_BLUE);
@@ -116,7 +117,7 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
             player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
                 String[] potion = s.split(";");
                 int amp = 1;
-                Optional<Holder.Reference<MobEffect>> holder = BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.parse(potion[0]));
+                Optional<Holder.Reference<MobEffect>> holder = BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(potion[0]));
                 if (holder.map(effect -> effect == MobEffects.LUCK && !potion[0].equals("minecraft:luck")).orElse(true)) {
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                     return;
@@ -152,7 +153,7 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
             String effect = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
                     .copyTag().getString("FlanEffect");
             if (!effect.isEmpty())
-                BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.parse(effect))
+                BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(effect))
                         .ifPresent(this.claim::removePotion);
             slot.set(ItemStack.EMPTY);
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.BAT_DEATH, 1, 1f);

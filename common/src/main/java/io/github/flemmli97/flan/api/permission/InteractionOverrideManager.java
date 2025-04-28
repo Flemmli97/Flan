@@ -1,7 +1,5 @@
 package io.github.flemmli97.flan.api.permission;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -16,6 +14,7 @@ import io.github.flemmli97.flan.Flan;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -33,6 +32,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import static io.github.flemmli97.flan.Flan.MODID;
+import static net.minecraft.resources.ResourceLocation.fromNamespaceAndPath;
+import static net.minecraft.util.ExtraCodecs.JSON;
+
 /**
  * Prob overengineered but anyway...
  * <p></p>
@@ -42,11 +45,12 @@ import java.util.function.Supplier;
  * <p></p>
  * Default applies to block left/right click, item right click, entity left/right click
  */
-public class InteractionOverrideManager extends SimpleJsonResourceReloadListener {
+public class InteractionOverrideManager extends SimpleJsonResourceReloadListener<JsonElement> {
 
     public static final String DIRECTORY = "claim_interactions_override";
 
-    private static final Gson GSON = new GsonBuilder().create();
+    public static final ResourceLocation RESOURCE_LOCATION = fromNamespaceAndPath(MODID, DIRECTORY);
+
 
     public static final Codec<List<Pair<Either<TagKey<Block>, Block>, ResourceLocation>>> BLOCK_CODEC = tagOrEntryCodec(BuiltInRegistries.BLOCK).listOf();
     public static final Codec<List<Pair<Either<TagKey<Item>, Item>, ResourceLocation>>> ITEM_CODEC = tagOrEntryCodec(BuiltInRegistries.ITEM).listOf();
@@ -58,14 +62,19 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
     public static final InteractionType<EntityType<?>> ENTITY_ATTACK = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "entity_attack"), () -> new InteractionHolder<>(BuiltInRegistries.ENTITY_TYPE, ENTITY_CODEC));
     public static final InteractionType<EntityType<?>> ENTITY_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "entity_interact"), () -> new InteractionHolder<>(BuiltInRegistries.ENTITY_TYPE, ENTITY_CODEC));
 
-    public static InteractionOverrideManager INSTANCE;
+    private static InteractionOverrideManager INSTANCE;
 
     private final Map<InteractionType<?>, InteractionHolder<?>> overrides = new HashMap<>();
 
     private final HolderLookup.Provider provider;
 
-    public InteractionOverrideManager(HolderLookup.Provider provider) {
-        super(GSON, DIRECTORY);
+    public static InteractionOverrideManager create(HolderLookup.Provider provider) {
+        INSTANCE = new InteractionOverrideManager(provider);
+        return getInstance();
+    }
+
+    private InteractionOverrideManager(HolderLookup.Provider provider) {
+        super(JSON, FileToIdConverter.json(DIRECTORY));
         this.provider = provider;
     }
 
@@ -91,9 +100,13 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
 
     public static <T> List<T> expandTag(Registry<T> registry, TagKey<T> tag) {
         List<T> elements = new ArrayList<>();
-        registry.getTag(tag)
+        registry.get(tag)
                 .ifPresent(n -> n.forEach(h -> elements.add(h.value())));
         return elements;
+    }
+
+    public static InteractionOverrideManager getInstance() {
+        return INSTANCE;
     }
 
     public ResourceLocation getBlockLeftClick(Block block) {

@@ -6,7 +6,6 @@
   "mixins": [
     "EntityDamageMixin",
     "FabricFireMixin",
-    "LevelMixin",
     "LightningHitMixin",
     "PatrolSpawnerMixin",
     "PhantomSpawnerMixin",
