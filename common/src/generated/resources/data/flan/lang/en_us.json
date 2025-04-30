@@ -280,6 +280,8 @@
   "flan.permission.flan:claim_message.desc.0": "Permission to edit the enter/leave message",
   "flan.permission.flan:archeology": "Archeology",
   "flan.permission.flan:archeology.desc.0": "Allow players to brush blocks in this claim",
+  "flan.permission.flan:wind_charge": "Wind Charge",
+  "flan.permission.flan:wind_charge.desc.0": "Permission to use wind charges",
   "flan.permission.flan:hurt_player": "Hurt Player",
   "flan.permission.flan:hurt_player.desc.0": "Permission to hurt other players",
   "flan.permission.flan:explosions": "Explosions",

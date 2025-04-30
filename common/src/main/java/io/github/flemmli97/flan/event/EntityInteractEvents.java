@@ -45,6 +45,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEgg;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.entity.projectile.windcharge.WindCharge;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.AbstractMinecartContainer;
 import net.minecraft.world.entity.vehicle.Boat;
@@ -144,11 +145,16 @@ public class EntityInteractEvents {
                 ResourceLocation perm;
                 if (proj instanceof ThrownEnderpearl)
                     perm = BuiltinPermission.ENDERPEARL;
+                else if (proj instanceof WindCharge)
+                    perm = BuiltinPermission.WIND_CHARGE;
                 else if (proj instanceof ThrownEgg || proj instanceof ThrownPotion)
                     perm = BuiltinPermission.PROJECTILES;
                 else
                     perm = InteractionOverrideManager.INSTANCE.getBlockInteract(state.getBlock());
-                if (perm != BuiltinPermission.ENDERPEARL && perm != BuiltinPermission.TARGETBLOCK && perm != BuiltinPermission.PROJECTILES)
+                if (perm != BuiltinPermission.ENDERPEARL
+                        && perm != BuiltinPermission.TARGETBLOCK
+                        && perm != BuiltinPermission.PROJECTILES
+                        && perm != BuiltinPermission.WIND_CHARGE)
                     return false;
                 ClaimStorage storage = ClaimStorage.get((ServerLevel) proj.level());
                 IPermissionContainer claim = storage.getForPermissionCheck(pos);

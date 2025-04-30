@@ -81,6 +81,7 @@ public class BuiltinPermission {
     public static ResourceLocation NOHUNGER = register("no_hunger", new ItemStack(Items.COOKED_BEEF), false, "Disable hunger");
     public static ResourceLocation CLAIMMESSAGE = register("claim_message", new ItemStack(Items.OAK_SIGN), false, "Permission to edit the enter/leave message");
     public static ResourceLocation ARCHAEOLOGY = register("archeology", new ItemStack(Items.BRUSH), false, false, "Allow players to brush blocks in this claim");
+    public static ResourceLocation WIND_CHARGE = register("wind_charge", new ItemStack(Items.WIND_CHARGE), "Permission to use wind charges");
 
     public static ResourceLocation HURTPLAYER = register("hurt_player", new ItemStack(Items.DIAMOND_SWORD), false, true, "Permission to hurt other players");
     public static ResourceLocation EXPLOSIONS = register("explosions", new ItemStack(Items.TNT), false, true, "Toggle explosions in claim");

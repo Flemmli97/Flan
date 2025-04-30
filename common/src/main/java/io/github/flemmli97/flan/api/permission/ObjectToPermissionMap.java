@@ -99,5 +99,6 @@ public class ObjectToPermissionMap {
         registerItemPredicateMap(item -> item instanceof BoneMealItem, () -> BuiltinPermission.PLACE);
         registerItemPredicateMap(item -> item instanceof BoatItem, () -> BuiltinPermission.BOAT);
         registerItemPredicateMap(item -> item instanceof BrushItem, () -> BuiltinPermission.ARCHAEOLOGY);
+        registerItemPredicateMap(item -> item == Items.WIND_CHARGE, () -> BuiltinPermission.WIND_CHARGE);
     }
 }
