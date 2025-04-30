@@ -10,6 +10,7 @@ Flan 1.11.7
 - Update translation lib
 - Fix swapped buy/sell permission node
 - Add windcharge permission
+- Add claim border crossing event
 
 Flan 1.11.6
 ================
