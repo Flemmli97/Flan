@@ -14,9 +14,9 @@ public class ClaimBorderCrossEvent {
          * Callback for when a player crosses a claims border. This gets triggered for subclaims too!
          * To check if a claim is a subclaim use {@link Claim#isSubclaim}
          *
-         * @param player     The player
-         * @param enter      The claim the player now enters.  to check
-         * @param exit       The claim the player leaves
+         * @param player The player
+         * @param enter  The claim the player now enters.  to check
+         * @param exit   The claim the player leaves
          */
         void borderCross(ServerPlayer player, @Nullable Claim enter, @Nullable Claim exit);
 
