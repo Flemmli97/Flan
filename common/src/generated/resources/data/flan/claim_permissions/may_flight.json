@@ -2,7 +2,7 @@
   "default_value": false,
   "global": false,
   "gui_item": {
-    "id": "minecraft:cooked_beef"
+    "id": "minecraft:feather"
   },
-  "order": 48
+  "order": 45
 }

@@ -13,7 +13,6 @@ import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.event.EntityInteractEvents;
 import io.github.flemmli97.flan.event.ItemInteractEvents;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.display.ClaimDisplay;
@@ -57,7 +56,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public class PlayerClaimData implements IPlayerData {
 
@@ -298,8 +296,7 @@ public class PlayerClaimData implements IPlayerData {
         return false;
     }
 
-    public void tick(Claim currentClaim, Consumer<Claim> cons) {
-        EntityInteractEvents.updateClaim(this.player, currentClaim, cons);
+    public void tick(Claim currentClaim) {
         boolean tool = ConfigHandler.isClaimingTool(this.player.getMainHandItem())
                 || ConfigHandler.isClaimingTool(this.player.getOffhandItem());
         boolean stick = ConfigHandler.isInspectionTool(this.player.getMainHandItem())
