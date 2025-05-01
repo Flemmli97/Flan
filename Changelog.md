@@ -1,3 +1,13 @@
+Flan 1.11.7
+================
+- `flight` permission renamed to `allow_flight` with updated description to fix confusion
+- Added `may_flight` permission which if enabled allows creative flight in the claim. Disabled by default
+- Fix double clicking in gui resulting in triple click
+- Update translation lib, fixing some translation issues
+- Fix swapped buy/sell permission node
+- Add claim border crossing event
+- Update es_mx translation
+
 Flan 1.11.6
 ================
 - Update buy/sell handler. Old configs will be auto converted. Check the wiki for new format
