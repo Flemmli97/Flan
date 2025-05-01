@@ -1,8 +1,8 @@
 {
   "gui_item": {
-    "id": "minecraft:oak_sign"
+    "id": "minecraft:feather"
   },
   "default_value": false,
   "global": false,
-  "order": 49
+  "order": 45
 }
