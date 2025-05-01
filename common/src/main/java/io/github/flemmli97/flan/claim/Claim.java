@@ -10,7 +10,7 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.platform.ClaimPermissionCheck;
+import io.github.flemmli97.flan.platform.ClaimEvents;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.platform.integration.webmap.WebmapCalls;
 import io.github.flemmli97.flan.player.LogoutTracker;
@@ -222,6 +222,10 @@ public class Claim implements IPermissionContainer {
         return this.parentClaim;
     }
 
+    public boolean isSubclaim() {
+        return this.parentClaim() != null;
+    }
+
     public void copySizes(Claim claim) {
         this.minX = claim.minX;
         this.maxX = claim.maxX;
@@ -311,7 +315,7 @@ public class Claim implements IPermissionContainer {
                 perm = BuiltinPermission.FAKEPLAYER;
             }
         }
-        InteractionResult res = ClaimPermissionCheck.INSTANCE.check(player, perm, pos);
+        InteractionResult res = ClaimEvents.INSTANCE.claimCheck(player, perm, pos);
         if (res != InteractionResult.PASS)
             return res != InteractionResult.FAIL;
         if (!this.isAdminClaim()) {
