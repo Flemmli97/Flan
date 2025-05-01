@@ -1,6 +1,5 @@
 Flan 1.11.7
 ================
-- `flight` permission renamed to `allow_flight` with updated description to fix confusion
 - Added `may_flight` permission which if enabled allows creative flight in the claim. Disabled by default
 - Fix double clicking in gui resulting in triple click
 - Update translation lib, fixing some translation issues
