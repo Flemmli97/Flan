@@ -3,7 +3,6 @@ Flan 1.11.7
 - Fix buy/sell handler now requiring server to parse and thus not working
 - Fix datagen missing and thus permissions not working 
 - Fix codecs requiring server access and thus some things permission not being registered 
-- `flight` permission renamed to `allow_flight` with updated description to fix confusion
 - Added `may_flight` permission which if enabled allows creative flight in the claim. Disabled by default
 - Fix double clicking in gui resulting in triple click
 - Update translation lib, fixing some translation issues
