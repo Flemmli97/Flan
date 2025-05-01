@@ -11,7 +11,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.Nullable;
 
-public class ClaimPermissionCheckImpl implements ClaimEvents {
+public class ClaimEventsImpl implements ClaimEvents {
 
     @Override
     public InteractionResult claimCheck(ServerPlayer player, ResourceLocation permission, BlockPos pos) {
