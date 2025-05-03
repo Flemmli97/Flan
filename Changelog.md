@@ -1,3 +1,7 @@
+Flan 1.11.7.b
+================
+- Fabric: Fix PlayerAbilityLib integration
+
 Flan 1.11.7
 ================
 - Fix buy/sell handler now requiring server to parse and thus not working
