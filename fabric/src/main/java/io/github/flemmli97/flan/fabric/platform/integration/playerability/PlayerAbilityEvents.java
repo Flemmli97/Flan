@@ -32,9 +32,9 @@ public class PlayerAbilityEvents {
     }
 
     public static void toggleCreativeFlight(ServerPlayer player, boolean flag) {
-        if (flag && !SOURCE.isActivelyGranting(player, VanillaAbilities.ALLOW_FLYING)) {
+        if (flag && !SOURCE.grants(player, VanillaAbilities.ALLOW_FLYING)) {
             Pal.grantAbility(player, VanillaAbilities.ALLOW_FLYING, SOURCE);
-        } else if (!flag && SOURCE.isActivelyGranting(player, VanillaAbilities.ALLOW_FLYING)) {
+        } else if (!flag && SOURCE.grants(player, VanillaAbilities.ALLOW_FLYING)) {
             Pal.revokeAbility(player, VanillaAbilities.ALLOW_FLYING, SOURCE);
         }
     }

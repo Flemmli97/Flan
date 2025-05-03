@@ -1,3 +1,7 @@
+Flan 1.11.7.b
+================
+- Fabric: Fix PlayerAbilityLib integration
+
 Flan 1.11.7
 ================
 - Added `may_flight` permission which if enabled allows creative flight in the claim. Disabled by default
