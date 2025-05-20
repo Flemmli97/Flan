@@ -21,7 +21,7 @@ public abstract class ReloadableServerResourcesMixin {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void onNewServerReload(LayeredRegistryAccess<RegistryLayer> registryAccess, HolderLookup.Provider provider, FeatureFlagSet enabledFeatures, Commands.CommandSelection commandSelection, List<Registry.PendingTags<?>> list, int functionCompilationLevel, CallbackInfo info) {
-        PermissionManager.INSTANCE = new PermissionManager(provider);
-        InteractionOverrideManager.INSTANCE = new InteractionOverrideManager(provider);
+        PermissionManager.create(provider);
+        InteractionOverrideManager.create(provider);
     }
 }
