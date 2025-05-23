@@ -21,7 +21,7 @@ If you want to add integration to flan first add the following snippet to your b
 repositories {
     maven {
         name = "Flemmli97"
-        url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
+        url "https://maven.blazing-coop.net/releases"
     }
 }
 

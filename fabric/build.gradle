@@ -49,7 +49,7 @@ repositories {
     maven { url = "https://mvn.devos.one/snapshots/" }
     maven {
         name = "LinguaBib"
-        url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
+        url "https://maven.blazing-coop.net/releases"
     }
 }
 
