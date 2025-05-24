@@ -1,3 +1,7 @@
+Flan 1.11.8
+================
+- Update translation lib
+
 Flan 1.11.7.b
 ================
 - Fabric: Fix PlayerAbilityLib integration
