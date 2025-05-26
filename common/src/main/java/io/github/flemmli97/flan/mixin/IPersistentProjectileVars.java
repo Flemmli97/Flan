@@ -14,9 +14,6 @@ public interface IPersistentProjectileVars {
     @Accessor("lastState")
     void setInBlockState(BlockState state);
 
-    @Invoker("setInGround")
-    void setInGround(boolean flag);
-
     @Invoker("getHitGroundSoundEvent")
     SoundEvent getSoundEvent();
 
