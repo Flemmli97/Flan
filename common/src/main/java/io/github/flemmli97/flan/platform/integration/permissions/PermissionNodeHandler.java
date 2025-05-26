@@ -57,7 +57,7 @@ public interface PermissionNodeHandler {
 
     PermissionNodeHandler INSTANCE = Flan.getPlatformInstance(PermissionNodeHandler.class,
             "io.github.flemmli97.flan.fabric.platform.integration.permissions.PermissionNodeHandlerImpl",
-            "io.github.flemmli97.flan.forge.platform.integration.permissions.PermissionNodeHandlerImpl");
+            "io.github.flemmli97.flan.neoforge.platform.integration.permissions.PermissionNodeHandlerImpl");
 
     default boolean perm(CommandSourceStack src, String perm) {
         return this.perm(src, perm, false);

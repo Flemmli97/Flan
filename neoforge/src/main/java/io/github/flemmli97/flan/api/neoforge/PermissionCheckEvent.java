@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.api.forge;
+package io.github.flemmli97.flan.api.neoforge;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;

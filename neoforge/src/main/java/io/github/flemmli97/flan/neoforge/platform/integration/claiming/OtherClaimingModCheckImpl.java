@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.forge.platform.integration.claiming;
+package io.github.flemmli97.flan.neoforge.platform.integration.claiming;
 
 import com.minecolonies.api.colony.IColony;
 import com.minecolonies.api.colony.IColonyManager;

@@ -13,7 +13,7 @@ public interface ClaimEvents {
 
     ClaimEvents INSTANCE = Flan.getPlatformInstance(ClaimEvents.class,
             "io.github.flemmli97.flan.fabric.platform.ClaimEventsImpl",
-            "io.github.flemmli97.flan.forge.platform.ClaimEventsImpl");
+            "io.github.flemmli97.flan.neoforge.platform.ClaimEventsImpl");
 
     InteractionResult claimCheck(ServerPlayer player, ResourceLocation permission, BlockPos pos);
 

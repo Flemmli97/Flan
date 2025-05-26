@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.forge.platform;
+package io.github.flemmli97.flan.neoforge.platform;
 
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;

@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.api.forge;
+package io.github.flemmli97.flan.api.neoforge;
 
 import io.github.flemmli97.flan.claim.Claim;
 import net.minecraft.server.level.ServerPlayer;

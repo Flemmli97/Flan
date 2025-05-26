@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.forge.mixin;
+package io.github.flemmli97.flan.neoforge.mixin;
 
 import io.github.flemmli97.flan.event.WorldEvents;
 import net.minecraft.core.BlockPos;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(FireBlock.class)
-public abstract class ForgeFireMixin {
+public abstract class NeoForgeFireMixin {
 
     /**
      * Check for blocks reacting to fire (e.g. tnt)

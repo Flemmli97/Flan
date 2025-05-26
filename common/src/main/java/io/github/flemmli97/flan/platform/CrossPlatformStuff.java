@@ -12,7 +12,7 @@ public interface CrossPlatformStuff {
 
     CrossPlatformStuff INSTANCE = Flan.getPlatformInstance(CrossPlatformStuff.class,
             "io.github.flemmli97.flan.fabric.platform.CrossPlatformStuffImpl",
-            "io.github.flemmli97.flan.forge.platform.CrossPlatformStuffImpl");
+            "io.github.flemmli97.flan.neoforge.platform.CrossPlatformStuffImpl");
 
     Path configPath();
 

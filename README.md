@@ -34,7 +34,7 @@ dependencies {
 		transitive = false //Remove this if you want to have all those optional dependencies
 	}
     
-    //Forge==========    
+    //NeoForge/Forge==========    
     compileOnly fg.deobf("io.github.flemmli97:flan:${minecraft_version}-${flan_version}-${mod_loader}:api")
     runtimeOnly fg.deobf("io.github.flemmli97:flan:${minecraft_version}-${flan_version}-${mod_loader}")
 }

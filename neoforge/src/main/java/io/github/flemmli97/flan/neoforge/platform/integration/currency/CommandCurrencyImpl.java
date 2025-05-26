@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.forge.platform.integration.currency;
+package io.github.flemmli97.flan.neoforge.platform.integration.currency;
 
 import dicemc.money.MoneyMod;
 import dicemc.money.storage.MoneyWSD;

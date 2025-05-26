@@ -10,7 +10,7 @@ public interface CommandCurrency {
 
     CommandCurrency INSTANCE = Flan.getPlatformInstance(CommandCurrency.class,
             "io.github.flemmli97.flan.fabric.platform.integration.currency.CommandCurrencyImpl",
-            "io.github.flemmli97.flan.forge.platform.integration.currency.CommandCurrencyImpl");
+            "io.github.flemmli97.flan.neoforge.platform.integration.currency.CommandCurrencyImpl");
 
     boolean sellClaimBlocks(ServerPlayer player, int blocks, float value, Consumer<Component> message);
 

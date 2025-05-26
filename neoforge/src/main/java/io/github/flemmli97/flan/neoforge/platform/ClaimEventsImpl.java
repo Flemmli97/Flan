@@ -1,7 +1,7 @@
-package io.github.flemmli97.flan.forge.platform;
+package io.github.flemmli97.flan.neoforge.platform;
 
-import io.github.flemmli97.flan.api.forge.ClaimBorderCrossEvent;
-import io.github.flemmli97.flan.api.forge.PermissionCheckEvent;
+import io.github.flemmli97.flan.api.neoforge.ClaimBorderCrossEvent;
+import io.github.flemmli97.flan.api.neoforge.PermissionCheckEvent;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.platform.ClaimEvents;
 import net.minecraft.core.BlockPos;

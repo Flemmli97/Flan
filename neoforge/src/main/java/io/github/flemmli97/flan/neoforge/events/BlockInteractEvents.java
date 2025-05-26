@@ -1,11 +1,10 @@
-package io.github.flemmli97.flan.forge.forgeevent;
+package io.github.flemmli97.flan.neoforge.events;
 
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
-import io.github.flemmli97.flan.event.BlockInteractEvents;
 import io.github.flemmli97.flan.event.ItemInteractEvents;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.player.display.EnumDisplayType;
@@ -24,24 +23,24 @@ import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 
-public class BlockInteractEventsForge {
+public class BlockInteractEvents {
 
     public static void startBreakBlocks(PlayerInteractEvent.LeftClickBlock event) {
         if (!(event.getLevel() instanceof ServerLevel))
             return;
-        if (BlockInteractEvents.startBreakBlocks(event.getEntity(), event.getLevel(), event.getHand(), event.getPos(), event.getFace()) == InteractionResult.FAIL)
+        if (io.github.flemmli97.flan.event.BlockInteractEvents.startBreakBlocks(event.getEntity(), event.getLevel(), event.getHand(), event.getPos(), event.getFace()) == InteractionResult.FAIL)
             event.setCanceled(true);
     }
 
     public static void breakBlocks(BlockEvent.BreakEvent event) {
         if (!(event.getLevel() instanceof ServerLevel))
             return;
-        if (!BlockInteractEvents.breakBlocks((Level) event.getLevel(), event.getPlayer(), event.getPos(), event.getState(), event.getLevel().getBlockEntity(event.getPos())))
+        if (!io.github.flemmli97.flan.event.BlockInteractEvents.breakBlocks((Level) event.getLevel(), event.getPlayer(), event.getPos(), event.getState(), event.getLevel().getBlockEntity(event.getPos())))
             event.setCanceled(true);
     }
 
     public static void useBlocks(PlayerInteractEvent.RightClickBlock event) {
-        InteractionResult res = BlockInteractEvents.useBlocks(event.getEntity(), event.getLevel(), event.getHand(), event.getHitVec());
+        InteractionResult res = io.github.flemmli97.flan.event.BlockInteractEvents.useBlocks(event.getEntity(), event.getLevel(), event.getHand(), event.getHitVec());
         if (res == InteractionResult.SUCCESS) {
             event.setCancellationResult(res);
             event.setCanceled(true);
@@ -58,17 +57,17 @@ public class BlockInteractEventsForge {
      * This is in most cases a double check but since its not in all cases we need to do this
      */
     public static void placeBlock(BlockEvent.EntityPlaceEvent event) {
-        event.setCanceled(forgePlaceBlocks(event.getEntity(), event.getPos(), event.getPlacedBlock()));
+        event.setCanceled(placeBlocksHandler(event.getEntity(), event.getPos(), event.getPlacedBlock()));
     }
 
     /**
      * This is in most cases a double check but since its not in all cases we need to do this
      */
     public static void placeBlocks(BlockEvent.EntityMultiPlaceEvent event) {
-        event.setCanceled(forgePlaceBlocks(event.getEntity(), event.getPos(), event.getPlacedBlock()));
+        event.setCanceled(placeBlocksHandler(event.getEntity(), event.getPos(), event.getPlacedBlock()));
     }
 
-    private static boolean forgePlaceBlocks(Entity entity, BlockPos placePos, BlockState placedBlock) {
+    private static boolean placeBlocksHandler(Entity entity, BlockPos placePos, BlockState placedBlock) {
         if (!(entity instanceof ServerPlayer player))
             return false;
         ClaimStorage storage = ClaimStorage.get(player.serverLevel());

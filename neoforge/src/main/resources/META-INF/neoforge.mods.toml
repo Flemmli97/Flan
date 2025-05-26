@@ -5,7 +5,7 @@ issueTrackerURL="https://github.com/Flemmli97/Flan/issues"
 [[mixins]]
 config = "flan.mixins.json"
 [[mixins]]
-config = "flan.forge.mixins.json"
+config = "flan.neoforge.mixins.json"
 [[mods]] 
 modId="flan"
 version="${version}"
@@ -13,7 +13,7 @@ displayName="Flan"
 displayURL="${homepage}"
 logoFile="icon.png"
 authors="Flemmli97"
-description='''Flan (Forge version): A serverside claiming mod'''
+description = '''Flan (NeoForge version): A serverside claiming mod'''
 [[dependencies.flan]]
 modId="minecraft"
 type="required"
@@ -23,6 +23,6 @@ side="BOTH"
 [[dependencies.flan]]
 modId="neoforge"
 type="required"
-versionRange="[${forge_version},)"
+versionRange = "[${neoforge_version},)"
 ordering="NONE"
 side="BOTH"

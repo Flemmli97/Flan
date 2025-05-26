@@ -68,7 +68,7 @@ dependencies {
 }
 
 task apiJar(type: Jar, dependsOn: classes) {
-    archiveClassifier.set "fabric-api-source"
+    archiveClassifier.set "api-source"
     from project(":common").sourceSets.main.output + sourceSets.main.output
     include "io/github/flemmli97/flan/api/**"
     include "fabric.mod_api.json" //Include this so it gets remapped as a dependency
@@ -76,7 +76,7 @@ task apiJar(type: Jar, dependsOn: classes) {
 }
 
 task remapApiJar(type: net.fabricmc.loom.task.RemapJarTask) {
-    archiveClassifier.set "fabric-api"
+    archiveClassifier.set "api"
     input.set apiJar.archiveFile
     addNestedDependencies = false
     dependsOn apiJar
@@ -91,7 +91,6 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             artifact(remapApiJar) {
-                classifier "api"
                 builtBy remapApiJar
             }
         }

@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.forge.forgeevent;
+package io.github.flemmli97.flan.neoforge.events;
 
 import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.config.ConfigHandler;
