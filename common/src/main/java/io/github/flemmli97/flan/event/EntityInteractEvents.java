@@ -77,7 +77,7 @@ public class EntityInteractEvents {
         if (claim != null) {
             if (claim instanceof Claim real && real.canInteractWithEntity(entity))
                 return InteractionResult.PASS;
-            ResourceLocation perm = InteractionOverrideManager.INSTANCE.getEntityInteract(entity.getType());
+            ResourceLocation perm = InteractionOverrideManager.getInstance().getEntityInteract(entity.getType());
             if (perm != null) {
                 return claim.canInteract(serverPlayer, perm, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             }
@@ -102,7 +102,7 @@ public class EntityInteractEvents {
         if (claim != null) {
             if (claim instanceof Claim real && real.canInteractWithEntity(entity))
                 return InteractionResult.PASS;
-            ResourceLocation perm = InteractionOverrideManager.INSTANCE.getEntityInteract(entity.getType());
+            ResourceLocation perm = InteractionOverrideManager.getInstance().getEntityInteract(entity.getType());
             if (perm != null) {
                 return claim.canInteract(player, perm, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             }
@@ -150,7 +150,7 @@ public class EntityInteractEvents {
                 else if (proj instanceof ThrownEgg || proj instanceof ThrownPotion)
                     perm = BuiltinPermission.PROJECTILES;
                 else
-                    perm = InteractionOverrideManager.INSTANCE.getBlockInteract(state.getBlock());
+                    perm = InteractionOverrideManager.getInstance().getBlockInteract(state.getBlock());
                 if (perm != BuiltinPermission.ENDERPEARL
                         && perm != BuiltinPermission.TARGETBLOCK
                         && perm != BuiltinPermission.PROJECTILES
@@ -228,7 +228,7 @@ public class EntityInteractEvents {
             if (entity.hasCustomName() && !claim.canInteract(player, BuiltinPermission.HURTNAMED, pos, message)) {
                 return InteractionResult.FAIL;
             }
-            ResourceLocation perm = InteractionOverrideManager.INSTANCE.getEntityAttack(entity.getType());
+            ResourceLocation perm = InteractionOverrideManager.getInstance().getEntityAttack(entity.getType());
             if (perm != null)
                 return claim.canInteract(player, perm, pos, message) ? InteractionResult.PASS : InteractionResult.FAIL;
             if (entity instanceof ArmorStand || !(entity instanceof LivingEntity))

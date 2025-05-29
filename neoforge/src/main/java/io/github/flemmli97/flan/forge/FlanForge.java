@@ -15,7 +15,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 
 @Mod(FlanForge.MODID)
 public class FlanForge {
@@ -30,7 +30,6 @@ public class FlanForge {
         Flan.impactor = ModList.get().isLoaded("impactor");
 
         IEventBus forge = NeoForge.EVENT_BUS;
-        forge.addListener(WorldEventsForge::modifyExplosion);
         forge.addListener(WorldEventsForge::preventMobSpawn);
         forge.addListener(ItemInteractEventsForge::useItem);
         forge.addListener(EventPriority.HIGHEST, BlockInteractEventsForge::startBreakBlocks);
@@ -64,8 +63,9 @@ public class FlanForge {
         ClaimCriterias.init();
     }
 
-    public void addReloadListener(AddReloadListenerEvent event) {
-        event.addListener(PermissionManager.INSTANCE = new PermissionManager(event.getRegistryAccess()));
-        event.addListener(InteractionOverrideManager.INSTANCE = new InteractionOverrideManager(event.getRegistryAccess()));
+    public void addReloadListener(AddServerReloadListenersEvent event) {
+        var registryAccess = event.getRegistryAccess();
+        event.addListener(PermissionManager.RESOURCE_LOCATION, PermissionManager.create(registryAccess));
+        event.addListener(InteractionOverrideManager.RESOURCE_LOCATION, InteractionOverrideManager.create(registryAccess));
     }
 }

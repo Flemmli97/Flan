@@ -27,7 +27,7 @@
     "MossBlockCheckMixin",
     "PistonMixin",
     "PlayerClaimMixin",
-    "PlayerMixin",
+    "ServerPlayerMixin",
     "RaidManagerMixin",
     "ReplaceBlockMixin",
     "ReplaceDiskMixin",
@@ -35,6 +35,7 @@
     "SculkShriekerMixin",
     "ServerPlayerGameModeMixin",
     "ServerWorldMixin",
+    "ServerExplosionMixin",
     "SetBlockPropertiesMixin",
     "StructureManagerAccessor",
     "TurtleEggMixin"

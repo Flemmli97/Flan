@@ -75,7 +75,7 @@ public class BlockInteractEventsForge {
         IPermissionContainer claim = storage.getForPermissionCheck(placePos);
         if (claim == null)
             return false;
-        ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract(placedBlock.getBlock());
+        ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract(placedBlock.getBlock());
         if (perm != null) {
             if (!claim.canInteract(player, perm, placePos, false)) {
                 player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);

@@ -4,6 +4,7 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.utils.IOwnedItem;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.entity.animal.allay.AllayAi;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -18,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class AllayMixin {
 
     @Inject(method = "wantsToPickUp", at = @At("HEAD"), cancellable = true)
-    private void onWantingPickup(ItemStack stack, CallbackInfoReturnable<Boolean> info) {
+    private void onWantingPickup(ServerLevel serverLevel, ItemStack stack, CallbackInfoReturnable<Boolean> info) {
         Allay allay = (Allay) (Object) this;
         if (AllayAi.getLikedPlayer(allay).map(p -> {
             Claim claim = ClaimStorage.get(p.serverLevel()).getClaimAt(allay.blockPosition());
@@ -28,7 +29,7 @@ public abstract class AllayMixin {
     }
 
     @Inject(method = "pickUpItem", at = @At("HEAD"), cancellable = true)
-    private void onPickupItem(ItemEntity itemEntity, CallbackInfo info) {
+    private void onPickupItem(ServerLevel serverLevel, ItemEntity itemEntity, CallbackInfo info) {
         if (AllayAi.getLikedPlayer((Allay) (Object) this).map(p -> {
             IOwnedItem ownedItem = (IOwnedItem) itemEntity;
             if (p.getUUID().equals(ownedItem.getPlayerOrigin()))

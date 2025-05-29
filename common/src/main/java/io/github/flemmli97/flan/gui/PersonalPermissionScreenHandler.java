@@ -56,7 +56,7 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
     protected void fillInventoryWith(Player player, SeparateInv inv, String group) {
         if (!(player instanceof ServerPlayer))
             return;
-        List<ClaimPermission> perms = new ArrayList<>(PermissionManager.INSTANCE.getAll());
+        List<ClaimPermission> perms = new ArrayList<>(PermissionManager.getInstance().getAll());
         if (group != null)
             perms.removeIf(p -> p.global);
         for (int i = 0; i < 54; i++) {
@@ -83,7 +83,7 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
     private void flipPage() {
         if (!(this.player instanceof ServerPlayer))
             return;
-        List<ClaimPermission> perms = new ArrayList<>(PermissionManager.INSTANCE.getAll());
+        List<ClaimPermission> perms = new ArrayList<>(PermissionManager.getInstance().getAll());
         if (this.group != null)
             perms.removeIf(p -> p.global);
         int maxPages = perms.size() / 28;
@@ -141,7 +141,7 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
         ItemStack stack = slot.getItem();
         ClaimPermission perm;
         try {
-            perm = PermissionManager.INSTANCE.get(ResourceLocation.parse(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+            perm = PermissionManager.getInstance().get(ResourceLocation.parse(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
                     .copyTag().getString(ServerScreenHelper.PERMISSION_KEY)));
             if (perm == null)
                 return false;

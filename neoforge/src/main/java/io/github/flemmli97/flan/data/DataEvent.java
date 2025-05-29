@@ -10,13 +10,10 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 public class DataEvent {
 
     @SubscribeEvent
-    public static void data(GatherDataEvent event) {
-        DataGenerator data = event.getGenerator();
-        PermissionGen permissionGen = new PermissionGen(data.getPackOutput(), event.getLookupProvider());
-        data.addProvider(event.includeServer(), permissionGen);
-        data.addProvider(event.includeServer(), new InteractionOverrideGen(data.getPackOutput()));
-        ENLangGen enLang = new ENLangGen(data.getPackOutput(), permissionGen);
-        data.addProvider(event.includeServer(), enLang);
+    public static void data(GatherDataEvent.Server event) {
+        PermissionGen permissionGen = event.createProvider(PermissionGen::new);
+        event.createProvider(packOutput -> new ENLangGen(packOutput, permissionGen));
+        event.createProvider(InteractionOverrideGen::new);
     }
 
 }

@@ -139,12 +139,12 @@ public class Claim implements IPermissionContainer {
         this.minZ = Math.min(z1, z2);
         this.maxX = Math.max(x1, x2);
         this.maxZ = Math.max(z1, z2);
-        this.minY = Math.max(world.getMinBuildHeight(), minY);
+        this.minY = Math.max(world.getMinY(), minY);
         this.owner = creator;
         this.level = world;
         this.homePos = this.getInitCenterPos();
         this.setDirty(true);
-        PermissionManager.INSTANCE.getAll().stream().filter(perm -> perm.defaultVal).forEach(perm -> this.globalPerm.put(perm.getId(), true));
+        PermissionManager.getInstance().getAll().stream().filter(perm -> perm.defaultVal).forEach(perm -> this.globalPerm.put(perm.getId(), true));
         ConfigHandler.CONFIG.getGloballyDefinedVals(world).forEach(e -> this.globalPerm.put(e.getKey(), e.getValue().getValue()));
         if (setDefaultGroups)
             ConfigHandler.CONFIG.defaultGroups.forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0, true)));
@@ -267,8 +267,8 @@ public class Claim implements IPermissionContainer {
     public ClaimBox getDimensions() {
         boolean is3d = this.is3d();
         int minY = is3d || ConfigHandler.CONFIG.defaultClaimDepth != -1 ? this.minY
-                : this.getLevel().getMinBuildHeight() - 10;
-        return new ClaimBox(this.minX, minY, this.minZ, this.maxX, Math.max(minY + 1, is3d ? this.maxY : (this.getLevel().getMaxBuildHeight() + 10)), this.maxZ);
+                : this.getLevel().getMinY() - 10;
+        return new ClaimBox(this.minX, minY, this.minZ, this.maxX, Math.max(minY + 1, is3d ? this.maxY : (this.getLevel().getMaxY() + 10)), this.maxZ);
     }
 
     public boolean is3d() {
@@ -336,7 +336,7 @@ public class Claim implements IPermissionContainer {
                 return global == Config.GlobalType.NONE || global.getValue();
             }
         }
-        if (PermissionManager.INSTANCE.isGlobalPermission(perm)) {
+        if (PermissionManager.getInstance().isGlobalPermission(perm)) {
             for (Claim claim : this.subClaims) {
                 if (claim.insideClaim(pos)) {
                     return claim.canInteract(player, perm, pos, message);
@@ -547,7 +547,7 @@ public class Claim implements IPermissionContainer {
      * @return If editing was successful or not
      */
     public boolean editPerms(ServerPlayer player, String group, ResourceLocation perm, int mode, boolean alwaysCan) {
-        if (PermissionManager.INSTANCE.isGlobalPermission(perm) || (!this.isAdminClaim() && ConfigHandler.CONFIG.globallyDefined(this.level, perm)))
+        if (PermissionManager.getInstance().isGlobalPermission(perm) || (!this.isAdminClaim() && ConfigHandler.CONFIG.globallyDefined(this.level, perm)))
             return false;
         if (alwaysCan || this.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
             if (mode > 1)
@@ -764,7 +764,7 @@ public class Claim implements IPermissionContainer {
                 this.leaveSubtitle = null;
             JsonObject potion = ConfigHandler.fromJson(obj, "Potions");
             potion.entrySet().forEach(e ->
-                    BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.parse(e.getKey()))
+                    BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(e.getKey()))
                             .ifPresent(effect -> this.potions.put(effect, e.getValue().getAsInt())));
             if (ConfigHandler.fromJson(obj, "AdminClaim", false))
                 this.owner = null;

@@ -6,35 +6,59 @@
       "minecraft:banner_patterns": [
         {
           "color": "cyan",
-          "pattern": "minecraft:rhombus"
+          "pattern": {
+            "asset_id": "minecraft:rhombus",
+            "translation_key": "cyan"
+          }
         },
         {
           "color": "light_gray",
-          "pattern": "minecraft:stripe_bottom"
+          "pattern": {
+            "asset_id": "minecraft:stripe_bottom",
+            "translation_key": "light_gray"
+          }
         },
         {
           "color": "gray",
-          "pattern": "minecraft:stripe_center"
+          "pattern": {
+            "asset_id": "minecraft:stripe_center",
+            "translation_key": "gray"
+          }
         },
         {
           "color": "light_gray",
-          "pattern": "minecraft:border"
+          "pattern": {
+            "asset_id": "minecraft:border",
+            "translation_key": "light_gray"
+          }
         },
         {
           "color": "black",
-          "pattern": "minecraft:stripe_middle"
+          "pattern": {
+            "asset_id": "minecraft:stripe_middle",
+            "translation_key": "black"
+          }
         },
         {
           "color": "light_gray",
-          "pattern": "minecraft:half_horizontal"
+          "pattern": {
+            "asset_id": "minecraft:half_horizontal",
+            "translation_key": "light_gray"
+          }
         },
         {
           "color": "light_gray",
-          "pattern": "minecraft:circle"
+          "pattern": {
+            "asset_id": "minecraft:circle",
+            "translation_key": "light_gray"
+          }
         },
         {
           "color": "black",
-          "pattern": "minecraft:border"
+          "pattern": {
+            "asset_id": "minecraft:border",
+            "translation_key": "black"
+          }
         }
       ],
       "minecraft:hide_additional_tooltip": {},

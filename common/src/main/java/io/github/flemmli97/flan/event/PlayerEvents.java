@@ -19,8 +19,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BonemealableFeaturePlacerBlock;
 import net.minecraft.world.level.block.GrassBlock;
-import net.minecraft.world.level.block.MossBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
@@ -49,7 +49,7 @@ public class PlayerEvents {
         if (context.getPlayer() instanceof ServerPlayer serverPlayer) {
             BlockState state = serverPlayer.level().getBlockState(context.getClickedPos());
             BlockPos.MutableBlockPos pos = context.getClickedPos().mutable();
-            ResourceLocation perm = InteractionOverrideManager.INSTANCE.getItemUse(context.getItemInHand().getItem());
+            ResourceLocation perm = InteractionOverrideManager.getInstance().getItemUse(context.getItemInHand().getItem());
             /**
              * {@link ItemInteractEvents#onItemUseBlock} handles this case already.
              * Sadly need to check again. In case its used in a claim. Less expensive than aoe check
@@ -57,8 +57,8 @@ public class PlayerEvents {
             if (perm != null && !ClaimStorage.get(serverPlayer.serverLevel()).getForPermissionCheck(pos).canInteract(serverPlayer, perm, pos, false))
                 return false;
             int range = 0;
-            Registry<ConfiguredFeature<?, ?>> registry = serverPlayer.level().registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE);
-            if (state.getBlock() instanceof MossBlock) {
+            Registry<ConfiguredFeature<?, ?>> registry = serverPlayer.level().registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE);
+            if (state.getBlock() instanceof BonemealableFeaturePlacerBlock) {
                 VegetationPatchConfiguration cfg = featureRange(registry, CaveFeatures.MOSS_PATCH_BONEMEAL, VegetationPatchConfiguration.class);
                 if (cfg != null) {
                     range = cfg.xzRadius.getMaxValue() + 1;
@@ -112,7 +112,7 @@ public class PlayerEvents {
 
     @SuppressWarnings("unchecked")
     public static <T extends FeatureConfiguration> T featureRange(Registry<ConfiguredFeature<?, ?>> registry, ResourceKey<ConfiguredFeature<?, ?>> key, Class<T> clss) {
-        return registry.getHolder(key).map(r -> {
+        return registry.get(key).map(r -> {
             if (clss.isInstance(r.value().config()))
                 return (T) r.value().config();
             return null;
