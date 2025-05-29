@@ -5,6 +5,7 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.event.BlockInteractEvents;
 import io.github.flemmli97.flan.event.ItemInteractEvents;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.player.display.EnumDisplayType;
@@ -23,24 +24,24 @@ import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 
-public class BlockInteractEvents {
+public class BlockInteractEventsNeoForge {
 
     public static void startBreakBlocks(PlayerInteractEvent.LeftClickBlock event) {
         if (!(event.getLevel() instanceof ServerLevel))
             return;
-        if (io.github.flemmli97.flan.event.BlockInteractEvents.startBreakBlocks(event.getEntity(), event.getLevel(), event.getHand(), event.getPos(), event.getFace()) == InteractionResult.FAIL)
+        if (BlockInteractEvents.startBreakBlocks(event.getEntity(), event.getLevel(), event.getHand(), event.getPos(), event.getFace()) == InteractionResult.FAIL)
             event.setCanceled(true);
     }
 
     public static void breakBlocks(BlockEvent.BreakEvent event) {
         if (!(event.getLevel() instanceof ServerLevel))
             return;
-        if (!io.github.flemmli97.flan.event.BlockInteractEvents.breakBlocks((Level) event.getLevel(), event.getPlayer(), event.getPos(), event.getState(), event.getLevel().getBlockEntity(event.getPos())))
+        if (!BlockInteractEvents.breakBlocks((Level) event.getLevel(), event.getPlayer(), event.getPos(), event.getState(), event.getLevel().getBlockEntity(event.getPos())))
             event.setCanceled(true);
     }
 
     public static void useBlocks(PlayerInteractEvent.RightClickBlock event) {
-        InteractionResult res = io.github.flemmli97.flan.event.BlockInteractEvents.useBlocks(event.getEntity(), event.getLevel(), event.getHand(), event.getHitVec());
+        InteractionResult res = BlockInteractEvents.useBlocks(event.getEntity(), event.getLevel(), event.getHand(), event.getHitVec());
         if (res == InteractionResult.SUCCESS) {
             event.setCancellationResult(res);
             event.setCanceled(true);
