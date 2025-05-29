@@ -169,7 +169,7 @@ public class EntityInteractEvents {
                         Vec3 vec3d2 = vec3d.normalize().scale(0.05000000074505806D);
                         pers.setPosRaw(pers.getX() - vec3d2.x, pers.getY() - vec3d2.y, pers.getZ() - vec3d2.z);
                         pers.playSound(((IPersistentProjectileVars) pers).getSoundEvent(), 1.0F, 1.2F / (pers.level().random.nextFloat() * 0.2F + 0.9F));
-                        ((IPersistentProjectileVars) pers).setInGround(true);
+                        ((IPersistentProjectileVars) pers).setInGroundState(true);
                         pers.shakeTime = 7;
                         pers.setCritArrow(false);
                         ((IPersistentProjectileVars) pers).setPiercingLevel((byte) 0);
