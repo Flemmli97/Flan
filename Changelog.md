@@ -1,6 +1,8 @@
 Flan 1.11.7.b
 ================
-- Fabric: Fix PlayerAbilityLib integration
+- Update to 1.21.4 #380 [@TEXHIK](https://github.com/TEXHIK), [@jblemee](https://github.com/jblemee)
+- Note apart from this push this version will not be supported  
+~~- Fabric: Fix PlayerAbilityLib integration~~
 
 Flan 1.11.7
 ================
