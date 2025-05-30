@@ -4,7 +4,7 @@
   "package": "io.github.flemmli97.flan.fabric.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "EntityDamageMixin",
+    "LivingDamageMixin",
     "FabricFireMixin",
     "LightningHitMixin",
     "PatrolSpawnerMixin",
@@ -19,7 +19,7 @@
     "SpawnHelperMixin",
     "WitherMixin",
     "WorldSaveHandlerMixin",
-    "XpEntityMixin",
+    "XpEntityMixin"
   ],
   "server": [
   ],
