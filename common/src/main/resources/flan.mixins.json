@@ -16,6 +16,7 @@
     "EndermanPickupMixin",
     "EndermanPlaceMixin",
     "EntityMixin",
+    "EntityDamageMixin",
     "FireBlockMixin",
     "FluidMixin",
     "FrostWalkerMixin",

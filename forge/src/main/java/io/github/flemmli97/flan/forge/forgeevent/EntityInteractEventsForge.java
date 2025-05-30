@@ -11,7 +11,7 @@ import net.minecraftforge.event.entity.EntityMobGriefingEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
@@ -53,7 +53,7 @@ public class EntityInteractEventsForge {
         }
     }
 
-    public static void preventDamage(LivingDamageEvent event) {
+    public static void preventDamage(LivingHurtEvent event) {
         boolean prevent = EntityInteractEvents.preventDamage(event.getEntity(), event.getSource());
         if (prevent) {
             event.setCanceled(true);
