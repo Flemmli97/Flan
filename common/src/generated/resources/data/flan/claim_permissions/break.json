@@ -1,14 +1,11 @@
 {
-  "guiItem": {
+  "gui_item": {
     "id": "minecraft:diamond_pickaxe",
     "tag": {
       "Damage": 0
     }
   },
-  "defaultVal": false,
+  "default_value": false,
   "global": false,
-  "order": 3,
-  "defaultDescription": [
-    "Permission to break blocks in the claim"
-  ]
+  "order": 3
 }

@@ -1,0 +1,13 @@
+{
+  "type": "flan:item_use",
+  "values": [
+    {
+      "entry": "appliedenergistics2:nether_quartz_wrench",
+      "permission": "flan:interact_block"
+    },
+    {
+      "entry": "appliedenergistics2:certus_quartz_wrench",
+      "permission": "flan:interact_block"
+    }
+  ]
+}
