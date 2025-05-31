@@ -29,6 +29,9 @@ public class ENLangGen extends ServerLangGen {
 
     @Override
     protected void addTranslations() {
+        this.add("flan.generic.false", "false");
+        this.add("flan.generic.true", "true");
+
         this.add("flan.noClaim", "There is no claim here.");
         this.add("flan.inspectBlockOwner", "This is %1$s's claim");
         this.add("flan.inspectNoClaim", "Nobody owns this block");
@@ -134,8 +137,6 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.screenAdd", "Add");
         this.add("flan.screenBack", "Back");
         this.add("flan.screenNoPerm", "No Permission");
-        this.add("flan.screenFalse", "false");
-        this.add("flan.screenTrue", "true");
         this.add("flan.screenDefault", "default");
 
         this.add("flan.screenMenu", "Claim-Menu");

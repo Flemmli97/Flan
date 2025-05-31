@@ -56,7 +56,9 @@ public class ClaimUtils {
             if (obj instanceof ChatFormatting formatting)
                 formattings.add(formatting);
             else {
-                if (obj instanceof Component || TranslatableContents.isAllowedPrimitiveArgument(obj))
+                if (obj instanceof Boolean b) {
+                    args.add(b ? Component.translatable("flan.generic.true") : Component.translatable("flan.generic.false"));
+                } else if (obj instanceof Component || TranslatableContents.isAllowedPrimitiveArgument(obj))
                     args.add(obj);
                 else
                     args.add(obj.toString());

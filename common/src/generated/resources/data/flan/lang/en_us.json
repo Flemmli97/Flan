@@ -1,4 +1,6 @@
 {
+  "flan.generic.false": "false",
+  "flan.generic.true": "true",
   "flan.noClaim": "There is no claim here.",
   "flan.inspectBlockOwner": "This is %1$s's claim",
   "flan.inspectNoClaim": "Nobody owns this block",
@@ -95,8 +97,6 @@
   "flan.screenAdd": "Add",
   "flan.screenBack": "Back",
   "flan.screenNoPerm": "No Permission",
-  "flan.screenFalse": "false",
-  "flan.screenTrue": "true",
   "flan.screenDefault": "default",
   "flan.screenMenu": "Claim-Menu",
   "flan.screenMenuSub": "SubClaim-Menu",

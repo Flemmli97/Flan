@@ -53,29 +53,29 @@ public class ServerScreenHelper {
         if (!claim.isAdminClaim() && !global.canModify()) {
             Component text = ServerScreenHelper.coloredGuiText("flan.screenUneditable", ChatFormatting.DARK_RED);
             lore.add(text);
-            String permFlag = global.getValue() ? "flan.screenTrue" : "flan.screenFalse";
-            Component text2 = ServerScreenHelper.coloredGuiText("flan.screenEnableText", ServerScreenHelper.coloredGuiText(permFlag), permFlag.equals("flan.screenTrue") ? ChatFormatting.GREEN : ChatFormatting.RED);
+            String permFlag = global.getValue() ? "flan.generic.true" : "flan.generic.false";
+            Component text2 = ServerScreenHelper.coloredGuiText("flan.screenEnableText", ServerScreenHelper.coloredGuiText(permFlag), permFlag.equals("flan.generic.true") ? ChatFormatting.GREEN : ChatFormatting.RED);
             lore.add(text2);
         } else {
             String permFlag;
             if (group == null) {
                 if (claim.parentClaim() == null)
-                    permFlag = claim.permEnabled(perm.getId()) == 1 ? "flan.screenTrue" : "flan.screenFalse";
+                    permFlag = claim.permEnabled(perm.getId()) == 1 ? "flan.generic.true" : "flan.generic.false";
                 else {
                     permFlag = switch (claim.permEnabled(perm.getId())) {
                         case -1 -> "flan.screenDefault";
-                        case 1 -> "flan.screenTrue";
-                        default -> "flan.screenFalse";
+                        case 1 -> "flan.generic.true";
+                        default -> "flan.generic.false";
                     };
                 }
             } else {
                 permFlag = switch (claim.groupHasPerm(group, perm.getId())) {
                     case -1 -> "flan.screenDefault";
-                    case 1 -> "flan.screenTrue";
-                    default -> "flan.screenFalse";
+                    case 1 -> "flan.generic.true";
+                    default -> "flan.generic.false";
                 };
             }
-            Component text = ServerScreenHelper.coloredGuiText("flan.screenEnableText", ServerScreenHelper.coloredGuiText(permFlag), permFlag.equals("flan.screenTrue") ? ChatFormatting.GREEN : ChatFormatting.RED);
+            Component text = ServerScreenHelper.coloredGuiText("flan.screenEnableText", ServerScreenHelper.coloredGuiText(permFlag), permFlag.equals("flan.generic.true") ? ChatFormatting.GREEN : ChatFormatting.RED);
             lore.add(text);
         }
         addLore(stack, lore);
@@ -96,16 +96,16 @@ public class ServerScreenHelper {
             Component text = ServerScreenHelper.coloredGuiText("flan.screenUneditable", ChatFormatting.DARK_RED);
             lore.add(text);
             boolean permFlag = global.getValue();
-            Component text2 = ServerScreenHelper.coloredGuiText("flan.screenEnableText", ServerScreenHelper.coloredGuiText(permFlag ? "flan.screenTrue" : "flan.screenFalse"), permFlag ? ChatFormatting.GREEN : ChatFormatting.RED);
+            Component text2 = ServerScreenHelper.coloredGuiText("flan.screenEnableText", ServerScreenHelper.coloredGuiText(permFlag ? "flan.generic.true" : "flan.generic.false"), permFlag ? ChatFormatting.GREEN : ChatFormatting.RED);
             lore.add(text2);
         } else {
             String permFlag;
             Map<ResourceLocation, Boolean> map = PlayerClaimData.get(player).playerDefaultGroups().getOrDefault(group, new HashMap<>());
             if (map.containsKey(perm.getId()))
-                permFlag = map.get(perm.getId()) ? "flan.screenTrue" : "flan.screenFalse";
+                permFlag = map.get(perm.getId()) ? "flan.generic.true" : "flan.generic.false";
             else
                 permFlag = "flan.screenDefault";
-            Component text = ServerScreenHelper.coloredGuiText("flan.screenEnableText", ServerScreenHelper.coloredGuiText(permFlag), permFlag.equals("flan.screenTrue") ? ChatFormatting.GREEN : ChatFormatting.RED);
+            Component text = ServerScreenHelper.coloredGuiText("flan.screenEnableText", ServerScreenHelper.coloredGuiText(permFlag), permFlag.equals("flan.generic.true") ? ChatFormatting.GREEN : ChatFormatting.RED);
             lore.add(text);
         }
         CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putString(PERMISSION_KEY, perm.getId().toString()));
@@ -130,6 +130,9 @@ public class ServerScreenHelper {
             if (obj instanceof ChatFormatting formatting)
                 formattings.add(formatting);
             else {
+                if (obj instanceof Boolean b) {
+                    args.add(b ? Component.translatable("flan.generic.true") : Component.translatable("flan.generic.false"));
+                }
                 if (obj instanceof Component || TranslatableContents.isAllowedPrimitiveArgument(obj))
                     args.add(obj);
                 else
