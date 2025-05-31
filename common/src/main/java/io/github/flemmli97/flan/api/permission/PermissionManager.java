@@ -28,10 +28,7 @@ public class PermissionManager extends SimpleJsonResourceReloadListener {
     public static final String DIRECTORY = "claim_permissions";
     private static final Gson GSON = new GsonBuilder().create();
 
-    /**
-     * The permission manager instance. This will be null if datapacks are not loaded yet.
-     */
-    public static PermissionManager INSTANCE;
+    private static PermissionManager INSTANCE;
 
     private Map<ResourceLocation, ClaimPermission> permissions = ImmutableMap.of();
     private List<ClaimPermission> sorted = List.of();
@@ -45,6 +42,13 @@ public class PermissionManager extends SimpleJsonResourceReloadListener {
 
     public static PermissionManager create(HolderLookup.Provider provider) {
         INSTANCE = new PermissionManager(provider);
+        return getInstance();
+    }
+
+    /**
+     * The permission manager instance. This will be null if datapacks are not loaded yet.
+     */
+    public static PermissionManager getInstance() {
         return INSTANCE;
     }
 

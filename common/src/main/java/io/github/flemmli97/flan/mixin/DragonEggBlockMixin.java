@@ -48,7 +48,7 @@ public abstract class DragonEggBlockMixin {
     @Inject(method = "teleport", at = @At("HEAD"), cancellable = true)
     private void onTeleport(BlockState state, Level level, BlockPos pos, CallbackInfo info) {
         if (this.flanTempPlayer instanceof ServerPlayer player) {
-            ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract((DragonEggBlock) (Object) this);
+            ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract((DragonEggBlock) (Object) this);
             if (perm == null)
                 perm = BuiltinPermission.INTERACTBLOCK;
             if (!ClaimStorage.get(player.serverLevel()).canInteract(pos, 16, player, perm, true))

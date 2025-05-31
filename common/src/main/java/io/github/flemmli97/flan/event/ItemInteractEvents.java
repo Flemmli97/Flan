@@ -73,7 +73,7 @@ public class ItemInteractEvents {
             return InteractionResultHolder.pass(stack);
         if (claim instanceof Claim real && real.canUseItem(stack))
             return InteractionResultHolder.pass(stack);
-        ResourceLocation perm = InteractionOverrideManager.INSTANCE.getItemUse(stack.getItem());
+        ResourceLocation perm = InteractionOverrideManager.getInstance().getItemUse(stack.getItem());
         if (perm != null) {
             boolean success = claim.canInteract(player, perm, pos, true);
             if (success)
@@ -117,7 +117,7 @@ public class ItemInteractEvents {
             return InteractionResult.PASS;
         if (claim instanceof Claim real && real.canUseItem(stack))
             return InteractionResult.PASS;
-        ResourceLocation perm = InteractionOverrideManager.INSTANCE.getItemUse(stack.getItem());
+        ResourceLocation perm = InteractionOverrideManager.getInstance().getItemUse(stack.getItem());
         if (perm == null) {
             if (stack.has(DataComponents.JUKEBOX_PLAYABLE))
                 perm = BuiltinPermission.JUKEBOX;

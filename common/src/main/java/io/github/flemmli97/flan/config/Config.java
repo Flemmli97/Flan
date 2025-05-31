@@ -118,7 +118,7 @@ public class Config {
     public int preConfigVersion;
 
     public Map<String, Map<ResourceLocation, Boolean>> defaultGroups = createHashMap(map -> {
-        map.put("Co-Owner", createLinkedHashMap(perms -> PermissionManager.INSTANCE.getAll().forEach(p -> perms.put(p.getId(), true))));
+        map.put("Co-Owner", createLinkedHashMap(perms -> PermissionManager.getInstance().getAll().forEach(p -> perms.put(p.getId(), true))));
         map.put("Visitor", createLinkedHashMap(perms -> {
             perms.put(BuiltinPermission.BED, true);
             perms.put(BuiltinPermission.DOOR, true);
@@ -246,7 +246,7 @@ public class Config {
                 if (e.getValue().isJsonObject()) {
                     e.getValue().getAsJsonObject().entrySet().forEach(jperm -> {
                         ResourceLocation id = BuiltinPermission.tryLegacy(jperm.getKey());
-                        ClaimPermission perm = PermissionManager.INSTANCE.get(id);
+                        ClaimPermission perm = PermissionManager.getInstance().get(id);
                         if (perm == null)
                             Flan.error("Default groups: No such permission for {}", jperm.getKey());
                         else
@@ -262,7 +262,7 @@ public class Config {
                 if (e.getValue().isJsonObject()) {
                     e.getValue().getAsJsonObject().entrySet().forEach(jperm -> {
                         ResourceLocation id = BuiltinPermission.tryLegacy(jperm.getKey());
-                        ClaimPermission perm = PermissionManager.INSTANCE.get(id);
+                        ClaimPermission perm = PermissionManager.getInstance().get(id);
                         if (perm == null)
                             Flan.error("Global Perms: No such permission for {}", jperm.getKey());
                         if (jperm.getValue().isJsonPrimitive() && jperm.getValue().getAsJsonPrimitive().isBoolean())

@@ -57,7 +57,7 @@ public class PermissionScreenHandler extends PagedServerOnlyScreenHandler<ClaimG
 
     @Override
     protected void fillInventoryWith() {
-        this.perms = new ArrayList<>(PermissionManager.INSTANCE.getAll());
+        this.perms = new ArrayList<>(PermissionManager.getInstance().getAll());
         if (this.data.getGroup() != null)
             this.perms.removeIf(p -> p.global);
         for (int i = 0; i < 54; i++) {
@@ -94,7 +94,7 @@ public class PermissionScreenHandler extends PagedServerOnlyScreenHandler<ClaimG
         ItemStack stack = slot.getItem();
         ClaimPermission perm;
         try {
-            perm = PermissionManager.INSTANCE.get(ResourceLocation.parse(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+            perm = PermissionManager.getInstance().get(ResourceLocation.parse(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
                     .copyTag().getString(ServerScreenHelper.PERMISSION_KEY)));
             if (perm == null)
                 return false;

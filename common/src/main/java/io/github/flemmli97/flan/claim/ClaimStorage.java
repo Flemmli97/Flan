@@ -571,7 +571,7 @@ public class ClaimStorage implements IPermissionStorage {
     }
 
     private static Set<ResourceLocation> complementOf(ResourceLocation... perms) {
-        Set<ResourceLocation> set = Sets.newHashSet(PermissionManager.INSTANCE.getIds());
+        Set<ResourceLocation> set = Sets.newHashSet(PermissionManager.getInstance().getIds());
         for (ResourceLocation perm : perms)
             set.remove(perm);
         return set;
@@ -598,7 +598,7 @@ public class ClaimStorage implements IPermissionStorage {
         if (!builders.isEmpty() && !builders.contains(ownerString)) {
             if (builders.contains("public")) {
                 perms.get("builders").forEach(perm -> {
-                    if (PermissionManager.INSTANCE.isGlobalPermission(perm))
+                    if (PermissionManager.getInstance().isGlobalPermission(perm))
                         claim.editGlobalPerms(null, perm, 1);
                 });
             } else {
@@ -609,7 +609,7 @@ public class ClaimStorage implements IPermissionStorage {
         if (!managers.isEmpty() && !managers.contains(ownerString)) {
             if (managers.contains("public")) {
                 perms.get("managers").forEach(perm -> {
-                    if (PermissionManager.INSTANCE.isGlobalPermission(perm))
+                    if (PermissionManager.getInstance().isGlobalPermission(perm))
                         claim.editGlobalPerms(null, perm, 1);
                 });
             } else {
@@ -620,7 +620,7 @@ public class ClaimStorage implements IPermissionStorage {
         if (!containers.isEmpty() && !containers.contains(ownerString)) {
             if (containers.contains("public")) {
                 perms.get("containers").forEach(perm -> {
-                    if (PermissionManager.INSTANCE.isGlobalPermission(perm))
+                    if (PermissionManager.getInstance().isGlobalPermission(perm))
                         claim.editGlobalPerms(null, perm, 1);
                 });
             } else {
@@ -631,7 +631,7 @@ public class ClaimStorage implements IPermissionStorage {
         if (!accessors.isEmpty() && !accessors.contains(ownerString)) {
             if (accessors.contains("public")) {
                 perms.get("accessors").forEach(perm -> {
-                    if (PermissionManager.INSTANCE.isGlobalPermission(perm))
+                    if (PermissionManager.getInstance().isGlobalPermission(perm))
                         claim.editGlobalPerms(null, perm, 1);
                 });
             } else {

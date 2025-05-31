@@ -871,11 +871,11 @@ public class CommandClaim {
             return 0;
         }
         ResourceLocation perm = ResourceLocationArgument.getId(context, "permission");
-        if (group != null && PermissionManager.INSTANCE.isGlobalPermission(perm)) {
+        if (group != null && PermissionManager.getInstance().isGlobalPermission(perm)) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.nonGlobalOnly", perm, ChatFormatting.DARK_RED), false);
             return 0;
         }
-        if (PermissionManager.INSTANCE.get(perm) == null) {
+        if (PermissionManager.getInstance().get(perm) == null) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.noSuchPerm", perm, ChatFormatting.DARK_RED), false);
             return 0;
         }
@@ -899,11 +899,11 @@ public class CommandClaim {
             default -> 0;
         };
         ResourceLocation perm = ResourceLocationArgument.getId(context, "permission");
-        if (PermissionManager.INSTANCE.isGlobalPermission(perm)) {
+        if (PermissionManager.getInstance().isGlobalPermission(perm)) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.nonGlobalOnly", perm, ChatFormatting.DARK_RED), false);
             return 0;
         }
-        if (PermissionManager.INSTANCE.get(perm) == null) {
+        if (PermissionManager.getInstance().get(perm) == null) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.noSuchPerm", perm, ChatFormatting.DARK_RED), false);
             return 0;
         }

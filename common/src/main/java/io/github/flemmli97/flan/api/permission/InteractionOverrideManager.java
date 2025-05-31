@@ -58,7 +58,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
     public static final InteractionType<EntityType<?>> ENTITY_ATTACK = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "entity_attack"), () -> new InteractionHolder<>(BuiltInRegistries.ENTITY_TYPE, ENTITY_CODEC));
     public static final InteractionType<EntityType<?>> ENTITY_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "entity_interact"), () -> new InteractionHolder<>(BuiltInRegistries.ENTITY_TYPE, ENTITY_CODEC));
 
-    public static InteractionOverrideManager INSTANCE;
+    private static InteractionOverrideManager INSTANCE;
 
     private final Map<InteractionType<?>, InteractionHolder<?>> overrides = new HashMap<>();
 
@@ -71,9 +71,13 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
 
     public static InteractionOverrideManager create(HolderLookup.Provider provider) {
         INSTANCE = new InteractionOverrideManager(provider);
-        return INSTANCE;
+        return getInstance();
     }
 
+    public static InteractionOverrideManager getInstance() {
+        return INSTANCE;
+    }
+    
     public static <T> Codec<Pair<Either<TagKey<T>, T>, ResourceLocation>> tagOrEntryCodec(Registry<T> registry) {
         return tagOrEntryCodec(registry.key(), registry.byNameCodec());
     }

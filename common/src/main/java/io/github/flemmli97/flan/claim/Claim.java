@@ -144,7 +144,7 @@ public class Claim implements IPermissionContainer {
         this.level = world;
         this.homePos = this.getInitCenterPos();
         this.setDirty(true);
-        PermissionManager.INSTANCE.getAll().stream().filter(perm -> perm.defaultVal).forEach(perm -> this.globalPerm.put(perm.getId(), true));
+        PermissionManager.getInstance().getAll().stream().filter(perm -> perm.defaultVal).forEach(perm -> this.globalPerm.put(perm.getId(), true));
         ConfigHandler.CONFIG.getGloballyDefinedVals(world).forEach(e -> this.globalPerm.put(e.getKey(), e.getValue().getValue()));
         if (setDefaultGroups)
             ConfigHandler.CONFIG.defaultGroups.forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0, true)));
@@ -336,7 +336,7 @@ public class Claim implements IPermissionContainer {
                 return global == Config.GlobalType.NONE || global.getValue();
             }
         }
-        if (PermissionManager.INSTANCE.isGlobalPermission(perm)) {
+        if (PermissionManager.getInstance().isGlobalPermission(perm)) {
             for (Claim claim : this.subClaims) {
                 if (claim.insideClaim(pos)) {
                     return claim.canInteract(player, perm, pos, message);
@@ -547,7 +547,7 @@ public class Claim implements IPermissionContainer {
      * @return If editing was successful or not
      */
     public boolean editPerms(ServerPlayer player, String group, ResourceLocation perm, int mode, boolean alwaysCan) {
-        if (PermissionManager.INSTANCE.isGlobalPermission(perm) || (!this.isAdminClaim() && ConfigHandler.CONFIG.globallyDefined(this.level, perm)))
+        if (PermissionManager.getInstance().isGlobalPermission(perm) || (!this.isAdminClaim() && ConfigHandler.CONFIG.globallyDefined(this.level, perm)))
             return false;
         if (alwaysCan || this.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
             if (mode > 1)

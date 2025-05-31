@@ -275,7 +275,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public boolean editDefaultPerms(String group, ResourceLocation perm, int mode) {
-        if (PermissionManager.INSTANCE.isGlobalPermission(perm) || ConfigHandler.CONFIG.globallyDefined(this.player.serverLevel(), perm))
+        if (PermissionManager.getInstance().isGlobalPermission(perm) || ConfigHandler.CONFIG.globallyDefined(this.player.serverLevel(), perm))
             return false;
         if (mode > 1)
             mode = -1;
