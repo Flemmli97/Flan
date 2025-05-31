@@ -61,6 +61,10 @@ public class AllowedRegistryList<T> {
         return this.list.stream().map(this::valueAsString).toList();
     }
 
+    public int size() {
+        return this.list.size();
+    }
+
     private ItemStack empty() {
         ItemStack stack = new ItemStack(Items.STICK);
         ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText("flan.allowListEmptyTag", ChatFormatting.DARK_RED));

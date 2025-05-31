@@ -1,7 +1,6 @@
 package io.github.flemmli97.flan.gui;
 
 import io.github.flemmli97.flan.claim.ClaimUtils;
-import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,20 +40,20 @@ public class ConfirmScreenHandler extends ServerOnlyScreenHandler<Object> {
 
 
     @Override
-    protected void fillInventoryWith(Player player, SeparateInv inv, Object additionalData) {
-        for (int i = 0; i < 9; i++) {
+    protected void fillInventoryWith() {
+        for (int i = 0; i < this.inventory.getContainerSize(); i++) {
             switch (i) {
                 case 3 -> {
                     ItemStack yes = new ItemStack(Items.GREEN_WOOL);
                     yes.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenYes", ChatFormatting.GREEN));
-                    inv.updateStack(i, yes);
+                    this.slots.get(i).set(yes);
                 }
                 case 5 -> {
                     ItemStack no = new ItemStack(Items.RED_WOOL);
                     no.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenNo", ChatFormatting.RED));
-                    inv.updateStack(i, no);
+                    this.slots.get(i).set(no);
                 }
-                default -> inv.updateStack(i, ServerScreenHelper.emptyFiller());
+                default -> this.slots.get(i).set(ServerScreenHelper.emptyFiller());
             }
         }
     }

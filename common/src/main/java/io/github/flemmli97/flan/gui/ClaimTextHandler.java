@@ -2,7 +2,6 @@ package io.github.flemmli97.flan.gui;
 
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimUtils;
-import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -24,11 +23,8 @@ import java.util.function.Consumer;
 
 public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
 
-    private final Claim claim;
-
     private ClaimTextHandler(int syncId, Inventory playerInventory, Claim claim) {
         super(syncId, playerInventory, 1, claim);
-        this.claim = claim;
     }
 
     public static void openClaimMenu(ServerPlayer player, Claim claim) {
@@ -47,13 +43,13 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
     }
 
     @Override
-    protected void fillInventoryWith(Player player, SeparateInv inv, Claim claim) {
+    protected void fillInventoryWith() {
         for (int i = 0; i < 9; i++) {
             switch (i) {
                 case 0 -> {
                     ItemStack close = new ItemStack(Items.TNT);
                     close.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
-                    inv.updateStack(i, close);
+                    this.slots.get(i).set(close);
                 }
                 case 2 -> {
                     ItemStack stack = new ItemStack(Items.OAK_SIGN);
@@ -61,10 +57,10 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                     List<Component> lore = new ArrayList<>();
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenTextJson", ChatFormatting.GOLD));
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenDelete", ChatFormatting.DARK_RED));
-                    if (claim.enterTitle != null)
-                        lore.add(claim.enterTitle);
+                    if (this.data.enterTitle != null)
+                        lore.add(this.data.enterTitle);
                     ServerScreenHelper.addLore(stack, lore);
-                    inv.updateStack(i, stack);
+                    this.slots.get(i).set(stack);
                 }
                 case 3 -> {
                     ItemStack stack2 = new ItemStack(Items.OAK_SIGN);
@@ -72,10 +68,10 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                     List<Component> lore = new ArrayList<>();
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenTextJson", ChatFormatting.GOLD));
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenDelete", ChatFormatting.DARK_RED));
-                    if (claim.enterSubtitle != null)
-                        lore.add(claim.enterSubtitle);
+                    if (this.data.enterSubtitle != null)
+                        lore.add(this.data.enterSubtitle);
                     ServerScreenHelper.addLore(stack2, lore);
-                    inv.updateStack(i, stack2);
+                    this.slots.get(i).set(stack2);
                 }
                 case 4 -> {
                     ItemStack stack3 = new ItemStack(Items.OAK_SIGN);
@@ -83,10 +79,10 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                     List<Component> lore = new ArrayList<>();
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenTextJson", ChatFormatting.GOLD));
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenDelete", ChatFormatting.DARK_RED));
-                    if (claim.leaveTitle != null)
-                        lore.add(claim.leaveTitle);
+                    if (this.data.leaveTitle != null)
+                        lore.add(this.data.leaveTitle);
                     ServerScreenHelper.addLore(stack3, lore);
-                    inv.updateStack(i, stack3);
+                    this.slots.get(i).set(stack3);
                 }
                 case 5 -> {
                     ItemStack stack4 = new ItemStack(Items.OAK_SIGN);
@@ -94,12 +90,12 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                     List<Component> lore = new ArrayList<>();
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenTextJson", ChatFormatting.GOLD));
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenDelete", ChatFormatting.DARK_RED));
-                    if (claim.leaveSubtitle != null)
-                        lore.add(claim.leaveSubtitle);
+                    if (this.data.leaveSubtitle != null)
+                        lore.add(this.data.leaveSubtitle);
                     ServerScreenHelper.addLore(stack4, lore);
-                    inv.updateStack(i, stack4);
+                    this.slots.get(i).set(stack4);
                 }
-                default -> inv.updateStack(i, ServerScreenHelper.emptyFiller());
+                default -> this.slots.get(i).set(ServerScreenHelper.emptyFiller());
             }
         }
     }
@@ -113,14 +109,14 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
     protected boolean handleSlotClicked(ServerPlayer player, int index, Slot slot, int clickType) {
         if (index == 0) {
             player.closeContainer();
-            player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.claim));
+            player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
         } else {
             Consumer<Component> cons = switch (index) {
-                case 2 -> text -> this.claim.setEnterTitle(text, this.claim.enterSubtitle);
-                case 3 -> text -> this.claim.setEnterTitle(this.claim.enterTitle, text);
-                case 4 -> text -> this.claim.setLeaveTitle(text, this.claim.leaveSubtitle);
-                case 5 -> text -> this.claim.setLeaveTitle(this.claim.leaveTitle, text);
+                case 2 -> text -> this.data.setEnterTitle(text, this.data.enterSubtitle);
+                case 3 -> text -> this.data.setEnterTitle(this.data.enterTitle, text);
+                case 4 -> text -> this.data.setLeaveTitle(text, this.data.leaveSubtitle);
+                case 5 -> text -> this.data.setLeaveTitle(this.data.leaveTitle, text);
                 default -> null;
             };
             if (cons != null) {
@@ -129,11 +125,11 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                     player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
                         player.closeContainer();
                         cons.accept(Component.literal(s).withStyle(Style.EMPTY.withItalic(false).applyFormat(ChatFormatting.WHITE)));
-                        player.getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.claim));
+                        player.getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.data));
                         ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
                     }, () -> {
                         player.closeContainer();
-                        player.getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.claim));
+                        player.getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.data));
                         ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                     }));
                 } else {
