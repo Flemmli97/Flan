@@ -47,8 +47,6 @@ public class PersonalPermissionScreenHandler extends PagedServerOnlyScreenHandle
 
     @Override
     protected void fillInventoryWith() {
-        if (!(this.player instanceof ServerPlayer))
-            return;
         this.perms = new ArrayList<>(PermissionManager.INSTANCE.getAll());
         if (this.data != null)
             this.perms.removeIf(p -> p.global);
@@ -63,7 +61,7 @@ public class PersonalPermissionScreenHandler extends PagedServerOnlyScreenHandle
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + this.getPage() * 28;
                 if (id < this.perms.size())
-                    this.slots.get(i).set(ServerScreenHelper.getFromPersonal((ServerPlayer) this.player, this.perms.get(id), this.data));
+                    this.slots.get(i).set(ServerScreenHelper.getFromPersonal(this.player, this.perms.get(id), this.data));
                 else
                     this.slots.get(i).set(ItemStack.EMPTY);
             }

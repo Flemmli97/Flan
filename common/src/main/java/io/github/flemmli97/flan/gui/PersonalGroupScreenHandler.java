@@ -43,8 +43,6 @@ public class PersonalGroupScreenHandler extends PagedServerOnlyScreenHandler<Obj
 
     @Override
     protected void fillInventoryWith() {
-        if (!(this.player instanceof ServerPlayer))
-            return;
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
@@ -61,7 +59,7 @@ public class PersonalGroupScreenHandler extends PagedServerOnlyScreenHandler<Obj
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 this.slots.get(i).set(ServerScreenHelper.emptyFiller());
             else {
-                List<String> groups = new ArrayList<>(PlayerClaimData.get((ServerPlayer) this.player).playerDefaultGroups().keySet());
+                List<String> groups = new ArrayList<>(PlayerClaimData.get(this.player).playerDefaultGroups().keySet());
                 groups.sort(null);
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + this.getPage() * 28;
@@ -127,6 +125,6 @@ public class PersonalGroupScreenHandler extends PagedServerOnlyScreenHandler<Obj
 
     @Override
     protected PageSettings pageSettings() {
-        return new PageSettings((PlayerClaimData.get((ServerPlayer) this.player).playerDefaultGroups().size() - 1) / 28, 47, 51);
+        return new PageSettings((PlayerClaimData.get(this.player).playerDefaultGroups().size() - 1) / 28, 47, 51);
     }
 }

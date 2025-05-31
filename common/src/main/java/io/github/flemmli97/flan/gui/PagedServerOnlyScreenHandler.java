@@ -2,7 +2,6 @@ package io.github.flemmli97.flan.gui;
 
 import io.github.flemmli97.flan.mixin.AbstractContainerAccessor;
 import net.minecraft.ChatFormatting;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -82,7 +81,7 @@ public abstract class PagedServerOnlyScreenHandler<T> extends ServerOnlyScreenHa
 
     public void flipNext() {
         this.page = Math.min(this.pageSettings().maxPages(), ++this.page);
-        ServerScreenHelper.playSongToPlayer((ServerPlayer) this.player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
+        ServerScreenHelper.playSongToPlayer(this.player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
 
         this.setupGui();
         this.broadcastChanges();
@@ -90,7 +89,7 @@ public abstract class PagedServerOnlyScreenHandler<T> extends ServerOnlyScreenHa
 
     public void flipPrevious() {
         this.page = Math.max(0, --this.page);
-        ServerScreenHelper.playSongToPlayer((ServerPlayer) this.player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
+        ServerScreenHelper.playSongToPlayer(this.player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
         this.setupGui();
         this.broadcastChanges();
     }

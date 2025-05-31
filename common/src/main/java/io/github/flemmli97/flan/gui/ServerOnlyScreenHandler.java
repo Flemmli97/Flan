@@ -17,14 +17,16 @@ import net.minecraft.world.item.ItemStack;
 public abstract class ServerOnlyScreenHandler<T> extends AbstractContainerMenu {
 
     protected final SeparateInvImpl inventory;
-    protected final Player player;
+    protected final ServerPlayer player;
     protected final T data;
 
     protected ServerOnlyScreenHandler(int syncId, Inventory playerInventory, int rows, T additionalData) {
         super(fromRows(rows), syncId);
         int i = (rows - 4) * 18;
         this.inventory = new SeparateInvImpl(rows * 9);
-        this.player = playerInventory.player;
+        if (!(playerInventory.player instanceof ServerPlayer p))
+            throw new IllegalStateException("This is a server only menu!");
+        this.player = p;
         this.data = additionalData;
         int n;
         int m;
