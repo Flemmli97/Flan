@@ -12,6 +12,7 @@ import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.commands.PendingCommand;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.ItemInteractEvents;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
@@ -84,7 +85,8 @@ public class PlayerClaimData implements IPlayerData {
 
     private final ServerPlayer player;
 
-    private boolean confirmDeleteAll, adminIgnoreClaim, claimBlockMessage;
+    private boolean adminIgnoreClaim, claimBlockMessage;
+    private PendingCommand pendingCommand;
 
     private final Map<String, Map<ResourceLocation, Boolean>> defaultGroups = new HashMap<>();
 
@@ -244,12 +246,22 @@ public class PlayerClaimData implements IPlayerData {
         this.firstCorner = pos;
     }
 
-    public boolean confirmedDeleteAll() {
-        return this.confirmDeleteAll;
+    public int runPendingCommand(boolean deny) {
+        int res = -1;
+        if (this.pendingCommand != null) {
+            if (deny)
+                res = this.pendingCommand.runCommand();
+            else {
+                this.pendingCommand.deny();
+                res = 0;
+            }
+        }
+        this.pendingCommand = null;
+        return res;
     }
 
-    public void setConfirmDeleteAll(boolean flag) {
-        this.confirmDeleteAll = flag;
+    public void deferCommand(PendingCommand flag) {
+        this.pendingCommand = flag;
         this.confirmTick = 400;
     }
 
@@ -342,7 +354,7 @@ public class PlayerClaimData implements IPlayerData {
             ));
         }
         if (--this.confirmTick < 0)
-            this.confirmDeleteAll = false;
+            this.pendingCommand = null;
         if (this.displayEditing != null)
             this.displayEditing.display(this.player, !tool && !stick);
         if (!tool) {
