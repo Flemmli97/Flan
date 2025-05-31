@@ -1,3 +1,7 @@
+Flan 1.11.10
+================
+- Hotfix: Fix permission gui page not flipping
+
 Flan 1.11.9
 ================
 - Fix indirect non living damage which for vanilla was really only with player tnt on itemframes etc.

@@ -69,7 +69,7 @@ public class PermissionScreenHandler extends PagedServerOnlyScreenHandler<ClaimG
                 this.slots.get(i).set(ServerScreenHelper.emptyFiller());
             else {
                 int row = i / 9 - 1;
-                int id = (i % 9) + row * 7 - 1;
+                int id = (i % 9) + row * 7 - 1 + this.getPage() * 28;
                 if (id < this.perms.size())
                     this.slots.get(i).set(ServerScreenHelper.fromPermission(this.data.getClaim(), this.player, this.perms.get(id), this.data.getGroup() == null ? null : this.data.getGroup()));
                 else
