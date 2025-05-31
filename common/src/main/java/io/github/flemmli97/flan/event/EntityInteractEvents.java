@@ -60,12 +60,6 @@ import net.minecraft.world.phys.Vec3;
 
 public class EntityInteractEvents {
 
-    private static ResourceLocation TATERZEN = ResourceLocation.fromNamespaceAndPath("taterzen", "npc");
-
-    public static InteractionResult attackEntity(Player player, Level world, InteractionHand hand, Entity entity, EntityHitResult hitResult) {
-        return attackSimple(player, entity, true);
-    }
-
     public static InteractionResult useAtEntity(Player player, Level world, InteractionHand hand, Entity entity, EntityHitResult hitResult) {
         if (!(player instanceof ServerPlayer serverPlayer) || player.isSpectator() || canInteract(entity))
             return InteractionResult.PASS;
@@ -106,20 +100,27 @@ public class EntityInteractEvents {
             if (perm != null) {
                 return claim.canInteract(player, perm, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             }
-            if (entity instanceof Boat)
-                return claim.canInteract(player, BuiltinPermission.BOAT, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
-            if (entity instanceof AbstractMinecart) {
-                if (entity instanceof AbstractMinecartContainer)
-                    return claim.canInteract(player, BuiltinPermission.OPENCONTAINER, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
-                return claim.canInteract(player, BuiltinPermission.MINECART, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
-            }
-            if (entity instanceof AbstractVillager || BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).equals(TATERZEN))
-                return claim.canInteract(player, BuiltinPermission.TRADING, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
-            if (entity instanceof ItemFrame)
-                return claim.canInteract(player, BuiltinPermission.ITEMFRAMEROTATE, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
-            if (entity instanceof OwnableEntity tame) {
-                if (tame.getOwnerUUID() != null && tame.getOwnerUUID().equals(player.getUUID()))
-                    return InteractionResult.PASS;
+            switch (entity) {
+                case Boat boat -> {
+                    return claim.canInteract(player, BuiltinPermission.BOAT, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
+                }
+                case AbstractMinecart minecart -> {
+                    if (entity instanceof AbstractMinecartContainer)
+                        return claim.canInteract(player, BuiltinPermission.OPENCONTAINER, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
+                    return claim.canInteract(player, BuiltinPermission.MINECART, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
+                }
+                case AbstractVillager villager -> {
+                    return claim.canInteract(player, BuiltinPermission.TRADING, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
+                }
+                case ItemFrame itemFrame -> {
+                    return claim.canInteract(player, BuiltinPermission.ITEMFRAMEROTATE, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
+                }
+                case OwnableEntity ownable -> {
+                    if (ownable.getOwnerUUID() != null && ownable.getOwnerUUID().equals(player.getUUID()))
+                        return InteractionResult.PASS;
+                }
+                default -> {
+                }
             }
             return claim.canInteract(player, BuiltinPermission.ANIMALINTERACT, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
         }
@@ -166,7 +167,7 @@ public class EntityInteractEvents {
                         ((IPersistentProjectileVars) pers).setInBlockState(pers.level().getBlockState(pos));
                         Vec3 vec3d = blockRes.getLocation().subtract(pers.getX(), pers.getY(), pers.getZ());
                         pers.setDeltaMovement(vec3d);
-                        Vec3 vec3d2 = vec3d.normalize().scale(0.05000000074505806D);
+                        Vec3 vec3d2 = vec3d.normalize().scale(0.05);
                         pers.setPosRaw(pers.getX() - vec3d2.x, pers.getY() - vec3d2.y, pers.getZ() - vec3d2.z);
                         pers.playSound(((IPersistentProjectileVars) pers).getSoundEvent(), 1.0F, 1.2F / (pers.level().random.nextFloat() * 0.2F + 0.9F));
                         ((IPersistentProjectileVars) pers).setInGround(true);
@@ -198,6 +199,7 @@ public class EntityInteractEvents {
                     ((IPersistentProjectileVars) pers).setPiercedEntities(pierced);
                     ((IPersistentProjectileVars) pers).setPiercingLevel((byte) (pers.getPierceLevel() + 1));
                 }
+                proj.hurtMarked = true;
                 return fail;
             }
         }

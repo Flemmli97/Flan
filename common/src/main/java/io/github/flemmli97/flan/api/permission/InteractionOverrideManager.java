@@ -64,9 +64,14 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
 
     private final HolderLookup.Provider provider;
 
-    public InteractionOverrideManager(HolderLookup.Provider provider) {
+    private InteractionOverrideManager(HolderLookup.Provider provider) {
         super(GSON, DIRECTORY);
         this.provider = provider;
+    }
+
+    public static InteractionOverrideManager create(HolderLookup.Provider provider) {
+        INSTANCE = new InteractionOverrideManager(provider);
+        return INSTANCE;
     }
 
     public static <T> Codec<Pair<Either<TagKey<T>, T>, ResourceLocation>> tagOrEntryCodec(Registry<T> registry) {

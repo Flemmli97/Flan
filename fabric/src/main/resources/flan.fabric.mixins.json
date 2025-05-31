@@ -13,7 +13,6 @@
     "PlayerDropMixin",
     "PlayerManagerMixin",
     "ProjectileMixin",
-    "ReloadableServerResourcesMixin",
     "ServerPlayerGameModeMixin",
     "SnowGolemMixin",
     "SpawnHelperMixin",

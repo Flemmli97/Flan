@@ -38,7 +38,6 @@ public class FlanNeoForge {
         bus.addListener(EventPriority.HIGHEST, BlockInteractEventsNeoForge::useBlocks);
         bus.addListener(EventPriority.HIGHEST, BlockInteractEventsNeoForge::placeBlock);
         bus.addListener(EventPriority.HIGHEST, BlockInteractEventsNeoForge::placeBlocks);
-        bus.addListener(EntityInteractEventsNeoForge::attackEntity);
         bus.addListener(EntityInteractEventsNeoForge::useAtEntity);
         bus.addListener(EntityInteractEventsNeoForge::useEntity);
         bus.addListener(EntityInteractEventsNeoForge::projectileHit);
@@ -65,7 +64,7 @@ public class FlanNeoForge {
     }
 
     public void addReloadListener(AddReloadListenerEvent event) {
-        event.addListener(PermissionManager.INSTANCE = new PermissionManager(event.getRegistryAccess()));
-        event.addListener(InteractionOverrideManager.INSTANCE = new InteractionOverrideManager(event.getRegistryAccess()));
+        event.addListener(PermissionManager.create(event.getRegistryAccess()));
+        event.addListener(InteractionOverrideManager.create(event.getRegistryAccess()));
     }
 }

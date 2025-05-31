@@ -38,9 +38,14 @@ public class PermissionManager extends SimpleJsonResourceReloadListener {
 
     private final HolderLookup.Provider provider;
 
-    public PermissionManager(HolderLookup.Provider provider) {
+    private PermissionManager(HolderLookup.Provider provider) {
         super(GSON, DIRECTORY);
         this.provider = provider;
+    }
+
+    public static PermissionManager create(HolderLookup.Provider provider) {
+        INSTANCE = new PermissionManager(provider);
+        return INSTANCE;
     }
 
     @Nullable

@@ -7,23 +7,15 @@ import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.EntityHitResult;
+import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityMobGriefingEvent;
 import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 
 public class EntityInteractEventsNeoForge {
-
-    public static void attackEntity(AttackEntityEvent event) {
-        InteractionResult result = EntityInteractEvents.attackSimple(event.getEntity(), event.getTarget(), true);
-        if (result == InteractionResult.FAIL) {
-            event.setCanceled(true);
-        }
-    }
 
     public static void useAtEntity(PlayerInteractEvent.EntityInteractSpecific event) {
         Entity target = event.getTarget();
@@ -52,10 +44,10 @@ public class EntityInteractEventsNeoForge {
         }
     }
 
-    public static void preventDamage(LivingIncomingDamageEvent event) {
+    public static void preventDamage(EntityInvulnerabilityCheckEvent event) {
         boolean prevent = EntityInteractEvents.preventDamage(event.getEntity(), event.getSource());
         if (prevent) {
-            event.setCanceled(true);
+            event.setInvulnerable(true);
         }
     }
 
