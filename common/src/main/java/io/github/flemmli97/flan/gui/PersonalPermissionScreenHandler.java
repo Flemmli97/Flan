@@ -3,7 +3,6 @@ package io.github.flemmli97.flan.gui;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.claim.ClaimUtils;
-import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -23,16 +22,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<String> {
+public class PersonalPermissionScreenHandler extends PagedServerOnlyScreenHandler<String> {
 
-    private final String group;
-    private int page;
-    private final Player player;
+    private List<ClaimPermission> perms;
 
     private PersonalPermissionScreenHandler(int syncId, Inventory playerInventory, String group) {
         super(syncId, playerInventory, 6, group);
-        this.group = group;
-        this.player = playerInventory.player;
     }
 
     public static void openClaimMenu(Player player, String group) {
@@ -51,71 +46,28 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
     }
 
     @Override
-    protected void fillInventoryWith(Player player, SeparateInv inv, String group) {
-        if (!(player instanceof ServerPlayer))
-            return;
-        List<ClaimPermission> perms = new ArrayList<>(PermissionManager.INSTANCE.getAll());
-        if (group != null)
-            perms.removeIf(p -> p.global);
-        for (int i = 0; i < 54; i++) {
-            int page = 0;
-            if (i == 0) {
-                ItemStack close = new ItemStack(Items.TNT);
-                close.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
-                inv.updateStack(i, close);
-            } else if (i == 51) {
-                ItemStack close = new ItemStack(Items.ARROW);
-                close.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenNext", ChatFormatting.WHITE));
-                inv.updateStack(i, close);
-            } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
-                inv.updateStack(i, ServerScreenHelper.emptyFiller());
-            else {
-                int row = i / 9 - 1;
-                int id = (i % 9) + row * 7 - 1 + page * 28;
-                if (id < perms.size())
-                    inv.updateStack(i, ServerScreenHelper.getFromPersonal((ServerPlayer) player, perms.get(id), group));
-            }
-        }
-    }
-
-    private void flipPage() {
+    protected void fillInventoryWith() {
         if (!(this.player instanceof ServerPlayer))
             return;
-        List<ClaimPermission> perms = new ArrayList<>(PermissionManager.INSTANCE.getAll());
-        if (this.group != null)
-            perms.removeIf(p -> p.global);
-        int maxPages = perms.size() / 28;
+        this.perms = new ArrayList<>(PermissionManager.INSTANCE.getAll());
+        if (this.data != null)
+            this.perms.removeIf(p -> p.global);
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
                 close.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
                 this.slots.get(i).set(close);
-            } else if (i == 47) {
-                ItemStack stack = ServerScreenHelper.emptyFiller();
-                if (this.page >= 1) {
-                    stack = new ItemStack(Items.ARROW);
-                    stack.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenPrevious", ChatFormatting.WHITE));
-                }
-                this.slots.get(i).set(stack);
-            } else if (i == 51) {
-                ItemStack stack = ServerScreenHelper.emptyFiller();
-                if (this.page < maxPages) {
-                    stack = new ItemStack(Items.ARROW);
-                    stack.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenNext", ChatFormatting.WHITE));
-                }
-                this.slots.get(i).set(stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 this.slots.get(i).set(ServerScreenHelper.emptyFiller());
             else {
                 int row = i / 9 - 1;
-                int id = (i % 9) + row * 7 - 1 + this.page * 28;
-                if (id < perms.size()) {
-                    this.slots.get(i).set(ServerScreenHelper.getFromPersonal((ServerPlayer) this.player, perms.get(id), this.group));
-                } else
+                int id = (i % 9) + row * 7 - 1 + this.getPage() * 28;
+                if (id < this.perms.size())
+                    this.slots.get(i).set(ServerScreenHelper.getFromPersonal((ServerPlayer) this.player, this.perms.get(id), this.data));
+                else
                     this.slots.get(i).set(ItemStack.EMPTY);
             }
         }
-        this.broadcastChanges();
     }
 
     @Override
@@ -125,16 +77,6 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
             player.getServer().execute(() -> PersonalGroupScreenHandler.openGroupMenu(player));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;
-        }
-        if (index == 47) {
-            this.page = 0;
-            this.flipPage();
-            ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
-        }
-        if (index == 51) {
-            this.page = 1;
-            this.flipPage();
-            ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
         }
         ItemStack stack = slot.getItem();
         ClaimPermission perm;
@@ -146,9 +88,9 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
             return false;
         }
         PlayerClaimData data = PlayerClaimData.get(player);
-        Map<ResourceLocation, Boolean> perms = data.playerDefaultGroups().getOrDefault(this.group, new HashMap<>());
-        boolean success = data.editDefaultPerms(this.group, perm.getId(), (perms.containsKey(perm.getId()) ? perms.get(perm.getId()) ? 1 : 0 : -1) + 1);
-        slot.set(ServerScreenHelper.getFromPersonal(player, perm, this.group));
+        Map<ResourceLocation, Boolean> perms = data.playerDefaultGroups().getOrDefault(this.data, new HashMap<>());
+        boolean success = data.editDefaultPerms(this.data, perm.getId(), (perms.containsKey(perm.getId()) ? perms.get(perm.getId()) ? 1 : 0 : -1) + 1);
+        slot.set(ServerScreenHelper.getFromPersonal(player, perm, this.data));
         if (success)
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.NOTE_BLOCK_PLING, 1, 1.2f);
         else
@@ -158,6 +100,11 @@ public class PersonalPermissionScreenHandler extends ServerOnlyScreenHandler<Str
 
     @Override
     protected boolean isRightSlot(int slot) {
-        return slot == 0 || (this.page == 1 && slot == 47) || (this.page == 0 && slot == 51) || (slot < 45 && slot > 8 && slot % 9 != 0 && slot % 9 != 8);
+        return slot == 0 || (slot < 45 && slot > 8 && slot % 9 != 0 && slot % 9 != 8);
+    }
+
+    @Override
+    protected PagedServerOnlyScreenHandler.PageSettings pageSettings() {
+        return new PagedServerOnlyScreenHandler.PageSettings((this.perms.size() - 1) / 28, 47, 51);
     }
 }

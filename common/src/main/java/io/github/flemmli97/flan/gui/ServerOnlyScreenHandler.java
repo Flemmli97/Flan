@@ -1,6 +1,5 @@
 package io.github.flemmli97.flan.gui;
 
-import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import io.github.flemmli97.flan.gui.inv.SeparateInvImpl;
 import io.github.flemmli97.flan.gui.inv.SlotDelegate;
 import io.github.flemmli97.flan.mixin.AbstractContainerAccessor;
@@ -17,13 +16,16 @@ import net.minecraft.world.item.ItemStack;
 
 public abstract class ServerOnlyScreenHandler<T> extends AbstractContainerMenu {
 
-    private final SeparateInvImpl inventory;
+    protected final SeparateInvImpl inventory;
+    protected final Player player;
+    protected final T data;
 
     protected ServerOnlyScreenHandler(int syncId, Inventory playerInventory, int rows, T additionalData) {
         super(fromRows(rows), syncId);
         int i = (rows - 4) * 18;
         this.inventory = new SeparateInvImpl(rows * 9);
-        this.fillInventoryWith(playerInventory.player, this.inventory, additionalData);
+        this.player = playerInventory.player;
+        this.data = additionalData;
         int n;
         int m;
         for (n = 0; n < rows; ++n) {
@@ -61,6 +63,7 @@ public abstract class ServerOnlyScreenHandler<T> extends AbstractContainerMenu {
                 }
             });
         }
+        this.setupGui();
     }
 
     private static MenuType<ChestMenu> fromRows(int rows) {
@@ -74,7 +77,11 @@ public abstract class ServerOnlyScreenHandler<T> extends AbstractContainerMenu {
         };
     }
 
-    protected abstract void fillInventoryWith(Player player, SeparateInv inv, T additionalData);
+    protected void setupGui() {
+        this.fillInventoryWith();
+    }
+
+    protected abstract void fillInventoryWith();
 
     @Override
     public boolean stillValid(Player player) {
