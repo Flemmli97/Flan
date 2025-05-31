@@ -67,7 +67,8 @@ public class PersonalGroupScreenHandler extends PagedServerOnlyScreenHandler<Obj
                     ItemStack group = new ItemStack(Items.PAPER);
                     group.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenGroupName", groups.get(id), ChatFormatting.DARK_BLUE));
                     this.slots.get(i).set(group);
-                }
+                } else
+                    this.slots.get(i).set(ItemStack.EMPTY);
             }
         }
     }

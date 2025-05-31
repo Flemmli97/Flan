@@ -86,7 +86,8 @@ public class PotionEditScreenHandler extends PagedServerOnlyScreenHandler<Claim>
                     Component comp = ServerScreenHelper.coloredGuiText("flan.screenPotionText", txt, ChatFormatting.DARK_BLUE);
                     effectStack.setHoverName(comp);
                     this.slots.get(i).set(effectStack);
-                }
+                } else
+                    this.slots.get(i).set(ItemStack.EMPTY);
             }
         }
     }

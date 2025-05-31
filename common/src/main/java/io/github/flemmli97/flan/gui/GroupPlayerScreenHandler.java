@@ -79,7 +79,8 @@ public class GroupPlayerScreenHandler extends PagedServerOnlyScreenHandler<Claim
                     GameProfile gameProfile = new GameProfile(null, players.get(id));
                     SkullBlockEntity.updateGameprofile(gameProfile, prof -> group.getOrCreateTag().put("SkullOwner", NbtUtils.writeGameProfile(new CompoundTag(), prof)));
                     this.slots.get(i).set(group);
-                }
+                } else
+                    this.slots.get(i).set(ItemStack.EMPTY);
             }
         }
     }

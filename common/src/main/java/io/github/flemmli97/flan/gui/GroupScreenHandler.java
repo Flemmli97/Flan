@@ -66,7 +66,8 @@ public class GroupScreenHandler extends PagedServerOnlyScreenHandler<Claim> {
                     group.getOrCreateTag().putString("FlanGroup", groups.get(id));
                     group.setHoverName(ServerScreenHelper.coloredGuiText("flan.screenGroupName", groups.get(id), ChatFormatting.DARK_BLUE));
                     this.slots.get(i).set(group);
-                }
+                } else
+                    this.slots.get(i).set(ItemStack.EMPTY);
             }
         }
     }
