@@ -29,7 +29,9 @@ public class InteractionOverrideGen extends InteractionOverrideProvider {
                 .addEntry(ResourceLocation.fromNamespaceAndPath("mekanism", "creative_bin"), BuiltinPermission.OPENCONTAINER));
 
         this.override(id("wrenches"), Builder.itemInteractions(InteractionOverrideManager.ITEM_USE)
-                .addEntry(itemTag(ResourceLocation.fromNamespaceAndPath("c", "wrenches")), BuiltinPermission.INTERACTBLOCK)
+                .addEntry(itemTag(ResourceLocation.fromNamespaceAndPath("c", "wrenches")), BuiltinPermission.INTERACTBLOCK));
+
+        this.override(id("wrenches_ae2"), Builder.itemInteractions(InteractionOverrideManager.ITEM_USE)
                 .addEntry(ResourceLocation.fromNamespaceAndPath("appliedenergistics2", "nether_quartz_wrench"), BuiltinPermission.INTERACTBLOCK)
                 .addEntry(ResourceLocation.fromNamespaceAndPath("appliedenergistics2", "certus_quartz_wrench"), BuiltinPermission.INTERACTBLOCK));
 
