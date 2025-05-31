@@ -218,6 +218,11 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.addIgnoreEntry", "Added %1$s to the claims ignore list %2$s");
         this.add("flan.removeIgnoreEntry", "Removed %1$s from the claims ignore list %2$s");
 
+        this.add("flan.confirmCommand", "Use '/flan confirm' to confirm running this command.");
+        this.add("flan.confirmCommand.args", "No such option %s");
+        this.add("flan.confirmCommand.none", "No command to confirm!");
+        this.add("flan.confirmCancelled", "Command cancelled!");
+
         this.add("flan.wiki", "For more info check out the wiki:");
 
         for (Map.Entry<ResourceLocation, ClaimPermission.Builder> entry : this.permissionGen.getData().entrySet()) {
@@ -267,6 +272,7 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.command.ignoreList", "ignoreList <add | remove> <" + Arrays.stream(CustomInteractListScreenHandler.Type.values()).map(t -> t.commandKey)
                         .collect(Collectors.joining(" | ")) + "> <value>",
                 "Add/remove an entry to/from the claims ignore list. Interactions in this list bypass permission checks");
+        this.add("flan.command.confirm", "confirm <confirmg | deny>", "Confirmation for sensitive commands");
 
         this.add("flan.command.reload", "reload", "Reloads the config ingame.");
         this.add("flan.command.bypass", "bypass", "Switches to admin mode ignoring all claims and permissions.");

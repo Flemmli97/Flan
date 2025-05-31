@@ -3,6 +3,7 @@ Flan 1.11.9
 - Fix indirect non living damage which for vanilla was really only with player tnt on itemframes etc.
 - Split the wrench override into two files as non present items also causes the tag to error
 - Rework gui backend and add pagination to all missing ones
+- Replace double typing command system with a confirmation system
 
 Flan 1.11.8
 ================
