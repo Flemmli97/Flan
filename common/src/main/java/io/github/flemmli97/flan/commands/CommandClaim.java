@@ -202,7 +202,9 @@ public class CommandClaim {
                                 .then(Commands.literal(CustomInteractListScreenHandler.Type.ENTITYUSE.commandKey)
                                         .then(Commands.argument("entry", ResourceOrTagKeyArgument.resourceOrTagKey(Registries.ENTITY_TYPE)).suggests((src, b) -> CommandHelpers.claimEntryListSuggestion(src, b, CustomInteractListScreenHandler.Type.ENTITYUSE))
                                                 .executes(src -> CommandClaim.removeClaimListEntries(src, CustomInteractListScreenHandler.Type.ENTITYUSE)))))
-                );
+                )
+                .then(Commands.literal("confirm").then(Commands.argument("confirm", StringArgumentType.string())
+                        .suggests((ctx, sb) -> SharedSuggestionProvider.suggest(List.of("confirm", "deny"), sb)).executes(CommandClaim::confirmCommand)));
         builder.then(Commands.literal("help").executes(ctx -> CommandHelp.helpMessage(ctx, 0, builder.getArguments()))
                 .then(Commands.argument("page", IntegerArgumentType.integer()).executes(ctx -> CommandHelp.helpMessage(ctx, builder.getArguments())))
                 .then(Commands.literal("cmd").then(Commands.argument("command", StringArgumentType.word()).suggests((ctx, sb) -> SharedSuggestionProvider.suggest(CommandHelp.registeredCommands(ctx, builder.getArguments()), sb)).executes(CommandHelp::helpCmd))));
@@ -473,18 +475,16 @@ public class CommandClaim {
 
     private static int deleteAllClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        PlayerClaimData data = PlayerClaimData.get(player);
-        if (data.confirmedDeleteAll()) {
-            for (ServerLevel world : player.getServer().getAllLevels()) {
+        PlayerClaimData data = PlayerClaimData.get(context.getSource().getPlayerOrException());
+        data.deferCommand(new PendingCommand(context, () -> {
+            for (ServerLevel world : context.getSource().getServer().getAllLevels()) {
                 ClaimStorage storage = ClaimStorage.get(world);
-                storage.allClaimsFromPlayer(player.getUUID()).forEach((claim) -> storage.deleteClaim(claim, true, PlayerClaimData.get(player).getClaimMode(), player.serverLevel()));
+                storage.allClaimsFromPlayer(player.getUUID()).forEach((claim) -> storage.deleteClaim(claim, true, data.getClaimMode(), player.serverLevel()));
             }
             player.displayClientMessage(ClaimUtils.translatedText("flan.deleteAllClaim", ChatFormatting.GOLD), false);
-            data.setConfirmDeleteAll(false);
-        } else {
-            data.setConfirmDeleteAll(true);
-            player.displayClientMessage(ClaimUtils.translatedText("flan.deleteAllClaimConfirm", ChatFormatting.DARK_RED), false);
-        }
+            return Command.SINGLE_SUCCESS;
+        }));
+        context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.confirmCommand", ChatFormatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -520,9 +520,14 @@ public class CommandClaim {
         Claim claim = ClaimUtils.checkReturn(player, BuiltinPermission.EDITCLAIM, ClaimUtils.genericNoPermMessage(player));
         if (claim == null)
             return 0;
-        List<Claim> subs = claim.getAllSubclaims();
-        subs.forEach(claim::deleteSubClaim);
-        player.displayClientMessage(ClaimUtils.translatedText("flan.deleteSubClaimAll", ChatFormatting.DARK_RED), false);
+        PlayerClaimData data = PlayerClaimData.get(context.getSource().getPlayerOrException());
+        data.deferCommand(new PendingCommand(context, () -> {
+            List<Claim> subs = claim.getAllSubclaims();
+            subs.forEach(claim::deleteSubClaim);
+            context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.deleteSubClaimAll", ChatFormatting.DARK_RED), false);
+            return Command.SINGLE_SUCCESS;
+        }));
+        context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.confirmCommand", ChatFormatting.GOLD), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -606,16 +611,26 @@ public class CommandClaim {
 
     private static int adminDeleteAll(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         CommandSourceStack src = context.getSource();
+        Collection<GameProfile> profiles = GameProfileArgument.getGameProfiles(context, "players");
         if (src.getEntity() instanceof ServerPlayer player) {
             PlayerClaimData data = PlayerClaimData.get(player);
-            if (!data.confirmedDeleteAll()) {
-                data.setConfirmDeleteAll(true);
-                player.displayClientMessage(ClaimUtils.translatedText("flan.deleteAllClaimConfirm", ChatFormatting.DARK_RED), false);
+            data.deferCommand(new PendingCommand(context, () -> {
+                List<String> players = new ArrayList<>();
+                for (GameProfile prof : profiles) {
+                    for (ServerLevel world : src.getLevel().getServer().getAllLevels()) {
+                        ClaimStorage storage = ClaimStorage.get(world);
+                        storage.allClaimsFromPlayer(prof.getId()).forEach((claim) -> storage.deleteClaim(claim, true, ClaimMode.DEFAULT, world));
+                    }
+                    players.add(prof.getName());
+                }
+                src.sendSuccess(() -> ClaimUtils.translatedText("flan.adminDeleteAll", players, ChatFormatting.GOLD), true);
                 return Command.SINGLE_SUCCESS;
-            }
+            }));
+            context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.confirmCommand", ChatFormatting.GOLD), true);
+            return Command.SINGLE_SUCCESS;
         }
         List<String> players = new ArrayList<>();
-        for (GameProfile prof : GameProfileArgument.getGameProfiles(context, "players")) {
+        for (GameProfile prof : profiles) {
             for (ServerLevel world : src.getLevel().getServer().getAllLevels()) {
                 ClaimStorage storage = ClaimStorage.get(world);
                 storage.allClaimsFromPlayer(prof.getId()).forEach((claim) -> storage.deleteClaim(claim, true, ClaimMode.DEFAULT, world));
@@ -1065,6 +1080,22 @@ public class CommandClaim {
     private static int buyClaimBlocks(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         boolean b = ConfigHandler.CONFIG.buySellHandler.buy(context.getSource().getPlayerOrException(), Math.max(0, IntegerArgumentType.getInteger(context, "amount")), m -> context.getSource().sendSuccess(() -> m, false));
         return b ? Command.SINGLE_SUCCESS : 0;
+    }
+
+    private static int confirmCommand(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        PlayerClaimData data = PlayerClaimData.get(player);
+        String confirm = StringArgumentType.getString(context, "confirm");
+        if (!confirm.equals("confirm") && !confirm.equals("deny")) {
+            context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.confirmCommand.args", ChatFormatting.RED), false);
+            return 0;
+        }
+        int res = data.runPendingCommand(confirm.equals("confirm"));
+        if (res == -1) {
+            context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.confirmCommand.none", ChatFormatting.RED), false);
+            return 0;
+        }
+        return res;
     }
 
     @SuppressWarnings("unchecked")
