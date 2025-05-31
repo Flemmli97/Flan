@@ -4,7 +4,6 @@ import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimUtils;
-import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -23,13 +22,9 @@ import net.minecraft.world.item.component.CustomData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PermissionScreenHandler extends ServerOnlyScreenHandler<ClaimGroup> {
+public class PermissionScreenHandler extends PagedServerOnlyScreenHandler<ClaimGroup> {
 
-    private final Claim claim;
-    private final String group;
-    private int page, maxPages;
     private List<ClaimPermission> perms;
-    private final Player player;
 
     private PermissionScreenHandler(int syncId, Inventory playerInventory, Claim claim, String group) {
         super(syncId, playerInventory, 6, new ClaimGroup() {
@@ -43,9 +38,6 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler<ClaimGroup>
                 return group;
             }
         });
-        this.claim = claim;
-        this.group = group;
-        this.player = playerInventory.player;
     }
 
     public static void openClaimMenu(Player player, Claim claim, String group) {
@@ -64,87 +56,40 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler<ClaimGroup>
     }
 
     @Override
-    protected void fillInventoryWith(Player player, SeparateInv inv, ClaimGroup additionalData) {
+    protected void fillInventoryWith() {
         this.perms = new ArrayList<>(PermissionManager.INSTANCE.getAll());
-        if (additionalData.getGroup() != null)
+        if (this.data.getGroup() != null)
             this.perms.removeIf(p -> p.global);
-        this.maxPages = (this.perms.size() - 1) / 28;
-        for (int i = 0; i < 54; i++) {
-            if (i == 0) {
-                ItemStack close = new ItemStack(Items.TNT);
-                close.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
-                inv.updateStack(i, close);
-            } else if (i == 51) {
-                ItemStack close = new ItemStack(Items.ARROW);
-                close.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenNext", ChatFormatting.WHITE));
-                inv.updateStack(i, close);
-            } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
-                inv.updateStack(i, ServerScreenHelper.emptyFiller());
-            else {
-                int row = i / 9 - 1;
-                int id = (i % 9) + row * 7 - 1;
-                if (id < this.perms.size())
-                    inv.updateStack(i, ServerScreenHelper.fromPermission(additionalData.getClaim(), (ServerPlayer) player, this.perms.get(id), additionalData.getGroup() == null ? null : additionalData.getGroup()));
-            }
-        }
-    }
-
-    private void flipPage() {
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
                 close.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
                 this.slots.get(i).set(close);
-            } else if (i == 47) {
-                ItemStack stack = ServerScreenHelper.emptyFiller();
-                if (this.page >= 1) {
-                    stack = new ItemStack(Items.ARROW);
-                    stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenPrevious", ChatFormatting.WHITE));
-                }
-                this.slots.get(i).set(stack);
-            } else if (i == 51) {
-                ItemStack stack = ServerScreenHelper.emptyFiller();
-                if (this.page < this.maxPages) {
-                    stack = new ItemStack(Items.ARROW);
-                    stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenNext", ChatFormatting.WHITE));
-                }
-                this.slots.get(i).set(stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 this.slots.get(i).set(ServerScreenHelper.emptyFiller());
             else {
                 int row = i / 9 - 1;
-                int id = (i % 9) + row * 7 - 1 + this.page * 28;
-                if (id < this.perms.size()) {
-                    this.slots.get(i).set(ServerScreenHelper.fromPermission(this.claim, (ServerPlayer) this.player, this.perms.get(id), this.group));
-                } else
+                int id = (i % 9) + row * 7 - 1;
+                if (id < this.perms.size())
+                    this.slots.get(i).set(ServerScreenHelper.fromPermission(this.data.getClaim(), this.player, this.perms.get(id), this.data.getGroup() == null ? null : this.data.getGroup()));
+                else
                     this.slots.get(i).set(ItemStack.EMPTY);
             }
         }
-        this.broadcastChanges();
     }
 
     @Override
     protected boolean handleSlotClicked(ServerPlayer player, int index, Slot slot, int clickType) {
         if (index == 0) {
-            if (this.group == null) {
+            if (this.data.getGroup() == null) {
                 player.closeContainer();
-                player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.claim));
+                player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data.getClaim()));
             } else {
                 player.closeContainer();
-                player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.claim));
+                player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.data.getClaim()));
             }
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;
-        }
-        if (index == 47) {
-            this.page--;
-            this.flipPage();
-            ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
-        }
-        if (index == 51) {
-            this.page++;
-            this.flipPage();
-            ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
         }
         ItemStack stack = slot.getItem();
         ClaimPermission perm;
@@ -157,16 +102,16 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler<ClaimGroup>
             return false;
         }
         boolean success;
-        if (this.group == null) {
+        if (this.data.getGroup() == null) {
             int mode;
-            if (this.claim.parentClaim() == null)
-                mode = this.claim.permEnabled(perm.getId()) == 1 ? -1 : 1;
+            if (this.data.getClaim().parentClaim() == null)
+                mode = this.data.getClaim().permEnabled(perm.getId()) == 1 ? -1 : 1;
             else
-                mode = this.claim.permEnabled(perm.getId()) + 1;
-            success = this.claim.editGlobalPerms(player, perm.getId(), mode);
+                mode = this.data.getClaim().permEnabled(perm.getId()) + 1;
+            success = this.data.getClaim().editGlobalPerms(player, perm.getId(), mode);
         } else
-            success = this.claim.editPerms(player, this.group, perm.getId(), this.claim.groupHasPerm(this.group, perm.getId()) + 1);
-        slot.set(ServerScreenHelper.fromPermission(this.claim, (ServerPlayer) this.player, perm, this.group));
+            success = this.data.getClaim().editPerms(player, this.data.getGroup(), perm.getId(), this.data.getClaim().groupHasPerm(this.data.getGroup(), perm.getId()) + 1);
+        slot.set(ServerScreenHelper.fromPermission(this.data.getClaim(), this.player, perm, this.data.getGroup()));
         if (success)
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.NOTE_BLOCK_PLING, 1, 1.2f);
         else
@@ -176,6 +121,11 @@ public class PermissionScreenHandler extends ServerOnlyScreenHandler<ClaimGroup>
 
     @Override
     protected boolean isRightSlot(int slot) {
-        return slot == 0 || (this.page > 0 && slot == 47) || (this.page < this.maxPages && slot == 51) || (slot < 45 && slot > 8 && slot % 9 != 0 && slot % 9 != 8);
+        return slot == 0 || (slot < 45 && slot > 8 && slot % 9 != 0 && slot % 9 != 8);
+    }
+
+    @Override
+    protected PageSettings pageSettings() {
+        return new PageSettings((this.perms.size() - 1) / 28, 47, 51);
     }
 }

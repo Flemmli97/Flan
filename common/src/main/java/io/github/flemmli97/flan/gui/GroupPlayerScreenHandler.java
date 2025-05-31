@@ -3,7 +3,6 @@ package io.github.flemmli97.flan.gui;
 import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimUtils;
-import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -20,15 +19,12 @@ import net.minecraft.world.item.component.ResolvableProfile;
 
 import java.util.List;
 
-public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup> {
+public class GroupPlayerScreenHandler extends PagedServerOnlyScreenHandler<ClaimGroup> {
 
-    private final Claim claim;
-    private final String group;
     private boolean removeMode;
 
     private GroupPlayerScreenHandler(int syncId, Inventory playerInventory, Claim claim, String group) {
         super(syncId, playerInventory, 6, new ClaimGroup() {
-
             @Override
             public Claim getClaim() {
                 return claim;
@@ -39,8 +35,6 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
                 return group;
             }
         });
-        this.claim = claim;
-        this.group = group;
     }
 
     public static void openPlayerGroupMenu(Player player, Claim claim, String group) {
@@ -59,32 +53,32 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
     }
 
     @Override
-    protected void fillInventoryWith(Player player, SeparateInv inv, ClaimGroup additionalData) {
-        Claim claim = additionalData.getClaim();
-        List<GameProfile> players = claim.playersFromGroup(player.getServer(), additionalData.getGroup());
+    protected void fillInventoryWith() {
+        List<GameProfile> players = this.data.getClaim().playersFromGroup(this.player.getServer(), this.data.getGroup());
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
                 close.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
-                inv.updateStack(i, close);
+                this.slots.get(i).set(close);
             } else if (i == 3) {
                 ItemStack stack = new ItemStack(Items.ANVIL);
                 stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenAdd", ChatFormatting.DARK_GREEN));
-                inv.updateStack(i, stack);
+                this.slots.get(i).set(stack);
             } else if (i == 4) {
                 ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
                 stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode ? ServerScreenHelper.coloredGuiText("flan.screenTrue") : ServerScreenHelper.coloredGuiText("flan.screenFalse"), ChatFormatting.DARK_RED));
-                inv.updateStack(i, stack);
+                this.slots.get(i).set(stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
-                inv.updateStack(i, ServerScreenHelper.emptyFiller());
+                this.slots.get(i).set(ServerScreenHelper.emptyFiller());
             else {
                 int row = i / 9 - 1;
-                int id = (i % 9) + row * 7 - 1;
+                int id = (i % 9) + row * 7 - 1 + this.getPage() * 28;
                 if (id < players.size()) {
                     ItemStack group = new ItemStack(Items.PLAYER_HEAD);
                     group.set(DataComponents.PROFILE, new ResolvableProfile(players.get(id)));
-                    inv.updateStack(i, group);
-                }
+                    this.slots.get(i).set(group);
+                } else
+                    this.slots.get(i).set(ItemStack.EMPTY);
             }
         }
     }
@@ -98,16 +92,16 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
     protected boolean handleSlotClicked(ServerPlayer player, int index, Slot slot, int clickType) {
         if (index == 0) {
             player.closeContainer();
-            player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.claim));
+            player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.data.getClaim()));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;
         }
         if (index == 3) {
             player.closeContainer();
             player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
-                boolean fl = player.getServer().getProfileCache().get(s).map(prof -> this.claim.setPlayerGroup(prof.getId(), this.group, false)).orElse(true);
+                boolean fl = player.getServer().getProfileCache().get(s).map(prof -> this.data.getClaim().setPlayerGroup(prof.getId(), this.data.getGroup(), false)).orElse(true);
                 player.closeContainer();
-                player.getServer().execute(() -> GroupPlayerScreenHandler.openPlayerGroupMenu(player, this.claim, this.group));
+                player.getServer().execute(() -> GroupPlayerScreenHandler.openPlayerGroupMenu(player, this.data.getClaim(), this.data.getGroup()));
                 if (fl)
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
                 else {
@@ -116,7 +110,7 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
                 }
             }, () -> {
                 player.closeContainer();
-                player.getServer().execute(() -> GroupPlayerScreenHandler.openPlayerGroupMenu(player, this.claim, this.group));
+                player.getServer().execute(() -> GroupPlayerScreenHandler.openPlayerGroupMenu(player, this.data.getClaim(), this.data.getGroup()));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
             }));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
@@ -134,11 +128,16 @@ public class GroupPlayerScreenHandler extends ServerOnlyScreenHandler<ClaimGroup
         if (!stack.isEmpty()) {
             ResolvableProfile profile = stack.get(DataComponents.PROFILE);
             if (this.removeMode && profile != null && profile.id().isPresent()) {
-                this.claim.setPlayerGroup(profile.gameProfile().getId(), null, false);
+                this.data.getClaim().setPlayerGroup(profile.gameProfile().getId(), null, false);
                 slot.set(ItemStack.EMPTY);
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.BAT_DEATH, 1, 1f);
             }
         }
         return false;
+    }
+
+    @Override
+    protected PageSettings pageSettings() {
+        return new PageSettings((this.data.getClaim().playersFromGroup(this.player.getServer(), this.data.getGroup()).size() - 1) / 28, 47, 51);
     }
 }

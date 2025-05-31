@@ -3,7 +3,6 @@ package io.github.flemmli97.flan.gui;
 import com.google.common.collect.Lists;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimUtils;
-import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -33,15 +32,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
-
-    private final Claim claim;
+public class PotionEditScreenHandler extends PagedServerOnlyScreenHandler<Claim> {
 
     private boolean removeMode;
 
     protected PotionEditScreenHandler(int syncId, Inventory playerInventory, Claim claim) {
         super(syncId, playerInventory, 6, claim);
-        this.claim = claim;
     }
 
     public static void openPotionMenu(Player player, Claim claim) {
@@ -60,28 +56,28 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
     }
 
     @Override
-    protected void fillInventoryWith(Player player, SeparateInv inv, Claim claim) {
-        Map<Holder<MobEffect>, Integer> potions = claim.getPotions();
+    protected void fillInventoryWith() {
+        Map<Holder<MobEffect>, Integer> potions = this.data.getPotions();
         List<Holder<MobEffect>> key = Lists.newArrayList(potions.keySet());
         key.sort(Comparator.comparing(Holder::getRegisteredName));
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack close = new ItemStack(Items.TNT);
                 close.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
-                inv.updateStack(i, close);
+                this.slots.get(i).set(close);
             } else if (i == 3) {
                 ItemStack stack = new ItemStack(Items.ANVIL);
                 stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenAdd", ChatFormatting.DARK_GREEN));
-                inv.updateStack(i, stack);
+                this.slots.get(i).set(stack);
             } else if (i == 4) {
                 ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
                 stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode ? ServerScreenHelper.coloredGuiText("flan.screenTrue") : ServerScreenHelper.coloredGuiText("flan.screenFalse"), ChatFormatting.DARK_RED));
-                inv.updateStack(i, stack);
+                this.slots.get(i).set(stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
-                inv.updateStack(i, ServerScreenHelper.emptyFiller());
+                this.slots.get(i).set(ServerScreenHelper.emptyFiller());
             else {
                 int row = i / 9 - 1;
-                int id = (i % 9) + row * 7 - 1;
+                int id = (i % 9) + row * 7 - 1 + this.getPage() * 28;
                 if (id < potions.size()) {
                     Holder<MobEffect> effect = key.get(id);
                     ItemStack effectStack = new ItemStack(Items.POTION);
@@ -92,8 +88,9 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
                     txt.append(Component.literal("-" + potions.get(effect)));
                     Component comp = ServerScreenHelper.coloredGuiText("flan.screenPotionText", txt, ChatFormatting.DARK_BLUE);
                     effectStack.set(DataComponents.CUSTOM_NAME, comp);
-                    inv.updateStack(i, effectStack);
-                }
+                    this.slots.get(i).set(effectStack);
+                } else
+                    this.slots.get(i).set(ItemStack.EMPTY);
             }
         }
     }
@@ -107,7 +104,7 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
     protected boolean handleSlotClicked(ServerPlayer player, int index, Slot slot, int clickType) {
         if (index == 0) {
             player.closeContainer();
-            player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.claim));
+            player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;
         }
@@ -127,13 +124,13 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
                     } catch (NumberFormatException e) {
                     }
                 }
-                this.claim.addPotion(holder.get(), amp);
+                this.data.addPotion(holder.get(), amp);
                 player.closeContainer();
-                player.getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.claim));
+                player.getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.data));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
             }, () -> {
                 player.closeContainer();
-                player.getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.claim));
+                player.getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.data));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
             }));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
@@ -153,10 +150,15 @@ public class PotionEditScreenHandler extends ServerOnlyScreenHandler<Claim> {
                     .copyTag().getString("FlanEffect");
             if (!effect.isEmpty())
                 BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.parse(effect))
-                        .ifPresent(this.claim::removePotion);
+                        .ifPresent(this.data::removePotion);
             slot.set(ItemStack.EMPTY);
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.BAT_DEATH, 1, 1f);
         }
         return false;
+    }
+
+    @Override
+    protected PageSettings pageSettings() {
+        return new PageSettings((this.data.getPotions().size() - 1) / 28, 47, 51);
     }
 }

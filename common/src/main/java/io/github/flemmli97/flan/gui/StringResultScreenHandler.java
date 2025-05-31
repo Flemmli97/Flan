@@ -91,7 +91,7 @@ public class StringResultScreenHandler extends AnvilMenu {
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
-        if (!(player instanceof ServerPlayer))
+        if (!(player instanceof ServerPlayer serverPlayer))
             return ItemStack.EMPTY;
         if (index == 0)
             this.ret.run();
@@ -101,7 +101,7 @@ public class StringResultScreenHandler extends AnvilMenu {
             if (name != null && name.getContents() instanceof PlainTextContents text) {
                 this.cons.accept(text.text());
             }
-            ((ServerPlayer) player).connection.send(new ClientboundSetExperiencePacket(player.experienceProgress, player.totalExperience, player.experienceLevel));
+            serverPlayer.connection.send(new ClientboundSetExperiencePacket(player.experienceProgress, player.totalExperience, player.experienceLevel));
         }
         this.broadcastChanges();
         return ItemStack.EMPTY;

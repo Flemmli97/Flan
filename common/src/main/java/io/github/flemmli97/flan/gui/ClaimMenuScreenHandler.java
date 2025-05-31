@@ -4,7 +4,6 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
-import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
@@ -24,11 +23,8 @@ import net.minecraft.world.item.alchemy.Potions;
 
 public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
 
-    private final Claim claim;
-
     private ClaimMenuScreenHandler(int syncId, Inventory playerInventory, Claim claim) {
         super(syncId, playerInventory, 2, claim);
-        this.claim = claim;
     }
 
     public static void openClaimMenu(ServerPlayer player, Claim claim) {
@@ -47,92 +43,92 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
     }
 
     @Override
-    protected void fillInventoryWith(Player player, SeparateInv inv, Claim claim) {
+    protected void fillInventoryWith() {
         for (int i = 0; i < 18; i++) {
             switch (i) {
                 case 0 -> {
                     ItemStack close = new ItemStack(Items.TNT);
                     close.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenClose", ChatFormatting.DARK_RED));
-                    inv.updateStack(i, close);
+                    this.slots.get(i).set(close);
                 }
                 case 2 -> {
                     ItemStack perm = new ItemStack(Items.BEACON);
                     perm.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenMenuGlobal", ChatFormatting.GOLD));
-                    if (player instanceof ServerPlayer && !this.hasEditPerm(claim, (ServerPlayer) player))
+                    if (!this.hasEditPerm(this.data, this.player))
                         ServerScreenHelper.addLore(perm, ServerScreenHelper.coloredGuiText("flan.screenNoPerm", ChatFormatting.DARK_RED));
-                    inv.updateStack(i, perm);
+                    this.slots.get(i).set(perm);
                 }
                 case 3 -> {
                     ItemStack group = new ItemStack(Items.WRITABLE_BOOK);
                     group.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenMenuGroup", ChatFormatting.GOLD));
-                    if (player instanceof ServerPlayer && !this.hasEditPerm(claim, (ServerPlayer) player))
+                    if (!this.hasEditPerm(this.data, this.player))
                         ServerScreenHelper.addLore(group, ServerScreenHelper.coloredGuiText("flan.screenNoPerm", ChatFormatting.DARK_RED));
-                    inv.updateStack(i, group);
+                    this.slots.get(i).set(group);
                 }
                 case 4 -> {
                     ItemStack potions = new ItemStack(Items.POTION);
                     potions.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenMenuPotion", ChatFormatting.GOLD));
-                    if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, BuiltinPermission.EDITPOTIONS))
+                    if (!this.hasPerm(this.data, this.player, BuiltinPermission.EDITPOTIONS))
                         ServerScreenHelper.addLore(potions, ServerScreenHelper.coloredGuiText("flan.screenNoPerm", ChatFormatting.DARK_RED));
-                    inv.updateStack(i, potions);
+                    this.slots.get(i).set(potions);
                 }
                 case 5 -> {
                     ItemStack sign = new ItemStack(Items.OAK_SIGN);
                     sign.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenMenuClaimText", ChatFormatting.GOLD));
-                    if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, BuiltinPermission.EDITCLAIM))
+                    if (!this.hasPerm(this.data, this.player, BuiltinPermission.EDITCLAIM))
                         ServerScreenHelper.addLore(sign, ServerScreenHelper.coloredGuiText("flan.screenNoPerm", ChatFormatting.DARK_RED));
-                    inv.updateStack(i, sign);
+                    this.slots.get(i).set(sign);
                 }
                 case 6 -> {
                     ItemStack head = new ItemStack(Items.ZOMBIE_HEAD);
                     head.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenMenuFakePlayers", ChatFormatting.GOLD));
-                    if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, BuiltinPermission.EDITPERMS))
+                    if (!this.hasPerm(this.data, this.player, BuiltinPermission.EDITPERMS))
                         ServerScreenHelper.addLore(head, ServerScreenHelper.coloredGuiText("flan.screenNoPerm", ChatFormatting.DARK_RED));
-                    inv.updateStack(i, head);
+                    this.slots.get(i).set(head);
                 }
                 case 8 -> {
                     ItemStack delete = new ItemStack(Items.BARRIER);
                     delete.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenMenuDelete", ChatFormatting.RED));
-                    if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, BuiltinPermission.EDITCLAIM))
+                    if (!this.hasPerm(this.data, this.player, BuiltinPermission.EDITCLAIM))
                         ServerScreenHelper.addLore(delete, ServerScreenHelper.coloredGuiText("flan.screenNoPerm", ChatFormatting.DARK_RED));
-                    inv.updateStack(i, delete);
+                    this.slots.get(i).set(delete);
                 }
                 case 11 -> {
                     ItemStack stack = PotionContents.createItemStack(Items.POTION, Potions.WATER);
                     stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText(CustomInteractListScreenHandler.Type.ITEM.translationKey, ChatFormatting.GOLD));
-                    if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, BuiltinPermission.EDITCLAIM))
+                    if (!this.hasPerm(this.data, this.player, BuiltinPermission.EDITCLAIM))
                         ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText("flan.screenNoPerm", ChatFormatting.DARK_RED));
-                    inv.updateStack(i, stack);
+                    this.slots.get(i).set(stack);
                 }
                 case 12 -> {
                     ItemStack stack = new ItemStack(Items.DIAMOND_PICKAXE);
                     stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText(CustomInteractListScreenHandler.Type.BLOCKBREAK.translationKey, ChatFormatting.GOLD));
-                    if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, BuiltinPermission.EDITCLAIM))
+                    if (!this.hasPerm(this.data, this.player, BuiltinPermission.EDITCLAIM))
                         ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText("flan.screenNoPerm", ChatFormatting.DARK_RED));
-                    inv.updateStack(i, stack);
+                    this.slots.get(i).set(stack);
                 }
                 case 13 -> {
                     ItemStack stack = new ItemStack(Items.RED_BANNER);
                     stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText(CustomInteractListScreenHandler.Type.BLOCKUSE.translationKey, ChatFormatting.GOLD));
-                    if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, BuiltinPermission.EDITCLAIM))
+                    if (!this.hasPerm(this.data, this.player, BuiltinPermission.EDITCLAIM))
                         ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText("flan.screenNoPerm", ChatFormatting.DARK_RED));
-                    inv.updateStack(i, stack);
+                    this.slots.get(i).set(stack);
                 }
                 case 14 -> {
                     ItemStack stack = new ItemStack(Items.DIAMOND_SWORD);
                     stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText(CustomInteractListScreenHandler.Type.ENTITYATTACK.translationKey, ChatFormatting.GOLD));
-                    if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, BuiltinPermission.EDITCLAIM))
+                    if (!this.hasPerm(this.data, this.player, BuiltinPermission.EDITCLAIM))
                         ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText("flan.screenNoPerm", ChatFormatting.DARK_RED));
-                    inv.updateStack(i, stack);
+                    this.slots.get(i).set(stack);
                 }
                 case 15 -> {
                     ItemStack stack = new ItemStack(Items.SHEARS);
                     stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText(CustomInteractListScreenHandler.Type.ENTITYUSE.translationKey, ChatFormatting.GOLD));
-                    if (player instanceof ServerPlayer && !this.hasPerm(claim, (ServerPlayer) player, BuiltinPermission.EDITCLAIM))
+                    if (!this.hasPerm(this.data, this.player, BuiltinPermission.EDITCLAIM))
                         ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText("flan.screenNoPerm", ChatFormatting.DARK_RED));
-                    inv.updateStack(i, stack);
+                    this.slots.get(i).set(stack);
                 }
-                default -> inv.updateStack(i, ServerScreenHelper.emptyFiller());
+                default -> this.slots.get(i).set(ServerScreenHelper.emptyFiller());
             }
         }
     }
@@ -150,58 +146,58 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 break;
             case 2:
-                if (this.hasEditPerm(this.claim, player)) {
+                if (this.hasEditPerm(this.data, player)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> PermissionScreenHandler.openClaimMenu(player, this.claim, null));
+                    player.getServer().execute(() -> PermissionScreenHandler.openClaimMenu(player, this.data, null));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                 break;
             case 3:
-                if (this.hasEditPerm(this.claim, player)) {
+                if (this.hasEditPerm(this.data, player)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.claim));
+                    player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.data));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                 break;
             case 4:
-                if (this.hasPerm(this.claim, player, BuiltinPermission.EDITPOTIONS)) {
+                if (this.hasPerm(this.data, player, BuiltinPermission.EDITPOTIONS)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.claim));
+                    player.getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.data));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                 break;
             case 5:
-                if (this.hasPerm(this.claim, player, BuiltinPermission.CLAIMMESSAGE)) {
+                if (this.hasPerm(this.data, player, BuiltinPermission.CLAIMMESSAGE)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.claim));
+                    player.getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.data));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                 break;
             case 6:
-                if (this.hasPerm(this.claim, player, BuiltinPermission.EDITPERMS)) {
+                if (this.hasPerm(this.data, player, BuiltinPermission.EDITPERMS)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> FakePlayerScreenHandler.open(player, this.claim));
+                    player.getServer().execute(() -> FakePlayerScreenHandler.open(player, this.data));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                 break;
             case 8:
-                if (this.hasPerm(this.claim, player, BuiltinPermission.EDITCLAIM)) {
+                if (this.hasPerm(this.data, player, BuiltinPermission.EDITCLAIM)) {
                     player.closeContainer();
                     player.getServer().execute(() -> ConfirmScreenHandler.openConfirmScreen(player, (bool) -> {
                         if (bool) {
                             ClaimStorage storage = ClaimStorage.get(player.serverLevel());
-                            storage.deleteClaim(this.claim, true, PlayerClaimData.get(player).getClaimMode(), player.serverLevel());
+                            storage.deleteClaim(this.data, true, PlayerClaimData.get(player).getClaimMode(), player.serverLevel());
                             player.closeContainer();
                             player.displayClientMessage(ClaimUtils.translatedText("flan.deleteClaim", ChatFormatting.RED), false);
                             ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_PLACE, 1, 1f);
                         } else {
                             player.closeContainer();
-                            player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.claim));
+                            player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data));
                             ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                         }
                     }));
@@ -209,41 +205,41 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                 break;
             case 11:
-                if (this.hasPerm(this.claim, player, BuiltinPermission.EDITPERMS)) {
+                if (this.hasPerm(this.data, player, BuiltinPermission.EDITPERMS)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, CustomInteractListScreenHandler.Type.ITEM, this.claim));
+                    player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, CustomInteractListScreenHandler.Type.ITEM, this.data));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                 break;
             case 12:
-                if (this.hasPerm(this.claim, player, BuiltinPermission.EDITPERMS)) {
+                if (this.hasPerm(this.data, player, BuiltinPermission.EDITPERMS)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, CustomInteractListScreenHandler.Type.BLOCKBREAK, this.claim));
+                    player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, CustomInteractListScreenHandler.Type.BLOCKBREAK, this.data));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                 break;
             case 13:
-                if (this.hasPerm(this.claim, player, BuiltinPermission.EDITPERMS)) {
+                if (this.hasPerm(this.data, player, BuiltinPermission.EDITPERMS)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, CustomInteractListScreenHandler.Type.BLOCKUSE, this.claim));
+                    player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, CustomInteractListScreenHandler.Type.BLOCKUSE, this.data));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                 break;
             case 14:
-                if (this.hasPerm(this.claim, player, BuiltinPermission.EDITPERMS)) {
+                if (this.hasPerm(this.data, player, BuiltinPermission.EDITPERMS)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, CustomInteractListScreenHandler.Type.ENTITYATTACK, this.claim));
+                    player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, CustomInteractListScreenHandler.Type.ENTITYATTACK, this.data));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                 break;
             case 15:
-                if (this.hasPerm(this.claim, player, BuiltinPermission.EDITPERMS)) {
+                if (this.hasPerm(this.data, player, BuiltinPermission.EDITPERMS)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, CustomInteractListScreenHandler.Type.ENTITYUSE, this.claim));
+                    player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, CustomInteractListScreenHandler.Type.ENTITYUSE, this.data));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);

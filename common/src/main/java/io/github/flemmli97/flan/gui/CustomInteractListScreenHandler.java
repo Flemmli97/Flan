@@ -3,7 +3,6 @@ package io.github.flemmli97.flan.gui;
 import com.mojang.datafixers.util.Either;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimUtils;
-import io.github.flemmli97.flan.gui.inv.SeparateInv;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -27,17 +26,12 @@ import net.minecraft.world.level.block.Blocks;
 
 import java.util.List;
 
-public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<CustomInteractListScreenHandler.Data> {
-
-    private final Claim claim;
-    private final Type type;
+public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandler<CustomInteractListScreenHandler.Data> {
 
     private boolean removeMode;
 
     private CustomInteractListScreenHandler(int syncId, Inventory playerInventory, Data data) {
         super(syncId, playerInventory, 6, data);
-        this.claim = data.claim;
-        this.type = data.type;
     }
 
     public static void openMenu(Player player, Type type, Claim claim) {
@@ -56,37 +50,38 @@ public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<Cus
     }
 
     @Override
-    protected void fillInventoryWith(Player player, SeparateInv inv, Data data) {
+    protected void fillInventoryWith() {
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack stack = new ItemStack(Items.TNT);
                 stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
-                inv.updateStack(i, stack);
+                this.slots.get(i).set(stack);
             } else if (i == 3) {
                 ItemStack stack = new ItemStack(Items.ANVIL);
                 stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenAdd", ChatFormatting.DARK_GREEN));
-                inv.updateStack(i, stack);
+                this.slots.get(i).set(stack);
             } else if (i == 4) {
                 ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
                 stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode ? ServerScreenHelper.coloredGuiText("flan.screenTrue") : ServerScreenHelper.coloredGuiText("flan.screenFalse"), ChatFormatting.DARK_RED));
-                inv.updateStack(i, stack);
+                this.slots.get(i).set(stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
-                inv.updateStack(i, ServerScreenHelper.emptyFiller());
+                this.slots.get(i).set(ServerScreenHelper.emptyFiller());
             else {
-                List<ItemStack> stacks = switch (data.type) {
-                    case ITEM -> data.claim.allowedItems.asStacks();
-                    case BLOCKBREAK -> data.claim.allowedBreakBlocks.asStacks();
-                    case BLOCKUSE -> data.claim.allowedUseBlocks.asStacks();
-                    case ENTITYATTACK -> data.claim.allowedEntityAttack.asStacks();
-                    case ENTITYUSE -> data.claim.allowedEntityUse.asStacks();
+                List<ItemStack> stacks = switch (this.data.type) {
+                    case ITEM -> this.data.claim.allowedItems.asStacks();
+                    case BLOCKBREAK -> this.data.claim.allowedBreakBlocks.asStacks();
+                    case BLOCKUSE -> this.data.claim.allowedUseBlocks.asStacks();
+                    case ENTITYATTACK -> this.data.claim.allowedEntityAttack.asStacks();
+                    case ENTITYUSE -> this.data.claim.allowedEntityUse.asStacks();
                 };
                 int row = i / 9 - 1;
-                int id = (i % 9) + row * 7 - 1;
+                int id = (i % 9) + row * 7 - 1 + this.getPage() * 28;
                 if (id < stacks.size()) {
                     ItemStack stack = stacks.get(id);
                     CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putInt("Index", id));
-                    inv.updateStack(i, stack);
-                }
+                    this.slots.get(i).set(stack);
+                } else
+                    this.slots.get(i).set(ItemStack.EMPTY);
             }
         }
     }
@@ -100,66 +95,66 @@ public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<Cus
     protected boolean handleSlotClicked(ServerPlayer player, int index, Slot slot, int clickType) {
         if (index == 0) {
             player.closeContainer();
-            player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.claim));
+            player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data.claim));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;
         }
         if (index == 3) {
             player.closeContainer();
             player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
-                switch (this.type) {
+                switch (this.data.type) {
                     case ITEM -> {
                         if (s.startsWith("#"))
-                            this.claim.allowedItems.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse(s.substring(1)))));
+                            this.data.claim.allowedItems.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse(s.substring(1)))));
                         else {
                             Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(s));
                             if (item != Items.AIR)
-                                this.claim.allowedItems.addAllowedItem(Either.left(item));
+                                this.data.claim.allowedItems.addAllowedItem(Either.left(item));
                         }
                     }
                     case BLOCKBREAK -> {
                         if (s.startsWith("#"))
-                            this.claim.allowedBreakBlocks.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.BLOCK.key(), ResourceLocation.parse(s.substring(1)))));
+                            this.data.claim.allowedBreakBlocks.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.BLOCK.key(), ResourceLocation.parse(s.substring(1)))));
                         else {
                             Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(s));
                             if (block != Blocks.AIR)
-                                this.claim.allowedBreakBlocks.addAllowedItem(Either.left(block));
+                                this.data.claim.allowedBreakBlocks.addAllowedItem(Either.left(block));
                         }
                     }
                     case BLOCKUSE -> {
                         if (s.startsWith("#"))
-                            this.claim.allowedUseBlocks.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.BLOCK.key(), ResourceLocation.parse(s.substring(1)))));
+                            this.data.claim.allowedUseBlocks.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.BLOCK.key(), ResourceLocation.parse(s.substring(1)))));
                         else {
                             Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(s));
                             if (block != Blocks.AIR)
-                                this.claim.allowedUseBlocks.addAllowedItem(Either.left(block));
+                                this.data.claim.allowedUseBlocks.addAllowedItem(Either.left(block));
                         }
                     }
                     case ENTITYATTACK -> {
                         if (s.startsWith("#"))
-                            this.claim.allowedEntityAttack.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), ResourceLocation.parse(s.substring(1)))));
+                            this.data.claim.allowedEntityAttack.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), ResourceLocation.parse(s.substring(1)))));
                         else {
                             EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(s));
                             if (entityType != EntityType.PIG || s.equals("minecraft:pig"))
-                                this.claim.allowedEntityAttack.addAllowedItem(Either.left(entityType));
+                                this.data.claim.allowedEntityAttack.addAllowedItem(Either.left(entityType));
                         }
                     }
                     case ENTITYUSE -> {
                         if (s.startsWith("#"))
-                            this.claim.allowedEntityUse.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), ResourceLocation.parse(s.substring(1)))));
+                            this.data.claim.allowedEntityUse.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), ResourceLocation.parse(s.substring(1)))));
                         else {
                             EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(s));
                             if (entityType != EntityType.PIG || s.equals("minecraft:pig"))
-                                this.claim.allowedEntityUse.addAllowedItem(Either.left(entityType));
+                                this.data.claim.allowedEntityUse.addAllowedItem(Either.left(entityType));
                         }
                     }
                 }
                 player.closeContainer();
-                player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, this.type, this.claim));
+                player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, this.data.type, this.data.claim));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
             }, () -> {
                 player.closeContainer();
-                player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, this.type, this.claim));
+                player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, this.data.type, this.data.claim));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
             }));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
@@ -178,16 +173,28 @@ public class CustomInteractListScreenHandler extends ServerOnlyScreenHandler<Cus
             CustomData nbt = stack.get(DataComponents.CUSTOM_DATA);
             int idx = nbt != null ? nbt.copyTag().getInt("Index") : 0;
             if (this.removeMode) {
-                switch (this.type) {
-                    case ITEM -> this.claim.allowedItems.removeAllowedItem(idx);
-                    case BLOCKBREAK -> this.claim.allowedBreakBlocks.removeAllowedItem(idx);
-                    case BLOCKUSE -> this.claim.allowedUseBlocks.removeAllowedItem(idx);
+                switch (this.data.type) {
+                    case ITEM -> this.data.claim.allowedItems.removeAllowedItem(idx);
+                    case BLOCKBREAK -> this.data.claim.allowedBreakBlocks.removeAllowedItem(idx);
+                    case BLOCKUSE -> this.data.claim.allowedUseBlocks.removeAllowedItem(idx);
                 }
                 slot.set(ItemStack.EMPTY);
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.BAT_DEATH, 1, 1f);
             }
         }
         return false;
+    }
+
+    @Override
+    protected PageSettings pageSettings() {
+        int size = switch (this.data.type) {
+            case ITEM -> this.data.claim.allowedItems.size();
+            case BLOCKBREAK -> this.data.claim.allowedBreakBlocks.size();
+            case BLOCKUSE -> this.data.claim.allowedUseBlocks.size();
+            case ENTITYATTACK -> this.data.claim.allowedEntityAttack.size();
+            case ENTITYUSE -> this.data.claim.allowedEntityUse.size();
+        };
+        return new PageSettings((size - 1) / 28, 47, 51);
     }
 
     public record Data(Claim claim, Type type) {
