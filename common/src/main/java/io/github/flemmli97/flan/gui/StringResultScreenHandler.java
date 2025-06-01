@@ -19,13 +19,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class StringResultScreenHandler extends AnvilMenu {
-
-    private final List<ContainerListener> listeners = new ArrayList<>();
 
     private final Consumer<String> cons;
     private final Runnable ret;
@@ -69,8 +65,8 @@ public class StringResultScreenHandler extends AnvilMenu {
     }
 
     @Override
-    public void clicked(int i, int j, ClickType actionType, Player playerEntity) {
-        if (i < 0 || !(playerEntity instanceof ServerPlayer player))
+    public void clicked(int i, int j, ClickType actionType, Player player) {
+        if (i < 0 || !(player instanceof ServerPlayer serverPlayer))
             return;
         Slot slot = this.slots.get(i);
         if (((AbstractContainerAccessor) this).containerSync() != null)
@@ -82,7 +78,7 @@ public class StringResultScreenHandler extends AnvilMenu {
             if (name != null && name.getContents() instanceof PlainTextContents text) {
                 this.cons.accept(text.text());
             }
-            player.connection.send(new ClientboundSetExperiencePacket(player.experienceProgress, player.totalExperience, player.experienceLevel));
+            serverPlayer.connection.send(new ClientboundSetExperiencePacket(serverPlayer.experienceProgress, serverPlayer.totalExperience, serverPlayer.experienceLevel));
         }
         this.broadcastChanges();
     }
@@ -110,7 +106,7 @@ public class StringResultScreenHandler extends AnvilMenu {
         int j;
         for (j = 0; j < this.slots.size(); ++j) {
             ItemStack stack = this.slots.get(j).getItem();
-            for (ContainerListener screenHandlerListener : this.listeners) {
+            for (ContainerListener screenHandlerListener : ((AbstractContainerAccessor) this).listeners()) {
                 screenHandlerListener.slotChanged(this, j, stack.copy());
             }
         }

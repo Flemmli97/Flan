@@ -23,7 +23,7 @@ public class PermissionCheckEvent {
 
     }
 
-    public static Event<PermissionCheck> CHECK = EventFactory.createArrayBacked(PermissionCheck.class,
+    public static final Event<PermissionCheck> CHECK = EventFactory.createArrayBacked(PermissionCheck.class,
             (listeners) -> (player, permission, pos) -> {
                 for (PermissionCheck event : listeners) {
                     InteractionResult result = event.check(player, permission, pos);

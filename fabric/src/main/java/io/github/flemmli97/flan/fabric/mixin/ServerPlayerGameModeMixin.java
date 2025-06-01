@@ -42,22 +42,22 @@ public abstract class ServerPlayerGameModeMixin implements ItemUseBlockFlags {
     }
 
     @Override
-    public void stopCanUseBlocks(boolean flag) {
+    public void flan$stopCanUseBlocks(boolean flag) {
         this.flan_stopInteractBlock = flag;
     }
 
     @Override
-    public void stopCanUseItems(boolean flag) {
+    public void flan$stopCanUseItems(boolean flag) {
         this.flan_stopInteractItemBlock = flag;
     }
 
     @Override
-    public boolean allowUseBlocks() {
+    public boolean flan$allowUseBlocks() {
         return !this.flan_stopInteractBlock;
     }
 
     @Override
-    public boolean allowUseItems() {
+    public boolean flan$allowUseItems() {
         return !this.flan_stopInteractItemBlock;
     }
 
@@ -69,6 +69,6 @@ public abstract class ServerPlayerGameModeMixin implements ItemUseBlockFlags {
             at = @At(value = "INVOKE", target = "Lorg/slf4j/Logger;warn(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V", remap = false)
     )
     private boolean shouldWarn(Logger logger, String warn, Object obj, Object obj2) {
-        return !((BlockBreakAttemptHandler) this).wasInstabreak() || ((BlockBreakAttemptHandler) this).failedPos() == null;
+        return !((BlockBreakAttemptHandler) this).flan$wasInstabreak() || ((BlockBreakAttemptHandler) this).flan$failedPos() == null;
     }
 }

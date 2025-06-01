@@ -51,7 +51,7 @@ public class OfflinePlayerData implements IPlayerData {
                 if (obj.has("LastSeen"))
                     last = LocalDateTime.parse(obj.get("LastSeen").getAsString(), Flan.ONLINE_TIME_FORMATTER);
             } catch (IOException e) {
-                e.printStackTrace();
+                Flan.LOGGER.error(e);
             } catch (RuntimeException e) {
                 Flan.error("Error parsing time for {}, ignoring", uuid);
             }
@@ -131,7 +131,7 @@ public class OfflinePlayerData implements IPlayerData {
             Files.delete(this.save);
         } catch (IOException e) {
             Flan.error("Couldn't delete file player data of {}", this.owner);
-            e.printStackTrace();
+            Flan.LOGGER.error(e);
         }
     }
 }

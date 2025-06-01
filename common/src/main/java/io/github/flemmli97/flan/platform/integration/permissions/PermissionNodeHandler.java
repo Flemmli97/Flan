@@ -8,52 +8,52 @@ import net.minecraft.server.level.ServerPlayer;
 
 public interface PermissionNodeHandler {
 
-    String cmdReload = "flan.command.reload";
-    String cmdGriefPrevention = "flan.command.read.griefprevention";
+    String CMD_RELOAD = "flan.command.reload";
+    String CMD_GRIEF_PREVENTION = "flan.command.read.griefprevention";
 
-    String claimCreate = "flan.claim.create";
-    String claimCreateAdmin = "flan.claim.admin.create";
+    String CLAIM_CREATE = "flan.claim.create";
+    String CLAIM_ADMIN_CREATE = "flan.claim.admin.create";
 
-    String cmdMenu = "flan.command.menu";
-    String cmdTrapped = "flan.command.trapped";
-    String cmdPGroup = "flan.command.personal";
-    String cmdInfo = "flan.command.info";
-    String cmdTransfer = "flan.command.transfer";
+    String CMD_MENU = "flan.command.menu";
+    String CMD_TRAPPED = "flan.command.trapped";
+    String CMD_PERSONAL = "flan.command.personal";
+    String CMD_INFO = "flan.command.info";
+    String CMD_TRANSFER = "flan.command.transfer";
 
-    String cmdDelete = "flan.command.delete";
-    String cmdDeleteAll = "flan.command.delete.all";
-    String cmdDeleteSub = "flan.command.delete.sub";
-    String cmdDeleteSubAll = "flan.command.delete.sub.all";
+    String CMD_DELETE = "flan.command.delete";
+    String CMD_DELETE_ALL = "flan.command.delete.all";
+    String CMD_DELETE_SUB = "flan.command.delete.sub";
+    String CMD_DELETE_SUB_ALL = "flan.command.delete.sub.all";
 
-    String cmdList = "flan.command.list";
-    String cmdListAll = "flan.command.list.all";
+    String CMD_LIST = "flan.command.list";
+    String CMD_LIST_ALL = "flan.command.list.all";
 
-    String cmdClaimMode = "flan.command.claim.mode";
-    String cmdBypassMode = "flan.command.bypass.claim";
-    String cmdAdminSet = "flan.command.admin.claim";
-    String cmdAdminList = "flan.command.admin.list";
-    String cmdAdminDelete = "flan.command.admin.delete";
-    String cmdAdminGive = "flan.command.admin.give";
-    String adminBypass = "flan.bypass.admin.mode";
+    String CMD_CLAIM_MODE = "flan.command.claim.mode";
+    String CMD_BYPASS_MODE = "flan.command.bypass.claim";
+    String CMD_ADMIN_SET = "flan.command.admin.claim";
+    String CMD_ADMIN_LIST = "flan.command.admin.list";
+    String CMD_ADMIN_DELETE = "flan.command.admin.delete";
+    String CMD_ADMIN_GIVE = "flan.command.admin.give";
+    String ADMIN_BYPASS = "flan.bypass.admin.mode";
 
-    String cmdGroup = "flan.command.group";
-    String cmdFakePlayer = "flan.command.fakeplayer";
-    String cmdPermission = "flan.command.permission";
-    String cmdClaimIgnore = "flan.command.claim.ignore";
+    String CMD_GROUP = "flan.command.group";
+    String CMD_FAKE_PLAYER = "flan.command.fakeplayer";
+    String CMD_PERMISSION = "flan.command.permission";
+    String CMD_CLAIM_IGNORE = "flan.command.claim.ignore";
 
-    String cmdSell = "flan.command.sell";
-    String cmdBuy = "flan.command.buy";
+    String CMD_SELL = "flan.command.sell";
+    String CMD_BUY = "flan.command.buy";
 
-    String cmdUnlockAll = "flan.command.unlock.all";
-    String cmdName = "flan.command.name";
+    String CMD_UNLOCK_ALL = "flan.command.unlock.all";
+    String CMD_NAME = "flan.command.name";
 
-    String cmdHome = "flan.command.home";
-    String cmdTeleport = "flan.command.teleport";
+    String CMD_HOME = "flan.command.home";
+    String CMD_TELEPORT = "flan.command.teleport";
 
-    String permClaimBlocks = "flan.claim.blocks.max";
-    String permMaxClaims = "flan.claims.amount";
-    String permClaimBlocksCap = "flan.claim.blocks.cap";
-    String permClaimBlocksBonus = "flan.claim.blocks.bonus";
+    String PERM_CLAIM_BLOCKS = "flan.claim.blocks.max";
+    String PERM_MAX_CLAIMS = "flan.claims.amount";
+    String PERM_CLAIM_BLOCKS_CAP = "flan.claim.blocks.cap";
+    String PERM_CLAIM_BLOCKS_BONUS = "flan.claim.blocks.bonus";
 
     PermissionNodeHandler INSTANCE = Flan.getPlatformInstance(PermissionNodeHandler.class,
             "io.github.flemmli97.flan.fabric.platform.integration.permissions.PermissionNodeHandlerImpl",

@@ -200,7 +200,7 @@ public class ItemInteractEvents {
         PlayerClaimData data = PlayerClaimData.get(player);
         if (data.isAdminIgnoreClaim())
             return true;
-        if (!PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.claimCreate, false)) {
+        if (!PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.CLAIM_CREATE, false)) {
             return false;
         }
         if (ConfigHandler.CONFIG.worldWhitelist) {
@@ -210,7 +210,7 @@ public class ItemInteractEvents {
     }
 
     public static void claimLandHandling(ServerPlayer player, BlockPos target) {
-        if (!PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.claimCreate, false)) {
+        if (!PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.CLAIM_CREATE, false)) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), true);
             return;
         }

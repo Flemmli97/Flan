@@ -1,6 +1,7 @@
 package io.github.flemmli97.flan.gui;
 
 import com.google.common.collect.Lists;
+import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimUtils;
 import net.minecraft.ChatFormatting;
@@ -117,6 +118,7 @@ public class PotionEditScreenHandler extends PagedServerOnlyScreenHandler<Claim>
                     try {
                         amp = Integer.parseInt(potion[1]);
                     } catch (NumberFormatException e) {
+                        Flan.LOGGER.error(e);
                     }
                 }
                 this.data.addPotion(holder.get(), amp);

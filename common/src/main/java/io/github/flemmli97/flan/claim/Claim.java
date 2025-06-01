@@ -383,7 +383,7 @@ public class Claim implements IPermissionContainer {
         if (player == null)
             return true;
         if (PlayerClaimData.get(player).isAdminIgnoreClaim())
-            return !this.isAdminClaim() || PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.adminBypass, true);
+            return !this.isAdminClaim() || PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.ADMIN_BYPASS, true);
         return this.isAdminClaim() && player.hasPermissions(2);
     }
 
@@ -897,7 +897,7 @@ public class Claim implements IPermissionContainer {
             if (this.claimID == null && other.claimID == null)
                 return this.getDimensions().equals(other.getDimensions());
             if (this.claimID != null)
-                return this.claimID.equals(((Claim) obj).claimID);
+                return this.claimID.equals(other.claimID);
         }
         return false;
     }

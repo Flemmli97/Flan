@@ -42,7 +42,7 @@ public class ClaimUtils {
 
     public static Consumer<Optional<Boolean>> genericNoPermMessage(ServerPlayer player) {
         return (b -> {
-            if (!b.isPresent())
+            if (b.isEmpty())
                 ClaimUtils.noClaimMessage(player);
             else if (!b.get())
                 player.displayClientMessage(translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);

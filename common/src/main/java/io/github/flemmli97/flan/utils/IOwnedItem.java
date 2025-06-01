@@ -6,10 +6,10 @@ import java.util.UUID;
 
 public interface IOwnedItem {
 
-    void setOriginPlayer(Player player);
+    void flan$setOriginPlayer(Player player);
 
-    UUID getDeathPlayer();
+    UUID flan$getDeathPlayer();
 
-    UUID getPlayerOrigin();
+    UUID flan$getPlayerOrigin();
 
 }
