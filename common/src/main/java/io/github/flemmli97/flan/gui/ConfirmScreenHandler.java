@@ -2,7 +2,6 @@ package io.github.flemmli97.flan.gui;
 
 import io.github.flemmli97.flan.claim.ClaimUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -45,14 +44,14 @@ public class ConfirmScreenHandler extends ServerOnlyScreenHandler<Object> {
         for (int i = 0; i < this.inventory.getContainerSize(); i++) {
             switch (i) {
                 case 3 -> {
-                    ItemStack yes = new ItemStack(Items.GREEN_WOOL);
-                    yes.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenYes", ChatFormatting.GREEN));
-                    this.slots.get(i).set(yes);
+                    ItemStack stack = ServerScreenHelper.createStack(Items.GREEN_WOOL,
+                            ServerScreenHelper.coloredGuiText("flan.screenYes", ChatFormatting.GREEN));
+                    this.slots.get(i).set(stack);
                 }
                 case 5 -> {
-                    ItemStack no = new ItemStack(Items.RED_WOOL);
-                    no.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenNo", ChatFormatting.RED));
-                    this.slots.get(i).set(no);
+                    ItemStack stack = ServerScreenHelper.createStack(Items.RED_WOOL,
+                            ServerScreenHelper.coloredGuiText("flan.screenNo", ChatFormatting.RED));
+                    this.slots.get(i).set(stack);
                 }
                 default -> this.slots.get(i).set(ServerScreenHelper.emptyFiller());
             }

@@ -1,3 +1,8 @@
+Flan 1.11.11
+================
+- Gui items now have all components removed for cleaner tooltips
+- Effect string can now use `-` instead of just `;` as delimiter
+
 Flan 1.11.10
 ================
 - Hotfix: Fix permission gui page not flipping

@@ -53,16 +53,15 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
     protected void fillInventoryWith() {
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
-                ItemStack stack = new ItemStack(Items.TNT);
-                stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
+                ItemStack stack = ServerScreenHelper.createStack(Items.TNT,
+                        ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
                 this.slots.get(i).set(stack);
             } else if (i == 3) {
-                ItemStack stack = new ItemStack(Items.ANVIL);
-                stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenAdd", ChatFormatting.DARK_GREEN));
+                ItemStack stack = ServerScreenHelper.createStack(Items.ANVIL, ServerScreenHelper.coloredGuiText("flan.screenAdd", ChatFormatting.DARK_GREEN));
                 this.slots.get(i).set(stack);
             } else if (i == 4) {
-                ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-                stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
+                ItemStack stack = ServerScreenHelper.createStack(Items.REDSTONE_BLOCK,
+                        ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
                 this.slots.get(i).set(stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 this.slots.get(i).set(ServerScreenHelper.emptyFiller());
@@ -162,8 +161,8 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
         }
         if (index == 4) {
             this.removeMode = !this.removeMode;
-            ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-            stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
+            ItemStack stack = ServerScreenHelper.createStack(Items.REDSTONE_BLOCK,
+                    ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
             slot.set(stack);
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;

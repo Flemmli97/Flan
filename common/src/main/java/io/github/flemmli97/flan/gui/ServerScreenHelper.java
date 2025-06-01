@@ -10,6 +10,7 @@ import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.linguabib.api.LanguageAPI;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -21,6 +22,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
@@ -30,20 +32,30 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ServerScreenHelper {
 
     public static final String PERMISSION_KEY = Flan.MODID + ".permission";
 
     public static ItemStack emptyFiller() {
-        ItemStack stack = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
-        stack.set(DataComponents.CUSTOM_NAME, ClaimUtils.translatedText(""));
+        return createStack(Items.GRAY_STAINED_GLASS_PANE, ClaimUtils.translatedText(""));
+    }
+
+    public static ItemStack createStack(Item item, Component name) {
+        return createStack(new ItemStack(item), name);
+    }
+
+    public static ItemStack createStack(ItemStack stack, Component name) {
+        Set<DataComponentType<?>> types = stack.getComponents().keySet();
+        types.forEach(stack::remove);
+        if (name != null)
+            stack.set(DataComponents.CUSTOM_NAME, name);
         return stack;
     }
 
     public static ItemStack fromPermission(Claim claim, ServerPlayer player, ClaimPermission perm, String group) {
-        ItemStack stack = perm.getItem();
-        stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText(perm.translationKey(), ChatFormatting.GOLD));
+        ItemStack stack = createStack(perm.getItem(), ServerScreenHelper.coloredGuiText(perm.translationKey(), ChatFormatting.GOLD));
         List<Component> lore = new ArrayList<>();
         for (String pdesc : LanguageAPI.getFormattedKeys(player, perm.translationKeyDescription())) {
             Component trans = ServerScreenHelper.coloredGuiText(pdesc, ChatFormatting.YELLOW);
@@ -84,8 +96,7 @@ public class ServerScreenHelper {
     }
 
     public static ItemStack getFromPersonal(ServerPlayer player, ClaimPermission perm, String group) {
-        ItemStack stack = perm.getItem();
-        stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText(perm.translationKey(), ChatFormatting.GOLD));
+        ItemStack stack = createStack(perm.getItem(), ServerScreenHelper.coloredGuiText(perm.translationKey(), ChatFormatting.GOLD));
         List<Component> lore = new ArrayList<>();
         for (String pdesc : LanguageAPI.getFormattedKeys(player, perm.translationKeyDescription())) {
             Component trans = ServerScreenHelper.coloredGuiText(pdesc, ChatFormatting.YELLOW);

@@ -35,11 +35,9 @@ public class StringResultScreenHandler extends AnvilMenu {
 
     private StringResultScreenHandler(int syncId, Inventory playerInventory, Consumer<String> cons, Runnable ret) {
         super(syncId, playerInventory);
-        ItemStack stack = new ItemStack(Items.PAPER);
-        stack.set(DataComponents.CUSTOM_NAME, ClaimUtils.translatedText(""));
+        ItemStack stack = ServerScreenHelper.createStack(Items.PAPER, ClaimUtils.translatedText(""));
         this.inputSlots.setItem(0, stack);
-        ItemStack out = new ItemStack(Items.BOOK);
-        out.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.stringScreenReturn"));
+        ItemStack out = ServerScreenHelper.createStack(Items.BOOK, ServerScreenHelper.coloredGuiText("flan.stringScreenReturn"));
         this.resultSlots.setItem(0, out);
         this.cons = cons;
         this.ret = ret;
@@ -111,10 +109,9 @@ public class StringResultScreenHandler extends AnvilMenu {
     public void broadcastChanges() {
         int j;
         for (j = 0; j < this.slots.size(); ++j) {
-            ItemStack itemStack = this.slots.get(j).getItem();
-
+            ItemStack stack = this.slots.get(j).getItem();
             for (ContainerListener screenHandlerListener : this.listeners) {
-                screenHandlerListener.slotChanged(this, j, itemStack.copy());
+                screenHandlerListener.slotChanged(this, j, stack.copy());
             }
         }
     }
@@ -124,11 +121,11 @@ public class StringResultScreenHandler extends AnvilMenu {
         if (!this.init)
             this.init = true;
         else {
-            ItemStack out = this.slots.get(2).getItem();
+            ItemStack stack = this.slots.get(2).getItem();
             if (StringUtils.isBlank(this.name))
-                out.remove(DataComponents.CUSTOM_NAME);
-            else if (!this.name.equals(out.getHoverName().getString())) {
-                out.set(DataComponents.CUSTOM_NAME, Component.literal(this.name));
+                stack.remove(DataComponents.CUSTOM_NAME);
+            else if (!this.name.equals(stack.getHoverName().getString())) {
+                stack.set(DataComponents.CUSTOM_NAME, Component.literal(this.name));
             }
         }
         this.broadcastChanges();

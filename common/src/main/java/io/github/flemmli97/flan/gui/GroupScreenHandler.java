@@ -46,16 +46,16 @@ public class GroupScreenHandler extends PagedServerOnlyScreenHandler<Claim> {
     protected void fillInventoryWith() {
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
-                ItemStack stack = new ItemStack(Items.TNT);
-                stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
+                ItemStack stack = ServerScreenHelper.createStack(Items.TNT,
+                        ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
                 this.slots.get(i).set(stack);
             } else if (i == 3) {
-                ItemStack stack = new ItemStack(Items.ANVIL);
-                stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenAdd", ChatFormatting.DARK_GREEN));
+                ItemStack stack = ServerScreenHelper.createStack(Items.ANVIL,
+                        ServerScreenHelper.coloredGuiText("flan.screenAdd", ChatFormatting.DARK_GREEN));
                 this.slots.get(i).set(stack);
             } else if (i == 4) {
-                ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-                stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
+                ItemStack stack = ServerScreenHelper.createStack(Items.REDSTONE_BLOCK,
+                        ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
                 this.slots.get(i).set(stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 this.slots.get(i).set(ServerScreenHelper.emptyFiller());
@@ -64,10 +64,9 @@ public class GroupScreenHandler extends PagedServerOnlyScreenHandler<Claim> {
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + this.getPage() * 28;
                 if (id < groups.size()) {
-                    ItemStack group = new ItemStack(Items.PAPER);
-                    CustomData.update(DataComponents.CUSTOM_DATA, group, t -> t.putString("FlanGroup", groups.get(id)));
-                    group.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenGroupName", groups.get(id), ChatFormatting.DARK_BLUE));
-                    this.slots.get(i).set(group);
+                    ItemStack stack = ServerScreenHelper.createStack(Items.PAPER, ServerScreenHelper.coloredGuiText("flan.screenGroupName", groups.get(id), ChatFormatting.DARK_BLUE));
+                    CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.putString("FlanGroup", groups.get(id)));
+                    this.slots.get(i).set(stack);
                 } else
                     this.slots.get(i).set(ItemStack.EMPTY);
             }
@@ -104,8 +103,8 @@ public class GroupScreenHandler extends PagedServerOnlyScreenHandler<Claim> {
         }
         if (index == 4) {
             this.removeMode = !this.removeMode;
-            ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-            stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
+            ItemStack stack = ServerScreenHelper.createStack(Items.REDSTONE_BLOCK,
+                    ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
             slot.set(stack);
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;

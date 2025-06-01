@@ -77,7 +77,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
     public static InteractionOverrideManager getInstance() {
         return INSTANCE;
     }
-    
+
     public static <T> Codec<Pair<Either<TagKey<T>, T>, ResourceLocation>> tagOrEntryCodec(Registry<T> registry) {
         return tagOrEntryCodec(registry.key(), registry.byNameCodec());
     }

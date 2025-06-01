@@ -4,7 +4,6 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -46,16 +45,16 @@ public class PersonalGroupScreenHandler extends PagedServerOnlyScreenHandler<Obj
     protected void fillInventoryWith() {
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
-                ItemStack close = new ItemStack(Items.TNT);
-                close.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
-                this.slots.get(i).set(close);
+                ItemStack stack = ServerScreenHelper.createStack(Items.TNT,
+                        ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
+                this.slots.get(i).set(stack);
             } else if (i == 3) {
-                ItemStack stack = new ItemStack(Items.ANVIL);
-                stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenAdd", ChatFormatting.DARK_GREEN));
+                ItemStack stack = ServerScreenHelper.createStack(Items.ANVIL,
+                        ServerScreenHelper.coloredGuiText("flan.screenAdd", ChatFormatting.DARK_GREEN));
                 this.slots.get(i).set(stack);
             } else if (i == 4) {
-                ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-                stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
+                ItemStack stack = ServerScreenHelper.createStack(Items.REDSTONE_BLOCK,
+                        ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
                 this.slots.get(i).set(stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 this.slots.get(i).set(ServerScreenHelper.emptyFiller());
@@ -65,9 +64,9 @@ public class PersonalGroupScreenHandler extends PagedServerOnlyScreenHandler<Obj
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + this.getPage() * 28;
                 if (id < groups.size()) {
-                    ItemStack group = new ItemStack(Items.PAPER);
-                    group.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenGroupName", groups.get(id), ChatFormatting.DARK_BLUE));
-                    this.slots.get(i).set(group);
+                    ItemStack stack = ServerScreenHelper.createStack(Items.PAPER,
+                            ServerScreenHelper.coloredGuiText("flan.screenGroupName", groups.get(id), ChatFormatting.DARK_BLUE));
+                    this.slots.get(i).set(stack);
                 } else
                     this.slots.get(i).set(ItemStack.EMPTY);
             }
@@ -103,8 +102,8 @@ public class PersonalGroupScreenHandler extends PagedServerOnlyScreenHandler<Obj
         }
         if (index == 4) {
             this.removeMode = !this.removeMode;
-            ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-            stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
+            ItemStack stack = ServerScreenHelper.createStack(Items.REDSTONE_BLOCK,
+                    ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
             slot.set(stack);
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;

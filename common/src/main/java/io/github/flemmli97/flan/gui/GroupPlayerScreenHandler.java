@@ -57,16 +57,16 @@ public class GroupPlayerScreenHandler extends PagedServerOnlyScreenHandler<Claim
         List<GameProfile> players = this.data.getClaim().playersFromGroup(this.player.getServer(), this.data.getGroup());
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
-                ItemStack close = new ItemStack(Items.TNT);
-                close.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
-                this.slots.get(i).set(close);
+                ItemStack stack = ServerScreenHelper.createStack(Items.TNT,
+                        ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
+                this.slots.get(i).set(stack);
             } else if (i == 3) {
-                ItemStack stack = new ItemStack(Items.ANVIL);
-                stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenAdd", ChatFormatting.DARK_GREEN));
+                ItemStack stack = ServerScreenHelper.createStack(Items.ANVIL,
+                        ServerScreenHelper.coloredGuiText("flan.screenAdd", ChatFormatting.DARK_GREEN));
                 this.slots.get(i).set(stack);
             } else if (i == 4) {
-                ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-                stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
+                ItemStack stack = ServerScreenHelper.createStack(Items.REDSTONE_BLOCK,
+                        ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
                 this.slots.get(i).set(stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 this.slots.get(i).set(ServerScreenHelper.emptyFiller());
@@ -74,9 +74,9 @@ public class GroupPlayerScreenHandler extends PagedServerOnlyScreenHandler<Claim
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + this.getPage() * 28;
                 if (id < players.size()) {
-                    ItemStack group = new ItemStack(Items.PLAYER_HEAD);
-                    group.set(DataComponents.PROFILE, new ResolvableProfile(players.get(id)));
-                    this.slots.get(i).set(group);
+                    ItemStack stack = ServerScreenHelper.createStack(Items.PLAYER_HEAD, null);
+                    stack.set(DataComponents.PROFILE, new ResolvableProfile(players.get(id)));
+                    this.slots.get(i).set(stack);
                 } else
                     this.slots.get(i).set(ItemStack.EMPTY);
             }
@@ -118,8 +118,8 @@ public class GroupPlayerScreenHandler extends PagedServerOnlyScreenHandler<Claim
         }
         if (index == 4) {
             this.removeMode = !this.removeMode;
-            ItemStack stack = new ItemStack(Items.REDSTONE_BLOCK);
-            stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
+            ItemStack stack = ServerScreenHelper.createStack(Items.REDSTONE_BLOCK,
+                    ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
             slot.set(stack);
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;

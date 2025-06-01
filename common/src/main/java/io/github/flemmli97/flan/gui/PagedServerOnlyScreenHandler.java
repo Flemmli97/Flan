@@ -2,7 +2,6 @@ package io.github.flemmli97.flan.gui;
 
 import io.github.flemmli97.flan.mixin.AbstractContainerAccessor;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -24,13 +23,13 @@ public abstract class PagedServerOnlyScreenHandler<T> extends ServerOnlyScreenHa
         super.setupGui();
         PageSettings settings = this.pageSettings();
         if (this.page >= 1 && settings.previousSlot() != -1) {
-            ItemStack stack = new ItemStack(Items.ARROW);
-            stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenPrevious", ChatFormatting.WHITE));
+            ItemStack stack = ServerScreenHelper.createStack(Items.ARROW,
+                    ServerScreenHelper.coloredGuiText("flan.screenPrevious", ChatFormatting.WHITE));
             this.slots.get(settings.previousSlot()).set(stack);
         }
         if (this.page < settings.maxPages() && settings.nextSlot() != -1) {
-            ItemStack stack = new ItemStack(Items.ARROW);
-            stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenNext", ChatFormatting.WHITE));
+            ItemStack stack = ServerScreenHelper.createStack(Items.ARROW,
+                    ServerScreenHelper.coloredGuiText("flan.screenNext", ChatFormatting.WHITE));
             this.slots.get(settings.nextSlot()).set(stack);
         }
     }

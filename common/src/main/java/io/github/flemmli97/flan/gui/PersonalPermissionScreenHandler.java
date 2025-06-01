@@ -54,9 +54,9 @@ public class PersonalPermissionScreenHandler extends PagedServerOnlyScreenHandle
             this.perms.removeIf(p -> p.global);
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
-                ItemStack close = new ItemStack(Items.TNT);
-                close.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
-                this.slots.get(i).set(close);
+                ItemStack stack = ServerScreenHelper.createStack(Items.TNT,
+                        ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
+                this.slots.get(i).set(stack);
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 this.slots.get(i).set(ServerScreenHelper.emptyFiller());
             else {

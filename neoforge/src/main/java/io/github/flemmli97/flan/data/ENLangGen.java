@@ -159,8 +159,8 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.screenPersonalGroups", "Personal-Groups");
         this.add("flan.screenPersonalPermissions", "Personal Permissions for %1$s");
         this.add("flan.screenFakePlayerNameUUID", "%s");
-        this.add("flan.screenPotions", "Claim Potions");
-        this.add("flan.screenPotionText", "%s");
+        this.add("flan.screenEffects", "Claim Effects");
+        this.add("flan.screenEffectText", "Effects");
         this.add("flan.screenTitleEditor", "Claim messages");
         this.add("flan.screenTitleEditorSub", "Subclaim messages");
         this.add("flan.screenTextJson", "Right-Click to use JSON text. See MC Wiki for that.");

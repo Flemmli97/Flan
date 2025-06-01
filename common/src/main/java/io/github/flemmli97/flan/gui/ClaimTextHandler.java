@@ -3,7 +3,6 @@ package io.github.flemmli97.flan.gui;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -48,13 +47,13 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
         for (int i = 0; i < 9; i++) {
             switch (i) {
                 case 0 -> {
-                    ItemStack close = new ItemStack(Items.TNT);
-                    close.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
-                    this.slots.get(i).set(close);
+                    ItemStack stack = ServerScreenHelper.createStack(Items.TNT,
+                            ServerScreenHelper.coloredGuiText("flan.screenBack", ChatFormatting.DARK_RED));
+                    this.slots.get(i).set(stack);
                 }
                 case 2 -> {
-                    ItemStack stack = new ItemStack(Items.OAK_SIGN);
-                    stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenEnterText", ChatFormatting.GOLD));
+                    ItemStack stack = ServerScreenHelper.createStack(Items.OAK_SIGN,
+                            ServerScreenHelper.coloredGuiText("flan.screenEnterText", ChatFormatting.GOLD));
                     List<Component> lore = new ArrayList<>();
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenTextJson", ChatFormatting.GOLD));
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenDelete", ChatFormatting.DARK_RED));
@@ -64,37 +63,37 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                     this.slots.get(i).set(stack);
                 }
                 case 3 -> {
-                    ItemStack stack2 = new ItemStack(Items.OAK_SIGN);
-                    stack2.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenEnterSubText", ChatFormatting.GOLD));
+                    ItemStack stack = ServerScreenHelper.createStack(Items.OAK_SIGN,
+                            ServerScreenHelper.coloredGuiText("flan.screenEnterSubText", ChatFormatting.GOLD));
                     List<Component> lore = new ArrayList<>();
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenTextJson", ChatFormatting.GOLD));
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenDelete", ChatFormatting.DARK_RED));
                     if (this.data.enterSubtitle != null)
                         lore.add(this.data.enterSubtitle);
-                    ServerScreenHelper.addLore(stack2, lore);
-                    this.slots.get(i).set(stack2);
+                    ServerScreenHelper.addLore(stack, lore);
+                    this.slots.get(i).set(stack);
                 }
                 case 4 -> {
-                    ItemStack stack3 = new ItemStack(Items.OAK_SIGN);
-                    stack3.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenLeaveText", ChatFormatting.GOLD));
+                    ItemStack stack = ServerScreenHelper.createStack(Items.OAK_SIGN,
+                            ServerScreenHelper.coloredGuiText("flan.screenLeaveText", ChatFormatting.GOLD));
                     List<Component> lore = new ArrayList<>();
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenTextJson", ChatFormatting.GOLD));
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenDelete", ChatFormatting.DARK_RED));
                     if (this.data.leaveTitle != null)
                         lore.add(this.data.leaveTitle);
-                    ServerScreenHelper.addLore(stack3, lore);
-                    this.slots.get(i).set(stack3);
+                    ServerScreenHelper.addLore(stack, lore);
+                    this.slots.get(i).set(stack);
                 }
                 case 5 -> {
-                    ItemStack stack4 = new ItemStack(Items.OAK_SIGN);
-                    stack4.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText("flan.screenLeaveSubText", ChatFormatting.GOLD));
+                    ItemStack stack = ServerScreenHelper.createStack(Items.OAK_SIGN,
+                            ServerScreenHelper.coloredGuiText("flan.screenLeaveSubText", ChatFormatting.GOLD));
                     List<Component> lore = new ArrayList<>();
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenTextJson", ChatFormatting.GOLD));
                     lore.add(ServerScreenHelper.coloredGuiText("flan.screenDelete", ChatFormatting.DARK_RED));
                     if (this.data.leaveSubtitle != null)
                         lore.add(this.data.leaveSubtitle);
-                    ServerScreenHelper.addLore(stack4, lore);
-                    this.slots.get(i).set(stack4);
+                    ServerScreenHelper.addLore(stack, lore);
+                    this.slots.get(i).set(stack);
                 }
                 default -> this.slots.get(i).set(ServerScreenHelper.emptyFiller());
             }
