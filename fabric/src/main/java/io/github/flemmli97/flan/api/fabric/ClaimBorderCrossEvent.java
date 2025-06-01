@@ -22,7 +22,7 @@ public class ClaimBorderCrossEvent {
 
     }
 
-    public static Event<BorderEvent> EVENT = EventFactory.createArrayBacked(BorderEvent.class,
+    public static final Event<BorderEvent> EVENT = EventFactory.createArrayBacked(BorderEvent.class,
             (listeners) -> (player, permission, pos) -> {
                 for (BorderEvent event : listeners) {
                     event.borderCross(player, permission, pos);

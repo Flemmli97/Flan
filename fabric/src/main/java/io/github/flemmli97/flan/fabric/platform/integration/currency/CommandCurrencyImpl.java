@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 
 public class CommandCurrencyImpl implements CommandCurrency {
 
-    private static final ResourceLocation eightyEconomyCurrencyName = ResourceLocation.fromNamespaceAndPath("eights_economy", "dollars");
+    private static final ResourceLocation EIGHTY_ECONOMY_CURRENCY_NAME = ResourceLocation.fromNamespaceAndPath("eights_economy", "dollars");
 
     @Override
     public boolean sellClaimBlocks(ServerPlayer player, int blocks, float value, Consumer<Component> message) {
@@ -35,7 +35,7 @@ public class CommandCurrencyImpl implements CommandCurrency {
                 message.accept(ClaimUtils.translatedText("flan.sellFail", ChatFormatting.DARK_RED));
                 return false;
             }
-            Currency currency = OctoEconomy.getInstance().getCurrentEconomy().getCurrency(eightyEconomyCurrencyName);
+            Currency currency = OctoEconomy.getInstance().getCurrentEconomy().getCurrency(EIGHTY_ECONOMY_CURRENCY_NAME);
             if (currency == null) {
                 message.accept(ClaimUtils.translatedText("flan.currencyMissing", ChatFormatting.DARK_RED));
                 return false;
@@ -72,7 +72,7 @@ public class CommandCurrencyImpl implements CommandCurrency {
         if (common != -1)
             return common == 1;
         if (Flan.octoEconomy) {
-            Currency currency = OctoEconomy.getInstance().getCurrentEconomy().getCurrency(eightyEconomyCurrencyName);
+            Currency currency = OctoEconomy.getInstance().getCurrentEconomy().getCurrency(EIGHTY_ECONOMY_CURRENCY_NAME);
             if (currency == null) {
                 message.accept(ClaimUtils.translatedText("flan.currencyMissing", ChatFormatting.DARK_RED));
                 return false;

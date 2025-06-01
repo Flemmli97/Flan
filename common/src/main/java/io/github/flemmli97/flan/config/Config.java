@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 
 public class Config {
 
-    private File config;
+    private final File config;
 
     public int startingBlocks = 500;
     public int maxClaimBlocks = 5000;

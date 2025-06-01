@@ -4,5 +4,5 @@ import io.github.flemmli97.flan.player.LogoutTracker;
 
 public interface LogoutImpl {
 
-    LogoutTracker getInstance();
+    LogoutTracker flan$getLogoutTracker();
 }

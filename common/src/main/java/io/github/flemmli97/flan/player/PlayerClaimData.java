@@ -107,13 +107,13 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public static PlayerClaimData get(ServerPlayer player) {
-        return ((IPlayerClaimImpl) player).get();
+        return ((IPlayerClaimImpl) player).flan$get();
     }
 
     @Override
     public int getClaimBlocks() {
-        return Math.min(this.claimBlocks, PermissionNodeHandler.INSTANCE.permVal(this.player, PermissionNodeHandler.permClaimBlocksCap, this.claimBlocks))
-                + PermissionNodeHandler.INSTANCE.permVal(this.player, PermissionNodeHandler.permClaimBlocksBonus, 0);
+        return Math.min(this.claimBlocks, PermissionNodeHandler.INSTANCE.permVal(this.player, PermissionNodeHandler.PERM_CLAIM_BLOCKS_CAP, this.claimBlocks))
+                + PermissionNodeHandler.INSTANCE.permVal(this.player, PermissionNodeHandler.PERM_CLAIM_BLOCKS_BONUS, 0);
     }
 
     public void setClaimBlocks(int amount) {
@@ -135,7 +135,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     private boolean canIncrease(int blocks) {
-        return PermissionNodeHandler.INSTANCE.permBelowEqVal(this.player, PermissionNodeHandler.permClaimBlocks, blocks, ConfigHandler.CONFIG.maxClaimBlocks);
+        return PermissionNodeHandler.INSTANCE.permBelowEqVal(this.player, PermissionNodeHandler.PERM_CLAIM_BLOCKS, blocks, ConfigHandler.CONFIG.maxClaimBlocks);
     }
 
     @Override
@@ -291,7 +291,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public boolean setTrappedRescue() {
-        Claim claim = ((IPlayerClaimImpl) this.player).getCurrentClaim();
+        Claim claim = ((IPlayerClaimImpl) this.player).flan$getCurrentClaim();
         if (this.trappedTick < 0 && claim != null && !this.player.getUUID().equals(claim.getOwner())) {
             this.trappedTick = 101;
             this.trappedPos = this.player.position();
@@ -397,7 +397,7 @@ public class PlayerClaimData implements IPlayerData {
                     this.tpPos = null;
                 } else {
                     Vec3 tp = TeleportUtils.getTeleportPos(this.player, this.player.position(), ClaimStorage.get(this.player.serverLevel()),
-                            new TeleportUtils.Area2D(((IPlayerClaimImpl) this.player).getCurrentClaim().getDimensions()),
+                            new TeleportUtils.Area2D(((IPlayerClaimImpl) this.player).flan$getCurrentClaim().getDimensions()),
                             TeleportUtils.roundedBlockPos(this.player.position()).mutable(), (claim, nPos) -> false);
                     if (this.player.isPassenger())
                         this.player.stopRiding();
@@ -536,6 +536,7 @@ public class PlayerClaimData implements IPlayerData {
             try {
                 Files.createFile(file);
             } catch (FileAlreadyExistsException e) {
+                Flan.LOGGER.error(e);
             }
             JsonObject obj = new JsonObject();
             obj.addProperty("ClaimBlocks", this.claimBlocks);
@@ -554,7 +555,7 @@ public class PlayerClaimData implements IPlayerData {
             ConfigHandler.GSON.toJson(obj, jsonWriter);
             jsonWriter.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Flan.LOGGER.error(e);
         }
     }
 
@@ -585,7 +586,7 @@ public class PlayerClaimData implements IPlayerData {
             updateScoreFor(this.player, ClaimCriterias.AMOUNT, this.claimBlocks + this.additionalClaimBlocks);
             this.updateClaimScores();
         } catch (IOException e) {
-            e.printStackTrace();
+            Flan.LOGGER.error(e);
         }
     }
 
@@ -602,6 +603,7 @@ public class PlayerClaimData implements IPlayerData {
             try {
                 Files.createFile(file);
             } catch (FileAlreadyExistsException e) {
+                Flan.LOGGER.error(e);
             }
             JsonReader reader = ConfigHandler.GSON.newJsonReader(Files.newBufferedReader(file, StandardCharsets.UTF_8));
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
@@ -620,7 +622,7 @@ public class PlayerClaimData implements IPlayerData {
             ConfigHandler.GSON.toJson(obj, jsonWriter);
             jsonWriter.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Flan.LOGGER.error(e);
         }
     }
 

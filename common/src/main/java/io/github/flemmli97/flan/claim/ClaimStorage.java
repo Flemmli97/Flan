@@ -59,7 +59,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ClaimStorage implements IPermissionStorage {
 
@@ -71,7 +71,7 @@ public class ClaimStorage implements IPermissionStorage {
     private final GlobalClaim globalClaim;
 
     public static ClaimStorage get(ServerLevel world) {
-        return ((IClaimStorage) world).get();
+        return ((IClaimStorage) world).flan$get();
     }
 
     public ClaimStorage(MinecraftServer server, ServerLevel world) {
@@ -141,7 +141,7 @@ public class ClaimStorage implements IPermissionStorage {
                 player.displayClientMessage(ClaimUtils.translatedText("flan.minClaimSize", ConfigHandler.CONFIG.minClaimsize, ChatFormatting.RED), false);
                 return false;
             }
-            if (!data.isAdminIgnoreClaim() && ConfigHandler.CONFIG.maxClaims != -1 && !PermissionNodeHandler.INSTANCE.permBelowEqVal(player, PermissionNodeHandler.permMaxClaims, this.playerClaimMap.getOrDefault(player.getUUID(), Sets.newHashSet()).size() + 1, ConfigHandler.CONFIG.maxClaims)) {
+            if (!data.isAdminIgnoreClaim() && ConfigHandler.CONFIG.maxClaims != -1 && !PermissionNodeHandler.INSTANCE.permBelowEqVal(player, PermissionNodeHandler.PERM_MAX_CLAIMS, this.playerClaimMap.getOrDefault(player.getUUID(), Sets.newHashSet()).size() + 1, ConfigHandler.CONFIG.maxClaims)) {
                 player.displayClientMessage(ClaimUtils.translatedText("flan.maxClaims", ChatFormatting.RED), false);
                 return false;
             }
@@ -411,27 +411,24 @@ public class ClaimStorage implements IPermissionStorage {
         Flan.log("Loading claim data for world {}", world.dimension());
         Path dir = ConfigHandler.getClaimSavePath(server, world.dimension());
         if (Files.exists(dir)) {
-            try {
-                for (Path file : Files.walk(dir).filter(Files::isRegularFile).collect(Collectors.toSet())) {
-                    String name = file.toFile().getName();
-                    if (!name.endsWith(".json"))
-                        continue;
-                    String realName = name.replace(".json", "");
-                    UUID uuid = realName.equals(ADMIN_CLAIMS) ? null : UUID.fromString(realName);
-                    JsonReader reader = ConfigHandler.GSON.newJsonReader(Files.newBufferedReader(file, StandardCharsets.UTF_8));
-                    JsonArray arr = ConfigHandler.GSON.fromJson(reader, JsonArray.class);
-                    reader.close();
-                    if (arr == null)
-                        continue;
-                    Flan.debug("Reading claim data from json {} for player uuid {}", arr, uuid);
-                    arr.forEach(el -> {
-                        if (el.isJsonObject()) {
-                            this.addClaim(Claim.fromJson((JsonObject) el, uuid, world));
-                        }
-                    });
-                }
+            try (Stream<Path> files = Files.walk(dir).filter(p -> Files.isRegularFile(p) && p.endsWith(".json"))) {
+                files.forEach(file -> {
+                    String realName = file.getFileName().toString().replace(".json", "");
+                    try (JsonReader reader = ConfigHandler.GSON.newJsonReader(Files.newBufferedReader(file, StandardCharsets.UTF_8))) {
+                        UUID uuid = realName.equals(ADMIN_CLAIMS) ? null : UUID.fromString(realName);
+                        JsonArray arr = ConfigHandler.GSON.fromJson(reader, JsonArray.class);
+                        Flan.debug("Reading claim data from json {} for player uuid {}", arr, uuid);
+                        arr.forEach(el -> {
+                            if (el.isJsonObject()) {
+                                this.addClaim(Claim.fromJson((JsonObject) el, uuid, world));
+                            }
+                        });
+                    } catch (IOException e) {
+                        Flan.LOGGER.error(e);
+                    }
+                });
             } catch (IOException e) {
-                e.printStackTrace();
+                Flan.LOGGER.error(e);
             }
         }
     }
@@ -476,7 +473,7 @@ public class ClaimStorage implements IPermissionStorage {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Flan.LOGGER.error(e);
         }
     }
 
@@ -561,11 +558,11 @@ public class ClaimStorage implements IPermissionStorage {
                     }
                 } catch (Exception e) {
                     src.sendSuccess(() -> ClaimUtils.translatedText("flan.errorFile", parent.getName(), ChatFormatting.RED), false);
-                    e.printStackTrace();
+                    Flan.LOGGER.error(e);
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Flan.LOGGER.error(e);
         }
         return true;
     }

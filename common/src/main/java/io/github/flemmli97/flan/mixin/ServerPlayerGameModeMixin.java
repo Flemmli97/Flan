@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -19,8 +20,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayerGameMode.class)
 public abstract class ServerPlayerGameModeMixin implements BlockBreakAttemptHandler {
 
+    @Final
     @Shadow
-    private ServerPlayer player;
+    protected ServerPlayer player;
     @Unique
     private BlockPos flan_blockBreakFail;
     @Unique
@@ -48,7 +50,7 @@ public abstract class ServerPlayerGameModeMixin implements BlockBreakAttemptHand
     }
 
     @Override
-    public void setBlockBreakAttemptFail(BlockPos pos, boolean instaBreak) {
+    public void flan$setBlockBreakAttemptFail(BlockPos pos, boolean instaBreak) {
         this.flan_was_insta_break = instaBreak;
         this.flan_blockBreakFail = pos;
         if (this.flan_blockBreakFail == null) {
@@ -58,12 +60,12 @@ public abstract class ServerPlayerGameModeMixin implements BlockBreakAttemptHand
     }
 
     @Override
-    public BlockPos failedPos() {
+    public BlockPos flan$failedPos() {
         return this.flan_blockBreakFail;
     }
 
     @Override
-    public boolean wasInstabreak() {
+    public boolean flan$wasInstabreak() {
         return this.flan_was_insta_break;
     }
 }

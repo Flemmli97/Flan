@@ -25,10 +25,11 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 public class FlanProtectionProvider implements ProtectionProvider {
-    public static final ResourceLocation Id = ResourceLocation.fromNamespaceAndPath("flan", "provider");
+
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("flan", "provider");
 
     public static void register() {
-        CommonProtection.register(Id, new FlanProtectionProvider());
+        CommonProtection.register(ID, new FlanProtectionProvider());
     }
 
     @Override

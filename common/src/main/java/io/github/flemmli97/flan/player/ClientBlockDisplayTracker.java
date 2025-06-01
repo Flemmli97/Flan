@@ -68,7 +68,7 @@ public class ClientBlockDisplayTracker {
             if (stateLookup != null) {
                 stateLookup.removeIf(i -> i.equals(id));
                 if (!stateLookup.isEmpty()) {
-                    Set<DisplayData> others = this.fakeBlocks.get(stateLookup.get(stateLookup.size() - 1));
+                    Set<DisplayData> others = this.fakeBlocks.get(stateLookup.getLast());
                     if (others != null) {
                         for (DisplayData o : others) {
                             if (o.pos.equals(d.pos)) {

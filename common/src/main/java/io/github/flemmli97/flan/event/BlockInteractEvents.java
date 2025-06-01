@@ -48,7 +48,7 @@ public class BlockInteractEvents {
         InteractionResult result = breakBlocks(world, player, pos, state, world.getBlockEntity(pos), true) ? InteractionResult.PASS : InteractionResult.FAIL;
         if (player instanceof ServerPlayer serverPlayer) {
             boolean failed = result == InteractionResult.FAIL;
-            ((BlockBreakAttemptHandler) serverPlayer.gameMode).setBlockBreakAttemptFail(failed ? pos : null, failed && state.getDestroyProgress(player, world, pos) >= 1);
+            ((BlockBreakAttemptHandler) serverPlayer.gameMode).flan$setBlockBreakAttemptFail(failed ? pos : null, failed && state.getDestroyProgress(player, world, pos) >= 1);
         }
         return result;
     }

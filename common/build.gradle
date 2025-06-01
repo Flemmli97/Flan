@@ -35,8 +35,8 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'org.yaml', name: 'snakeyaml', version: '1.25'
-    shadowCommon group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+    implementation group: 'org.yaml', name: 'snakeyaml', version: '2.4'
+    shadowCommon group: 'org.yaml', name: 'snakeyaml', version: '2.4'
 
     modImplementation dynmap_fabric
 

@@ -27,9 +27,9 @@ public record ClaimBox(int minX, int minY, int minZ, int maxX, int maxY, int max
     public boolean equals(Object obj) {
         if (obj == this)
             return true;
-        if (!(obj instanceof ClaimBox otherBox))
+        if (!(obj instanceof ClaimBox(int x1, int y1, int z1, int x2, int y2, int z2)))
             return false;
-        return this.minX == otherBox.minX && this.minY == otherBox.minY && this.minZ == otherBox.minZ
-                && this.maxX == otherBox.maxX && this.maxY == otherBox.maxY && this.maxZ == otherBox.maxZ;
+        return this.minX == x1 && this.minY == y1 && this.minZ == z1
+                && this.maxX == x1 && this.maxY == y1 && this.maxZ == z1;
     }
 }

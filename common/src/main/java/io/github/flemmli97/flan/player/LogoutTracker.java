@@ -15,7 +15,7 @@ public class LogoutTracker {
     private final Set<UUID> trackerUUID = new HashSet<>();
 
     public static LogoutTracker getInstance(MinecraftServer server) {
-        return ((LogoutImpl) server).getInstance();
+        return ((LogoutImpl) server).flan$getLogoutTracker();
     }
 
     public void track(UUID player) {

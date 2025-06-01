@@ -12,22 +12,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerLevel.class)
 public abstract class ServerWorldMixin implements IClaimStorage {
     @Unique
-    private ClaimStorage flanClaimData;
+    private ClaimStorage flan$ClaimData;
 
     @Inject(method = "<init>*", at = @At("RETURN"))
     private void initData(CallbackInfo info) {
         ServerLevel world = ((ServerLevel) (Object) this);
-        this.flanClaimData = new ClaimStorage(world.getServer(), world);
+        this.flan$ClaimData = new ClaimStorage(world.getServer(), world);
     }
 
     @Inject(method = "saveLevelData", at = @At("RETURN"))
     private void saveClaimData(CallbackInfo info) {
         ServerLevel world = ((ServerLevel) (Object) this);
-        this.flanClaimData.save(world.getServer(), world.dimension());
+        this.flan$ClaimData.save(world.getServer(), world.dimension());
     }
 
     @Override
-    public ClaimStorage get() {
-        return this.flanClaimData;
+    public ClaimStorage flan$get() {
+        return this.flan$ClaimData;
     }
 }

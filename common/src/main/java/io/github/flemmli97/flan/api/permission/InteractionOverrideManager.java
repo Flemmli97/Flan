@@ -211,7 +211,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
 
     public record InteractionType<T>(ResourceLocation id, Supplier<InteractionHolder<T>> gen) {
 
-        static Map<ResourceLocation, InteractionType<?>> LOOKUP = new HashMap<>();
+        static final Map<ResourceLocation, InteractionType<?>> LOOKUP = new HashMap<>();
 
         public InteractionType(ResourceLocation id, Supplier<InteractionHolder<T>> gen) {
             this.id = id;

@@ -19,27 +19,27 @@ import java.util.UUID;
 public abstract class ItemEntityMixin implements IOwnedItem {
 
     @Unique
-    private UUID flanPlayerOrigin;
+    private UUID flan$PlayerOrigin;
     @Unique
-    private UUID flanDeathPlayerOrigin;
+    private UUID flan$DeathPlayerOrigin;
 
     @Inject(method = "readAdditionalSaveData", at = @At("RETURN"))
     private void readData(CompoundTag tag, CallbackInfo info) {
         if (tag.contains("Flan:PlayerOrigin"))
-            this.flanPlayerOrigin = tag.getUUID("Flan:PlayerOrigin");
+            this.flan$PlayerOrigin = tag.getUUID("Flan:PlayerOrigin");
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("RETURN"))
     private void writeData(CompoundTag tag, CallbackInfo info) {
-        if (this.flanPlayerOrigin != null)
-            tag.putUUID("Flan:PlayerOrigin", this.flanPlayerOrigin);
+        if (this.flan$PlayerOrigin != null)
+            tag.putUUID("Flan:PlayerOrigin", this.flan$PlayerOrigin);
     }
 
     @Override
-    public void setOriginPlayer(Player player) {
-        this.flanPlayerOrigin = player.getUUID();
+    public void flan$setOriginPlayer(Player player) {
+        this.flan$PlayerOrigin = player.getUUID();
         if (player instanceof ServerPlayer && PlayerClaimData.get((ServerPlayer) player).setDeathItemOwner())
-            this.flanDeathPlayerOrigin = this.flanPlayerOrigin;
+            this.flan$DeathPlayerOrigin = this.flan$PlayerOrigin;
     }
 
     @Inject(method = "playerTouch", at = @At(value = "HEAD"), cancellable = true)
@@ -50,12 +50,12 @@ public abstract class ItemEntityMixin implements IOwnedItem {
     }
 
     @Override
-    public UUID getDeathPlayer() {
-        return this.flanDeathPlayerOrigin;
+    public UUID flan$getDeathPlayer() {
+        return this.flan$DeathPlayerOrigin;
     }
 
     @Override
-    public UUID getPlayerOrigin() {
-        return this.flanPlayerOrigin;
+    public UUID flan$getPlayerOrigin() {
+        return this.flan$PlayerOrigin;
     }
 }

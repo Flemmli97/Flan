@@ -114,9 +114,9 @@ public class FlanFabric implements ModInitializer {
             InteractionResult res = BlockInteractEvents.useBlocks(p, world, hand, hitResult);
             if (res == InteractionResult.SUCCESS)
                 return res;
-            flags.stopCanUseBlocks(res == InteractionResult.FAIL);
-            flags.stopCanUseItems(ItemInteractEvents.onItemUseBlock(new UseOnContext(p, hand, hitResult)) == InteractionResult.FAIL);
-            if (!flags.allowUseBlocks() && !flags.allowUseItems())
+            flags.flan$stopCanUseBlocks(res == InteractionResult.FAIL);
+            flags.flan$stopCanUseItems(ItemInteractEvents.onItemUseBlock(new UseOnContext(p, hand, hitResult)) == InteractionResult.FAIL);
+            if (!flags.flan$allowUseBlocks() && !flags.flan$allowUseItems())
                 return InteractionResult.FAIL;
         }
         return InteractionResult.PASS;

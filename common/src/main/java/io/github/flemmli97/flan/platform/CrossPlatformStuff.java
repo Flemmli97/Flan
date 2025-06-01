@@ -27,6 +27,6 @@ public interface CrossPlatformStuff {
     boolean blockDataContains(CompoundTag nbt, String tag);
 
     default void toggleCreativeFlight(ServerPlayer player, boolean flag) {
-        ((VanillaFlightStateTracker) player).toggleFlight(flag);
+        ((VanillaFlightStateTracker) player).flan$toggleFlight(flag);
     }
 }

@@ -191,7 +191,7 @@ public class EntityInteractEvents {
                 }
                 Entity hit = ((EntityHitResult) res).getEntity();
                 boolean fail = attackSimple(player, hit, true) != InteractionResult.PASS;
-                if (fail && proj instanceof AbstractArrow pers && ((AbstractArrow) proj).getPierceLevel() > 0) {
+                if (fail && proj instanceof AbstractArrow pers && pers.getPierceLevel() > 0) {
                     IntOpenHashSet pierced = ((IPersistentProjectileVars) pers).getPiercedEntities();
                     if (pierced == null)
                         pierced = new IntOpenHashSet(5);
@@ -257,13 +257,13 @@ public class EntityInteractEvents {
         if (player instanceof ServerPlayer sPlayer) {
             if (entity instanceof ItemEntity) {
                 IOwnedItem ownedItem = (IOwnedItem) entity;
-                if (ownedItem.getDeathPlayer() != null) {
-                    ServerPlayer other = sPlayer.getServer().getPlayerList().getPlayer(ownedItem.getDeathPlayer());
+                if (ownedItem.flan$getDeathPlayer() != null) {
+                    ServerPlayer other = sPlayer.getServer().getPlayerList().getPlayer(ownedItem.flan$getDeathPlayer());
                     if (other == null)
                         return false;
-                    return ownedItem.getDeathPlayer().equals(player.getUUID()) || PlayerClaimData.get(other).deathItemsUnlocked();
+                    return ownedItem.flan$getDeathPlayer().equals(player.getUUID()) || PlayerClaimData.get(other).deathItemsUnlocked();
                 }
-                if (sPlayer.getUUID().equals(ownedItem.getPlayerOrigin()))
+                if (sPlayer.getUUID().equals(ownedItem.flan$getPlayerOrigin()))
                     return true;
                 ClaimStorage storage = ClaimStorage.get(sPlayer.serverLevel());
                 BlockPos pos = sPlayer.blockPosition();
@@ -337,7 +337,7 @@ public class EntityInteractEvents {
     }
 
     public static void updateDroppedItem(Player player, ItemEntity entity) {
-        ((IOwnedItem) entity).setOriginPlayer((player));
+        ((IOwnedItem) entity).flan$setOriginPlayer((player));
     }
 
     public static Claim currentClaimTick(ServerPlayer player, Claim currentClaim) {

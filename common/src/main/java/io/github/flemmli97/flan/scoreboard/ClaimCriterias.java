@@ -1,5 +1,6 @@
 package io.github.flemmli97.flan.scoreboard;
 
+import io.github.flemmli97.flan.Flan;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import java.lang.reflect.Constructor;
@@ -7,13 +8,12 @@ import java.lang.reflect.InvocationTargetException;
 
 public class ClaimCriterias {
 
-    public static ObjectiveCriteria AMOUNT = create("flan:total_claimblocks", true, ObjectiveCriteria.RenderType.INTEGER);
-    public static ObjectiveCriteria USED = create("flan:used_claimblocks", true, ObjectiveCriteria.RenderType.INTEGER);
-    public static ObjectiveCriteria FREE = create("flan:free_claimblocks", true, ObjectiveCriteria.RenderType.INTEGER);
-    public static ObjectiveCriteria CLAIMS = create("flan:claim_number", true, ObjectiveCriteria.RenderType.INTEGER);
+    public static final ObjectiveCriteria AMOUNT = create("flan:total_claimblocks", true, ObjectiveCriteria.RenderType.INTEGER);
+    public static final ObjectiveCriteria USED = create("flan:used_claimblocks", true, ObjectiveCriteria.RenderType.INTEGER);
+    public static final ObjectiveCriteria FREE = create("flan:free_claimblocks", true, ObjectiveCriteria.RenderType.INTEGER);
+    public static final ObjectiveCriteria CLAIMS = create("flan:claim_number", true, ObjectiveCriteria.RenderType.INTEGER);
 
     public static void init() {
-
     }
 
     /**
@@ -26,7 +26,7 @@ public class ClaimCriterias {
             return cons.newInstance(name, readOnly, renderType);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
                  InvocationTargetException e) {
-            e.printStackTrace();
+            Flan.LOGGER.error(e);
         }
         return null;
     }

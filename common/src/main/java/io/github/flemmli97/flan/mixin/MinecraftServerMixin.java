@@ -10,10 +10,10 @@ import org.spongepowered.asm.mixin.Unique;
 public abstract class MinecraftServerMixin implements LogoutImpl {
 
     @Unique
-    private final LogoutTracker flanLogout = new LogoutTracker();
+    private final LogoutTracker flan$Logout = new LogoutTracker();
 
     @Override
-    public LogoutTracker getInstance() {
-        return this.flanLogout;
+    public LogoutTracker flan$getLogoutTracker() {
+        return this.flan$Logout;
     }
 }

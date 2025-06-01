@@ -61,17 +61,17 @@ public abstract class PlayerClaimMixin extends Player implements IPlayerClaimImp
     }
 
     @Override
-    public PlayerClaimData get() {
+    public PlayerClaimData flan$get() {
         return this.flan$ClaimData;
     }
 
     @Override
-    public Claim getCurrentClaim() {
+    public Claim flan$getCurrentClaim() {
         return this.flan$CurrentClaim;
     }
 
     @Override
-    public void toggleFlight(boolean mayFly) {
+    public void flan$toggleFlight(boolean mayFly) {
         boolean changed = false;
         if (this.flan$claimFlight != mayFly) {
             if (mayFly) {

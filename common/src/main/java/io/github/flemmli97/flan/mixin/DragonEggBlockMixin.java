@@ -23,31 +23,31 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class DragonEggBlockMixin {
 
     @Unique
-    private Player flanTempPlayer;
+    private Player flan$TempPlayer;
 
     @Inject(method = "useWithoutItem", at = @At("HEAD"))
     private void onUse(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit, CallbackInfoReturnable<InteractionResult> info) {
-        this.flanTempPlayer = player;
+        this.flan$TempPlayer = player;
     }
 
     @Inject(method = "useWithoutItem", at = @At("RETURN"))
     private void onUseReturn(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit, CallbackInfoReturnable<InteractionResult> info) {
-        this.flanTempPlayer = null;
+        this.flan$TempPlayer = null;
     }
 
     @Inject(method = "attack", at = @At("HEAD"))
     private void onAttack(BlockState state, Level level, BlockPos pos, Player player, CallbackInfo info) {
-        this.flanTempPlayer = player;
+        this.flan$TempPlayer = player;
     }
 
     @Inject(method = "attack", at = @At("RETURN"))
     private void onAttackReturn(BlockState state, Level level, BlockPos pos, Player player, CallbackInfo info) {
-        this.flanTempPlayer = null;
+        this.flan$TempPlayer = null;
     }
 
     @Inject(method = "teleport", at = @At("HEAD"), cancellable = true)
     private void onTeleport(BlockState state, Level level, BlockPos pos, CallbackInfo info) {
-        if (this.flanTempPlayer instanceof ServerPlayer player) {
+        if (this.flan$TempPlayer instanceof ServerPlayer player) {
             ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract((DragonEggBlock) (Object) this);
             if (perm == null)
                 perm = BuiltinPermission.INTERACTBLOCK;

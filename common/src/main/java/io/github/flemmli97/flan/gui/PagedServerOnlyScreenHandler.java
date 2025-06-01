@@ -35,11 +35,6 @@ public abstract class PagedServerOnlyScreenHandler<T> extends ServerOnlyScreenHa
     }
 
     @Override
-    public boolean stillValid(Player player) {
-        return true;
-    }
-
-    @Override
     public void clicked(int i, int j, ClickType clickType, Player player) {
         if (this.handlePageFlip(i)) {
             for (ContainerListener listener : ((AbstractContainerAccessor) this).listeners())

@@ -9,19 +9,19 @@ import net.minecraft.server.level.ServerPlayer;
  */
 public interface ItemUseBlockFlags {
 
-    void stopCanUseBlocks(boolean flag);
+    void flan$stopCanUseBlocks(boolean flag);
 
-    void stopCanUseItems(boolean flag);
+    void flan$stopCanUseItems(boolean flag);
 
     /**
      * If false prevents interaction with a block
      */
-    boolean allowUseBlocks();
+    boolean flan$allowUseBlocks();
 
     /**
      * If false prevents right clicking with an item on a block
      */
-    boolean allowUseItems();
+    boolean flan$allowUseItems();
 
     static ItemUseBlockFlags fromPlayer(ServerPlayer player) {
         return (ItemUseBlockFlags) player.gameMode;
