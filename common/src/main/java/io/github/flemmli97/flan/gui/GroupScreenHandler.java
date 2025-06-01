@@ -112,7 +112,7 @@ public class GroupScreenHandler extends PagedServerOnlyScreenHandler<Claim> {
         ItemStack stack = slot.getItem();
         if (!stack.isEmpty()) {
             String name = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
-                    .copyTag().getString("FlanGroup");
+                    .copyTag().getStringOr("FlanGroup", "");
             if (this.removeMode) {
                 this.data.removePermGroup(player, name);
                 slot.set(ItemStack.EMPTY);

@@ -45,9 +45,9 @@ public abstract class InteractionOverrideProvider implements DataProvider {
     public CompletableFuture<?> run(CachedOutput cache) {
         this.add();
         return CompletableFuture.allOf(this.data.entrySet().stream().map(entry -> {
-            Path path = this.output.getOutputFolder(PackOutput.Target.DATA_PACK).resolve(entry.getKey().getNamespace() + "/" + InteractionOverrideManager.DIRECTORY + "/" + entry.getKey().getPath() + ".json");
+            Path path = this.output.getOutputFolder(PackOutput.Target.DATA_PACK).resolve(entry.getKey().getNamespace() + "/" + InteractionOverrideManager.ID.getPath() + "/" + entry.getKey().getPath() + ".json");
             JsonObject obj = new JsonObject();
-            obj.addProperty("type", entry.getValue().type.id().toString());
+            obj.addProperty("type", entry.getValue().type.getId().toString());
             obj.add("values", entry.getValue().values());
             return DataProvider.saveStable(cache, obj, path);
         }).toArray(CompletableFuture<?>[]::new));

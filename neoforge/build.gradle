@@ -3,7 +3,7 @@ apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/arch-loom
 loom {
     runs {
         data {
-            data()
+            serverData()
             programArgs "--all", "--mod", "flan"
             programArgs "--output", project(":common").file("src/generated/resources").absolutePath
         }

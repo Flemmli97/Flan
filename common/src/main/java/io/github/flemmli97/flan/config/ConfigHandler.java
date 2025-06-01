@@ -50,7 +50,7 @@ public class ConfigHandler {
         CompoundTag second = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (second.isEmpty())
             return config.isEmpty();
-        return config.getAllKeys().stream().allMatch(key -> Objects.equals(config.get(key), second.get(key)));
+        return config.entrySet().stream().allMatch(e -> Objects.equals(e.getValue(), second.get(e.getKey())));
     }
 
     public static int fromJson(JsonObject obj, String key, int fallback) {

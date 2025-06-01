@@ -59,7 +59,7 @@ public class BuiltinPermission {
     public static final ResourceLocation PROJECTILES = register("projectiles", new ItemStack(Items.ARROW), "Permission to let shot projectiles", "interact with blocks (e.g. arrow on button)");
     public static final ResourceLocation TRAMPLE = register("trample", new ItemStack(Items.FARMLAND), "Permission to enable block trampling", "(farmland, turtle eggs)");
     public static final ResourceLocation PORTAL = register("portal", new ItemStack(Items.OBSIDIAN), true, "Permission to use nether portals");
-    public static final ResourceLocation RAID = register("raid", holder -> Raid.getLeaderBannerInstance(holder.lookupOrThrow(Registries.BANNER_PATTERN)), false, false, "Permission to trigger raids in claim.", "Wont prevent raids (just) outside");
+    public static final ResourceLocation RAID = register("raid", holder -> Raid.getOminousBannerInstance(holder.lookupOrThrow(Registries.BANNER_PATTERN)), false, false, "Permission to trigger raids in claim.", "Wont prevent raids (just) outside");
     public static final ResourceLocation BOAT = register("boat", new ItemStack(Items.OAK_BOAT), "Permission to use boats");
     public static final ResourceLocation MINECART = register("minecart", new ItemStack(Items.MINECART), "Permission to sit in minecarts");
     public static final ResourceLocation BUCKET = register("bucket", new ItemStack(Items.BUCKET), "Permission to take liquids with buckets");

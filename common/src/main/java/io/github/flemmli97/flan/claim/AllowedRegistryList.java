@@ -50,7 +50,7 @@ public class AllowedRegistryList<T> {
     public List<ItemStack> asStacks() {
         return this.list.stream().map(e ->
                 e.map(v -> new ItemStack(this.asItem.apply(v)), tag -> {
-                    ItemStack any = this.registry.getTag(tag).map(f ->
+                    ItemStack any = this.registry.get(tag).map(f ->
                             f.stream().map(h -> new ItemStack(this.asItem.apply(h.value()))).findFirst().orElse(this.empty())).orElse(this.empty());
                     any.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText(String.format("#%s", tag.location()), ChatFormatting.GOLD));
                     return any;
@@ -115,7 +115,7 @@ public class AllowedRegistryList<T> {
             else {
                 ResourceLocation id = ResourceLocation.parse(element);
                 if (this.registry.containsKey(id)) {
-                    this.addAllowedItem(Either.left(this.registry.get(id)));
+                    this.addAllowedItem(Either.left(this.registry.getValue(id)));
                 } else {
                     Flan.LOGGER.error("No such registry item for {} with id: {}", this.registry.key(), id);
                 }

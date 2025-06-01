@@ -151,7 +151,7 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
             }
 
             private ItemStack toStack() {
-                ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.get(this.item), this.count);
+                ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.getValue(this.item), this.count);
                 stack.applyComponents(this.components);
                 return stack;
             }

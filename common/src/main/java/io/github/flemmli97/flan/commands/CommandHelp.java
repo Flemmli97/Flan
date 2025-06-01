@@ -15,6 +15,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,17 +40,17 @@ public class CommandHelp {
             if (i < subCommands.size()) {
                 String sub = subCommands.get(i);
                 MutableComponent cmdText = ClaimUtils.translatedText("flan.commands.helpCmdEntry", subCommands.get(i), ChatFormatting.GRAY);
-                context.getSource().sendSuccess(() -> cmdText.withStyle(cmdText.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flan help cmd " + sub))), false);
+                context.getSource().sendSuccess(() -> cmdText.withStyle(cmdText.getStyle().withClickEvent(new ClickEvent.RunCommand("/flan help cmd " + sub))), false);
             }
         MutableComponent pageText = null;
         if (page > 0) {
             MutableComponent pageTextBack = ClaimUtils.translatedText("flan.commands.help.previous", ChatFormatting.DARK_GREEN);
-            pageTextBack.withStyle(pageTextBack.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flan help " + (page - 1))));
+            pageTextBack.withStyle(pageTextBack.getStyle().withClickEvent(new ClickEvent.RunCommand("/flan help " + (page - 1))));
             pageText = pageTextBack;
         }
         if (page < max) {
             MutableComponent pageTextNext = ClaimUtils.translatedText("flan.commands.help.next", ChatFormatting.DARK_GREEN);
-            pageTextNext.withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/flan help " + (page + 1))));
+            pageTextNext.withStyle(Style.EMPTY.withClickEvent(new ClickEvent.RunCommand("/flan help " + (page + 1))));
             if (pageText != null) {
                 pageText = pageText.append(Component.literal(" | ").withStyle(ChatFormatting.DARK_GRAY)).append(pageTextNext);
             } else
@@ -84,7 +85,7 @@ public class CommandHelp {
         if (command.equals("help")) {
             context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.wiki", ChatFormatting.GOLD), false);
             MutableComponent wiki = ClaimUtils.translatedText("https://github.com/Flemmli97/Flan/wiki", ChatFormatting.GREEN);
-            wiki.setStyle(wiki.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/Flemmli97/Flan/wiki")));
+            wiki.setStyle(wiki.getStyle().withClickEvent(new ClickEvent.OpenUrl(URI.create("https://github.com/Flemmli97/Flan/wiki"))));
             context.getSource().sendSuccess(() -> wiki, false);
         }
         return Command.SINGLE_SUCCESS;

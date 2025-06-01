@@ -23,7 +23,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -42,25 +41,25 @@ import java.util.Set;
 
 public class ItemInteractEvents {
 
-    public static InteractionResultHolder<ItemStack> useItem(Player p, Level world, InteractionHand hand) {
+    public static InteractionResult useItem(Player p, Level world, InteractionHand hand) {
         if (!(p instanceof ServerPlayer player) || p.isSpectator())
-            return InteractionResultHolder.pass(p.getItemInHand(hand));
+            return InteractionResult.PASS;
         ItemStack stack = player.getItemInHand(hand);
         if (ConfigHandler.isClaimingTool(stack)) {
             BlockPos pos = rayTargetPos(player);
             if (pos != null) {
                 claimLandHandling(player, pos);
-                return InteractionResultHolder.success(stack);
+                return InteractionResult.SUCCESS_SERVER;
             }
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
         if (ConfigHandler.isInspectionTool(stack)) {
             BlockPos pos = rayTargetPos(player, 32, false);
             if (pos != null) {
                 inspect(player, pos);
-                return InteractionResultHolder.success(stack);
+                return InteractionResult.SUCCESS_SERVER;
             }
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
         ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
         BlockPos pos = player.blockPosition();
@@ -70,14 +69,14 @@ public class ItemInteractEvents {
         }
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim == null)
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         if (claim instanceof Claim real && real.canUseItem(stack))
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         ResourceLocation perm = InteractionOverrideManager.getInstance().getItemUse(stack.getItem());
         if (perm != null) {
             boolean success = claim.canInteract(player, perm, pos, true);
             if (success)
-                return InteractionResultHolder.pass(stack);
+                return InteractionResult.PASS;
             if (perm.equals(BuiltinPermission.PLACE)) {
                 BlockPos update = pos;
                 if (stack.getItem() == Items.LILY_PAD) {
@@ -88,9 +87,9 @@ public class ItemInteractEvents {
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
                 updateHeldItem(player);
             }
-            return InteractionResultHolder.fail(stack);
+            return InteractionResult.FAIL;
         }
-        return InteractionResultHolder.pass(stack);
+        return InteractionResult.PASS;
     }
 
     private static final Set<Item> BLACK_LISTED_ITEMS = Sets.newHashSet(Items.COMPASS, Items.FILLED_MAP, Items.FIREWORK_ROCKET);
@@ -109,7 +108,7 @@ public class ItemInteractEvents {
 
     private static InteractionResult itemUseOn(Level level, ServerPlayer player, ClaimStorage storage, BlockPos placePos, ItemStack stack) {
         IPermissionContainer claim = storage.getForPermissionCheck(placePos);
-        Claim column = storage.getForPermissionCheck(new BlockPos(placePos.getX(), level.getMaxBuildHeight(), placePos.getZ()))
+        Claim column = storage.getForPermissionCheck(new BlockPos(placePos.getX(), level.getMaxY(), placePos.getZ()))
                 instanceof Claim real ? real : null;
         if (claim == null)
             return InteractionResult.PASS;
@@ -151,7 +150,7 @@ public class ItemInteractEvents {
      * -2 == Main inventory update
      */
     private static void updateHeldItem(ServerPlayer player) {
-        player.connection.send(new ClientboundContainerSetSlotPacket(-2, 0, player.getInventory().selected, player.getInventory().getSelected()));
+        player.connection.send(new ClientboundContainerSetSlotPacket(-2, 0, player.getInventory().getSelectedSlot(), player.getInventory().getSelectedItem()));
         player.connection.send(new ClientboundContainerSetSlotPacket(-2, 0, 40, player.getInventory().getItem(40)));
     }
 
@@ -219,7 +218,7 @@ public class ItemInteractEvents {
         ClaimStorage storage = ClaimStorage.get(player.serverLevel());
         Claim claim = storage.getClaimAt(target);
         if (claim == null)
-            claim = storage.getClaimAt(new BlockPos(target.getX(), player.serverLevel().getMaxBuildHeight(), target.getZ()));
+            claim = storage.getClaimAt(new BlockPos(target.getX(), player.serverLevel().getMaxY(), target.getZ()));
         PlayerClaimData data = PlayerClaimData.get(player);
         if (data.claimCooldown())
             return;

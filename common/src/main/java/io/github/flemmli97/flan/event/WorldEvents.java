@@ -16,7 +16,6 @@ import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.StructureManager;
@@ -24,11 +23,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 
+import java.util.List;
+
 public class WorldEvents {
 
-    public static void modifyExplosion(Explosion explosion, ServerLevel world) {
+    public static void modifyExplosion(List<BlockPos> toExplode, ServerLevel world) {
         ClaimStorage storage = ClaimStorage.get(world);
-        explosion.getToBlow().removeIf(pos -> {
+        toExplode.removeIf(pos -> {
             IPermissionContainer claim = storage.getForPermissionCheck(pos);
             if (claim != null)
                 return !claim.canInteract(null, BuiltinPermission.EXPLOSIONS, pos);

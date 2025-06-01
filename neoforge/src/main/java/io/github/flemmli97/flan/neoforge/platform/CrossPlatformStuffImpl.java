@@ -43,7 +43,8 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public boolean blockDataContains(CompoundTag nbt, String tag) {
-        return nbt.contains(tag) || nbt.getCompound("ForgeData").contains(tag);
+        return nbt.contains(tag)
+                || nbt.getCompoundOrEmpty("NeoForgeData").contains(tag);
     }
 
     @Override

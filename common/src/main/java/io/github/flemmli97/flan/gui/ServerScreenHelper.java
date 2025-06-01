@@ -48,7 +48,7 @@ public class ServerScreenHelper {
 
     public static ItemStack createStack(ItemStack stack, Component name) {
         Set<DataComponentType<?>> types = stack.getComponents().keySet();
-        types.forEach(stack::remove);
+        types.stream().filter(t -> t != DataComponents.ITEM_MODEL).forEach(stack::remove);
         if (name != null)
             stack.set(DataComponents.CUSTOM_NAME, name);
         return stack;

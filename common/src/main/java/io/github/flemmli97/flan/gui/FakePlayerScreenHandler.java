@@ -120,7 +120,7 @@ public class FakePlayerScreenHandler extends PagedServerOnlyScreenHandler<Claim>
             UUID uuid = null;
             try {
                 uuid = UUID.fromString(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
-                        .copyTag().getString("FlanFakePlayer"));
+                        .copyTag().getStringOr("FlanFakePlayer", ""));
             } catch (IllegalArgumentException ignored) {
             }
             if (this.removeMode && uuid != null) {

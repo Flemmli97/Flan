@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Entity.class)
 public abstract class EntityDamageMixin {
 
-    @Inject(method = "isInvulnerableTo", at = @At(value = "HEAD"), cancellable = true)
-    private void onDamage(DamageSource source, CallbackInfoReturnable<Boolean> info) {
+    @Inject(method = "isInvulnerableToBase", at = @At(value = "HEAD"), cancellable = true)
+    private void invulnerableCheck(DamageSource source, CallbackInfoReturnable<Boolean> info) {
         if (EntityInteractEvents.preventDamage((Entity) (Object) this, source)) {
             info.setReturnValue(false);
             info.cancel();

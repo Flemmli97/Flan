@@ -15,7 +15,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 
 @Mod(FlanNeoForge.MODID)
 public class FlanNeoForge {
@@ -63,8 +63,8 @@ public class FlanNeoForge {
         ClaimCriterias.init();
     }
 
-    public void addReloadListener(AddReloadListenerEvent event) {
-        event.addListener(PermissionManager.create(event.getRegistryAccess()));
-        event.addListener(InteractionOverrideManager.create(event.getRegistryAccess()));
+    public void addReloadListener(AddServerReloadListenersEvent event) {
+        event.addListener(PermissionManager.ID, PermissionManager.create(event.getRegistryAccess()));
+        event.addListener(InteractionOverrideManager.ID, InteractionOverrideManager.create(event.getRegistryAccess()));
     }
 }

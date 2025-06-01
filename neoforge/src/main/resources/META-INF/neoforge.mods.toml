@@ -6,7 +6,7 @@ issueTrackerURL="https://github.com/Flemmli97/Flan/issues"
 config = "flan.mixins.json"
 [[mixins]]
 config = "flan.neoforge.mixins.json"
-[[mods]] 
+[[mods]]
 modId="flan"
 version="${version}"
 displayName="Flan"

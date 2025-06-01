@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SnowGolem.class)
 public abstract class SnowGolemMixin {
 
-    @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getGameRules()Lnet/minecraft/world/level/GameRules;"), cancellable = true)
+    @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/GameRules;getBoolean(Lnet/minecraft/world/level/GameRules$Key;)Z"), cancellable = true)
     private void checkSnow(CallbackInfo info) {
         if (!EntityInteractEvents.canSnowGolemInteract((SnowGolem) (Object) this)) {
             info.cancel();

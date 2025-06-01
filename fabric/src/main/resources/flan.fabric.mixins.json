@@ -5,8 +5,8 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "EntityDamageMixin",
+    "ExplosionMixin",
     "FabricFireMixin",
-    "LevelMixin",
     "LightningHitMixin",
     "PatrolSpawnerMixin",
     "PhantomSpawnerMixin",

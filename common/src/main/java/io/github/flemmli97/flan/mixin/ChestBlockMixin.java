@@ -25,7 +25,7 @@ public abstract class ChestBlockMixin {
                 new BlockHitResult(context.getClickLocation(), direction, pos, false)) == InteractionResult.FAIL) {
             info.setReturnValue(null);
             if (context.getPlayer() instanceof ServerPlayer player)
-                player.getServer().tell(new TickTask(1, () -> player.connection.send(new ClientboundBlockUpdatePacket(pos, context.getLevel().getBlockState(pos)))));
+                player.getServer().schedule(new TickTask(1, () -> player.connection.send(new ClientboundBlockUpdatePacket(pos, context.getLevel().getBlockState(pos)))));
         }
     }
 }

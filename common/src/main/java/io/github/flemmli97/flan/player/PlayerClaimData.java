@@ -512,15 +512,15 @@ public class PlayerClaimData implements IPlayerData {
             String cmdStr = String.format("/flan fakePlayer add %s", fakePlayer.getUUID());
             Component cmd = ClaimUtils.translatedText("flan.clickableComponent")
                     .withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)
-                            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, cmdStr))
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(cmdStr))));
+                            .withClickEvent(new ClickEvent.RunCommand(cmdStr))
+                            .withHoverEvent(new HoverEvent.ShowText(Component.literal(cmdStr))));
             Component msg = ClaimUtils.translatedText("flan.fakePlayerNotification2", cmd);
             this.player.sendSystemMessage(msg);
             cmdStr = "/flan fakePlayer";
             cmd = ClaimUtils.translatedText("flan.clickableComponent")
                     .withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)
-                            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, cmdStr))
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(cmdStr))));
+                            .withClickEvent(new ClickEvent.RunCommand(cmdStr))
+                            .withHoverEvent(new HoverEvent.ShowText(Component.literal(cmdStr))));
             msg = ClaimUtils.translatedText("flan.fakePlayerNotification3", cmd);
             this.player.sendSystemMessage(msg);
             map.put(fakePlayer.getUUID(), this.player.serverLevel().getGameTime());
@@ -535,8 +535,7 @@ public class PlayerClaimData implements IPlayerData {
             Path file = dir.resolve(this.player.getUUID() + ".json");
             try {
                 Files.createFile(file);
-            } catch (FileAlreadyExistsException e) {
-                Flan.LOGGER.error(e);
+            } catch (FileAlreadyExistsException ignored) {
             }
             JsonObject obj = new JsonObject();
             obj.addProperty("ClaimBlocks", this.claimBlocks);

@@ -139,7 +139,7 @@ public class Claim implements IPermissionContainer {
         this.minZ = Math.min(z1, z2);
         this.maxX = Math.max(x1, x2);
         this.maxZ = Math.max(z1, z2);
-        this.minY = Math.max(world.getMinBuildHeight(), minY);
+        this.minY = Math.max(world.getMinY(), minY);
         this.owner = creator;
         this.level = world;
         this.homePos = this.getInitCenterPos();
@@ -267,8 +267,8 @@ public class Claim implements IPermissionContainer {
     public ClaimBox getDimensions() {
         boolean is3d = this.is3d();
         int minY = is3d || ConfigHandler.CONFIG.defaultClaimDepth != -1 ? this.minY
-                : this.getLevel().getMinBuildHeight() - 10;
-        return new ClaimBox(this.minX, minY, this.minZ, this.maxX, Math.max(minY + 1, is3d ? this.maxY : (this.getLevel().getMaxBuildHeight() + 10)), this.maxZ);
+                : this.getLevel().getMinY() - 10;
+        return new ClaimBox(this.minX, minY, this.minZ, this.maxX, Math.max(minY + 1, is3d ? this.maxY : (this.getLevel().getMaxY() + 10)), this.maxZ);
     }
 
     public boolean is3d() {
@@ -764,7 +764,7 @@ public class Claim implements IPermissionContainer {
                 this.leaveSubtitle = null;
             JsonObject potion = ConfigHandler.fromJson(obj, "Potions");
             potion.entrySet().forEach(e ->
-                    BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.parse(e.getKey()))
+                    BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(e.getKey()))
                             .ifPresent(effect -> this.potions.put(effect, e.getValue().getAsInt())));
             if (ConfigHandler.fromJson(obj, "AdminClaim", false))
                 this.owner = null;

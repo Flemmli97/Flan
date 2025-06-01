@@ -116,7 +116,7 @@ public class CommandClaim {
                         .then(Commands.argument("amount", IntegerArgumentType.integer()).executes(CommandClaim::sellClaimBlocks)))
                 .then(Commands.literal("claimMessage").then(Commands.argument("type", StringArgumentType.word()).suggests((ctx, b) -> SharedSuggestionProvider.suggest(new String[]{"enter", "leave"}, b))
                         .then(Commands.argument("title", StringArgumentType.word()).suggests((ctx, b) -> SharedSuggestionProvider.suggest(new String[]{"title", "subtitle"}, b))
-                                .then(Commands.literal("text").then(Commands.argument("component", ComponentArgument.textComponent(buildContext)).executes(ctx -> CommandClaim.editClaimMessages(ctx, ComponentArgument.getComponent(ctx, "component")))))
+                                .then(Commands.literal("text").then(Commands.argument("component", ComponentArgument.textComponent(buildContext)).executes(ctx -> CommandClaim.editClaimMessages(ctx, ComponentArgument.getResolvedComponent(ctx, "component")))))
                                 .then(Commands.literal("string").then(Commands.argument("message", StringArgumentType.string()).executes(CommandClaim::editClaimMessages))))))
                 .then(Commands.literal("group").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.CMD_GROUP))
                         .then(Commands.literal("add").then(Commands.argument("group", StringArgumentType.string()).executes(CommandClaim::addGroup)))
@@ -590,7 +590,7 @@ public class CommandClaim {
         ServerPlayer player = context.getSource().getPlayerOrException();
         PlayerClaimData data = PlayerClaimData.get(player);
         data.setAdminIgnoreClaim(!data.isAdminIgnoreClaim());
-        player.displayClientMessage(ClaimUtils.translatedText("flan.adminMode", data.isAdminIgnoreClaim(), ChatFormatting.GOLD), false);
+        player.displayClientMessage(ClaimUtils.translatedText("flan.adminMode", data.isAdminIgnoreClaim() ? Component.translatable("flan.screenTrue") : Component.translatable("flan.screenFalse"), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -1100,7 +1100,7 @@ public class CommandClaim {
     private static <T> String addClaimListEntry(CommandContext<CommandSourceStack> context, Registry<T> registry, AllowedRegistryList<T> list) throws CommandSyntaxException {
         ResourceOrTagKeyArgument.Result<T> value = CommandHelpers.getRegistryType(context, "entry", (ResourceKey<Registry<T>>) registry.key());
         value.unwrap().ifRight(tag -> list.addAllowedItem(Either.right(tag))).ifLeft(id -> {
-            T entry = registry.get(id);
+            T entry = registry.getValue(id);
             if (entry != Items.AIR)
                 list.addAllowedItem(Either.left(entry));
         });

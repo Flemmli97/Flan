@@ -95,7 +95,7 @@ public class PermissionScreenHandler extends PagedServerOnlyScreenHandler<ClaimG
         ClaimPermission perm;
         try {
             perm = PermissionManager.getInstance().get(ResourceLocation.parse(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
-                    .copyTag().getString(ServerScreenHelper.PERMISSION_KEY)));
+                    .copyTag().getStringOr(ServerScreenHelper.PERMISSION_KEY, "")));
             if (perm == null)
                 return false;
         } catch (NullPointerException e) {

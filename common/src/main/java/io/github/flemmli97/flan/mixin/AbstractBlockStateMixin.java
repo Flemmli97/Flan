@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.mixin;
 import io.github.flemmli97.flan.event.BlockInteractEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class AbstractBlockStateMixin {
 
     @Inject(method = "entityInside", at = @At(value = "HEAD"), cancellable = true)
-    private void collision(Level world, BlockPos pos, Entity entity, CallbackInfo info) {
-        if (BlockInteractEvents.cancelEntityBlockCollision(this.asState(), world, pos, entity)) {
+    private void collision(Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, CallbackInfo info) {
+        if (BlockInteractEvents.cancelEntityBlockCollision(this.asState(), level, pos, entity)) {
             info.cancel();
         }
     }

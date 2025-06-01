@@ -106,7 +106,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
                         if (s.startsWith("#"))
                             this.data.claim.allowedItems.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse(s.substring(1)))));
                         else {
-                            Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(s));
+                            Item item = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(s));
                             if (item != Items.AIR)
                                 this.data.claim.allowedItems.addAllowedItem(Either.left(item));
                         }
@@ -115,7 +115,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
                         if (s.startsWith("#"))
                             this.data.claim.allowedBreakBlocks.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.BLOCK.key(), ResourceLocation.parse(s.substring(1)))));
                         else {
-                            Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(s));
+                            Block block = BuiltInRegistries.BLOCK.getValue(ResourceLocation.parse(s));
                             if (block != Blocks.AIR)
                                 this.data.claim.allowedBreakBlocks.addAllowedItem(Either.left(block));
                         }
@@ -124,7 +124,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
                         if (s.startsWith("#"))
                             this.data.claim.allowedUseBlocks.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.BLOCK.key(), ResourceLocation.parse(s.substring(1)))));
                         else {
-                            Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(s));
+                            Block block = BuiltInRegistries.BLOCK.getValue(ResourceLocation.parse(s));
                             if (block != Blocks.AIR)
                                 this.data.claim.allowedUseBlocks.addAllowedItem(Either.left(block));
                         }
@@ -133,7 +133,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
                         if (s.startsWith("#"))
                             this.data.claim.allowedEntityAttack.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), ResourceLocation.parse(s.substring(1)))));
                         else {
-                            EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(s));
+                            EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.getValue(ResourceLocation.parse(s));
                             if (entityType != EntityType.PIG || s.equals("minecraft:pig"))
                                 this.data.claim.allowedEntityAttack.addAllowedItem(Either.left(entityType));
                         }
@@ -142,7 +142,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
                         if (s.startsWith("#"))
                             this.data.claim.allowedEntityUse.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), ResourceLocation.parse(s.substring(1)))));
                         else {
-                            EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(s));
+                            EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.getValue(ResourceLocation.parse(s));
                             if (entityType != EntityType.PIG || s.equals("minecraft:pig"))
                                 this.data.claim.allowedEntityUse.addAllowedItem(Either.left(entityType));
                         }
@@ -170,7 +170,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
         ItemStack stack = slot.getItem();
         if (!stack.isEmpty()) {
             CustomData nbt = stack.get(DataComponents.CUSTOM_DATA);
-            int idx = nbt != null ? nbt.copyTag().getInt("Index") : 0;
+            int idx = nbt != null ? nbt.copyTag().getIntOr("Index", 0) : 0;
             if (this.removeMode) {
                 switch (this.data.type) {
                     case ITEM -> this.data.claim.allowedItems.removeAllowedItem(idx);

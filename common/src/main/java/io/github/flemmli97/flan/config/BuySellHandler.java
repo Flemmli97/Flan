@@ -51,7 +51,7 @@ public class BuySellHandler {
                 .setStyle(Style.EMPTY.withItalic(false).applyFormat(ChatFormatting.AQUA)));
         List<Component> stackComp = new ArrayList<>();
         for (ItemResult r : stacks) {
-            stackComp.add(Component.translatable("flan.buy_sell.item.amount", Component.translatable(r.stack().getDescriptionId()), r.amount(), r.value())
+            stackComp.add(Component.translatable("flan.buy_sell.item.amount", r.stack().getItemName(), r.amount(), r.value())
                     .setStyle(Style.EMPTY.withItalic(false).applyFormat(ChatFormatting.GREEN)));
         }
         ServerScreenHelper.addLore(stack, stackComp);
@@ -94,7 +94,7 @@ public class BuySellHandler {
                 // Check if player can pay the amount
                 check:
                 for (BuyItem ing : this.buyItems) {
-                    for (ItemStack stack : player.getInventory().items) {
+                    for (ItemStack stack : player.getInventory()) {
                         if (this.matches(ing.predicate(), stack)) {
                             if (stack.isDamageableItem()) {
                                 if (stack.getDamageValue() != 0) {
@@ -124,7 +124,7 @@ public class BuySellHandler {
                 }
                 Component items = Component.translatable("flan.buy_sell.items")
                         .withStyle(Style.EMPTY.applyFormat(ChatFormatting.AQUA)
-                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(fromResults(bought)))));
+                                .withHoverEvent(new HoverEvent.ShowItem(fromResults(bought))));
                 data.setAdditionalClaims(data.getAdditionalClaims() + payed);
                 message.accept(ClaimUtils.translatedText("flan.buySuccessItem", payed, items));
                 return true;
@@ -194,7 +194,7 @@ public class BuySellHandler {
                 int sold = (blocks - toSell);
                 Component items = Component.translatable("flan.buy_sell.items")
                         .withStyle(Style.EMPTY.applyFormat(ChatFormatting.AQUA)
-                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(fromResults(soldStacks)))));
+                                .withHoverEvent(new HoverEvent.ShowItem(fromResults(soldStacks))));
                 data.setAdditionalClaims(data.getAdditionalClaims() - sold);
                 message.accept(ClaimUtils.translatedText("flan.sellSuccessItem", sold, items));
                 return true;
@@ -211,7 +211,7 @@ public class BuySellHandler {
     }
 
     private boolean matches(ItemPredicate predicate, ItemStack stack) {
-        if (predicate.components().alwaysMatches() || predicate.subPredicates().isEmpty()) {
+        if (predicate.components().exact().alwaysMatches() || predicate.components().isEmpty()) {
             if (stack.getComponentsPatch()
                     .entrySet().stream()
                     .anyMatch(e -> e.getKey() != DataComponents.CUSTOM_NAME

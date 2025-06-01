@@ -41,10 +41,10 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractThrownPotion;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEgg;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
-import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.entity.projectile.windcharge.WindCharge;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.AbstractMinecartContainer;
@@ -116,7 +116,7 @@ public class EntityInteractEvents {
                     return claim.canInteract(player, BuiltinPermission.ITEMFRAMEROTATE, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
                 }
                 case OwnableEntity ownable -> {
-                    if (ownable.getOwnerUUID() != null && ownable.getOwnerUUID().equals(player.getUUID()))
+                    if (ownable.getOwnerReference() != null && ownable.getOwnerReference().matches(player))
                         return InteractionResult.PASS;
                 }
                 default -> {
@@ -148,7 +148,7 @@ public class EntityInteractEvents {
                     perm = BuiltinPermission.ENDERPEARL;
                 else if (proj instanceof WindCharge)
                     perm = BuiltinPermission.WIND_CHARGE;
-                else if (proj instanceof ThrownEgg || proj instanceof ThrownPotion)
+                else if (proj instanceof ThrownEgg || proj instanceof AbstractThrownPotion)
                     perm = BuiltinPermission.PROJECTILES;
                 else
                     perm = InteractionOverrideManager.getInstance().getBlockInteract(state.getBlock());
@@ -170,7 +170,7 @@ public class EntityInteractEvents {
                         Vec3 vec3d2 = vec3d.normalize().scale(0.05);
                         pers.setPosRaw(pers.getX() - vec3d2.x, pers.getY() - vec3d2.y, pers.getZ() - vec3d2.z);
                         pers.playSound(((IPersistentProjectileVars) pers).getSoundEvent(), 1.0F, 1.2F / (pers.level().random.nextFloat() * 0.2F + 0.9F));
-                        ((IPersistentProjectileVars) pers).setInGround(true);
+                        ((IPersistentProjectileVars) pers).setInGroundState(true);
                         pers.shakeTime = 7;
                         pers.setCritArrow(false);
                         ((IPersistentProjectileVars) pers).setPiercingLevel((byte) 0);

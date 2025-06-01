@@ -42,7 +42,7 @@ public class OtherClaimingModCheckImpl implements OtherClaimingModCheck {
             map.forEach((colony, poss) -> poss.forEach(pos -> {
                 int blockX = pos.x << 4;
                 int blockZ = pos.z << 4;
-                set.add(new DisplayBox(blockX, level.getMinBuildHeight(), blockZ, blockX + 15, level.getMaxBuildHeight(), blockZ + 15, () -> false, neighbors(pos, poss)));
+                set.add(new DisplayBox(blockX, level.getMinY(), blockZ, blockX + 15, level.getMaxY(), blockZ + 15, () -> false, neighbors(pos, poss)));
             }));
         }
     }

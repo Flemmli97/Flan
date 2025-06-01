@@ -25,8 +25,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.CustomData;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -81,8 +79,7 @@ public class PotionEditScreenHandler extends PagedServerOnlyScreenHandler<Claim>
                 if (id < potions.size()) {
                     Holder<MobEffect> effect = key.get(id);
                     ItemStack stack = ServerScreenHelper.createStack(Items.POTION, ServerScreenHelper.coloredGuiText("flan.screenEffectText", ChatFormatting.YELLOW));
-                    Collection<MobEffectInstance> inst = Collections.singleton(new MobEffectInstance(effect, 0, potions.get(effect) - 1));
-                    stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.of(PotionContents.getColor(inst)), List.copyOf(inst)));
+                    stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.empty(), List.of(new MobEffectInstance(effect, 0, potions.get(effect) - 1)), Optional.empty()));
                     CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putString("FlanEffect", effect.getRegisteredName()));
                     this.slots.get(i).set(stack);
                 } else
@@ -109,7 +106,7 @@ public class PotionEditScreenHandler extends PagedServerOnlyScreenHandler<Claim>
             player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
                 String[] potion = s.contains("-") ? s.split("-") : s.split(";");
                 int amp = 1;
-                Optional<Holder.Reference<MobEffect>> holder = BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.parse(potion[0]));
+                Optional<Holder.Reference<MobEffect>> holder = BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(potion[0]));
                 if (holder.map(effect -> effect == MobEffects.LUCK && !potion[0].equals("minecraft:luck")).orElse(true)) {
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                     return;
@@ -144,9 +141,9 @@ public class PotionEditScreenHandler extends PagedServerOnlyScreenHandler<Claim>
         ItemStack stack = slot.getItem();
         if (!stack.isEmpty() && this.removeMode) {
             String effect = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
-                    .copyTag().getString("FlanEffect");
+                    .copyTag().getStringOr("FlanEffect", "");
             if (!effect.isEmpty())
-                BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.parse(effect))
+                BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(effect))
                         .ifPresent(this.data::removePotion);
             slot.set(ItemStack.EMPTY);
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.BAT_DEATH, 1, 1f);

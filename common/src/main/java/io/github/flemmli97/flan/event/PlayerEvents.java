@@ -4,13 +4,12 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.mixin.BonemealableBlockAccess;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.features.CaveFeatures;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.data.worldgen.features.NetherFeatures;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -19,8 +18,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BonemealableFeaturePlacerBlock;
 import net.minecraft.world.level.block.GrassBlock;
-import net.minecraft.world.level.block.MossBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
@@ -57,9 +56,9 @@ public class PlayerEvents {
             if (perm != null && !ClaimStorage.get(serverPlayer.serverLevel()).getForPermissionCheck(pos).canInteract(serverPlayer, perm, pos, false))
                 return false;
             int range = 0;
-            Registry<ConfiguredFeature<?, ?>> registry = serverPlayer.level().registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE);
-            if (state.getBlock() instanceof MossBlock) {
-                VegetationPatchConfiguration cfg = featureRange(registry, CaveFeatures.MOSS_PATCH_BONEMEAL, VegetationPatchConfiguration.class);
+            RegistryAccess registry = serverPlayer.level().registryAccess();
+            if (state.getBlock() instanceof BonemealableFeaturePlacerBlock bonemealable) {
+                VegetationPatchConfiguration cfg = featureRange(registry, ((BonemealableBlockAccess) bonemealable).getFeature(), VegetationPatchConfiguration.class);
                 if (cfg != null) {
                     range = cfg.xzRadius.getMaxValue() + 1;
                     pos.set(pos.getX(), pos.getY() + cfg.verticalRange + 1, pos.getZ());
@@ -111,8 +110,8 @@ public class PlayerEvents {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends FeatureConfiguration> T featureRange(Registry<ConfiguredFeature<?, ?>> registry, ResourceKey<ConfiguredFeature<?, ?>> key, Class<T> clss) {
-        return registry.getHolder(key).map(r -> {
+    public static <T extends FeatureConfiguration> T featureRange(RegistryAccess registry, ResourceKey<ConfiguredFeature<?, ?>> key, Class<T> clss) {
+        return registry.get(key).map(r -> {
             if (clss.isInstance(r.value().config()))
                 return (T) r.value().config();
             return null;

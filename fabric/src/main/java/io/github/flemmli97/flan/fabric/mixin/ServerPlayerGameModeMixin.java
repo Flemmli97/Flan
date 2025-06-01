@@ -26,14 +26,14 @@ public abstract class ServerPlayerGameModeMixin implements ItemUseBlockFlags {
     @Unique
     private boolean flan_stopInteractItemBlock;
 
-    @ModifyVariable(method = "useItemOn", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;copy()Lnet/minecraft/world/item/ItemStack;"), ordinal = 1)
+    @ModifyVariable(method = "useItemOn", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/level/ServerPlayer;isSecondaryUseActive()Z"))
     private boolean stopBlockUse(boolean orig) {
         if (this.flan_stopInteractBlock)
             return true;
         return orig;
     }
 
-    @Inject(method = "useItemOn", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayerGameMode;isCreative()Z"), cancellable = true)
+    @Inject(method = "useItemOn", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;hasInfiniteMaterials()Z"), cancellable = true)
     private void stopItemOnBlock(ServerPlayer serverPlayer, Level level, ItemStack itemStack, InteractionHand interactionHand, BlockHitResult blockHitResult, CallbackInfoReturnable<InteractionResult> info) {
         if (this.flan_stopInteractItemBlock) {
             info.setReturnValue(InteractionResult.PASS);

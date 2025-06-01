@@ -165,7 +165,7 @@ public class Config {
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
             reader.close();
             this.preConfigVersion = ConfigHandler.fromJson(obj, "configVersion", 0);
-            obj = ConfigUpdater.updateConfig(this.preConfigVersion, obj);
+            obj = ConfigUpdater.updateConfig(this.preConfigVersion, server, obj);
             this.startingBlocks = ConfigHandler.fromJson(obj, "startingBlocks", this.startingBlocks);
             this.maxClaimBlocks = ConfigHandler.fromJson(obj, "maxClaimBlocks", this.maxClaimBlocks);
             this.ticksForNextBlock = ConfigHandler.fromJson(obj, "ticksForNextBlock", this.ticksForNextBlock);
@@ -185,11 +185,11 @@ public class Config {
             this.worldWhitelist = ConfigHandler.fromJson(obj, "worldWhitelist", this.worldWhitelist);
 
             if (obj.has("claimingItem"))
-                this.claimingItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse((obj.get("claimingItem").getAsString())));
+                this.claimingItem = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse((obj.get("claimingItem").getAsString())));
             this.claimingNBT = CompoundTag.CODEC.parse(JsonOps.INSTANCE, GsonHelper.getAsJsonObject(obj, "claimingNBT", new JsonObject()))
                     .getOrThrow();
             if (obj.has("inspectionItem"))
-                this.inspectionItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse((obj.get("inspectionItem").getAsString())));
+                this.inspectionItem = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse((obj.get("inspectionItem").getAsString())));
             this.inspectionNBT = CompoundTag.CODEC.parse(JsonOps.INSTANCE, GsonHelper.getAsJsonObject(obj, "inspectionNBT", new JsonObject()))
                     .getOrThrow();
             this.main3dClaims = ConfigHandler.fromJson(obj, "main3dClaims", this.main3dClaims);
@@ -273,7 +273,7 @@ public class Config {
                 }
                 this.globalDefaultPerms.put(e.getKey(), perms);
             });
-            ConfigUpdater.postUpdateConfig(this.preConfigVersion, this);
+            ConfigUpdater.postUpdateConfig(this.preConfigVersion, server, this);
         } catch (IOException e) {
             Flan.LOGGER.error(e);
         }

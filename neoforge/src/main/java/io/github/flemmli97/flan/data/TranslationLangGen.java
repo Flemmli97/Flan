@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.data;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.linguabib.api.ServerLangGen;
 import net.minecraft.data.PackOutput;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +13,7 @@ import java.util.Set;
  * To use
  * 1. Extend this class and implement addTranslationsFor
  * 2. Add all translations
- * 3. Add the instance to {@link DataEvent#data(net.neoforged.neoforge.data.event.GatherDataEvent)}
+ * 3. Add the instance to {@link DataEvent#data(GatherDataEvent.Server)}
  */
 public abstract class TranslationLangGen extends ServerLangGen {
 

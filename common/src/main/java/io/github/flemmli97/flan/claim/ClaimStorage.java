@@ -313,7 +313,7 @@ public class ClaimStorage implements IPermissionStorage {
                     int maxX = Math.min(posX + 15, pos.getX() + rX);
                     int maxZ = Math.min(posZ + 15, pos.getZ() + rZ);
                     // AABB that defines the area for this chunk
-                    AABB bb = new AABB(minX, level.getMinBuildHeight(), minZ, maxX, level.getMaxBuildHeight(), maxZ);
+                    AABB bb = new AABB(minX, level.getMinY(), minZ, maxX, level.getMaxY(), maxZ);
                     list.stream().filter(claim -> claim.intersects(bb)).forEach(affected::add);
                 }
             }
@@ -411,7 +411,7 @@ public class ClaimStorage implements IPermissionStorage {
         Flan.log("Loading claim data for world {}", world.dimension());
         Path dir = ConfigHandler.getClaimSavePath(server, world.dimension());
         if (Files.exists(dir)) {
-            try (Stream<Path> files = Files.walk(dir).filter(p -> Files.isRegularFile(p) && p.endsWith(".json"))) {
+            try (Stream<Path> files = Files.walk(dir).filter(p -> Files.isRegularFile(p) && p.toString().endsWith(".json"))) {
                 files.forEach(file -> {
                     String realName = file.getFileName().toString().replace(".json", "");
                     try (JsonReader reader = ConfigHandler.GSON.newJsonReader(Files.newBufferedReader(file, StandardCharsets.UTF_8))) {
@@ -552,7 +552,8 @@ public class ClaimStorage implements IPermissionStorage {
                         for (DisplayBox claim : conflicts) {
                             ClaimBox dim = claim.box();
                             MutableComponent text = ClaimUtils.translatedText(String.format("@[x=%d;z=%d]", dim.minX(), dim.minZ()), ChatFormatting.RED);
-                            text.setStyle(text.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + dim.minX() + " ~ " + dim.minZ())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, ClaimUtils.translatedText("chat.coordinates.tooltip"))));
+                            text.setStyle(text.getStyle().withClickEvent(new ClickEvent.SuggestCommand("/tp @s " + dim.minX() + " ~ " + dim.minZ()))
+                                    .withHoverEvent(new HoverEvent.ShowText(ClaimUtils.translatedText("chat.coordinates.tooltip"))));
                             src.sendSuccess(() -> text, false);
                         }
                     }

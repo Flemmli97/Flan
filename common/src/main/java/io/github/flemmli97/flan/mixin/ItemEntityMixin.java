@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.mixin;
 import io.github.flemmli97.flan.event.EntityInteractEvents;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.utils.IOwnedItem;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -25,14 +26,12 @@ public abstract class ItemEntityMixin implements IOwnedItem {
 
     @Inject(method = "readAdditionalSaveData", at = @At("RETURN"))
     private void readData(CompoundTag tag, CallbackInfo info) {
-        if (tag.contains("Flan:PlayerOrigin"))
-            this.flan$PlayerOrigin = tag.getUUID("Flan:PlayerOrigin");
+        this.flan$PlayerOrigin = tag.read("Flan:PlayerOrigin", UUIDUtil.CODEC).orElse(null);
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("RETURN"))
     private void writeData(CompoundTag tag, CallbackInfo info) {
-        if (this.flan$PlayerOrigin != null)
-            tag.putUUID("Flan:PlayerOrigin", this.flan$PlayerOrigin);
+        tag.storeNullable("Flan:PlayerOrigin", UUIDUtil.CODEC, this.flan$PlayerOrigin);
     }
 
     @Override
