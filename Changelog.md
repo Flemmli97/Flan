@@ -1,7 +1,9 @@
 Flan 1.11.11
 ================
+- Update to 1.21.5!
 - Gui items now have all components removed for cleaner tooltips
 - Effect string can now use `-` instead of just `;` as delimiter
+- Update yaml lib
 
 Flan 1.11.10
 ================
