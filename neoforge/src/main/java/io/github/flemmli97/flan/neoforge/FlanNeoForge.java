@@ -64,7 +64,7 @@ public class FlanNeoForge {
     }
 
     public void addReloadListener(AddServerReloadListenersEvent event) {
-        event.addListener(PermissionManager.ID, PermissionManager.create(event.getRegistryAccess()));
-        event.addListener(InteractionOverrideManager.ID, InteractionOverrideManager.create(event.getRegistryAccess()));
+        event.addListener(PermissionManager.ID.location(), PermissionManager.create(event.getRegistryAccess()));
+        event.addListener(InteractionOverrideManager.ID.location(), InteractionOverrideManager.create(event.getRegistryAccess()));
     }
 }

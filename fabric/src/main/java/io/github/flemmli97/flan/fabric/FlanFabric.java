@@ -73,8 +73,8 @@ public class FlanFabric implements ModInitializer {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PlayerEvents.onLogout(handler.player));
         CommandRegistrationCallback.EVENT.register((dispatcher, reg, env) -> CommandClaim.register(dispatcher, reg, env == Commands.CommandSelection.DEDICATED));
 
-        registerListener(PermissionManager.ID, PermissionManager::create);
-        registerListener(InteractionOverrideManager.ID, InteractionOverrideManager::create);
+        registerListener(PermissionManager.ID.location(), PermissionManager::create);
+        registerListener(InteractionOverrideManager.ID.location(), InteractionOverrideManager::create);
 
         Flan.permissionAPI = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
         Flan.playerAbilityLib = FabricLoader.getInstance().isModLoaded("playerabilitylib");

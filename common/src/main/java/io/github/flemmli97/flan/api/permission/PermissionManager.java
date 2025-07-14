@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.api.permission;
 import com.google.common.collect.ImmutableMap;
 import io.github.flemmli97.flan.Flan;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -19,8 +20,8 @@ import java.util.Map;
  */
 public class PermissionManager extends SimpleJsonResourceReloadListener<ClaimPermission.Builder> {
 
-    public static final String DIRECTORY = "claim_permissions";
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Flan.MODID, "claim_permissions");
+    public static final ResourceKey<? extends Registry<ClaimPermission.Builder>> ID =
+            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "claim_permissions"));
 
     private static PermissionManager INSTANCE;
 
@@ -28,9 +29,7 @@ public class PermissionManager extends SimpleJsonResourceReloadListener<ClaimPer
     private List<ClaimPermission> sorted = List.of();
 
     private PermissionManager(HolderLookup.Provider provider) {
-        super(provider, ClaimPermission.Builder.CODEC,
-                /// NeoForge appends the namespace to the path so we use the default namespace which doesn't cause that
-                ResourceKey.createRegistryKey(ResourceLocation.withDefaultNamespace(ID.getPath())));
+        super(provider, ClaimPermission.Builder.CODEC, ID);
     }
 
     public static PermissionManager create(HolderLookup.Provider provider) {

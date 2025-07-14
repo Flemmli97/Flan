@@ -4,8 +4,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
-import io.github.flemmli97.flan.api.permission.PermissionManager;
+import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -40,7 +41,8 @@ public abstract class ClaimPermissionProvider implements DataProvider {
             return provider;
         }).thenCompose(provider -> CompletableFuture.allOf(this.data.entrySet().stream().map(entry -> {
             ResourceLocation res = entry.getKey();
-            Path path = this.output.getOutputFolder(PackOutput.Target.DATA_PACK).resolve(res.getNamespace() + "/" + PermissionManager.ID.getPath() + "/" + res.getPath() + ".json");
+            Path path = this.output.getOutputFolder(PackOutput.Target.DATA_PACK).resolve(res.getNamespace())
+                    .resolve(Registries.elementsDirPath(InteractionOverrideManager.ID)).resolve(res.getPath() + ".json");
             JsonElement obj = ClaimPermission.Builder.CODEC.encodeStart(provider.createSerializationContext(JsonOps.INSTANCE), entry.getValue())
                     .getOrThrow();
             return DataProvider.saveStable(cache, obj, path);

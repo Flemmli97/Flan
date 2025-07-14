@@ -38,7 +38,8 @@ import java.util.function.Supplier;
  */
 public class InteractionOverrideManager extends SimpleJsonResourceReloadListener<InteractionOverrideManager.InteractionEntry<?>> {
 
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Flan.MODID, "claim_interactions_override");
+    public static final ResourceKey<? extends Registry<InteractionOverrideManager.InteractionEntry<?>>> ID =
+            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "claim_interactions_override"));
 
     public static final Codec<List<Pair<Either<TagKey<Block>, Block>, ResourceLocation>>> BLOCK_CODEC = tagOrEntryCodec(BuiltInRegistries.BLOCK).listOf();
     public static final Codec<List<Pair<Either<TagKey<Item>, Item>, ResourceLocation>>> ITEM_CODEC = tagOrEntryCodec(BuiltInRegistries.ITEM).listOf();
@@ -55,9 +56,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
     private final Map<InteractionType<?>, InteractionHolder<?>> overrides = new HashMap<>();
 
     private InteractionOverrideManager(HolderLookup.Provider provider) {
-        super(provider, InteractionEntry.CODEC,
-                /// NeoForge appends the namespace to the path so we use the default namespace which doesn't cause that
-                ResourceKey.createRegistryKey(ResourceLocation.withDefaultNamespace(ID.getPath())));
+        super(provider, InteractionEntry.CODEC, ID);
     }
 
     public static InteractionOverrideManager create(HolderLookup.Provider provider) {
