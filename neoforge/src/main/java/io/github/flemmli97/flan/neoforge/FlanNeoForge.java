@@ -33,15 +33,17 @@ public class FlanNeoForge {
         bus.addListener(WorldEventsNeoForge::modifyExplosion);
         bus.addListener(WorldEventsNeoForge::preventMobSpawn);
         bus.addListener(ItemInteractEventsNeoForge::useItem);
+
         bus.addListener(EventPriority.HIGHEST, BlockInteractEventsNeoForge::startBreakBlocks);
         bus.addListener(EventPriority.HIGHEST, BlockInteractEventsNeoForge::breakBlocks);
         bus.addListener(EventPriority.HIGHEST, BlockInteractEventsNeoForge::useBlocks);
         bus.addListener(EventPriority.HIGHEST, BlockInteractEventsNeoForge::placeBlock);
         bus.addListener(EventPriority.HIGHEST, BlockInteractEventsNeoForge::placeBlocks);
-        bus.addListener(EntityInteractEventsNeoForge::useAtEntity);
-        bus.addListener(EntityInteractEventsNeoForge::useEntity);
-        bus.addListener(EntityInteractEventsNeoForge::projectileHit);
-        bus.addListener(EntityInteractEventsNeoForge::preventDamage);
+        bus.addListener(EventPriority.HIGHEST, EntityInteractEventsNeoForge::useAtEntity);
+        bus.addListener(EventPriority.HIGHEST, EntityInteractEventsNeoForge::useEntity);
+        bus.addListener(EventPriority.HIGHEST, EntityInteractEventsNeoForge::projectileHit);
+        bus.addListener(EventPriority.HIGHEST, EntityInteractEventsNeoForge::preventDamage);
+
         bus.addListener(EntityInteractEventsNeoForge::xpAbsorb);
         bus.addListener(EntityInteractEventsNeoForge::canDropItem);
         bus.addListener(EntityInteractEventsNeoForge::mobGriefing);
