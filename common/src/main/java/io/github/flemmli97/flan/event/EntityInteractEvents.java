@@ -257,7 +257,7 @@ public class EntityInteractEvents {
 
     public static boolean canCollideWith(Player player, Entity entity) {
         if (player instanceof ServerPlayer sPlayer) {
-            if (entity instanceof ItemEntity) {
+            if (entity instanceof ItemEntity itemEntity) {
                 IOwnedItem ownedItem = (IOwnedItem) entity;
                 if (ownedItem.flan$getDeathPlayer() != null) {
                     ServerPlayer other = sPlayer.getServer().getPlayerList().getPlayer(ownedItem.flan$getDeathPlayer());
@@ -270,8 +270,12 @@ public class EntityInteractEvents {
                 ClaimStorage storage = ClaimStorage.get(sPlayer.serverLevel());
                 BlockPos pos = sPlayer.blockPosition();
                 IPermissionContainer claim = storage.getForPermissionCheck(pos);
-                if (claim != null)
+                if (claim != null) {
+                    if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_PICKUP, itemEntity.getItem()::is, itemEntity.getItem()::is)) {
+                        return true;
+                    }
                     return claim.canInteract(sPlayer, BuiltinPermission.PICKUP, pos, false);
+                }
             }
         }
         return true;
@@ -283,8 +287,11 @@ public class EntityInteractEvents {
             BlockPos pos = player.blockPosition();
             IPermissionContainer claim = storage.getForPermissionCheck(pos);
             boolean allow = true;
-            if (claim != null)
-                allow = claim.canInteract((ServerPlayer) player, BuiltinPermission.DROP, pos, false);
+            if (claim != null) {
+                if (!(claim instanceof Claim real) || !real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_DROP, stack::is, stack::is)) {
+                    allow = claim.canInteract((ServerPlayer) player, BuiltinPermission.DROP, pos, false);
+                }
+            }
             if (!allow) {
                 player.getInventory().add(stack);
                 NonNullList<ItemStack> stacks = NonNullList.create();

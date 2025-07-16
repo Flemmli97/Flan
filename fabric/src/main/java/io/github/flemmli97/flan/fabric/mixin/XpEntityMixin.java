@@ -17,5 +17,4 @@ public abstract class XpEntityMixin {
             info.cancel();
         }
     }
-
 }

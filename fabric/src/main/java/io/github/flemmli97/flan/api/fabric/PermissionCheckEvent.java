@@ -20,7 +20,6 @@ public class PermissionCheckEvent {
          * @return ActionResult#PASS to do nothing. ActionResult#FAIL to prevent the action. Else to allow the action
          */
         InteractionResult check(ServerPlayer player, ResourceLocation permission, BlockPos pos);
-
     }
 
     public static final Event<PermissionCheck> CHECK = EventFactory.createArrayBacked(PermissionCheck.class,
