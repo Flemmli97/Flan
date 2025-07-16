@@ -26,5 +26,4 @@ public abstract class ReplaceDiskMixin {
             return Optional.of(Flan.NONE_PREDICATE);
         return predicate;
     }
-
 }

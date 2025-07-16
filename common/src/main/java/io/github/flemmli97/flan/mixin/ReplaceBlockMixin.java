@@ -21,5 +21,4 @@ public abstract class ReplaceBlockMixin {
         if (entity instanceof LivingEntity living && !EntityInteractEvents.canFrostwalkerFreeze(serverLevel, BlockPos.containing(vec3).offset(((ReplaceBlock) (Object) this).offset()), living))
             info.cancel();
     }
-
 }

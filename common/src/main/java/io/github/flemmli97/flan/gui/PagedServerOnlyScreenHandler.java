@@ -90,5 +90,6 @@ public abstract class PagedServerOnlyScreenHandler<T> extends ServerOnlyScreenHa
     }
 
     public record PageSettings(int maxPages, int previousSlot, int nextSlot) {
+
     }
 }

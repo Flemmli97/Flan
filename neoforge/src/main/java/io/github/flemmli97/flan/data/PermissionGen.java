@@ -22,8 +22,9 @@ public class PermissionGen extends ClaimPermissionProvider {
         BuiltinPermission.DATAGEN_DATA.forEach((id, builder) -> this.addPermission(id, builder.apply(provider)));
         this.addPermission(CreateCompat.CREATE, new ClaimPermission.Builder(
                 new ClaimPermission.Builder.ItemStackHolder(ResourceLocation.parse("create:cart_assembler")),
-                false, false, BuiltinPermission.order++, "create",
+                BuiltinPermission.order++,
                 List.of("Gives permission to allow minecart contraptions to pass through claim border.",
-                        "Note if this is disabled and your contraption goes out of the claim it can't go back in!")));
+                        "Note if this is disabled and your contraption goes out of the claim it can't go back in!"))
+                .global(false).requiredMod("create"));
     }
 }

@@ -306,6 +306,7 @@ public class BuySellHandler {
     }
 
     record BuyItem(float amount, ItemPredicate predicate) implements Comparable<BuyItem> {
+
         @Override
         public int compareTo(@NotNull BuyItem buyItem) {
             return Float.compare(buyItem.amount, this.amount);
@@ -313,6 +314,7 @@ public class BuySellHandler {
     }
 
     record SellItem(float amount, ItemStack item) implements Comparable<SellItem> {
+
         @Override
         public int compareTo(@NotNull SellItem item) {
             return Float.compare(item.amount, this.amount);
@@ -320,5 +322,6 @@ public class BuySellHandler {
     }
 
     record ItemResult(ItemStack stack, int amount, float value) {
+
     }
 }

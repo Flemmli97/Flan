@@ -1,6 +1,5 @@
 package io.github.flemmli97.flan.claim;
 
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 

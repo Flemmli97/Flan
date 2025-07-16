@@ -38,7 +38,6 @@ public class ConfirmScreenHandler extends ServerOnlyScreenHandler<Object> {
         player.openMenu(fac);
     }
 
-
     @Override
     protected void fillInventoryWith() {
         for (int i = 0; i < this.inventory.getContainerSize(); i++) {

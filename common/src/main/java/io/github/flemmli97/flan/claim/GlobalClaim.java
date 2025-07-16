@@ -2,6 +2,8 @@ package io.github.flemmli97.flan.claim;
 
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
+import io.github.flemmli97.flan.api.permission.ClaimPermission;
+import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
@@ -17,7 +19,7 @@ public record GlobalClaim(ServerLevel world) implements IPermissionContainer {
     public boolean canInteract(ServerPlayer player, ResourceLocation perm, BlockPos pos, boolean message) {
         message = message && player.getClass().equals(ServerPlayer.class); //dont send messages to fake players
         Config.GlobalType global = ConfigHandler.CONFIG.getGlobal(this.world, perm);
-        if (global != Config.GlobalType.NONE && (player == null || !PlayerClaimData.get(player).isAdminIgnoreClaim())) {
+        if (global != Config.GlobalType.NONE && (player == null || !this.isAdmin(player, perm))) {
             if (global.getValue())
                 return true;
             if (message)
@@ -25,5 +27,12 @@ public record GlobalClaim(ServerLevel world) implements IPermissionContainer {
             return false;
         }
         return !perm.equals(BuiltinPermission.MOBSPAWN) && !perm.equals(BuiltinPermission.ANIMALSPAWN);
+    }
+
+    private boolean isAdmin(ServerPlayer player, ResourceLocation perm) {
+        ClaimPermission permission = PermissionManager.getInstance().get(perm);
+        if (permission != null && permission.requireExplicitSet)
+            return false;
+        return PlayerClaimData.get(player).isAdminIgnoreClaim();
     }
 }

@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerLevel.class)
 public abstract class ServerWorldMixin implements IClaimStorage {
+
     @Unique
     private ClaimStorage flan$ClaimData;
 
