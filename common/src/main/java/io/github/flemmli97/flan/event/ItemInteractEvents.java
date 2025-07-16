@@ -86,8 +86,8 @@ public class ItemInteractEvents {
                 }
                 player.connection.send(new ClientboundBlockUpdatePacket(update, world.getBlockState(update)));
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
-                updateHeldItem(player);
             }
+            updateHeldItem(player);
             return InteractionResultHolder.fail(stack);
         }
         return InteractionResultHolder.pass(stack);
