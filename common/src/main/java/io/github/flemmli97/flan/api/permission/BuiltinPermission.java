@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -75,7 +76,7 @@ public class BuiltinPermission {
     public static final ResourceLocation DROP = register("drop", new ItemStack(Items.BOWL), true, "Allow the drop of items");
     public static final ResourceLocation PICKUP = register("pickup", new ItemStack(Items.BRICK), true, "Allow the pickup of items");
     public static final ResourceLocation ALLOW_FLIGHT = register("flight", new ItemStack(Items.IRON_BLOCK), true, "Allows all non creative flight", "Does not grant flight!");
-    public static final ResourceLocation MAY_FLIGHT = register("may_flight", new ItemStack(Items.FEATHER), false, "Allows player to fly in this claim.", "Flight permission needs to be true!");
+    public static final ResourceLocation MAY_FLIGHT = register("may_flight", (holder, order) -> new ClaimPermission.Builder(new ItemStack(Items.FEATHER), order, List.of("Allows player to fly in this claim.", "Flight permission needs to be true!")).requireExplicitSet(true));
     public static final ResourceLocation CANSTAY = register("can_stay", new ItemStack(Items.PAPER), true, "Allow players to enter your claim");
     public static final ResourceLocation TELEPORT = register("teleport", new ItemStack(Items.END_PORTAL_FRAME), false, "Allow player to teleport to your claim home position");
     public static final ResourceLocation NOHUNGER = register("no_hunger", new ItemStack(Items.COOKED_BEEF), false, "Disable hunger");
@@ -112,9 +113,13 @@ public class BuiltinPermission {
     }
 
     private static ResourceLocation register(String key, Function<HolderLookup.Provider, ItemStack> item, boolean defaultVal, boolean global, String... description) {
+        return register(key, (holder, order) -> new ClaimPermission.Builder(item.apply(holder), order, List.of(description)).defaultVal(defaultVal).global(global));
+    }
+
+    private static ResourceLocation register(String key, BiFunction<HolderLookup.Provider, Integer, ClaimPermission.Builder> builder) {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(Flan.MODID, key);
         if (CrossPlatformStuff.INSTANCE.isDataGen()) {
-            DATAGEN_DATA.put(id, holder -> new ClaimPermission.Builder(item.apply(holder), defaultVal, global, order++, List.of(description)));
+            DATAGEN_DATA.put(id, holder -> builder.apply(holder, order++));
         }
         LEGACY_MIGRATION.put(key.replace("_", "").toUpperCase(Locale.ROOT), id);
         return id;

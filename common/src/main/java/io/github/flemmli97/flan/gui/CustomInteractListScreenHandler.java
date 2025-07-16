@@ -197,6 +197,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
     }
 
     public record Data(Claim claim, Type type) {
+
     }
 
     public enum Type {

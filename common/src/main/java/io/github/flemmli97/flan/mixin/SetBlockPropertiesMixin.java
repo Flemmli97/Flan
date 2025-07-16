@@ -21,5 +21,4 @@ public abstract class SetBlockPropertiesMixin {
         if (entity instanceof LivingEntity living && !EntityInteractEvents.canFrostwalkerFreeze(serverLevel, BlockPos.containing(vec3).offset(((SetBlockProperties) (Object) this).offset()), living))
             info.cancel();
     }
-
 }

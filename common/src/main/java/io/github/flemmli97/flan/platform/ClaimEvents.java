@@ -18,5 +18,4 @@ public interface ClaimEvents {
     InteractionResult claimCheck(ServerPlayer player, ResourceLocation permission, BlockPos pos);
 
     void borderCross(ServerPlayer player, @Nullable Claim enter, @Nullable Claim exit);
-
 }

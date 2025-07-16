@@ -39,6 +39,7 @@ public class LogoutTracker {
     }
 
     private static class LogoutTicket {
+
         private final UUID uuid;
         private int time = ConfigHandler.CONFIG.offlineProtectActivation;
 

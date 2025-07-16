@@ -16,5 +16,4 @@ public interface AbstractContainerAccessor {
 
     @Accessor("synchronizer")
     ContainerSynchronizer containerSync();
-
 }
