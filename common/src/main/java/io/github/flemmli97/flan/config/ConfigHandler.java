@@ -85,7 +85,7 @@ public class ConfigHandler {
         }
     }
 
-    public static JsonArray arryFromJson(JsonObject obj, String key) {
+    public static JsonArray arrayFromJson(JsonObject obj, String key) {
         try {
             return obj.get(key).getAsJsonArray();
         } catch (NullPointerException | UnsupportedOperationException e) {

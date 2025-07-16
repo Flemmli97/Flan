@@ -37,7 +37,7 @@ public class ConfigUpdater {
         map.put(5, config -> {
             Flan.debug("Updating config to version 5");
             JsonObject buySellHandler = ConfigHandler.fromJson(config, "buySellHandler");
-            JsonArray buyItems = ConfigHandler.arryFromJson(buySellHandler, "buyIngredients");
+            JsonArray buyItems = ConfigHandler.arrayFromJson(buySellHandler, "buyIngredients");
             List<JsonElement> toRemove = new ArrayList<>();
             buyItems.forEach(k -> {
                 JsonObject o = k.getAsJsonObject();

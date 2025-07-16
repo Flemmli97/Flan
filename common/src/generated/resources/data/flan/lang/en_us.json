@@ -387,7 +387,7 @@
   "flan.command.teleport.1": "Teleport to the given claims home position. Use global to teleport to admin claims",
   "flan.command.permission.0": "permission { global | (<group | personal> <name>) } <permission> <true | false | default>",
   "flan.command.permission.1": " Sets global/group/personal permissions. Also editable via the claim menu (for group perm right click on the group in the menu).",
-  "flan.command.ignoreList.0": "ignoreList <add | remove> <item | block_break | block_use | entity_attack | entity_use> <value>",
+  "flan.command.ignoreList.0": "ignoreList <add | remove> <flan:block_break | flan:block_use | flan:entity_attack | flan:entity_use | flan:item> <value>",
   "flan.command.ignoreList.1": "Add/remove an entry to/from the claims ignore list. Interactions in this list bypass permission checks",
   "flan.command.confirm.0": "confirm <confirmg | deny>",
   "flan.command.confirm.1": "Confirmation for sensitive commands",

@@ -178,7 +178,7 @@ public class Config {
             this.noSpawnClaim = ConfigHandler.fromJson(obj, "noSpawnClaim", this.noSpawnClaim);
             this.claimingCooldown = ConfigHandler.fromJson(obj, "claimingCooldown", this.claimingCooldown);
 
-            JsonArray arr = ConfigHandler.arryFromJson(obj, "blacklistedWorlds");
+            JsonArray arr = ConfigHandler.arrayFromJson(obj, "blacklistedWorlds");
             this.blacklistedWorlds = new String[arr.size()];
             for (int i = 0; i < arr.size(); i++)
                 this.blacklistedWorlds[i] = arr.get(i).getAsString();
@@ -212,24 +212,24 @@ public class Config {
 
             this.lenientBlockEntityCheck = ConfigHandler.fromJson(obj, "lenientBlockEntityCheck", this.lenientBlockEntityCheck);
             this.breakBlockBlacklist.clear();
-            ConfigHandler.arryFromJson(obj, "breakBlockBlacklist").forEach(e -> this.breakBlockBlacklist.add(e.getAsString()));
+            ConfigHandler.arrayFromJson(obj, "breakBlockBlacklist").forEach(e -> this.breakBlockBlacklist.add(e.getAsString()));
             this.interactBlockBlacklist.clear();
-            ConfigHandler.arryFromJson(obj, "interactBlockBlacklist").forEach(e -> this.interactBlockBlacklist.add(e.getAsString()));
+            ConfigHandler.arrayFromJson(obj, "interactBlockBlacklist").forEach(e -> this.interactBlockBlacklist.add(e.getAsString()));
             this.breakBlockEntityTagBlacklist.clear();
-            ConfigHandler.arryFromJson(obj, "breakBlockEntityTagBlacklist").forEach(e -> this.breakBlockEntityTagBlacklist.add(e.getAsString()));
+            ConfigHandler.arrayFromJson(obj, "breakBlockEntityTagBlacklist").forEach(e -> this.breakBlockEntityTagBlacklist.add(e.getAsString()));
             this.interactBlockEntityTagBlacklist.clear();
-            ConfigHandler.arryFromJson(obj, "interactBlockEntityTagBlacklist").forEach(e -> this.interactBlockEntityTagBlacklist.add(e.getAsString()));
+            ConfigHandler.arrayFromJson(obj, "interactBlockEntityTagBlacklist").forEach(e -> this.interactBlockEntityTagBlacklist.add(e.getAsString()));
             this.ignoredEntityTypes.clear();
-            ConfigHandler.arryFromJson(obj, "ignoredEntities").forEach(e -> this.ignoredEntityTypes.add(e.getAsString()));
+            ConfigHandler.arrayFromJson(obj, "ignoredEntities").forEach(e -> this.ignoredEntityTypes.add(e.getAsString()));
             this.entityTagIgnore.clear();
-            ConfigHandler.arryFromJson(obj, "entityTagIgnore").forEach(e -> this.entityTagIgnore.add(e.getAsString()));
+            ConfigHandler.arrayFromJson(obj, "entityTagIgnore").forEach(e -> this.entityTagIgnore.add(e.getAsString()));
 
             this.legacyOverrides.clear();
-            ConfigHandler.arryFromJson(obj, "legacyOverrides").forEach(e -> this.legacyOverrides.add(e.getAsString()));
-            ConfigHandler.arryFromJson(obj, "customItemPermission").forEach(e -> this.legacyOverrides.add(e.getAsString()));
-            ConfigHandler.arryFromJson(obj, "customBlockPermission").forEach(e -> this.legacyOverrides.add(e.getAsString()));
-            ConfigHandler.arryFromJson(obj, "customEntityPermission").forEach(e -> this.legacyOverrides.add(e.getAsString()));
-            ConfigHandler.arryFromJson(obj, "leftClickBlockPermission").forEach(e -> this.legacyOverrides.add(e.getAsString()));
+            ConfigHandler.arrayFromJson(obj, "legacyOverrides").forEach(e -> this.legacyOverrides.add(e.getAsString()));
+            ConfigHandler.arrayFromJson(obj, "customItemPermission").forEach(e -> this.legacyOverrides.add(e.getAsString()));
+            ConfigHandler.arrayFromJson(obj, "customBlockPermission").forEach(e -> this.legacyOverrides.add(e.getAsString()));
+            ConfigHandler.arrayFromJson(obj, "customEntityPermission").forEach(e -> this.legacyOverrides.add(e.getAsString()));
+            ConfigHandler.arrayFromJson(obj, "leftClickBlockPermission").forEach(e -> this.legacyOverrides.add(e.getAsString()));
 
             this.dropTicks = ConfigHandler.fromJson(obj, "dropTicks", this.dropTicks);
             this.inactivityTime = ConfigHandler.fromJson(obj, "inactivityTimeDays", this.inactivityTime);

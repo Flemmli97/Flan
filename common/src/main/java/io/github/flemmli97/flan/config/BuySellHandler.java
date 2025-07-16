@@ -279,7 +279,7 @@ public class BuySellHandler {
         this.buyType = Type.valueOf(ConfigHandler.fromJson(object, "buyType", this.buyType.toString()));
         this.buyAmount = object.has("buyValue") ? object.get("buyValue").getAsFloat() : this.buyAmount;
         this.buyItems.clear();
-        JsonArray buyArr = ConfigHandler.arryFromJson(object, "buyItems");
+        JsonArray buyArr = ConfigHandler.arrayFromJson(object, "buyItems");
         DynamicOps<JsonElement> ops = server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
         buyArr.forEach(k -> {
             JsonObject o = k.getAsJsonObject();
@@ -290,7 +290,7 @@ public class BuySellHandler {
         this.sellType = Type.valueOf(ConfigHandler.fromJson(object, "sellType", this.sellType.toString()));
         this.sellAmount = object.has("sellValue") ? object.get("sellValue").getAsFloat() : this.sellAmount;
         this.sellItems.clear();
-        JsonArray sellArr = ConfigHandler.arryFromJson(object, "sellItems");
+        JsonArray sellArr = ConfigHandler.arrayFromJson(object, "sellItems");
         sellArr.forEach(k -> {
             JsonObject o = k.getAsJsonObject();
             this.sellItems.add(new SellItem(o.get("amount").getAsFloat(), ITEM_STACK_CODEC.parse(ops, o.get("item"))
