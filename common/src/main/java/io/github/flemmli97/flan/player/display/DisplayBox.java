@@ -6,9 +6,12 @@ import net.minecraft.core.Direction;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public class DisplayBox {
+
+    private final UUID id = UUID.randomUUID();
 
     private final ClaimBox box;
     private final Supplier<Boolean> removed;
@@ -48,6 +51,10 @@ public class DisplayBox {
 
     public boolean is3d() {
         return false;
+    }
+
+    public UUID id() {
+        return this.id;
     }
 
     @Override

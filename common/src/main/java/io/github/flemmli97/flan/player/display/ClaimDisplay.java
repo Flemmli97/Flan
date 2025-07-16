@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 public class ClaimDisplay {
@@ -37,8 +36,6 @@ public class ClaimDisplay {
 
     private DisplayBoxPos pos;
     private ClaimBox prevDims;
-
-    private final UUID displayId = UUID.randomUUID();
 
     public ClaimDisplay(Claim claim, EnumDisplayType type, int y) {
         this(claim.display(), claim.getLevel(), type, y);
@@ -182,7 +179,7 @@ public class ClaimDisplay {
                 for (BlockPos pos : this.pos.edges) {
                     displayData.add(new ClientBlockDisplayTracker.DisplayData(pos, this.type.displayBlock));
                 }
-                data.clientBlockDisplayTracker.displayFakeBlocks(this.displayId, displayData);
+                data.clientBlockDisplayTracker.displayFakeBlocks(this.display.id(), displayData);
             }
         }
         if (ConfigHandler.CONFIG.particleDisplay) {
@@ -200,7 +197,7 @@ public class ClaimDisplay {
     public void onRemoved(ServerPlayer player) {
         if (!ConfigHandler.CONFIG.particleDisplay) {
             PlayerClaimData data = PlayerClaimData.get(player);
-            data.clientBlockDisplayTracker.resetFakeBlocks(this.displayId);
+            data.clientBlockDisplayTracker.resetFakeBlocks(this.display.id());
         }
     }
 

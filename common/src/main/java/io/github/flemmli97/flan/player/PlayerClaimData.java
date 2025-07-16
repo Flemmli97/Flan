@@ -203,17 +203,26 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public void addDisplayClaim(IPermissionContainer cont, EnumDisplayType type, int height) {
+        this.addDisplayClaim(cont, type, height, true);
+    }
+
+    private void addDisplayClaim(IPermissionContainer cont, EnumDisplayType type, int height, boolean override) {
         if (cont instanceof Claim claim) {
-            this.displayToAdd.add(new ClaimDisplay(claim, type, height));
-            if (type == EnumDisplayType.MAIN)
+            this.addDisplayClaim(new ClaimDisplay(claim, type, height), override);
+            if (type == EnumDisplayType.MAIN) {
                 for (Claim sub : claim.getAllSubclaims())
-                    this.displayToAdd.add(new ClaimDisplay(sub, EnumDisplayType.SUB, height));
+                    this.addDisplayClaim(new ClaimDisplay(sub, EnumDisplayType.SUB, height), override);
+            }
         }
     }
 
     public void addDisplayClaim(DisplayBox display, EnumDisplayType type, int height) {
-        if (!display.isRemoved())
-            this.displayToAdd.add(new ClaimDisplay(display, this.player.serverLevel(), type, height));
+        this.addDisplayClaim(new ClaimDisplay(display, this.player.serverLevel(), type, height), true);
+    }
+
+    private void addDisplayClaim(ClaimDisplay display, boolean override) {
+        if (override || !this.claimDisplayList.contains(display))
+            this.displayToAdd.add(display);
     }
 
     public ClaimMode getClaimMode() {
@@ -315,19 +324,18 @@ public class PlayerClaimData implements IPlayerData {
                 || ConfigHandler.isClaimingTool(this.player.getOffhandItem());
         boolean stick = ConfigHandler.isInspectionTool(this.player.getMainHandItem())
                 || ConfigHandler.isInspectionTool(this.player.getOffhandItem());
+        this.claimDisplayList.removeIf(display -> {
+            boolean remove = display.display(this.player, !tool && !stick)
+                    || display.equals(this.displayEditing);
+            if (remove)
+                display.onRemoved(this.player);
+            return remove || this.displayToAdd.contains(display);
+        });
         this.displayToAdd.forEach(add -> {
-            if (!this.claimDisplayList.add(add)) {
-                this.claimDisplayList.removeIf(c -> c.equals(add) && c.type != add.type);
+            if (!add.equals(this.displayEditing))
                 this.claimDisplayList.add(add);
-            }
         });
         this.displayToAdd.clear();
-        this.claimDisplayList.removeIf(d -> {
-            boolean remove = d.display(this.player, !tool && !stick);
-            if (remove)
-                d.onRemoved(this.player);
-            return remove;
-        });
         if (++this.lastBlockTick > ConfigHandler.CONFIG.ticksForNextBlock) {
             this.addClaimBlocks(1);
             this.lastBlockTick = 0;
@@ -418,10 +426,10 @@ public class PlayerClaimData implements IPlayerData {
         if (ConfigHandler.CONFIG.nearbyClaimsToolDisplay > 0) {
             for (Claim claim : ClaimStorage.get(this.player.serverLevel())
                     .getNearbyClaims(this.player.serverLevel(), this.player.blockPosition(), ConfigHandler.CONFIG.nearbyClaimsToolDisplay, ConfigHandler.CONFIG.nearbyClaimsToolDisplay)) {
-                this.addDisplayClaim(claim, EnumDisplayType.MAIN, this.player.blockPosition().getY());
+                this.addDisplayClaim(claim, EnumDisplayType.MAIN, this.player.blockPosition().getY(), false);
             }
         } else {
-            this.addDisplayClaim(currentClaim, EnumDisplayType.MAIN, this.player.blockPosition().getY());
+            this.addDisplayClaim(currentClaim, EnumDisplayType.MAIN, this.player.blockPosition().getY(), false);
         }
     }
 
