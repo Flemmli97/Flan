@@ -1,9 +1,10 @@
-package io.github.flemmli97.flan.claim;
+package io.github.flemmli97.flan.claim.attachment;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.gui.ServerScreenHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
@@ -72,6 +73,15 @@ public class AllowedRegistryList<T> {
         return stack;
     }
 
+    public void addAllowedItem(String value) {
+        if (value.startsWith("#"))
+            this.addAllowedItem(Either.right(TagKey.create(this.registry.key(), ResourceLocation.parse(value.substring(1)))));
+        else {
+            this.registry.getOptional(ResourceLocation.parse(value))
+                    .ifPresent(direct -> this.addAllowedItem(Either.left(direct)));
+        }
+    }
+
     public void addAllowedItem(Either<T, TagKey<T>> allowed) {
         if (this.mapping.put(this.valueAsString(allowed), this.list.size()) == null) {
             this.list.add(allowed);
@@ -106,7 +116,7 @@ public class AllowedRegistryList<T> {
         return array;
     }
 
-    public void read(JsonArray array) {
+    public AllowedRegistryList<T> read(JsonArray array) {
         this.list.clear();
         array.forEach(e -> {
             String element = e.getAsString();
@@ -121,5 +131,6 @@ public class AllowedRegistryList<T> {
                 }
             }
         });
+        return this;
     }
 }

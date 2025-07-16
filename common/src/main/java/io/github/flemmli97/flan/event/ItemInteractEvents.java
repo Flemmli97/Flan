@@ -7,6 +7,7 @@ import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
@@ -70,7 +71,7 @@ public class ItemInteractEvents {
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim == null)
             return InteractionResult.PASS;
-        if (claim instanceof Claim real && real.canUseItem(stack))
+        if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_USE, stack::is, stack::is))
             return InteractionResult.PASS;
         ResourceLocation perm = InteractionOverrideManager.getInstance().getItemUse(stack.getItem());
         if (perm != null) {
@@ -115,7 +116,7 @@ public class ItemInteractEvents {
             return InteractionResult.PASS;
         if (BLACK_LISTED_ITEMS.contains(stack.getItem()))
             return InteractionResult.PASS;
-        if (claim instanceof Claim real && real.canUseItem(stack))
+        if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_USE, stack::is, stack::is))
             return InteractionResult.PASS;
         ResourceLocation perm = InteractionOverrideManager.getInstance().getItemUse(stack.getItem());
         if (perm == null) {

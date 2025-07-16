@@ -5,6 +5,7 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
+import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.mixin.IHungerAccessor;
 import io.github.flemmli97.flan.mixin.IPersistentProjectileVars;
@@ -69,7 +70,8 @@ public class EntityInteractEvents {
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
-            if (claim instanceof Claim real && real.canInteractWithEntity(entity))
+            if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ENTITY_USE,
+                    type -> type == entity.getType(), entity.getType()::is))
                 return InteractionResult.PASS;
             ResourceLocation perm = InteractionOverrideManager.getInstance().getEntityInteract(entity.getType());
             if (perm != null) {
@@ -94,7 +96,8 @@ public class EntityInteractEvents {
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
-            if (claim instanceof Claim real && real.canInteractWithEntity(entity))
+            if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ENTITY_USE,
+                    type -> type == entity.getType(), entity.getType()::is))
                 return InteractionResult.PASS;
             ResourceLocation perm = InteractionOverrideManager.getInstance().getEntityInteract(entity.getType());
             if (perm != null) {
@@ -223,7 +226,8 @@ public class EntityInteractEvents {
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
-            if (claim instanceof Claim real && real.canAttackEntity(entity))
+            if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ENTITY_ATTACK,
+                    type -> type == entity.getType(), entity.getType()::is))
                 return InteractionResult.PASS;
             if (entity.hasCustomName() && !claim.canInteract(player, BuiltinPermission.HURTNAMED, pos, message)) {
                 return InteractionResult.FAIL;

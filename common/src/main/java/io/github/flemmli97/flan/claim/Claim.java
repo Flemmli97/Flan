@@ -10,6 +10,8 @@ import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
+import io.github.flemmli97.flan.claim.attachment.AllowedRegistryListHolder;
+import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
 import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.ClaimEvents;
@@ -38,12 +40,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
@@ -91,11 +87,7 @@ public class Claim implements IPermissionContainer {
 
     private final Map<Holder<MobEffect>, Integer> potions = new HashMap<>();
 
-    public final AllowedRegistryList<Item> allowedItems = AllowedRegistryList.ofItemLike(BuiltInRegistries.ITEM, this);
-    public final AllowedRegistryList<Block> allowedUseBlocks = AllowedRegistryList.ofItemLike(BuiltInRegistries.BLOCK, this);
-    public final AllowedRegistryList<Block> allowedBreakBlocks = AllowedRegistryList.ofItemLike(BuiltInRegistries.BLOCK, this);
-    public final AllowedRegistryList<EntityType<?>> allowedEntityAttack = new AllowedRegistryList<>(BuiltInRegistries.ENTITY_TYPE, this, AllowedRegistryList.ENTITY_AS_ITEM);
-    public final AllowedRegistryList<EntityType<?>> allowedEntityUse = new AllowedRegistryList<>(BuiltInRegistries.ENTITY_TYPE, this, AllowedRegistryList.ENTITY_AS_ITEM);
+    public final AllowedRegistryListHolder allowedEntries = new AllowedRegistryListHolder(this);
 
     public Component enterTitle, enterSubtitle, leaveTitle, leaveSubtitle;
 
@@ -696,26 +688,6 @@ public class Claim implements IPermissionContainer {
         this.displayTitleMessage(player, this.leaveTitle, this.leaveSubtitle);
     }
 
-    public boolean canUseItem(ItemStack stack) {
-        return this.allowedItems.matches(stack::is, stack::is);
-    }
-
-    public boolean canUseBlockItem(BlockState state) {
-        return this.allowedUseBlocks.matches(state::is, state::is);
-    }
-
-    public boolean canBreakBlockItem(BlockState state) {
-        return this.allowedBreakBlocks.matches(state::is, state::is);
-    }
-
-    public boolean canAttackEntity(Entity entity) {
-        return this.allowedEntityAttack.matches(type -> entity.getType() == type, tag -> entity.getType().is(tag));
-    }
-
-    public boolean canInteractWithEntity(Entity entity) {
-        return this.allowedEntityUse.matches(type -> entity.getType() == type, tag -> entity.getType().is(tag));
-    }
-
     /**
      * Only marks non sub claims
      */
@@ -742,7 +714,7 @@ public class Claim implements IPermissionContainer {
             this.minY = pos.get(4).getAsInt();
             if (obj.has("MaxY"))
                 this.maxY = obj.get("MaxY").getAsInt();
-            JsonArray home = ConfigHandler.arryFromJson(obj, "Home");
+            JsonArray home = ConfigHandler.arrayFromJson(obj, "Home");
             if (home.size() != 3)
                 this.homePos = this.getDefaultCenterPos();
             else {
@@ -776,11 +748,21 @@ public class Claim implements IPermissionContainer {
                 this.owner = null;
             else
                 this.owner = uuid;
-            this.allowedItems.read(ConfigHandler.arryFromJson(obj, "AllowedItems"));
-            this.allowedUseBlocks.read(ConfigHandler.arryFromJson(obj, "AllowedUseBlocks"));
-            this.allowedBreakBlocks.read(ConfigHandler.arryFromJson(obj, "AllowedBreakBlocks"));
-            this.allowedEntityAttack.read(ConfigHandler.arryFromJson(obj, "AllowedEntityAttack"));
-            this.allowedEntityUse.read(ConfigHandler.arryFromJson(obj, "AllowedEntityUse"));
+
+            JsonObject allowedEntryObj = ConfigHandler.fromJson(obj, "AllowedEntries");
+            // Legacy Update
+            if (obj.has("AllowedItems"))
+                allowedEntryObj.add(ClaimAllowListKey.ITEM_USE.id().toString(), ConfigHandler.arrayFromJson(obj, "AllowedItems"));
+            if (obj.has("AllowedUseBlocks"))
+                allowedEntryObj.add(ClaimAllowListKey.BLOCK_BREAK.id().toString(), ConfigHandler.arrayFromJson(obj, "AllowedUseBlocks"));
+            if (obj.has("AllowedBreakBlocks"))
+                allowedEntryObj.add(ClaimAllowListKey.BLOCK_USE.id().toString(), ConfigHandler.arrayFromJson(obj, "AllowedBreakBlocks"));
+            if (obj.has("AllowedEntityAttack"))
+                allowedEntryObj.add(ClaimAllowListKey.ENTITY_ATTACK.id().toString(), ConfigHandler.arrayFromJson(obj, "AllowedEntityAttack"));
+            if (obj.has("AllowedEntityUse"))
+                allowedEntryObj.add(ClaimAllowListKey.ENTITY_USE.id().toString(), ConfigHandler.arrayFromJson(obj, "AllowedEntityUse"));
+            this.allowedEntries.load(allowedEntryObj);
+
             this.globalPerm.clear();
             this.permissions.clear();
             this.subClaims.clear();
@@ -804,9 +786,9 @@ public class Claim implements IPermissionContainer {
             });
             ConfigHandler.fromJson(obj, "PlayerPerms").entrySet()
                     .forEach(key -> this.playersGroups.put(UUID.fromString(key.getKey()), key.getValue().getAsString()));
-            ConfigHandler.arryFromJson(obj, "SubClaims")
+            ConfigHandler.arrayFromJson(obj, "SubClaims")
                     .forEach(sub -> this.subClaims.add(Claim.fromJson(sub.getAsJsonObject(), this.owner, this.level)));
-            ConfigHandler.arryFromJson(obj, "FakePlayers")
+            ConfigHandler.arrayFromJson(obj, "FakePlayers")
                     .forEach(e -> {
                         try {
                             this.fakePlayers.add(UUID.fromString(e.getAsString()));
@@ -844,11 +826,7 @@ public class Claim implements IPermissionContainer {
         obj.add("Potions", potions);
         if (this.parent != null)
             obj.addProperty("Parent", this.parent.toString());
-        obj.add("AllowedItems", this.allowedItems.save());
-        obj.add("AllowedUseBlocks", this.allowedUseBlocks.save());
-        obj.add("AllowedBreakBlocks", this.allowedBreakBlocks.save());
-        obj.add("AllowedEntityAttack", this.allowedEntityAttack.save());
-        obj.add("AllowedEntityUse", this.allowedEntityUse.save());
+        obj.add("AllowedEntries", this.allowedEntries.save());
         if (!this.globalPerm.isEmpty()) {
             JsonElement gPerm;
             if (this.parent == null) {

@@ -3,13 +3,12 @@ package io.github.flemmli97.flan.data;
 import com.google.common.collect.ImmutableSet;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
-import io.github.flemmli97.flan.gui.CustomInteractListScreenHandler;
+import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
 import io.github.flemmli97.flan.player.ClaimMode;
 import io.github.flemmli97.linguabib.api.ServerLangGen;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -169,11 +168,11 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.screenLeaveText", "Edit title text on leave.");
         this.add("flan.screenLeaveSubText", "Edit subtitle text on leave.");
         this.add("flan.screenDelete", "Use \"$empty\" to delete the message");
-        this.add(CustomInteractListScreenHandler.Type.ITEM.translationKey, "Allowed item use");
-        this.add(CustomInteractListScreenHandler.Type.BLOCKBREAK.translationKey, "Allowed block break");
-        this.add(CustomInteractListScreenHandler.Type.BLOCKUSE.translationKey, "Allowed block use");
-        this.add(CustomInteractListScreenHandler.Type.ENTITYATTACK.translationKey, "Allowed entities to attack");
-        this.add(CustomInteractListScreenHandler.Type.ENTITYUSE.translationKey, "Allowed entity interactions");
+        this.add(ClaimAllowListKey.ITEM_USE.translationKey(), "Allowed item use");
+        this.add(ClaimAllowListKey.BLOCK_BREAK.translationKey(), "Allowed block break");
+        this.add(ClaimAllowListKey.BLOCK_USE.translationKey(), "Allowed block use");
+        this.add(ClaimAllowListKey.ENTITY_ATTACK.translationKey(), "Allowed entities to attack");
+        this.add(ClaimAllowListKey.ENTITY_USE.translationKey(), "Allowed entity interactions");
         this.add("flan.allowListEmptyTag", "Empty Tag");
 
         this.add("flan.chatClaimTextEdit", "[Click for command]");
@@ -272,7 +271,7 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.command.fakePlayer", "fakePlayer <add | remove> <uuid>", "Adds/remove a fakeplayer to/from the claim");
         this.add("flan.command.teleport", "teleport { <self | global> <claim name | claim uuid> } | { other <player> <claim name | claim uuid> }", "Teleport to the given claims home position. Use global to teleport to admin claims");
         this.add("flan.command.permission", "permission { global | (<group | personal> <name>) } <permission> <true | false | default>", " Sets global/group/personal permissions. Also editable via the claim menu (for group perm right click on the group in the menu).");
-        this.add("flan.command.ignoreList", "ignoreList <add | remove> <" + Arrays.stream(CustomInteractListScreenHandler.Type.values()).map(t -> t.commandKey)
+        this.add("flan.command.ignoreList", "ignoreList <add | remove> <" + ClaimAllowListKey.keys().entrySet().stream().sorted(Map.Entry.comparingByKey(ClaimPermission.NAMESPACE_FIRST)).map(e -> e.getValue().id().toString())
                         .collect(Collectors.joining(" | ")) + "> <value>",
                 "Add/remove an entry to/from the claims ignore list. Interactions in this list bypass permission checks");
         this.add("flan.command.confirm", "confirm <confirmg | deny>", "Confirmation for sensitive commands");

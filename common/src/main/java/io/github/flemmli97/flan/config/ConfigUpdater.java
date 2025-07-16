@@ -42,7 +42,7 @@ public class ConfigUpdater {
         map.put(5, (server, config) -> {
             Flan.debug("Updating config to version 5");
             JsonObject buySellHandler = ConfigHandler.fromJson(config, "buySellHandler");
-            JsonArray buyItems = ConfigHandler.arryFromJson(buySellHandler, "buyIngredients");
+            JsonArray buyItems = ConfigHandler.arrayFromJson(buySellHandler, "buyIngredients");
             List<JsonElement> toRemove = new ArrayList<>();
             DynamicOps<JsonElement> ops = server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
             buyItems.forEach(k -> {

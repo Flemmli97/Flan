@@ -18,7 +18,7 @@ import java.util.Optional;
  */
 public class ClaimPermission implements Comparable<ClaimPermission> {
 
-    private static final Comparator<ResourceLocation> NAMESPACE_FIRST = Comparator.comparing(ResourceLocation::getNamespace)
+    public static final Comparator<ResourceLocation> NAMESPACE_FIRST = Comparator.comparing(ResourceLocation::getNamespace)
             .thenComparing(ResourceLocation::getPath);
     /**
      * Item to show in the gui

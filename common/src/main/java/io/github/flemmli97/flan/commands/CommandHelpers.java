@@ -13,8 +13,8 @@ import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
 import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.gui.CustomInteractListScreenHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -116,19 +116,13 @@ public class CommandHelpers {
                 ClaimUtils.translatedText("No such entry %1$s", object)).create(result));
     }
 
-    public static CompletableFuture<Suggestions> claimEntryListSuggestion(CommandContext<CommandSourceStack> context, SuggestionsBuilder build, CustomInteractListScreenHandler.Type type) throws CommandSyntaxException {
+    public static CompletableFuture<Suggestions> claimEntryListSuggestion(CommandContext<CommandSourceStack> context, SuggestionsBuilder build, ClaimAllowListKey<?> key) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         List<String> list = new ArrayList<>();
         ClaimStorage storage = ClaimStorage.get(player.serverLevel());
         Claim claim = storage.getClaimAt(player.blockPosition());
         if (claim != null && claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
-            switch (type) {
-                case ITEM -> list = claim.allowedItems.asString();
-                case BLOCKBREAK -> list = claim.allowedBreakBlocks.asString();
-                case BLOCKUSE -> list = claim.allowedUseBlocks.asString();
-                case ENTITYATTACK -> list = claim.allowedEntityAttack.asString();
-                case ENTITYUSE -> list = claim.allowedEntityUse.asString();
-            }
+            list = claim.allowedEntries.get(key).asString();
         }
         return SharedSuggestionProvider.suggest(list, build);
     }

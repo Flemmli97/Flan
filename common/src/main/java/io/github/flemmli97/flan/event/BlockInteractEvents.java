@@ -5,6 +5,7 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
+import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.gui.LockedLecternScreenHandler;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
@@ -73,7 +74,7 @@ public class BlockInteractEvents {
         ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
-            if (claim instanceof Claim real && real.canBreakBlockItem(state))
+            if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.BLOCK_BREAK, state::is, state::is))
                 return true;
             ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
             if (contains(id, world.getBlockEntity(pos), ConfigHandler.CONFIG.breakBlockBlacklist, ConfigHandler.CONFIG.breakBlockEntityTagBlacklist))
@@ -113,7 +114,7 @@ public class BlockInteractEvents {
         IPermissionContainer claim = storage.getForPermissionCheck(hitResult.getBlockPos());
         if (claim != null) {
             BlockState state = world.getBlockState(hitResult.getBlockPos());
-            if (claim instanceof Claim real && real.canUseBlockItem(state))
+            if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.BLOCK_USE, state::is, state::is))
                 return InteractionResult.PASS;
             ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
             BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
