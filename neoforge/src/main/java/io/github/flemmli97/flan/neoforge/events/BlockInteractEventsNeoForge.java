@@ -49,7 +49,7 @@ public class BlockInteractEventsNeoForge {
         }
         if (res == InteractionResult.FAIL)
             event.setUseBlock(TriState.FALSE);
-        res = ItemInteractEvents.onItemUseBlock(new UseOnContext(event.getEntity(), event.getHand(), event.getHitVec()));
+        res = ItemInteractEvents.onItemUseBlock(new UseOnContext(event.getEntity(), event.getHand(), event.getHitVec()), res != InteractionResult.FAIL);
         if (res == InteractionResult.FAIL)
             event.setUseItem(TriState.FALSE);
     }

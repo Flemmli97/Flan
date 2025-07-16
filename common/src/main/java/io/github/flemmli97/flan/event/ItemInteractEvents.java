@@ -95,19 +95,19 @@ public class ItemInteractEvents {
 
     private static final Set<Item> BLACK_LISTED_ITEMS = Sets.newHashSet(Items.COMPASS, Items.FILLED_MAP, Items.FIREWORK_ROCKET);
 
-    public static InteractionResult onItemUseBlock(UseOnContext context) {
+    public static InteractionResult onItemUseBlock(UseOnContext context, boolean hadBlockSuccess) {
         if (!(context.getPlayer() instanceof ServerPlayer player) || context.getItemInHand().isEmpty())
             return InteractionResult.PASS;
         ClaimStorage storage = ClaimStorage.get((ServerLevel) context.getLevel());
         BlockPos interactPos = context.getClickedPos();
-        InteractionResult interact = itemUseOn(context.getLevel(), player, storage, interactPos, context.getItemInHand());
+        InteractionResult interact = itemUseOn(context.getLevel(), player, storage, interactPos, context.getItemInHand(), hadBlockSuccess);
         if (interact != InteractionResult.PASS)
             return interact;
         BlockPos placePos = new BlockPlaceContext(context).getClickedPos();
-        return itemUseOn(context.getLevel(), player, storage, placePos, context.getItemInHand());
+        return itemUseOn(context.getLevel(), player, storage, placePos, context.getItemInHand(), hadBlockSuccess);
     }
 
-    private static InteractionResult itemUseOn(Level level, ServerPlayer player, ClaimStorage storage, BlockPos placePos, ItemStack stack) {
+    private static InteractionResult itemUseOn(Level level, ServerPlayer player, ClaimStorage storage, BlockPos placePos, ItemStack stack, boolean hadBlockSuccess) {
         IPermissionContainer claim = storage.getForPermissionCheck(placePos);
         Claim column = storage.getForPermissionCheck(new BlockPos(placePos.getX(), level.getMaxY(), placePos.getZ()))
                 instanceof Claim real ? real : null;
@@ -121,28 +121,21 @@ public class ItemInteractEvents {
         if (perm == null) {
             if (stack.has(DataComponents.JUKEBOX_PLAYABLE))
                 perm = BuiltinPermission.JUKEBOX;
+            else
+                perm = BuiltinPermission.PLACE;
         }
-        if (perm != null) {
-            if (claim.canInteract(player, perm, placePos, false)) {
-                if (column != null && stack.getItem() instanceof BlockItem) {
-                    column.extendDownwards(placePos);
-                }
-                return InteractionResult.PASS;
-            } else {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
-                return InteractionResult.FAIL;
-            }
-        }
-        if (claim.canInteract(player, BuiltinPermission.PLACE, placePos, false)) {
+        if (claim.canInteract(player, perm, placePos, false)) {
             if (column != null && stack.getItem() instanceof BlockItem) {
                 column.extendDownwards(placePos);
             }
             return InteractionResult.PASS;
         }
-        player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+        if (!hadBlockSuccess) {
+            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+            PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
+        }
         BlockState other = level.getBlockState(placePos.above());
         player.connection.send(new ClientboundBlockUpdatePacket(placePos.above(), other));
-        PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
         updateHeldItem(player);
         return InteractionResult.FAIL;
     }
