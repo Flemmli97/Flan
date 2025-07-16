@@ -41,9 +41,10 @@ public class FlanForge {
         forge.addListener(EventPriority.HIGHEST, BlockInteractEventsForge::useBlocks);
         forge.addListener(EventPriority.HIGHEST, BlockInteractEventsForge::placeBlock);
         forge.addListener(EventPriority.HIGHEST, BlockInteractEventsForge::placeBlocks);
-        forge.addListener(EntityInteractEventsForge::attackEntity);
-        forge.addListener(EntityInteractEventsForge::useAtEntity);
-        forge.addListener(EntityInteractEventsForge::useEntity);
+        forge.addListener(EventPriority.HIGHEST, EntityInteractEventsForge::attackEntity);
+        forge.addListener(EventPriority.HIGHEST, EntityInteractEventsForge::useAtEntity);
+        forge.addListener(EventPriority.HIGHEST, EntityInteractEventsForge::useEntity);
+
         forge.addListener(EntityInteractEventsForge::projectileHit);
         forge.addListener(EntityInteractEventsForge::preventDamage);
         forge.addListener(EntityInteractEventsForge::xpAbsorb);

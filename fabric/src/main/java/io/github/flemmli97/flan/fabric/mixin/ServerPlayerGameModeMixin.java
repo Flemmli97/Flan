@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ServerPlayerGameMode.class)
+@Mixin(value = ServerPlayerGameMode.class, priority = 999)
 public abstract class ServerPlayerGameModeMixin implements ItemUseBlockFlags {
 
     @Unique

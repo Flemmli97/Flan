@@ -56,17 +56,17 @@ public class FlanFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        PlayerBlockBreakEvents.BEFORE.register(BlockInteractEvents::breakBlocks);
-        AttackBlockCallback.EVENT.register(BlockInteractEvents::startBreakBlocks);
-        UseBlockCallback.EVENT.addPhaseOrdering(EVENT_PHASE, Event.DEFAULT_PHASE);
-        UseBlockCallback.EVENT.register(EVENT_PHASE, FlanFabric::useBlocks);
-        UseEntityCallback.EVENT.register(((player, world, hand, entity, hitResult) -> {
+        applyPriorityListener(PlayerBlockBreakEvents.BEFORE, BlockInteractEvents::breakBlocks);
+        applyPriorityListener(AttackBlockCallback.EVENT, BlockInteractEvents::startBreakBlocks);
+        applyPriorityListener(UseBlockCallback.EVENT, FlanFabric::useBlocks);
+        applyPriorityListener(UseEntityCallback.EVENT, ((player, world, hand, entity, hitResult) -> {
             if (hitResult != null)
                 return EntityInteractEvents.useAtEntity(player, world, hand, entity, null);
             return EntityInteractEvents.useEntity(player, world, hand, entity);
         }));
-        AttackEntityCallback.EVENT.register(EntityInteractEvents::attackEntity);
-        UseItemCallback.EVENT.register(ItemInteractEvents::useItem);
+        applyPriorityListener(AttackEntityCallback.EVENT, EntityInteractEvents::attackEntity);
+        applyPriorityListener(UseItemCallback.EVENT, ItemInteractEvents::useItem);
+
         ServerLifecycleEvents.SERVER_STARTING.register(FlanFabric::serverLoad);
         ServerLifecycleEvents.SERVER_STARTED.register(FlanFabric::serverFinishLoad);
         ServerTickEvents.START_SERVER_TICK.register(WorldEvents::serverTick);
@@ -116,6 +116,11 @@ public class FlanFabric implements ModInitializer {
         if (Flan.commonProtApi)
             FlanProtectionProvider.register();
         ClaimCriterias.init();
+    }
+
+    private static <T> void applyPriorityListener(Event<T> event, T listener) {
+        event.addPhaseOrdering(EVENT_PHASE, Event.DEFAULT_PHASE);
+        event.register(EVENT_PHASE, listener);
     }
 
     public static void serverLoad(MinecraftServer server) {
