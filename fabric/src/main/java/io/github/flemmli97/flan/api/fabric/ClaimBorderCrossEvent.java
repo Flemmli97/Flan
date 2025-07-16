@@ -19,7 +19,6 @@ public class ClaimBorderCrossEvent {
          * @param exit   The claim the player leaves
          */
         void borderCross(ServerPlayer player, @Nullable Claim enter, @Nullable Claim exit);
-
     }
 
     public static final Event<BorderEvent> EVENT = EventFactory.createArrayBacked(BorderEvent.class,

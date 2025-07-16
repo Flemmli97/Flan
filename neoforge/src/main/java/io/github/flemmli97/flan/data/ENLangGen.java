@@ -146,6 +146,7 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.screenMenuClaimText", "Edit Enter/Leave Text");
         this.add("flan.screenMenuFakePlayers", "Fake Players");
         this.add("flan.screenMenuDelete", "Delete Claim");
+        this.add("flan.screenAllowList", "Configure bypasses for actions");
         this.add("flan.screenConfirm", "Confirm");
         this.add("flan.screenYes", "Yes");
         this.add("flan.screenNo", "No");
@@ -173,6 +174,8 @@ public class ENLangGen extends ServerLangGen {
         this.add(ClaimAllowListKey.BLOCK_USE.translationKey(), "Allowed block use");
         this.add(ClaimAllowListKey.ENTITY_ATTACK.translationKey(), "Allowed entities to attack");
         this.add(ClaimAllowListKey.ENTITY_USE.translationKey(), "Allowed entity interactions");
+        this.add(ClaimAllowListKey.ITEM_PICKUP.translationKey(), "Allowed item pickups");
+        this.add(ClaimAllowListKey.ITEM_DROP.translationKey(), "Allowed item drops");
         this.add("flan.allowListEmptyTag", "Empty Tag");
 
         this.add("flan.chatClaimTextEdit", "[Click for command]");

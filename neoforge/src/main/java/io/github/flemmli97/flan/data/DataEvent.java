@@ -18,5 +18,4 @@ public class DataEvent {
         ENLangGen enLang = new ENLangGen(data.getPackOutput(), permissionGen);
         data.addProvider(event.includeServer(), enLang);
     }
-
 }

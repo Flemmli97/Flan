@@ -30,7 +30,6 @@ public class PermissionNodeHandlerImpl implements PermissionNodeHandler {
         return PermissionNodeHandler.super.perm(src, perm, adminCmd);
     }
 
-
     @Override
     public boolean permBelowEqVal(ServerPlayer src, String perm, int val, int fallback) {
         if (Flan.permissionAPI) {

@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.mixin;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
+import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
 import io.github.flemmli97.flan.utils.IOwnedItem;
 import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.entity.animal.allay.AllayAi;
@@ -22,7 +23,13 @@ public abstract class AllayMixin {
         Allay allay = (Allay) (Object) this;
         if (AllayAi.getLikedPlayer(allay).map(p -> {
             Claim claim = ClaimStorage.get(p.serverLevel()).getClaimAt(allay.blockPosition());
-            return claim != null && (!claim.canInteract(p, BuiltinPermission.PICKUP, allay.blockPosition(), false));
+            if (claim != null) {
+                if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_PICKUP, stack::is, stack::is)) {
+                    return false;
+                }
+                return !claim.canInteract(p, BuiltinPermission.PICKUP, allay.blockPosition(), false);
+            }
+            return false;
         }).orElse(false))
             info.setReturnValue(false);
     }
@@ -34,7 +41,13 @@ public abstract class AllayMixin {
             if (p.getUUID().equals(ownedItem.flan$getPlayerOrigin()))
                 return false;
             Claim claim = ClaimStorage.get(p.serverLevel()).getClaimAt(itemEntity.blockPosition());
-            return claim != null && !claim.canInteract(p, BuiltinPermission.PICKUP, itemEntity.blockPosition(), false);
+            if (claim != null) {
+                if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_PICKUP, itemEntity.getItem()::is, itemEntity.getItem()::is)) {
+                    return false;
+                }
+                return !claim.canInteract(p, BuiltinPermission.PICKUP, itemEntity.blockPosition(), false);
+            }
+            return false;
         }).orElse(false))
             info.cancel();
     }
