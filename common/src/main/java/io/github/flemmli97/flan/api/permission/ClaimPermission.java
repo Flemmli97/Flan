@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +18,8 @@ import java.util.Optional;
  */
 public class ClaimPermission implements Comparable<ClaimPermission> {
 
+    private static final Comparator<ResourceLocation> NAMESPACE_FIRST = Comparator.comparing(ResourceLocation::getNamespace)
+            .thenComparing(ResourceLocation::getPath);
     /**
      * Item to show in the gui
      */
@@ -80,7 +83,7 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
     @Override
     public int compareTo(@NotNull ClaimPermission other) {
         if (this.order == other.order)
-            return this.id.compareTo(other.id);
+            return NAMESPACE_FIRST.compare(this.id, other.id);
         return Integer.compare(this.order, other.order);
     }
 
