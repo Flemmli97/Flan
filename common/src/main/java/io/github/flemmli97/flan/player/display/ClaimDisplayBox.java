@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.player.display;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimBox;
 
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public class ClaimDisplayBox extends DisplayBox {
@@ -24,6 +25,11 @@ public class ClaimDisplayBox extends DisplayBox {
     @Override
     public boolean is3d() {
         return this.claim.is3d();
+    }
+
+    @Override
+    public UUID id() {
+        return this.claim.getClaimID();
     }
 
     @Override
