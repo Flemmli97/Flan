@@ -11,5 +11,4 @@ public interface IOwnedItem {
     UUID getDeathPlayer();
 
     UUID getPlayerOrigin();
-
 }

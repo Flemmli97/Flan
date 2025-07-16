@@ -16,5 +16,4 @@ public interface IPermissionContainer {
      * @param player The player doing the action. Can be null
      */
     boolean canInteract(ServerPlayer player, ResourceLocation perm, BlockPos pos, boolean message);
-
 }

@@ -55,7 +55,6 @@ public class DisplayBox {
         return this.box.hashCode();
     }
 
-
     @Override
     public boolean equals(Object obj) {
         if (obj == this)

@@ -17,5 +17,4 @@ public abstract class EntityMixin {
         if (BlockInteractEvents.preventFallOn((Entity) (Object) this, heightDifference, onGround, landedState, landedPosition))
             info.cancel();
     }
-
 }

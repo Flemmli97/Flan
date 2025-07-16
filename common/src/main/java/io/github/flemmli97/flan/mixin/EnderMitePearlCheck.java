@@ -20,5 +20,4 @@ public abstract class EnderMitePearlCheck extends ThrowableItemProjectile {
     private float newChance(float old) {
         return PlayerEvents.canSpawnFromPlayer(this.getOwner(), old);
     }
-
 }

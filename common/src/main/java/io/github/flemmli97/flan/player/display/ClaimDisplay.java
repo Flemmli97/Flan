@@ -275,9 +275,11 @@ public class ClaimDisplay {
     }
 
     record DisplayBoxPos(List<BlockPos> vertices, List<BlockPos> edges) {
+
     }
 
     public record Height(int solid, int water) {
+
     }
 
     public static class ChunkCache {

@@ -29,13 +29,19 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
      */
     public final boolean global;
     /**
+     * Whether this permission needs to have its value set in the claim to function
+     * If this is true admin and owner will be treated as normal players (aka the claims permission needs to be true to apply to them)
+     */
+    public final boolean requireExplicitSet;
+    /**
      * The order in which this permission appears in the gui. If a permission has the same ordering the id will determine the order
      */
     public final int order;
 
-    private ClaimPermission(ResourceLocation id, ItemStack guiItem, boolean defaultVal, boolean global, int order) {
+    private ClaimPermission(ResourceLocation id, ItemStack guiItem, boolean defaultVal, boolean global, boolean requireExplicitSet, int order) {
         this.id = id;
         this.guiItem = guiItem;
+        this.requireExplicitSet = requireExplicitSet;
         this.order = order;
         this.defaultVal = defaultVal;
         this.global = global;
@@ -88,42 +94,61 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
 
         public static final Codec<ClaimPermission.Builder> CODEC = RecordCodecBuilder.create((instance) ->
                 instance.group(
+                        Codec.BOOL.optionalFieldOf("require_explicit").forGetter(d -> !d.requireExplicitSet ? Optional.empty() : Optional.of(true)),
                         Codec.INT.fieldOf("order").forGetter(d -> d.order),
                         Codec.STRING.optionalFieldOf("required_mod").forGetter(d -> Optional.ofNullable(d.requiredMod)),
 
                         ItemStackHolder.CODEC.fieldOf("gui_item").forGetter(d -> d.guiItem),
                         Codec.BOOL.fieldOf("default_value").forGetter(d -> d.defaultVal),
                         Codec.BOOL.fieldOf("global").forGetter(d -> d.global)
-                ).apply(instance, (order, requiredMod, item, val, global) -> new ClaimPermission.Builder(item, val, global, order, requiredMod.orElse(null), null)));
+                ).apply(instance, (explicit, order, requiredMod, item, val, global)
+                        -> new ClaimPermission.Builder(item, order, null).defaultVal(val).global(global).requireExplicitSet(explicit.orElse(false)).requiredMod(requiredMod.orElse(null))));
 
         private final ItemStackHolder guiItem;
-        // Only used for datagen
+        /**
+         * Only used for datagen
+         */
         public final List<String> desc;
-        private final boolean defaultVal;
-        private final boolean global;
-        private final String requiredMod;
+        private boolean defaultVal;
+        private boolean global;
+        private String requiredMod;
 
         private final int order;
 
-        public Builder(ItemStack guiItem, boolean defaultVal, boolean global, int order, List<String> desc) {
-            this(new ItemStackHolder(guiItem), defaultVal, global, order, desc);
-        }
+        private boolean requireExplicitSet;
 
-        public Builder(ItemStackHolder guiItem, boolean defaultVal, boolean global, int order, List<String> desc) {
-            this(guiItem, defaultVal, global, order, null, desc);
+        public Builder(ItemStack guiItem, int order, List<String> desc) {
+            this(new ItemStackHolder(guiItem), order, desc);
         }
 
         /**
          * The builder for a claim permission used in datagen. And reloading.
          * See Claimpermission fields what the fields stand for
          */
-        public Builder(ItemStackHolder guiItem, boolean defaultVal, boolean global, int order, String requiredMod, List<String> desc) {
+        public Builder(ItemStackHolder guiItem, int order, List<String> desc) {
             this.guiItem = guiItem;
             this.desc = desc;
-            this.defaultVal = defaultVal;
-            this.global = global;
             this.order = order;
+        }
+
+        public Builder defaultVal(boolean defaultVal) {
+            this.defaultVal = defaultVal;
+            return this;
+        }
+
+        public Builder global(boolean global) {
+            this.global = global;
+            return this;
+        }
+
+        public Builder requireExplicitSet(boolean requireExplicitSet) {
+            this.requireExplicitSet = requireExplicitSet;
+            return this;
+        }
+
+        public Builder requiredMod(String requiredMod) {
             this.requiredMod = requiredMod;
+            return this;
         }
 
         public boolean verify() {
@@ -131,7 +156,7 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
         }
 
         public ClaimPermission build(ResourceLocation id) {
-            return new ClaimPermission(id, this.guiItem.toStack(), this.defaultVal, this.global, this.order);
+            return new ClaimPermission(id, this.guiItem.toStack(), this.defaultVal, this.global, this.requireExplicitSet, this.order);
         }
 
         public record ItemStackHolder(ResourceLocation item, int count, CompoundTag tag) {

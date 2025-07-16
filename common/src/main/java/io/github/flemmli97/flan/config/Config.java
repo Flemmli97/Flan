@@ -102,7 +102,6 @@ public class Config {
             "appliedenergistics2:certus_quartz_wrench-flan:interact_block"
     );
 
-
     public int dropTicks = 6000;
 
     public int inactivityTime = -1;

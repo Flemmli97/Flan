@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 
 public class BuiltinPermission {
 
@@ -70,7 +71,7 @@ public class BuiltinPermission {
     public static ResourceLocation DROP = register("drop", new ItemStack(Items.BOWL), true, "Allow the drop of items");
     public static ResourceLocation PICKUP = register("pickup", new ItemStack(Items.BRICK), true, "Allow the pickup of items");
     public static ResourceLocation ALLOW_FLIGHT = register("flight", new ItemStack(Items.IRON_BLOCK), true, "Allows all non creative flight", "Does not grant flight!");
-    public static ResourceLocation MAY_FLIGHT = register("may_flight", new ItemStack(Items.FEATHER), false, "Allows player to fly in this claim.", "Flight permission needs to be true!");
+    public static ResourceLocation MAY_FLIGHT = register("may_flight", order -> new ClaimPermission.Builder(new ItemStack(Items.FEATHER), order, List.of("Allows player to fly in this claim.", "Flight permission needs to be true!")).requireExplicitSet(true));
     public static ResourceLocation CANSTAY = register("can_stay", new ItemStack(Items.PAPER), true, "Allow players to enter your claim");
     public static ResourceLocation TELEPORT = register("teleport", new ItemStack(Items.END_PORTAL_FRAME), false, "Allow player to teleport to your claim home position");
     public static ResourceLocation NOHUNGER = register("no_hunger", new ItemStack(Items.COOKED_BEEF), false, "Disable hunger");
@@ -93,7 +94,6 @@ public class BuiltinPermission {
     public static ResourceLocation PLAYERMOBSPAWN = register("player_mob_spawn", new ItemStack(Items.WARDEN_SPAWN_EGG), false, true, "Permission for affected players to spawn mobs with interactions", "E.g. wardens, or endermites with enderpearls");
     public static ResourceLocation SCULK = register("sculk", new ItemStack(Items.SCULK_SENSOR), false, true, "Permission for sculk sensors.", "Shriekers are handled under PLAYERMOBSPAWN");
 
-
     private static ResourceLocation register(String id, ItemStack item, String... description) {
         return register(id, item, false, description);
     }
@@ -103,9 +103,13 @@ public class BuiltinPermission {
     }
 
     private static ResourceLocation register(String key, ItemStack item, boolean defaultVal, boolean global, String... description) {
+        return register(key, order -> new ClaimPermission.Builder(item, order, List.of(description)).defaultVal(defaultVal).global(global));
+    }
+
+    private static ResourceLocation register(String key, Function<Integer, ClaimPermission.Builder> builder) {
         ResourceLocation id = new ResourceLocation(Flan.MODID, key);
         if (CrossPlatformStuff.INSTANCE.isDataGen()) {
-            DATAGEN_DATA.put(id, new ClaimPermission.Builder(item, defaultVal, global, order++, List.of(description)));
+            DATAGEN_DATA.put(id, builder.apply(order++));
         }
         LEGACY_MIGRATION.put(key.replace("_", "").toUpperCase(Locale.ROOT), id);
         return id;

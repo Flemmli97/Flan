@@ -4,5 +4,6 @@
   "gui_item": {
     "id": "minecraft:feather"
   },
-  "order": 45
+  "order": 45,
+  "require_explicit": true
 }

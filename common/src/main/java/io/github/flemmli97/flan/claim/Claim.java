@@ -7,6 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
+import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -321,7 +322,7 @@ public class Claim implements IPermissionContainer {
         if (!this.isAdminClaim()) {
             Config.GlobalType global = ConfigHandler.CONFIG.getGlobal(this.level, perm);
             if (!global.canModify()) {
-                if (global.getValue() || (player != null && this.isAdminIgnore(player)))
+                if (global.getValue() || (player != null && this.playerBypassesPermission(player, perm)))
                     return true;
                 if (message)
                     player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
@@ -347,7 +348,7 @@ public class Claim implements IPermissionContainer {
                 this.getOwnerPlayer().ifPresent(p -> PlayerClaimData.get(p).notifyFakePlayerInteraction(player, pos, this));
             return false;
         }
-        if (this.isAdminIgnore(player) || player.getUUID().equals(this.owner))
+        if (this.playerBypassesPermission(player, perm))
             return true;
         if (!perm.equals(BuiltinPermission.EDITCLAIM) && !perm.equals(BuiltinPermission.EDITPERMS))
             for (Claim claim : this.subClaims) {
@@ -376,8 +377,13 @@ public class Claim implements IPermissionContainer {
         return false;
     }
 
-    private boolean isAdminIgnore(ServerPlayer player) {
+    private boolean playerBypassesPermission(ServerPlayer player, ResourceLocation perm) {
         if (player == null)
+            return true;
+        ClaimPermission permission = PermissionManager.INSTANCE.get(perm);
+        if (permission != null && permission.requireExplicitSet)
+            return false;
+        if (player.getUUID().equals(this.owner))
             return true;
         if (PlayerClaimData.get(player).isAdminIgnoreClaim())
             return !this.isAdminClaim() || PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.adminBypass, true);
