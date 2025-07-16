@@ -45,8 +45,7 @@ public class EntityInteractEventsNeoForge {
     }
 
     public static void preventDamage(EntityInvulnerabilityCheckEvent event) {
-        boolean prevent = EntityInteractEvents.preventDamage(event.getEntity(), event.getSource());
-        if (prevent) {
+        if (EntityInteractEvents.preventDamage(event.getEntity(), event.getSource())) {
             event.setInvulnerable(true);
         }
     }
