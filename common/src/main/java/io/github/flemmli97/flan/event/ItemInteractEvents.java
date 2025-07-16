@@ -87,6 +87,7 @@ public class ItemInteractEvents {
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
                 updateHeldItem(player);
             }
+            updateHeldItem(player);
             return InteractionResult.FAIL;
         }
         return InteractionResult.PASS;

@@ -179,8 +179,6 @@ public class EntityInteractEvents {
                     }
                     if (proj instanceof ThrownEnderpearl)
                         proj.remove(Entity.RemovalReason.KILLED);
-                    //TODO: find a way to properly update chorus fruit break on hit
-                    //player.getServer().send(new ServerTask(player.getServer().getTicks()+2, ()->player.world.updateListeners(pos, state, state, 2)));
                 }
                 return flag;
             } else if (res.getType() == HitResult.Type.ENTITY) {
