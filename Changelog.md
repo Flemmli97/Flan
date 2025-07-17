@@ -1,3 +1,13 @@
+Flan 1.11.12
+================
+- Bump language lib:
+  - Fixes issues with default translation being overriden causing problems
+- Increased priorities of various events which should help with mod compat (e.g. carry on)
+- Permission now have a `require_explicit` field:
+  - If true the claims permission needs to be set to true explicitly to apply to admin/owner
+  - By default only `may_flight` has this so the permission needs to be true for flying
+- Update claim display handling fixing dangling fake blocks
+
 Flan 1.11.9
 ================
 - Fix indirect non living damage which for vanilla was really only with player tnt on itemframes etc.
