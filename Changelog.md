@@ -1,3 +1,17 @@
+Flan 1.11.12
+================
+- Bump language lib:
+  - Fixes issues with default translation being overriden causing problems
+- Fix damage check reversed so entities were always damaged
+- Increased priorities of various events which should help with mod compat (e.g. carry on)
+- Remove the no permission message that showed up if e.g. block interact is allowed but items were not
+- Permission now have a `require_explicit` field:
+  - If true the claims permission needs to be set to true explicitly to apply to admin/owner
+  - By default only `may_flight` has this so the permission needs to be true for flying
+- Fix empty hand bypassing block interaction protection
+- Update claim display handling fixing dangling fake blocks
+- Extend allow lists with item drop/pickup list so claim users can decide what items are droppable/pickupable
+
 Flan 1.11.11
 ================
 - Update to 1.21.5!
