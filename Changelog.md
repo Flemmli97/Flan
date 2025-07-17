@@ -7,6 +7,7 @@ Flan 1.11.12
   - If true the claims permission needs to be set to true explicitly to apply to admin/owner
   - By default only `may_flight` has this so the permission needs to be true for flying
 - Update claim display handling fixing dangling fake blocks
+- Move prevent/allow flight and hunger handling out of claims so now it respects global perms in config
 
 Flan 1.11.9
 ================
