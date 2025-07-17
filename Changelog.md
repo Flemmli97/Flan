@@ -10,6 +10,7 @@ Flan 1.11.12
   - By default only `may_flight` has this so the permission needs to be true for flying
 - Update claim display handling fixing dangling fake blocks
 - Extend allow lists with item drop/pickup list so claim users can decide what items are droppable/pickupable
+- Move prevent/allow flight and hunger handling out of claims so now it respects global perms in config
 
 Flan 1.11.11
 ================
