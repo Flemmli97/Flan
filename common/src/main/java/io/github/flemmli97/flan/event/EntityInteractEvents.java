@@ -399,15 +399,7 @@ public class EntityInteractEvents {
                         }
                         player.teleportTo(tp.x(), tp.y(), tp.z());
                     }
-                    if (player.getAbilities().flying && !gameModeCanFly(player.gameMode.getGameModeForPlayer()) && !mainClaim.canInteract(player, BuiltinPermission.ALLOW_FLIGHT, rounded, true)) {
-                        player.getAbilities().flying = false;
-                        player.connection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
-                    } else if (!gameModeCanFly(player.gameMode.getGameModeForPlayer())) {
-                        CrossPlatformStuff.INSTANCE.toggleCreativeFlight(player, currentClaim.canInteract(player, BuiltinPermission.MAY_FLIGHT, rounded, false));
-                    }
-                    if (player.getFoodData().getSaturationLevel() < 2 && mainClaim.canInteract(player, BuiltinPermission.NOHUNGER, bPos, false)) {
-                        ((IHungerAccessor) player.getFoodData()).setSaturation(2);
-                    }
+                    rounded = bPos;
                     currentClaim.applyEffects(player);
                 }
             }
@@ -420,6 +412,16 @@ public class EntityInteractEvents {
                 claim.displayEnterTitle(player);
             }
             newClaim = claim;
+        }
+        IPermissionContainer permissionContainer = newClaim != null ? newClaim : storage.getForPermissionCheck(rounded);
+        if (player.getAbilities().flying && !gameModeCanFly(player.gameMode.getGameModeForPlayer()) && !permissionContainer.canInteract(player, BuiltinPermission.ALLOW_FLIGHT, rounded, true)) {
+            player.getAbilities().flying = false;
+            player.connection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
+        } else if (!gameModeCanFly(player.gameMode.getGameModeForPlayer())) {
+            CrossPlatformStuff.INSTANCE.toggleCreativeFlight(player, permissionContainer.canInteract(player, BuiltinPermission.MAY_FLIGHT, rounded, false));
+        }
+        if (player.getFoodData().getSaturationLevel() < 2 && permissionContainer.canInteract(player, BuiltinPermission.NOHUNGER, rounded, false)) {
+            ((IHungerAccessor) player.getFoodData()).setSaturation(2);
         }
         return newClaim;
     }
