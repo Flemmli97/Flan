@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.mixin;
 
 import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.claim.Claim;
-import io.github.flemmli97.flan.event.EntityInteractEvents;
+import io.github.flemmli97.flan.event.PlayerEvents;
 import io.github.flemmli97.flan.platform.ClaimEvents;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.utils.IPlayerClaimImpl;
@@ -40,7 +40,7 @@ public abstract class PlayerClaimMixin extends Player implements IPlayerClaimImp
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void tickData(CallbackInfo info) {
-        Claim newClaim = EntityInteractEvents.currentClaimTick((ServerPlayer) (Object) this, this.flan$CurrentClaim);
+        Claim newClaim = PlayerEvents.currentClaimTick((ServerPlayer) (Object) this, this.flan$CurrentClaim);
         if (this.flan$CurrentClaim != newClaim)
             ClaimEvents.INSTANCE.borderCross((ServerPlayer) (Object) this, newClaim, this.flan$CurrentClaim);
         this.flan$CurrentClaim = newClaim;
