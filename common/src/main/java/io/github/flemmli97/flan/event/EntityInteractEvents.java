@@ -7,18 +7,10 @@ import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
 import io.github.flemmli97.flan.config.ConfigHandler;
-import io.github.flemmli97.flan.mixin.IHungerAccessor;
 import io.github.flemmli97.flan.mixin.IPersistentProjectileVars;
-import io.github.flemmli97.flan.platform.CrossPlatformStuff;
-import io.github.flemmli97.flan.player.PlayerClaimData;
-import io.github.flemmli97.flan.utils.IOwnedItem;
-import io.github.flemmli97.flan.utils.TeleportUtils;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,7 +28,6 @@ import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.decoration.ItemFrame;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.npc.AbstractVillager;
@@ -50,8 +41,6 @@ import net.minecraft.world.entity.projectile.windcharge.WindCharge;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.AbstractMinecartContainer;
 import net.minecraft.world.entity.vehicle.Boat;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -244,68 +233,6 @@ public class EntityInteractEvents {
         return InteractionResult.PASS;
     }
 
-    public static boolean xpAbsorb(Player player) {
-        if (player instanceof ServerPlayer) {
-            ClaimStorage storage = ClaimStorage.get((ServerLevel) player.level());
-            BlockPos pos = player.blockPosition();
-            IPermissionContainer claim = storage.getForPermissionCheck(pos);
-            if (claim != null)
-                return !claim.canInteract((ServerPlayer) player, BuiltinPermission.XP, pos, false);
-        }
-        return false;
-    }
-
-    public static boolean canCollideWith(Player player, Entity entity) {
-        if (player instanceof ServerPlayer sPlayer) {
-            if (entity instanceof ItemEntity itemEntity) {
-                IOwnedItem ownedItem = (IOwnedItem) entity;
-                if (ownedItem.flan$getDeathPlayer() != null) {
-                    ServerPlayer other = sPlayer.getServer().getPlayerList().getPlayer(ownedItem.flan$getDeathPlayer());
-                    if (other == null)
-                        return false;
-                    return ownedItem.flan$getDeathPlayer().equals(player.getUUID()) || PlayerClaimData.get(other).deathItemsUnlocked();
-                }
-                if (sPlayer.getUUID().equals(ownedItem.flan$getPlayerOrigin()))
-                    return true;
-                ClaimStorage storage = ClaimStorage.get(sPlayer.serverLevel());
-                BlockPos pos = sPlayer.blockPosition();
-                IPermissionContainer claim = storage.getForPermissionCheck(pos);
-                if (claim != null) {
-                    if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_PICKUP, itemEntity.getItem()::is, itemEntity.getItem()::is)) {
-                        return true;
-                    }
-                    return claim.canInteract(sPlayer, BuiltinPermission.PICKUP, pos, false);
-                }
-            }
-        }
-        return true;
-    }
-
-    public static boolean canDropItem(Player player, ItemStack stack) {
-        if (!player.isDeadOrDying() && player instanceof ServerPlayer) {
-            ClaimStorage storage = ClaimStorage.get((ServerLevel) player.level());
-            BlockPos pos = player.blockPosition();
-            IPermissionContainer claim = storage.getForPermissionCheck(pos);
-            boolean allow = true;
-            if (claim != null) {
-                if (!(claim instanceof Claim real) || !real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_DROP, stack::is, stack::is)) {
-                    allow = claim.canInteract((ServerPlayer) player, BuiltinPermission.DROP, pos, false);
-                }
-            }
-            if (!allow) {
-                player.getInventory().add(stack);
-                NonNullList<ItemStack> stacks = NonNullList.create();
-                for (int j = 0; j < player.containerMenu.slots.size(); ++j) {
-                    ItemStack itemStack2 = player.containerMenu.slots.get(j).getItem();
-                    stacks.add(itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2);
-                }
-                ((ServerPlayer) player).connection.send(new ClientboundContainerSetContentPacket(player.containerMenu.containerId, 0, stacks, player.inventoryMenu.getCarried()));
-            }
-            return allow;
-        }
-        return true;
-    }
-
     public static boolean witherCanDestroy(WitherBoss wither) {
         if (wither.level().isClientSide)
             return true;
@@ -343,91 +270,6 @@ public class EntityInteractEvents {
                 return false;
         }
         return true;
-    }
-
-    public static void updateDroppedItem(Player player, ItemEntity entity) {
-        ((IOwnedItem) entity).flan$setOriginPlayer((player));
-    }
-
-    public static Claim currentClaimTick(ServerPlayer player, Claim currentClaim) {
-        Vec3 pos = player.position();
-        BlockPos rounded = TeleportUtils.roundedBlockPos(pos.add(0, player.getEyeHeight(player.getPose()), 0));
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
-        Claim newClaim = currentClaim;
-        if (currentClaim != null) {
-            if (!currentClaim.intersects(player.getBoundingBox())) {
-                boolean isSub = currentClaim.parentClaim() != null;
-                Claim claim = isSub ? storage.getClaimAt(rounded) : currentClaim.parentClaim();
-                if (claim == null) {
-                    currentClaim.displayLeaveTitle(player);
-                    if (!gameModeCanFly(player.gameMode.getGameModeForPlayer()))
-                        CrossPlatformStuff.INSTANCE.toggleCreativeFlight(player, false);
-                } else {
-                    Claim sub = claim.getSubClaim(rounded);
-                    boolean display = true;
-                    if (sub != null)
-                        claim = sub;
-                    else {
-                        display = currentClaim.enterTitle != null;
-                        if (claim.enterTitle == null)
-                            currentClaim.displayLeaveTitle(player);
-                    }
-                    if (display)
-                        claim.displayEnterTitle(player);
-                }
-                newClaim = claim;
-            } else {
-                if (currentClaim.parentClaim() == null) {
-                    Claim sub = currentClaim.getSubClaim(rounded);
-                    if (sub != null) {
-                        currentClaim = sub;
-                        currentClaim.displayEnterTitle(player);
-                        newClaim = currentClaim;
-                    }
-                }
-                if (!player.isSpectator()) {
-                    BlockPos.MutableBlockPos bPos = rounded.mutable();
-                    boolean isSub = currentClaim.parentClaim() != null;
-                    Claim mainClaim = isSub ? currentClaim.parentClaim() : currentClaim;
-                    Entity passenger = player.getVehicle();
-                    if (!mainClaim.canInteract(player, BuiltinPermission.CANSTAY, bPos, true) || (passenger instanceof Boat && !mainClaim.canInteract(player, BuiltinPermission.BOAT, bPos, true))) {
-                        Claim sub = isSub ? currentClaim : null;
-                        Vec3 tp = TeleportUtils.getTeleportPos(player, pos, storage, new TeleportUtils.Area2D(sub != null ? sub.getDimensions() : mainClaim.getDimensions()), true, bPos, (claim, nPos) -> claim.canInteract(player, BuiltinPermission.CANSTAY, nPos, false));
-                        if (passenger != null) {
-                            player.stopRiding();
-                            passenger.teleportTo(tp.x(), tp.y(), tp.z());
-                        }
-                        player.teleportTo(tp.x(), tp.y(), tp.z());
-                    }
-                    rounded = bPos;
-                    currentClaim.applyEffects(player);
-                }
-            }
-        } else if (player.tickCount % 3 == 0) {
-            Claim claim = storage.getClaimAt(rounded);
-            Claim sub = claim != null ? claim.getSubClaim(rounded) : null;
-            if (sub != null)
-                claim = sub;
-            if (claim != null) {
-                claim.displayEnterTitle(player);
-            }
-            newClaim = claim;
-        }
-        IPermissionContainer permissionContainer = newClaim != null ? newClaim : storage.getForPermissionCheck(rounded);
-        if (player.getAbilities().flying && !gameModeCanFly(player.gameMode.getGameModeForPlayer()) && !permissionContainer.canInteract(player, BuiltinPermission.ALLOW_FLIGHT, rounded, true)) {
-            player.getAbilities().flying = false;
-            player.connection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
-        } else if (!gameModeCanFly(player.gameMode.getGameModeForPlayer())) {
-            CrossPlatformStuff.INSTANCE.toggleCreativeFlight(player, permissionContainer.canInteract(player, BuiltinPermission.MAY_FLIGHT, rounded, false));
-        }
-        if (player.getFoodData().getSaturationLevel() < 2 && permissionContainer.canInteract(player, BuiltinPermission.NOHUNGER, rounded, false)) {
-            ((IHungerAccessor) player.getFoodData()).setSaturation(2);
-        }
-        return newClaim;
-    }
-
-    protected static boolean gameModeCanFly(GameType gameType) {
-        return gameType == GameType.CREATIVE || gameType == GameType.SPECTATOR;
     }
 
     public static boolean canFrostwalkerFreeze(ServerLevel world, BlockPos pos, LivingEntity entity) {
