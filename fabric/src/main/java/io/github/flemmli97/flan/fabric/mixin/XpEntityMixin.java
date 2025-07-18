@@ -1,6 +1,6 @@
 package io.github.flemmli97.flan.fabric.mixin;
 
-import io.github.flemmli97.flan.event.EntityInteractEvents;
+import io.github.flemmli97.flan.event.PlayerEvents;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,7 +13,7 @@ public abstract class XpEntityMixin {
 
     @Inject(method = "playerTouch", at = @At(value = "HEAD"), cancellable = true)
     private void collision(Player player, CallbackInfo info) {
-        if (EntityInteractEvents.xpAbsorb(player)) {
+        if (PlayerEvents.xpAbsorb(player)) {
             info.cancel();
         }
     }

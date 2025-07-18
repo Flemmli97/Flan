@@ -1,7 +1,6 @@
 package io.github.flemmli97.flan.claim;
 
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
-import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.config.Config;
@@ -17,21 +16,23 @@ public record GlobalClaim(ServerLevel world) implements IPermissionContainer {
 
     @Override
     public boolean canInteract(ServerPlayer player, ResourceLocation perm, BlockPos pos, boolean message) {
+        ClaimPermission permission = PermissionManager.INSTANCE.get(perm);
+        if (permission == null)
+            return false;
         message = message && player.getClass().equals(ServerPlayer.class); //dont send messages to fake players
         Config.GlobalType global = ConfigHandler.CONFIG.getGlobal(this.world, perm);
-        if (global != Config.GlobalType.NONE && (player == null || !this.isAdmin(player, perm))) {
+        if (global != Config.GlobalType.NONE && (player == null || !this.isAdmin(player, permission))) {
             if (global.getValue())
                 return true;
             if (message)
                 player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
             return false;
         }
-        return !perm.equals(BuiltinPermission.MOBSPAWN) && !perm.equals(BuiltinPermission.ANIMALSPAWN);
+        return permission.defaultVal;
     }
 
-    private boolean isAdmin(ServerPlayer player, ResourceLocation perm) {
-        ClaimPermission permission = PermissionManager.INSTANCE.get(perm);
-        if (permission != null && permission.requireExplicitSet)
+    private boolean isAdmin(ServerPlayer player, ClaimPermission permission) {
+        if (permission.requireExplicitSet)
             return false;
         return PlayerClaimData.get(player).isAdminIgnoreClaim();
     }
