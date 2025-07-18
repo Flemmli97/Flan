@@ -1,6 +1,7 @@
 package io.github.flemmli97.flan.forge.forgeevent;
 
 import io.github.flemmli97.flan.event.EntityInteractEvents;
+import io.github.flemmli97.flan.event.PlayerEvents;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.SnowGolem;
@@ -61,13 +62,13 @@ public class EntityInteractEventsForge {
     }
 
     public static void xpAbsorb(PlayerXpEvent.PickupXp event) {
-        boolean prevent = EntityInteractEvents.xpAbsorb(event.getEntity());
+        boolean prevent = PlayerEvents.xpAbsorb(event.getEntity());
         if (prevent)
             event.setCanceled(true);
     }
 
     public static void canDropItem(ItemTossEvent event) {
-        boolean canDrop = EntityInteractEvents.canDropItem(event.getPlayer(), event.getEntity().getItem());
+        boolean canDrop = PlayerEvents.canDropItem(event.getPlayer(), event.getEntity().getItem());
         if (!canDrop) {
             event.setCanceled(true);
         }
