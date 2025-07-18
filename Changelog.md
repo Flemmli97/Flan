@@ -1,3 +1,9 @@
+Flan 1.11.13
+================
+- Fix level permission not defaulting to default value.
+  - Fixes flight always on if not defined in config
+- Reset player motion if player tries to fly with blocked flight
+
 Flan 1.11.12
 ================
 - Bump language lib:
