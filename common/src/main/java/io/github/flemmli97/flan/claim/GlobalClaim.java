@@ -28,7 +28,7 @@ public record GlobalClaim(ServerLevel world) implements IPermissionContainer {
                 player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
             return false;
         }
-        return permission.defaultVal;
+        return permission.globalVal;
     }
 
     private boolean isAdmin(ServerPlayer player, ClaimPermission permission) {

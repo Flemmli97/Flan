@@ -71,7 +71,7 @@ public class BuiltinPermission {
     public static ResourceLocation DROP = register("drop", new ItemStack(Items.BOWL), true, "Allow the drop of items");
     public static ResourceLocation PICKUP = register("pickup", new ItemStack(Items.BRICK), true, "Allow the pickup of items");
     public static ResourceLocation ALLOW_FLIGHT = register("flight", new ItemStack(Items.IRON_BLOCK), true, "Allows all non creative flight", "Does not grant flight!");
-    public static ResourceLocation MAY_FLIGHT = register("may_flight", order -> new ClaimPermission.Builder(new ItemStack(Items.FEATHER), order, List.of("Allows player to fly in this claim.", "Flight permission needs to be true!")).requireExplicitSet(true));
+    public static ResourceLocation MAY_FLIGHT = register("may_flight", order -> new ClaimPermission.Builder(new ItemStack(Items.FEATHER), order, List.of("Allows player to fly in this claim.", "Flight permission needs to be true!")).requireExplicitSet(true).globalVal(false));
     public static ResourceLocation CANSTAY = register("can_stay", new ItemStack(Items.PAPER), true, "Allow players to enter your claim");
     public static ResourceLocation TELEPORT = register("teleport", new ItemStack(Items.END_PORTAL_FRAME), false, "Allow player to teleport to your claim home position");
     public static ResourceLocation NOHUNGER = register("no_hunger", new ItemStack(Items.COOKED_BEEF), false, "Disable hunger");
@@ -86,8 +86,8 @@ public class BuiltinPermission {
     public static ResourceLocation FIRESPREAD = register("fire_spread", new ItemStack(Items.BLAZE_POWDER), false, true, "Toggle firespread in claim");
     public static ResourceLocation WATERBORDER = register("water_border", new ItemStack(Items.WATER_BUCKET), false, true, "Toggle water crossing claim borders");
     public static ResourceLocation PISTONBORDER = register("piston_border", new ItemStack(Items.PISTON), false, true, "Toggle piston pull/push across claim borders");
-    public static ResourceLocation MOBSPAWN = register("mob_spawn", new ItemStack(Items.ZOMBIE_SPAWN_EGG), false, true, "Prevent hostile mobspawn in claim");
-    public static ResourceLocation ANIMALSPAWN = register("animal_spawn", new ItemStack(Items.PIG_SPAWN_EGG), false, true, "Prevent other spawn in claim");
+    public static ResourceLocation MOBSPAWN = register("mob_spawn", order -> new ClaimPermission.Builder(new ItemStack(Items.ZOMBIE_SPAWN_EGG), order, List.of("Prevent hostile mobspawn in claim")).global(true).globalVal(false));
+    public static ResourceLocation ANIMALSPAWN = register("animal_spawn", order -> new ClaimPermission.Builder(new ItemStack(Items.PIG_SPAWN_EGG), order, List.of("Prevent other spawn in claim")).global(true).globalVal(false));
     public static ResourceLocation LIGHTNING = register("lightning", new ItemStack(Items.TRIDENT), false, true, "Allow lightning to affect claims", "e.g. set blocks on fire", "or affect animals (mobs are excluded)");
     public static ResourceLocation LOCKITEMS = register("lock_items", new ItemStack(Items.FIREWORK_STAR), true, true, "If items should be locked on death");
     public static ResourceLocation FAKEPLAYER = register("fake_player", new ItemStack(Items.CARROT_ON_A_STICK), false, true, "Allow fakeplayers to interact in this claim", "Some mods fakeplayer has the users uuid", "For those mods this permission is not needed");

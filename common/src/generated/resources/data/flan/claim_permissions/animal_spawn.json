@@ -1,6 +1,7 @@
 {
   "default_value": false,
   "global": true,
+  "global_default_value": false,
   "gui_item": {
     "id": "minecraft:pig_spawn_egg"
   },
