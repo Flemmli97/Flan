@@ -1,3 +1,7 @@
+Flan 1.11.14
+================
+- Fix config global permission issue of outside being treated as in claim
+
 Flan 1.11.13
 ================
 - Fix level permission not defaulting to default value.
