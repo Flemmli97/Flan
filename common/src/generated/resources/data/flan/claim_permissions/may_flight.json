@@ -1,6 +1,7 @@
 {
   "default_value": false,
   "global": false,
+  "global_default_value": false,
   "gui_item": {
     "id": "minecraft:feather"
   },
