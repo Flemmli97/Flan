@@ -127,6 +127,7 @@
   "flan.screenDelete": "使用 \"$empty\" 刪除訊息",
   "flan.screenMenuItemUse": "允許使用物品",
   "flan.screenMenuBlockBreak": "允許破壞方塊",
+  "flan.screenMenuBlockPlace": "允許放置方塊"
   "flan.screenMenuBlockUse": "允許使用方塊",
   "flan.screenMenuEntityAttack": "允許攻擊實體",
   "flan.screenMenuEntityUse": "允許與實體互動",

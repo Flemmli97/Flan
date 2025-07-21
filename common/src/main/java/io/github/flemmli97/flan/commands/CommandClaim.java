@@ -176,6 +176,9 @@ public class CommandClaim {
                                 .then(Commands.literal(CustomInteractListScreenHandler.Type.BLOCKBREAK.commandKey)
                                         .then(Commands.argument("entry", ResourceOrTagKeyArgument.resourceOrTagKey(Registries.BLOCK))
                                                 .executes(src -> CommandClaim.addClaimListEntries(src, CustomInteractListScreenHandler.Type.BLOCKBREAK))))
+                                .then(Commands.literal(CustomInteractListScreenHandler.Type.BLOCKPLACE.commandKey)
+                                        .then(Commands.argument("entry", ResourceOrTagKeyArgument.resourceOrTagKey(Registries.BLOCK))
+                                                .executes(src -> CommandClaim.addClaimListEntries(src, CustomInteractListScreenHandler.Type.BLOCKPLACE))))
                                 .then(Commands.literal(CustomInteractListScreenHandler.Type.BLOCKUSE.commandKey)
                                         .then(Commands.argument("entry", ResourceOrTagKeyArgument.resourceOrTagKey(Registries.BLOCK))
                                                 .executes(src -> CommandClaim.addClaimListEntries(src, CustomInteractListScreenHandler.Type.BLOCKUSE))))
@@ -192,6 +195,9 @@ public class CommandClaim {
                                 .then(Commands.literal(CustomInteractListScreenHandler.Type.BLOCKBREAK.commandKey)
                                         .then(Commands.argument("entry", ResourceOrTagKeyArgument.resourceOrTagKey(Registries.BLOCK)).suggests((src, b) -> CommandHelpers.claimEntryListSuggestion(src, b, CustomInteractListScreenHandler.Type.BLOCKBREAK))
                                                 .executes(src -> CommandClaim.removeClaimListEntries(src, CustomInteractListScreenHandler.Type.BLOCKBREAK))))
+                                .then(Commands.literal(CustomInteractListScreenHandler.Type.BLOCKPLACE.commandKey)
+                                        .then(Commands.argument("entry", ResourceOrTagKeyArgument.resourceOrTagKey(Registries.BLOCK)).suggests((src, b) -> CommandHelpers.claimEntryListSuggestion(src, b, CustomInteractListScreenHandler.Type.BLOCKPLACE))
+                                                .executes(src -> CommandClaim.removeClaimListEntries(src, CustomInteractListScreenHandler.Type.BLOCKPLACE))))
                                 .then(Commands.literal(CustomInteractListScreenHandler.Type.BLOCKUSE.commandKey)
                                         .then(Commands.argument("entry", ResourceOrTagKeyArgument.resourceOrTagKey(Registries.BLOCK)).suggests((src, b) -> CommandHelpers.claimEntryListSuggestion(src, b, CustomInteractListScreenHandler.Type.BLOCKUSE))
                                                 .executes(src -> CommandClaim.removeClaimListEntries(src, CustomInteractListScreenHandler.Type.BLOCKUSE))))
@@ -1033,6 +1039,7 @@ public class CommandClaim {
         String result = switch (type) {
             case ITEM -> addClaimListEntry(context, BuiltInRegistries.ITEM, claim.allowedItems);
             case BLOCKBREAK -> addClaimListEntry(context, BuiltInRegistries.BLOCK, claim.allowedBreakBlocks);
+            case BLOCKPLACE -> addClaimListEntry(context, BuiltInRegistries.BLOCK, claim.allowedPlaceBlocks);
             case BLOCKUSE -> addClaimListEntry(context, BuiltInRegistries.BLOCK, claim.allowedUseBlocks);
             case ENTITYATTACK -> addClaimListEntry(context, BuiltInRegistries.ENTITY_TYPE, claim.allowedEntityAttack);
             case ENTITYUSE -> addClaimListEntry(context, BuiltInRegistries.ENTITY_TYPE, claim.allowedEntityUse);
@@ -1055,6 +1062,7 @@ public class CommandClaim {
         switch (type) {
             case ITEM -> claim.allowedItems.removeAllowedItem(value);
             case BLOCKBREAK -> claim.allowedBreakBlocks.removeAllowedItem(value);
+            case BLOCKPLACE -> claim.allowedPlaceBlocks.removeAllowedItem(value);
             case BLOCKUSE -> claim.allowedUseBlocks.removeAllowedItem(value);
             case ENTITYATTACK -> claim.allowedEntityAttack.removeAllowedItem(value);
             case ENTITYUSE -> claim.allowedEntityUse.removeAllowedItem(value);

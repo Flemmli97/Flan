@@ -128,6 +128,7 @@
   "flan.screenDelete": "Use \"$empty\" to delete the message",
   "flan.screenMenuItemUse": "Allowed item use",
   "flan.screenMenuBlockBreak": "Allowed block break",
+  "flan.screenMenuBlockPlace": "Allowed block place",
   "flan.screenMenuBlockUse": "Allowed block use",
   "flan.screenMenuEntityAttack": "Allowed entities to attack",
   "flan.screenMenuEntityUse": "Allowed entity interactions",

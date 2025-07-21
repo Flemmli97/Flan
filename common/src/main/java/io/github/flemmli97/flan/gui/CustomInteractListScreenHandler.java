@@ -69,6 +69,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
                 List<ItemStack> stacks = switch (this.data.type) {
                     case ITEM -> this.data.claim.allowedItems.asStacks();
                     case BLOCKBREAK -> this.data.claim.allowedBreakBlocks.asStacks();
+                    case BLOCKPLACE -> this.data.claim.allowedPlaceBlocks.asStacks();
                     case BLOCKUSE -> this.data.claim.allowedUseBlocks.asStacks();
                     case ENTITYATTACK -> this.data.claim.allowedEntityAttack.asStacks();
                     case ENTITYUSE -> this.data.claim.allowedEntityUse.asStacks();
@@ -118,6 +119,15 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
                             Block block = BuiltInRegistries.BLOCK.get(new ResourceLocation(s));
                             if (block != Blocks.AIR)
                                 this.data.claim.allowedBreakBlocks.addAllowedItem(Either.left(block));
+                        }
+                    }
+                    case BLOCKPLACE -> {
+                        if (s.startsWith("#"))
+                            this.data.claim.allowedPlaceBlocks.addAllowedItem(Either.right(TagKey.create(BuiltInRegistries.BLOCK.key(), new ResourceLocation(s.substring(1)))));
+                        else {
+                            Block block = BuiltInRegistries.BLOCK.get(new ResourceLocation(s));
+                            if (block != Blocks.AIR)
+                                this.data.claim.allowedPlaceBlocks.addAllowedItem(Either.left(block));
                         }
                     }
                     case BLOCKUSE -> {
@@ -175,6 +185,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
                 switch (this.data.type) {
                     case ITEM -> this.data.claim.allowedItems.removeAllowedItem(idx);
                     case BLOCKBREAK -> this.data.claim.allowedBreakBlocks.removeAllowedItem(idx);
+                    case BLOCKPLACE -> this.data.claim.allowedPlaceBlocks.removeAllowedItem(idx);
                     case BLOCKUSE -> this.data.claim.allowedUseBlocks.removeAllowedItem(idx);
                 }
                 slot.set(ItemStack.EMPTY);
@@ -189,6 +200,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
         int size = switch (this.data.type) {
             case ITEM -> this.data.claim.allowedItems.size();
             case BLOCKBREAK -> this.data.claim.allowedBreakBlocks.size();
+            case BLOCKPLACE -> this.data.claim.allowedPlaceBlocks.size();
             case BLOCKUSE -> this.data.claim.allowedUseBlocks.size();
             case ENTITYATTACK -> this.data.claim.allowedEntityAttack.size();
             case ENTITYUSE -> this.data.claim.allowedEntityUse.size();
@@ -203,6 +215,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
     public enum Type {
         ITEM("flan.screenMenuItemUse", "item"),
         BLOCKBREAK("flan.screenMenuBlockBreak", "block_break"),
+        BLOCKPLACE("flan.screenMenuBlockPlace", "block_place"),
         BLOCKUSE("flan.screenMenuBlockUse", "block_use"),
         ENTITYATTACK("flan.screenMenuEntityAttack", "entity_attack"),
         ENTITYUSE("flan.screenMenuEntityUse", "entity_use");

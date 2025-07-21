@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.forge.forgeevent;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
+import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.event.BlockInteractEvents;
@@ -74,6 +75,8 @@ public class BlockInteractEventsForge {
         ClaimStorage storage = ClaimStorage.get(player.serverLevel());
         IPermissionContainer claim = storage.getForPermissionCheck(placePos);
         if (claim == null)
+            return false;
+        if (claim instanceof Claim real && real.canPlaceBlockItem(placedBlock))
             return false;
         ResourceLocation perm = InteractionOverrideManager.INSTANCE.getBlockInteract(placedBlock.getBlock());
         if (perm != null) {
