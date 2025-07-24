@@ -169,7 +169,7 @@ public class ClaimDisplay {
             return this.display.isRemoved();
         ClaimBox dims = this.display.box();
         if (this.pos == null || this.changed(dims)) {
-            this.pos = calculatePos(player.serverLevel(), this.display, this.displayHeight);
+            this.pos = calculatePos(player.level(), this.display, this.displayHeight);
             if (!ConfigHandler.CONFIG.particleDisplay) {
                 PlayerClaimData data = PlayerClaimData.get(player);
                 Set<ClientBlockDisplayTracker.DisplayData> displayData = new HashSet<>();
@@ -184,10 +184,10 @@ public class ClaimDisplay {
         }
         if (ConfigHandler.CONFIG.particleDisplay) {
             for (BlockPos pos : this.pos.vertices) {
-                player.connection.send(new ClientboundLevelParticlesPacket(this.type.cornerParticle, true, true, pos.getX() + 0.5, pos.getY() + 0.5 + player.serverLevel().getRandom().nextDouble() * 1.5, pos.getZ() + 0.5, 0, 1, 0, 1, 0));
+                player.connection.send(new ClientboundLevelParticlesPacket(this.type.cornerParticle, true, true, pos.getX() + 0.5, pos.getY() + 0.5 + player.level().getRandom().nextDouble() * 1.5, pos.getZ() + 0.5, 0, 1, 0, 1, 0));
             }
             for (BlockPos pos : this.pos.edges) {
-                player.connection.send(new ClientboundLevelParticlesPacket(this.type.middleParticle, true, true, pos.getX() + 0.5, pos.getY() + 0.5 + player.serverLevel().getRandom().nextDouble() * 1.5, pos.getZ() + 0.5, 0, 1, 0, 1, 0));
+                player.connection.send(new ClientboundLevelParticlesPacket(this.type.middleParticle, true, true, pos.getX() + 0.5, pos.getY() + 0.5 + player.level().getRandom().nextDouble() * 1.5, pos.getZ() + 0.5, 0, 1, 0, 1, 0));
             }
         }
         this.prevDims = dims;

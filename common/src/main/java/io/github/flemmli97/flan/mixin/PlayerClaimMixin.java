@@ -7,7 +7,6 @@ import io.github.flemmli97.flan.platform.ClaimEvents;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.utils.IPlayerClaimImpl;
 import io.github.flemmli97.flan.utils.VanillaFlightStateTracker;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -29,8 +28,8 @@ public abstract class PlayerClaimMixin extends Player implements IPlayerClaimImp
     @Unique
     private boolean flan$claimFlight, flan$togglingFlight, flan$otherFlightState;
 
-    private PlayerClaimMixin(Level level, BlockPos pos, float yRot, GameProfile gameProfile) {
-        super(level, pos, yRot, gameProfile);
+    private PlayerClaimMixin(Level level, GameProfile gameProfile) {
+        super(level, gameProfile);
     }
 
     @Inject(method = "<init>*", at = @At("RETURN"))

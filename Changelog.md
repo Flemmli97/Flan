@@ -6,7 +6,8 @@ Flan 1.11.15
 
 Flan 1.11.14
 ================
-- Fix config global permission issue of outside being treated as in claim
+- Update to 1.21.8
+~~- Fix config global permission issue of outside being treated as in claim~~
 
 Flan 1.11.13
 ================

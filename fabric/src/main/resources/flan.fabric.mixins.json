@@ -4,6 +4,7 @@
   "package": "io.github.flemmli97.flan.fabric.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "AnvilMenuMixin",
     "EntityDamageMixin",
     "ExplosionMixin",
     "FabricFireMixin",

@@ -215,7 +215,7 @@ public class ClaimStorage implements IPermissionStorage {
 
     public void toggleAdminClaim(ServerPlayer player, Claim claim, boolean toggle) {
         Flan.log("Set claim {} to an admin claim", claim);
-        this.deleteClaim(claim, false, ClaimMode.DEFAULT, player.serverLevel());
+        this.deleteClaim(claim, false, ClaimMode.DEFAULT, player.level());
         if (toggle)
             claim.getOwnerPlayer().ifPresent(o -> PlayerClaimData.get(o).updateScoreboard());
         claim.toggleAdminClaim(player, toggle);
@@ -229,7 +229,7 @@ public class ClaimStorage implements IPermissionStorage {
         int minY = claim.is3d() && dims.minY() == from.getY() ? dims.maxY() : dims.minY();
         BlockPos opposite = new BlockPos(dims.minX() == from.getX() ? dims.maxX() : dims.minX(),
                 minY, dims.minZ() == from.getZ() ? dims.maxZ() : dims.minZ());
-        Claim newClaim = new Claim(opposite, to, player.getUUID(), player.serverLevel());
+        Claim newClaim = new Claim(opposite, to, player.getUUID(), player.level());
         if (claim.is3d()) {
             if (Math.abs(minY - to.getY()) < ConfigHandler.CONFIG.minHeight3d) {
                 player.displayClientMessage(ClaimUtils.translatedText("flan.minClaimHeight", ConfigHandler.CONFIG.minHeight3d, ChatFormatting.RED), false);
@@ -257,7 +257,7 @@ public class ClaimStorage implements IPermissionStorage {
         boolean enoughBlocks = claim.isAdminClaim() || data.isAdminIgnoreClaim() || newData.canUseClaimBlocks(diff);
         if (enoughBlocks) {
             Flan.log("Resizing claim {}", claim);
-            this.deleteClaim(claim, false, ClaimMode.DEFAULT, player.serverLevel());
+            this.deleteClaim(claim, false, ClaimMode.DEFAULT, player.level());
             claim.copySizes(newClaim);
             this.addClaim(claim);
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
@@ -324,7 +324,7 @@ public class ClaimStorage implements IPermissionStorage {
     public boolean canInteract(BlockPos pos, int radius, ServerPlayer player, ResourceLocation perm, boolean message) {
         boolean realPlayer = player != null && player.getClass().equals(ServerPlayer.class);
         message = message && realPlayer;
-        Set<Claim> affected = this.getNearbyClaims(player.serverLevel(), pos, radius, radius);
+        Set<Claim> affected = this.getNearbyClaims(player.level(), pos, radius, radius);
         affected.remove(this.getClaimAt(pos));
         for (BlockPos ipos : BlockPos.betweenClosed(pos.getX() - radius, pos.getY(), pos.getZ() - radius,
                 pos.getX() + radius, pos.getY(), pos.getZ() + radius)) {

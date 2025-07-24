@@ -72,7 +72,7 @@ public class WorldEvents {
     }
 
     public static boolean canStartRaid(ServerPlayer player, BlockPos pos) {
-        IPermissionContainer claim = ClaimStorage.get(player.serverLevel()).getForPermissionCheck(pos);
+        IPermissionContainer claim = ClaimStorage.get(player.level()).getForPermissionCheck(pos);
         return claim.canInteract(player, BuiltinPermission.RAID, pos);
     }
 

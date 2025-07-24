@@ -71,7 +71,7 @@ public class CommandHelpers {
     public static CompletableFuture<Suggestions> groupSuggestion(CommandContext<CommandSourceStack> context, SuggestionsBuilder build) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         List<String> list = new ArrayList<>();
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         Claim claim = storage.getClaimAt(player.blockPosition());
         if (claim != null && claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
             list = claim.groups();
@@ -119,7 +119,7 @@ public class CommandHelpers {
     public static CompletableFuture<Suggestions> claimEntryListSuggestion(CommandContext<CommandSourceStack> context, SuggestionsBuilder build, ClaimAllowListKey<?> key) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         List<String> list = new ArrayList<>();
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         Claim claim = storage.getClaimAt(player.blockPosition());
         if (claim != null && claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
             list = claim.allowedEntries.get(key).asString();

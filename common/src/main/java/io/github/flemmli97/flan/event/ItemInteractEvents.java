@@ -208,12 +208,12 @@ public class ItemInteractEvents {
             player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), true);
             return;
         }
-        if (!canClaimWorld(player.serverLevel(), player))
+        if (!canClaimWorld(player.level(), player))
             return;
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         Claim claim = storage.getClaimAt(target);
         if (claim == null)
-            claim = storage.getClaimAt(new BlockPos(target.getX(), player.serverLevel().getMaxY(), target.getZ()));
+            claim = storage.getClaimAt(new BlockPos(target.getX(), player.level().getMaxY(), target.getZ()));
         PlayerClaimData data = PlayerClaimData.get(player);
         if (data.claimCooldown())
             return;
@@ -293,7 +293,7 @@ public class ItemInteractEvents {
     }
 
     public static void inspect(ServerPlayer player, BlockPos target) {
-        Claim claim = ClaimStorage.get(player.serverLevel()).getClaimAt(target);
+        Claim claim = ClaimStorage.get(player.level()).getClaimAt(target);
         PlayerClaimData data = PlayerClaimData.get(player);
         if (data.claimCooldown())
             return;

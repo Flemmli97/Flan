@@ -217,7 +217,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public void addDisplayClaim(DisplayBox display, EnumDisplayType type, int height) {
-        this.addDisplayClaim(new ClaimDisplay(display, this.player.serverLevel(), type, height), true);
+        this.addDisplayClaim(new ClaimDisplay(display, this.player.level(), type, height), true);
     }
 
     private void addDisplayClaim(ClaimDisplay display, boolean override) {
@@ -284,7 +284,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public boolean editDefaultPerms(String group, ResourceLocation perm, int mode) {
-        if (PermissionManager.getInstance().isGlobalPermission(perm) || ConfigHandler.CONFIG.globallyDefined(this.player.serverLevel(), perm))
+        if (PermissionManager.getInstance().isGlobalPermission(perm) || ConfigHandler.CONFIG.globallyDefined(this.player.level(), perm))
             return false;
         if (mode > 1)
             mode = -1;
@@ -340,7 +340,7 @@ public class PlayerClaimData implements IPlayerData {
             this.addClaimBlocks(1);
             this.lastBlockTick = 0;
         }
-        if (tool && ItemInteractEvents.canPlayerClaim(this.player.serverLevel(), this.player)) {
+        if (tool && ItemInteractEvents.canPlayerClaim(this.player.level(), this.player)) {
             this.claimingRange = this.getClaimMode().is3d && this.editingCorner() != null ? 10 : 64;
             BlockPos pos = ItemInteractEvents.rayTargetPos(this.player);
             if (pos != null && !pos.equals(this.firstCorner)) {
@@ -404,7 +404,7 @@ public class PlayerClaimData implements IPlayerData {
                     this.player.teleportTo(tpTo.getX() + 0.5, tpTo.getY(), tpTo.getZ() + 0.5);
                     this.tpPos = null;
                 } else {
-                    Vec3 tp = TeleportUtils.getTeleportPos(this.player, this.player.position(), ClaimStorage.get(this.player.serverLevel()),
+                    Vec3 tp = TeleportUtils.getTeleportPos(this.player, this.player.position(), ClaimStorage.get(this.player.level()),
                             new TeleportUtils.Area2D(((IPlayerClaimImpl) this.player).flan$getCurrentClaim().getDimensions()),
                             TeleportUtils.roundedBlockPos(this.player.position()).mutable(), (claim, nPos) -> false);
                     if (this.player.isPassenger())
@@ -424,8 +424,8 @@ public class PlayerClaimData implements IPlayerData {
 
     private void displayClaims(Claim currentClaim) {
         if (ConfigHandler.CONFIG.nearbyClaimsToolDisplay > 0) {
-            for (Claim claim : ClaimStorage.get(this.player.serverLevel())
-                    .getNearbyClaims(this.player.serverLevel(), this.player.blockPosition(), ConfigHandler.CONFIG.nearbyClaimsToolDisplay, ConfigHandler.CONFIG.nearbyClaimsToolDisplay)) {
+            for (Claim claim : ClaimStorage.get(this.player.level())
+                    .getNearbyClaims(this.player.level(), this.player.blockPosition(), ConfigHandler.CONFIG.nearbyClaimsToolDisplay, ConfigHandler.CONFIG.nearbyClaimsToolDisplay)) {
                 this.addDisplayClaim(claim, EnumDisplayType.MAIN, this.player.blockPosition().getY(), false);
             }
         } else {
@@ -434,7 +434,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     private boolean shouldDisplayClaimToolMessage() {
-        return ItemInteractEvents.canClaimWorld(this.player.serverLevel(), this.player)
+        return ItemInteractEvents.canClaimWorld(this.player.level(), this.player)
                 && ConfigHandler.CONFIG.maxClaimBlocks > 0;
     }
 
@@ -493,7 +493,7 @@ public class PlayerClaimData implements IPlayerData {
             return false;
         if (this.calculateShouldDrop) {
             BlockPos rounded = TeleportUtils.roundedBlockPos(this.player.position().add(0, this.player.getEyeHeight(this.player.getPose()), 0));
-            this.shouldProtectDrop = ClaimStorage.get(this.player.serverLevel()).getForPermissionCheck(rounded)
+            this.shouldProtectDrop = ClaimStorage.get(this.player.level()).getForPermissionCheck(rounded)
                     .canInteract(this.player, BuiltinPermission.LOCKITEMS, rounded)
                     && !this.player.getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
             this.calculateShouldDrop = false;
@@ -514,7 +514,7 @@ public class PlayerClaimData implements IPlayerData {
             return;
         Map<UUID, Long> map = this.fakePlayerNotif.computeIfAbsent(claim.getClaimID(), o -> new HashMap<>());
         Long last = map.get(fakePlayer.getUUID());
-        if (last == null || this.player.serverLevel().getGameTime() - 1200 > last) {
+        if (last == null || this.player.level().getGameTime() - 1200 > last) {
             Component claimMsg = ClaimUtils.translatedText("flan.fakePlayerNotification1", claim.getLevel().dimension().location().toString(), pos, ChatFormatting.DARK_RED);
             this.player.sendSystemMessage(claimMsg);
             String cmdStr = String.format("/flan fakePlayer add %s", fakePlayer.getUUID());
@@ -531,7 +531,7 @@ public class PlayerClaimData implements IPlayerData {
                             .withHoverEvent(new HoverEvent.ShowText(Component.literal(cmdStr))));
             msg = ClaimUtils.translatedText("flan.fakePlayerNotification3", cmd);
             this.player.sendSystemMessage(msg);
-            map.put(fakePlayer.getUUID(), this.player.serverLevel().getGameTime());
+            map.put(fakePlayer.getUUID(), this.player.level().getGameTime());
         }
     }
 

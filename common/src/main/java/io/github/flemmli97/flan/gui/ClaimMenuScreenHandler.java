@@ -158,8 +158,8 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
                     player.closeContainer();
                     player.getServer().execute(() -> ConfirmScreenHandler.openConfirmScreen(player, (bool) -> {
                         if (bool) {
-                            ClaimStorage storage = ClaimStorage.get(player.serverLevel());
-                            storage.deleteClaim(this.data, true, PlayerClaimData.get(player).getClaimMode(), player.serverLevel());
+                            ClaimStorage storage = ClaimStorage.get(player.level());
+                            storage.deleteClaim(this.data, true, PlayerClaimData.get(player).getClaimMode(), player.level());
                             player.closeContainer();
                             player.displayClientMessage(ClaimUtils.translatedText("flan.deleteClaim", ChatFormatting.RED), false);
                             ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_PLACE, 1, 1f);

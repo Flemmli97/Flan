@@ -175,7 +175,7 @@ public class BlockInteractEvents {
 
     private static void executeSignCommand(BlockEntity blockEntity, BlockPos pos, ServerPlayer player) {
         if (blockEntity instanceof SignBlockEntity sign)
-            sign.executeClickCommandsIfPresent(player, player.level(), pos, sign.isFacingFrontText(player));
+            sign.executeClickCommandsIfPresent(player.level(), player, pos, sign.isFacingFrontText(player));
     }
 
     public static boolean contains(ResourceLocation id, BlockEntity blockEntity, List<String> idList, List<String> tagList) {

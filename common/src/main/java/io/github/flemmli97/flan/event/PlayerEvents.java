@@ -70,7 +70,7 @@ public class PlayerEvents {
              * {@link ItemInteractEvents#onItemUseBlock} handles this case already.
              * Sadly need to check again. In case its used in a claim. Less expensive than aoe check
              */
-            if (perm != null && !ClaimStorage.get(serverPlayer.serverLevel()).getForPermissionCheck(pos).canInteract(serverPlayer, perm, pos, false))
+            if (perm != null && !ClaimStorage.get(serverPlayer.level()).getForPermissionCheck(pos).canInteract(serverPlayer, perm, pos, false))
                 return false;
             int range = 0;
             RegistryAccess registry = serverPlayer.level().registryAccess();
@@ -102,7 +102,7 @@ public class PlayerEvents {
                 int y = Math.max(Math.max(h1, h2), h3);
                 pos.set(pos.getX(), pos.getY() + y + 1, pos.getZ());
             }
-            if (range > 0 && perm != null && !ClaimStorage.get(serverPlayer.serverLevel()).canInteract(pos, range, serverPlayer, perm, false)) {
+            if (range > 0 && perm != null && !ClaimStorage.get(serverPlayer.level()).canInteract(pos, range, serverPlayer, perm, false)) {
                 serverPlayer.displayClientMessage(ClaimUtils.translatedText("flan.tooCloseClaim", ChatFormatting.DARK_RED), true);
                 return true;
             }
@@ -113,17 +113,17 @@ public class PlayerEvents {
     public static float canSpawnFromPlayer(Entity entity, float old) {
         BlockPos pos;
         if (entity instanceof ServerPlayer player &&
-                !ClaimStorage.get(player.serverLevel()).getForPermissionCheck(pos = player.blockPosition()).canInteract(player, BuiltinPermission.PLAYERMOBSPAWN, pos, false))
+                !ClaimStorage.get(player.level()).getForPermissionCheck(pos = player.blockPosition()).canInteract(player, BuiltinPermission.PLAYERMOBSPAWN, pos, false))
             return -1;
         return old;
     }
 
     public static boolean canWardenSpawnTrigger(BlockPos pos, ServerPlayer player) {
-        return ClaimStorage.get(player.serverLevel()).getForPermissionCheck(pos).canInteract(player, BuiltinPermission.PLAYERMOBSPAWN, pos, false);
+        return ClaimStorage.get(player.level()).getForPermissionCheck(pos).canInteract(player, BuiltinPermission.PLAYERMOBSPAWN, pos, false);
     }
 
     public static boolean canSculkTrigger(BlockPos pos, ServerPlayer player) {
-        return ClaimStorage.get(player.serverLevel()).getForPermissionCheck(pos).canInteract(player, BuiltinPermission.SCULK, pos, false);
+        return ClaimStorage.get(player.level()).getForPermissionCheck(pos).canInteract(player, BuiltinPermission.SCULK, pos, false);
     }
 
     @SuppressWarnings("unchecked")
@@ -158,7 +158,7 @@ public class PlayerEvents {
                 }
                 if (sPlayer.getUUID().equals(ownedItem.flan$getPlayerOrigin()))
                     return true;
-                ClaimStorage storage = ClaimStorage.get(sPlayer.serverLevel());
+                ClaimStorage storage = ClaimStorage.get(sPlayer.level());
                 BlockPos pos = sPlayer.blockPosition();
                 IPermissionContainer claim = storage.getForPermissionCheck(pos);
                 if (claim != null) {
@@ -204,7 +204,7 @@ public class PlayerEvents {
     public static Claim currentClaimTick(ServerPlayer player, Claim currentClaim) {
         Vec3 pos = player.position();
         BlockPos rounded = TeleportUtils.roundedBlockPos(pos.add(0, player.getEyeHeight(player.getPose()), 0));
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         Claim newClaim = currentClaim;
         if (currentClaim != null) {
             if (!currentClaim.intersects(player.getBoundingBox())) {

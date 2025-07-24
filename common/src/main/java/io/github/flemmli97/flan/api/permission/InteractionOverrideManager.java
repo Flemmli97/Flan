@@ -218,6 +218,5 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
 
         public static final Codec<InteractionEntry<?>> CODEC = ResourceLocation.CODEC.dispatch(e -> e.type().getId(),
                 t -> InteractionType.LOOKUP.get(t).getCodec());
-
     }
 }

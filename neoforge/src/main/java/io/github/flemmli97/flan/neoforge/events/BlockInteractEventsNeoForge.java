@@ -71,7 +71,7 @@ public class BlockInteractEventsNeoForge {
     private static boolean placeBlocksHandler(Entity entity, BlockPos placePos, BlockState placedBlock) {
         if (!(entity instanceof ServerPlayer player))
             return false;
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         IPermissionContainer claim = storage.getForPermissionCheck(placePos);
         if (claim == null)
             return false;

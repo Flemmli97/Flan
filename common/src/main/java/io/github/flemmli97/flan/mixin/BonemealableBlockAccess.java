@@ -11,5 +11,4 @@ public interface BonemealableBlockAccess {
 
     @Accessor("feature")
     ResourceKey<ConfiguredFeature<?, ?>> getFeature();
-
 }

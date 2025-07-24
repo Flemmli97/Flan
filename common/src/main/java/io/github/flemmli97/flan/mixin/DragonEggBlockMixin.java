@@ -51,7 +51,7 @@ public abstract class DragonEggBlockMixin {
             ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract((DragonEggBlock) (Object) this);
             if (perm == null)
                 perm = BuiltinPermission.INTERACTBLOCK;
-            if (!ClaimStorage.get(player.serverLevel()).canInteract(pos, 16, player, perm, true))
+            if (!ClaimStorage.get(player.level()).canInteract(pos, 16, player, perm, true))
                 info.cancel();
         }
     }

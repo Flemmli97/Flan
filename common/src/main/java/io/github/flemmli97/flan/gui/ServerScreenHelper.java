@@ -102,7 +102,7 @@ public class ServerScreenHelper {
             Component trans = ServerScreenHelper.coloredGuiText(pdesc, ChatFormatting.YELLOW);
             lore.add(trans);
         }
-        Config.GlobalType global = ConfigHandler.CONFIG.getGlobal(player.serverLevel(), perm.getId());
+        Config.GlobalType global = ConfigHandler.CONFIG.getGlobal(player.level(), perm.getId());
         if (!global.canModify()) {
             Component text = ServerScreenHelper.coloredGuiText("flan.screenUneditable", ChatFormatting.DARK_RED);
             lore.add(text);

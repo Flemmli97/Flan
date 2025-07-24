@@ -10,7 +10,7 @@ public class HarvestWithEase {
     public static void init() {
         HarvestWithEaseEvents.HARVEST_CHECK.register((level, blockState, blockPos, player, interactionHand, harvestCheckEvent) -> {
             if (player instanceof ServerPlayer serverPlayer) {
-                ClaimStorage storage = ClaimStorage.get(serverPlayer.serverLevel());
+                ClaimStorage storage = ClaimStorage.get(serverPlayer.level());
                 if (!storage.getForPermissionCheck(blockPos)
                         .canInteract(serverPlayer, BuiltinPermission.BREAK, blockPos)) {
                     harvestCheckEvent.setCanceled(true);

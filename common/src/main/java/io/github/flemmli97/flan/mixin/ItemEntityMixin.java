@@ -4,10 +4,11 @@ import io.github.flemmli97.flan.event.PlayerEvents;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.utils.IOwnedItem;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,13 +26,13 @@ public abstract class ItemEntityMixin implements IOwnedItem {
     private UUID flan$DeathPlayerOrigin;
 
     @Inject(method = "readAdditionalSaveData", at = @At("RETURN"))
-    private void readData(CompoundTag tag, CallbackInfo info) {
-        this.flan$PlayerOrigin = tag.read("Flan:PlayerOrigin", UUIDUtil.CODEC).orElse(null);
+    private void readData(ValueInput input, CallbackInfo ci) {
+        this.flan$PlayerOrigin = input.read("Flan:PlayerOrigin", UUIDUtil.CODEC).orElse(null);
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("RETURN"))
-    private void writeData(CompoundTag tag, CallbackInfo info) {
-        tag.storeNullable("Flan:PlayerOrigin", UUIDUtil.CODEC, this.flan$PlayerOrigin);
+    private void writeData(ValueOutput output, CallbackInfo ci) {
+        output.storeNullable("Flan:PlayerOrigin", UUIDUtil.CODEC, this.flan$PlayerOrigin);
     }
 
     @Override

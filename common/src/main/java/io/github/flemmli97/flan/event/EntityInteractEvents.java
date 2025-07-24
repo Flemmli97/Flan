@@ -211,7 +211,7 @@ public class EntityInteractEvents {
             return InteractionResult.PASS;
         if (entity instanceof Enemy)
             return InteractionResult.PASS;
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {

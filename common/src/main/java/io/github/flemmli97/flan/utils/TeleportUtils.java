@@ -34,7 +34,7 @@ public class TeleportUtils {
         if (claim == null || check.apply(claim, bPos)) {
             Vec3 ret = pos.getB();
             BlockPos rounded = roundedBlockPos(ret);
-            int y = player.serverLevel().getChunk(rounded.getX() >> 4, rounded.getZ() >> 4)
+            int y = player.level().getChunk(rounded.getX() >> 4, rounded.getZ() >> 4)
                     .getHeight(Heightmap.Types.MOTION_BLOCKING, rounded.getX() & 15, rounded.getZ() & 15);
             Vec3 dest = new Vec3(ret.x, y + 1, ret.z);
             if (player.level().noCollision(player, player.getBoundingBox().move(dest.subtract(player.position()))))

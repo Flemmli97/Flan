@@ -32,7 +32,7 @@ public class ClaimUtils {
 
     public static Claim checkReturn(ServerPlayer player, ResourceLocation perm, Consumer<Optional<Boolean>> cons) {
         BlockPos pos = player.blockPosition();
-        Claim claim = ClaimStorage.get(player.serverLevel()).getClaimAt(pos);
+        Claim claim = ClaimStorage.get(player.level()).getClaimAt(pos);
         return check(player, pos, claim, perm, cons) ? claim : null;
     }
 

@@ -4,8 +4,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
+import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
@@ -26,6 +30,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.PlainTextContents;
@@ -97,9 +102,9 @@ public class Claim implements IPermissionContainer {
 
     //New claim
     public Claim(BlockPos pos1, BlockPos pos2, ServerPlayer creator) {
-        this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator.getUUID(), creator.serverLevel(), PlayerClaimData.get(creator).playerDefaultGroups().isEmpty());
+        this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator.getUUID(), creator.level(), PlayerClaimData.get(creator).playerDefaultGroups().isEmpty());
         PlayerClaimData.get(creator).playerDefaultGroups().forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0, true)));
-        Collection<Claim> all = ClaimStorage.get(creator.serverLevel()).allClaimsFromPlayer(creator.getUUID());
+        Collection<Claim> all = ClaimStorage.get(creator.level()).allClaimsFromPlayer(creator.getUUID());
         String name = String.format(ConfigHandler.CONFIG.defaultClaimName, "%1$s", all.size());
         if (!name.isEmpty()) {
             for (Claim claim : all) {
@@ -720,26 +725,11 @@ public class Claim implements IPermissionContainer {
             else {
                 this.homePos = new BlockPos(home.get(0).getAsInt(), home.get(1).getAsInt(), home.get(2).getAsInt());
             }
-            String message = ConfigHandler.fromJson(obj, "EnterTitle", "");
-            if (!message.isEmpty())
-                this.enterTitle = Component.Serializer.fromJson(message, this.level.registryAccess());
-            else
-                this.enterTitle = null;
-            message = ConfigHandler.fromJson(obj, "EnterSubtitle", "");
-            if (!message.isEmpty())
-                this.enterSubtitle = Component.Serializer.fromJson(message, this.level.registryAccess());
-            else
-                this.enterSubtitle = null;
-            message = ConfigHandler.fromJson(obj, "LeaveTitle", "");
-            if (!message.isEmpty())
-                this.leaveTitle = Component.Serializer.fromJson(message, this.level.registryAccess());
-            else
-                this.leaveTitle = null;
-            message = ConfigHandler.fromJson(obj, "LeaveSubtitle", "");
-            if (!message.isEmpty())
-                this.leaveSubtitle = Component.Serializer.fromJson(message, this.level.registryAccess());
-            else
-                this.leaveSubtitle = null;
+            DynamicOps<JsonElement> ops = this.level.registryAccess().createSerializationContext(JsonOps.INSTANCE);
+            this.enterTitle = this.readComponent(obj, "EnterTitle", ops);
+            this.enterSubtitle = this.readComponent(obj, "EnterSubtitle", ops);
+            this.leaveTitle = this.readComponent(obj, "LeaveTitle", ops);
+            this.leaveSubtitle = this.readComponent(obj, "LeaveSubtitle", ops);
             JsonObject potion = ConfigHandler.fromJson(obj, "Potions");
             potion.entrySet().forEach(e ->
                     BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(e.getKey()))
@@ -800,6 +790,20 @@ public class Claim implements IPermissionContainer {
         }
     }
 
+    private Component readComponent(JsonObject obj, String name, DynamicOps<JsonElement> ops) {
+        if (!obj.has(name))
+            return null;
+        JsonElement message = obj.get(name);
+        if (message.isJsonPrimitive()) {
+            String legacy = message.getAsString();
+            if (!legacy.startsWith("{"))
+                return null;
+            message = ConfigHandler.GSON.fromJson(legacy, JsonObject.class);
+            Flan.LOGGER.info("Converted legacy component {}", message);
+        }
+        return ComponentSerialization.CODEC.parse(ops, message).ifError(Flan.LOGGER::error).result().orElse(null);
+    }
+
     public JsonObject toJson(JsonObject obj) {
         obj.addProperty("ID", this.claimID.toString());
         obj.addProperty("Name", this.claimName);
@@ -817,10 +821,11 @@ public class Claim implements IPermissionContainer {
         home.add(this.homePos.getY());
         home.add(this.homePos.getZ());
         obj.add("Home", home);
-        obj.addProperty("EnterTitle", this.enterTitle == null ? "" : Component.Serializer.toJson(this.enterTitle, this.level.registryAccess()));
-        obj.addProperty("EnterSubtitle", this.enterSubtitle == null ? "" : Component.Serializer.toJson(this.enterSubtitle, this.level.registryAccess()));
-        obj.addProperty("LeaveTitle", this.leaveTitle == null ? "" : Component.Serializer.toJson(this.leaveTitle, this.level.registryAccess()));
-        obj.addProperty("LeaveSubtitle", this.leaveSubtitle == null ? "" : Component.Serializer.toJson(this.leaveSubtitle, this.level.registryAccess()));
+        DynamicOps<JsonElement> ops = this.level.registryAccess().createSerializationContext(JsonOps.INSTANCE);
+        obj.add("EnterTitle", this.enterTitle == null ? JsonNull.INSTANCE : ComponentSerialization.CODEC.encodeStart(ops, this.enterTitle).getOrThrow());
+        obj.add("EnterSubtitle", this.enterSubtitle == null ? JsonNull.INSTANCE : ComponentSerialization.CODEC.encodeStart(ops, this.enterSubtitle).getOrThrow());
+        obj.add("LeaveTitle", this.leaveTitle == null ? JsonNull.INSTANCE : ComponentSerialization.CODEC.encodeStart(ops, this.leaveTitle).getOrThrow());
+        obj.add("LeaveSubtitle", this.leaveSubtitle == null ? JsonNull.INSTANCE : ComponentSerialization.CODEC.encodeStart(ops, this.leaveSubtitle).getOrThrow());
         JsonObject potions = new JsonObject();
         this.potions.forEach((effect, amp) -> potions.addProperty(effect.getRegisteredName(), amp));
         obj.add("Potions", potions);

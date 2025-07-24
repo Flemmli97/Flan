@@ -188,9 +188,9 @@ public class CommandClaim {
 
     private static int addClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        if (!ItemInteractEvents.canClaimWorld(player.serverLevel(), player))
+        if (!ItemInteractEvents.canClaimWorld(player.level(), player))
             return 0;
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         BlockPos from = BlockPosArgument.getLoadedBlockPos(context, "from");
         BlockPos to = BlockPosArgument.getLoadedBlockPos(context, "to");
         storage.createClaim(from, to, player);
@@ -239,9 +239,9 @@ public class CommandClaim {
 
     private static int addClaimRect(CommandContext<CommandSourceStack> context, int x, int z) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        if (!ItemInteractEvents.canClaimWorld(player.serverLevel(), player))
+        if (!ItemInteractEvents.canClaimWorld(player.level(), player))
             return 0;
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         boolean evenX = x % 2 == 0;
         boolean evenZ = z % 2 == 0;
         BlockPos from = player.blockPosition().offset(evenX ? -(int) ((x - 1) * 0.5) : -(int) (x * 0.5), -5, evenZ ? -(int) ((z - 1) * 0.5) : -(int) (z * 0.5));
@@ -258,7 +258,7 @@ public class CommandClaim {
             return 0;
         }
         GameProfile prof = profs.iterator().next();
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         Claim claim = storage.getClaimAt(player.blockPosition());
         if (claim == null) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.noClaim", ChatFormatting.RED), false);
@@ -289,7 +289,7 @@ public class CommandClaim {
     private static int openMenu(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         PlayerClaimData data = PlayerClaimData.get(player);
-        Claim claim = ClaimStorage.get(player.serverLevel()).getClaimAt(player.blockPosition());
+        Claim claim = ClaimStorage.get(player.level()).getClaimAt(player.blockPosition());
         if (claim == null) {
             ClaimUtils.noClaimMessage(player);
             return 0;
@@ -323,7 +323,7 @@ public class CommandClaim {
             Claim claim = ClaimUtils.checkReturn(player, BuiltinPermission.EDITPERMS, ClaimUtils.genericNoPermMessage(player));
             if (claim == null)
                 return 0;
-            boolean nameUsed = ClaimStorage.get(player.serverLevel()).allClaimsFromPlayer(claim.getOwner())
+            boolean nameUsed = ClaimStorage.get(player.level()).allClaimsFromPlayer(claim.getOwner())
                     .stream().map(Claim::getClaimName).anyMatch(name -> name.equals(StringArgumentType.getString(context, "name")));
             if (!nameUsed) {
                 String name = StringArgumentType.getString(context, "name");
@@ -333,7 +333,7 @@ public class CommandClaim {
                 player.displayClientMessage(ClaimUtils.translatedText("flan.claimNameUsed", ChatFormatting.DARK_RED), false);
             }
         } else {
-            Claim claim = ClaimStorage.get(player.serverLevel()).getClaimAt(player.blockPosition());
+            Claim claim = ClaimStorage.get(player.level()).getClaimAt(player.blockPosition());
             Claim sub = claim.getSubClaim(player.blockPosition());
             if (sub != null && (claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition()) || sub.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition()))) {
                 boolean nameUsed = claim.getAllSubclaims()
@@ -346,7 +346,7 @@ public class CommandClaim {
                     player.displayClientMessage(ClaimUtils.translatedText("flan.claimNameUsedSub", ChatFormatting.DARK_RED), false);
                 }
             } else if (claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
-                boolean nameUsed = ClaimStorage.get(player.serverLevel()).allClaimsFromPlayer(claim.getOwner())
+                boolean nameUsed = ClaimStorage.get(player.level()).allClaimsFromPlayer(claim.getOwner())
                         .stream().map(Claim::getClaimName).anyMatch(name -> name.equals(StringArgumentType.getString(context, "name")));
                 if (!nameUsed) {
                     String name = StringArgumentType.getString(context, "name");
@@ -396,7 +396,7 @@ public class CommandClaim {
 
     private static int claimInfo(CommandContext<CommandSourceStack> context, Claim.InfoType infoType) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        Claim claim = ClaimStorage.get(player.serverLevel()).getClaimAt(player.blockPosition());
+        Claim claim = ClaimStorage.get(player.level()).getClaimAt(player.blockPosition());
         PlayerClaimData data = PlayerClaimData.get(player);
         if (claim == null) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.noClaim", ChatFormatting.RED), false);
@@ -420,7 +420,7 @@ public class CommandClaim {
 
     private static int deleteClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         Claim claim = storage.getClaimAt(player.blockPosition());
         boolean check = ClaimUtils.check(player, player.blockPosition(), claim, BuiltinPermission.EDITCLAIM, b -> {
             if (b.isEmpty())
@@ -430,7 +430,7 @@ public class CommandClaim {
         });
         if (!check)
             return 0;
-        if (!storage.deleteClaim(claim, true, PlayerClaimData.get(player).getClaimMode(), player.serverLevel())) {
+        if (!storage.deleteClaim(claim, true, PlayerClaimData.get(player).getClaimMode(), player.level())) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.deleteSubClaimError", ChatFormatting.DARK_RED), false);
         } else {
             player.displayClientMessage(ClaimUtils.translatedText("flan.deleteClaim", ChatFormatting.RED), false);
@@ -444,7 +444,7 @@ public class CommandClaim {
         data.deferCommand(new PendingCommand(context, () -> {
             for (ServerLevel world : context.getSource().getServer().getAllLevels()) {
                 ClaimStorage storage = ClaimStorage.get(world);
-                storage.allClaimsFromPlayer(player.getUUID()).forEach((claim) -> storage.deleteClaim(claim, true, data.getClaimMode(), player.serverLevel()));
+                storage.allClaimsFromPlayer(player.getUUID()).forEach((claim) -> storage.deleteClaim(claim, true, data.getClaimMode(), player.level()));
             }
             player.displayClientMessage(ClaimUtils.translatedText("flan.deleteAllClaim", ChatFormatting.GOLD), false);
             return Command.SINGLE_SUCCESS;
@@ -455,7 +455,7 @@ public class CommandClaim {
 
     private static int deleteSubClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         Claim claim = storage.getClaimAt(player.blockPosition());
         if (claim == null) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.noClaim", ChatFormatting.RED), false);
@@ -608,7 +608,7 @@ public class CommandClaim {
 
     private static int toggleAdminClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         Claim claim = storage.getClaimAt(player.blockPosition());
         if (claim == null) {
             context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.noClaim", ChatFormatting.RED), false);
@@ -673,7 +673,7 @@ public class CommandClaim {
     private static int modifyGroup(CommandContext<CommandSourceStack> context, boolean remove) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         String group = StringArgumentType.getString(context, "group");
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         Claim claim = storage.getClaimAt(player.blockPosition());
         if (claim == null) {
             ClaimUtils.noClaimMessage(player);
@@ -721,7 +721,7 @@ public class CommandClaim {
 
     private static int modifyPlayer(CommandContext<CommandSourceStack> context, String group, boolean force) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         Claim claim = storage.getClaimAt(player.blockPosition());
         if (claim == null) {
             ClaimUtils.noClaimMessage(player);
@@ -773,7 +773,7 @@ public class CommandClaim {
 
     private static int modifyFakePlayer(CommandContext<CommandSourceStack> context, boolean remove) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         Claim claim = storage.getClaimAt(player.blockPosition());
         if (claim == null) {
             ClaimUtils.noClaimMessage(player);
@@ -820,7 +820,7 @@ public class CommandClaim {
 
     private static int editPerms(CommandContext<CommandSourceStack> context, String group, int mode) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        Claim claim = ClaimStorage.get(player.serverLevel()).getClaimAt(player.blockPosition());
+        Claim claim = ClaimStorage.get(player.level()).getClaimAt(player.blockPosition());
         PlayerClaimData data = PlayerClaimData.get(player);
         if (data.getClaimMode().isSubclaim) {
             Claim sub = claim.getSubClaim(player.blockPosition());
@@ -894,7 +894,7 @@ public class CommandClaim {
         if (claim == null)
             return 0;
 
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(player.level());
         int amount = IntegerArgumentType.getInteger(context, "distance");
         ClaimBox dims = claim.getDimensions();
         Direction facing = player.getDirection();
@@ -923,7 +923,7 @@ public class CommandClaim {
     public static int teleport(CommandContext<CommandSourceStack> context, UUID owner) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         String name = StringArgumentType.getString(context, "claim");
-        Optional<Claim> claims = ClaimStorage.get(player.serverLevel()).allClaimsFromPlayer(owner)
+        Optional<Claim> claims = ClaimStorage.get(player.level()).allClaimsFromPlayer(owner)
                 .stream().filter(claim -> {
                     if (claim.getClaimName().isEmpty())
                         return claim.getClaimID().toString().equals(name);
