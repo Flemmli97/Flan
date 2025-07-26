@@ -973,7 +973,19 @@ public class Claim implements IPermissionContainer {
 
     interface ClaimUpdater {
 
-        Map<Integer, ClaimUpdater> UPDATER = Config.createHashMap(map -> map.put(2, claim -> claim.globalPerm.put(BuiltinPermission.LOCKITEMS, true)));
+        Map<Integer, ClaimUpdater> UPDATER = Config.createHashMap(map -> {
+            map.put(7, claim -> {
+                Map<ResourceLocation, Boolean> coowner = claim.permissions.get("Co-Owner");
+                if (coowner != null && coowner.isEmpty()) {
+                    coowner.putAll(ConfigHandler.CONFIG.defaultGroups.getOrDefault("Co-Owner", new HashMap<>()));
+                }
+                Map<ResourceLocation, Boolean> visitors = claim.permissions.get("Visitor");
+                if (visitors != null && visitors.isEmpty()) {
+                    visitors.putAll(ConfigHandler.CONFIG.defaultGroups.getOrDefault("Visitor", new HashMap<>()));
+                }
+            });
+            map.put(2, claim -> claim.globalPerm.put(BuiltinPermission.LOCKITEMS, true));
+        });
 
         static void updateClaim(Claim claim) {
             UPDATER.entrySet().stream().filter(e -> e.getKey() > ConfigHandler.CONFIG.preConfigVersion).map(Map.Entry::getValue)

@@ -2,6 +2,7 @@ package io.github.flemmli97.flan.api.permission;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -71,5 +72,6 @@ public class PermissionManager extends SimpleJsonResourceReloadListener<ClaimPer
         });
         this.permissions = builder.build();
         this.sorted = this.permissions.values().stream().sorted().toList();
+        ConfigHandler.CONFIG.validatePermissionConfigs();
     }
 }

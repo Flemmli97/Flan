@@ -7,6 +7,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
+import io.github.flemmli97.flan.api.permission.PermissionManager;
 import net.minecraft.advancements.critereon.DataComponentMatchers;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
@@ -24,6 +25,38 @@ public class ConfigUpdater {
 
     @SuppressWarnings("deprecation")
     private static final Map<Integer, Updater> UPDATER = Config.createHashMap(map -> {
+        map.put(7, new Updater() {
+            @Override
+            public JsonObject configUpdater(MinecraftServer server, JsonObject oldVals) {
+                return oldVals;
+            }
+
+            @Override
+            public void postUpdater(MinecraftServer server, Config config) {
+                config.defaultGroups.computeIfPresent("Co-Owner", (k, v) -> {
+                    if (v.isEmpty()) {
+                        PermissionManager.getInstance().getAll().forEach(p -> v.put(p.getId(), true));
+                    }
+                    return v;
+                });
+                config.defaultGroups.computeIfPresent("Visitor", (k, v) -> {
+                    if (v.isEmpty()) {
+                        v.put(BuiltinPermission.BED, true);
+                        v.put(BuiltinPermission.DOOR, true);
+                        v.put(BuiltinPermission.FENCEGATE, true);
+                        v.put(BuiltinPermission.TRAPDOOR, true);
+                        v.put(BuiltinPermission.BUTTONLEVER, true);
+                        v.put(BuiltinPermission.PRESSUREPLATE, true);
+                        v.put(BuiltinPermission.ENDERCHEST, true);
+                        v.put(BuiltinPermission.ENCHANTMENTTABLE, true);
+                        v.put(BuiltinPermission.ITEMFRAMEROTATE, true);
+                        v.put(BuiltinPermission.PORTAL, true);
+                        v.put(BuiltinPermission.TRADING, true);
+                    }
+                    return v;
+                });
+            }
+        });
         map.put(6, new Updater() {
             @Override
             public JsonObject configUpdater(MinecraftServer server, JsonObject oldVals) {
