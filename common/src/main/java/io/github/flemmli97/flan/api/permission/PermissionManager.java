@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -87,6 +88,7 @@ public class PermissionManager extends SimpleJsonResourceReloadListener {
         });
         this.permissions = builder.build();
         this.sorted = this.permissions.values().stream().sorted().toList();
+        ConfigHandler.CONFIG.validatePermissionConfigs();
     }
 
     private static final Map<String, String> LEGACY = Map.of("requiredMod", "required_mod",

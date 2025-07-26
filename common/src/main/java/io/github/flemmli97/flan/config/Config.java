@@ -23,9 +23,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -114,12 +116,12 @@ public class Config {
 
     public boolean log;
 
-    public int configVersion = 6;
+    public int configVersion = 7;
     public int preConfigVersion;
 
     public Map<String, Map<ResourceLocation, Boolean>> defaultGroups = createHashMap(map -> {
-        map.put("Co-Owner", createLinkedHashMap(perms -> PermissionManager.getInstance().getAll().forEach(p -> perms.put(p.getId(), true))));
-        map.put("Visitor", createLinkedHashMap(perms -> {
+        map.put("Co-Owner", createHashMap(perms -> PermissionManager.getInstance().getAll().forEach(p -> perms.put(p.getId(), true))));
+        map.put("Visitor", createHashMap(perms -> {
             perms.put(BuiltinPermission.BED, true);
             perms.put(BuiltinPermission.DOOR, true);
             perms.put(BuiltinPermission.FENCEGATE, true);
@@ -246,11 +248,7 @@ public class Config {
                 if (e.getValue().isJsonObject()) {
                     e.getValue().getAsJsonObject().entrySet().forEach(jperm -> {
                         ResourceLocation id = BuiltinPermission.tryLegacy(jperm.getKey());
-                        ClaimPermission perm = PermissionManager.getInstance().get(id);
-                        if (perm == null)
-                            Flan.error("Default groups: No such permission for {}", jperm.getKey());
-                        else
-                            perms.put(id, jperm.getValue().getAsBoolean());
+                        perms.put(id, jperm.getValue().getAsBoolean());
                     });
                 }
                 this.defaultGroups.put(e.getKey(), perms);
@@ -262,9 +260,6 @@ public class Config {
                 if (e.getValue().isJsonObject()) {
                     e.getValue().getAsJsonObject().entrySet().forEach(jperm -> {
                         ResourceLocation id = BuiltinPermission.tryLegacy(jperm.getKey());
-                        ClaimPermission perm = PermissionManager.getInstance().get(id);
-                        if (perm == null)
-                            Flan.error("Global Perms: No such permission for {}", jperm.getKey());
                         if (jperm.getValue().isJsonPrimitive() && jperm.getValue().getAsJsonPrimitive().isBoolean())
                             perms.put(id, jperm.getValue().getAsBoolean() ? GlobalType.ALLTRUE : GlobalType.ALLFALSE);
                         else
@@ -368,7 +363,9 @@ public class Config {
         JsonObject global = new JsonObject();
         this.globalDefaultPerms.forEach((key, value) -> {
             JsonObject perm = new JsonObject();
-            value.forEach((key1, value1) -> perm.addProperty(key1.toString(), value1.toString()));
+            Map<ResourceLocation, Object> map = new TreeMap<>(ClaimPermission.NAMESPACE_FIRST);
+            map.putAll(value);
+            map.forEach((key1, value1) -> perm.addProperty(key1.toString(), value1.toString()));
             global.add(key, perm);
         });
         obj.add("globalDefaultPerms", global);
@@ -383,6 +380,31 @@ public class Config {
 
     public boolean globallyDefined(ServerLevel world, ResourceLocation perm) {
         return !this.getGlobal(world, perm).canModify();
+    }
+
+    public void validatePermissionConfigs() {
+        Set<ResourceLocation> missing = new HashSet<>();
+        this.defaultGroups.forEach((group, perms) -> {
+            perms.keySet().forEach(id -> {
+                ClaimPermission perm = PermissionManager.getInstance().get(id);
+                if (perm == null)
+                    missing.add(id);
+            });
+        });
+        if (!missing.isEmpty()) {
+            Flan.error("Default groups: Missing permissions for {}", missing);
+        }
+        Set<ResourceLocation> missing2 = new HashSet<>();
+        this.globalDefaultPerms.forEach((group, perms) -> {
+            perms.keySet().forEach(id -> {
+                ClaimPermission perm = PermissionManager.getInstance().get(id);
+                if (perm == null)
+                    missing2.add(id);
+            });
+        });
+        if (!missing2.isEmpty()) {
+            Flan.error("Global Perms: Missing permissions for {}", missing2);
+        }
     }
 
     public GlobalType getGlobal(ServerLevel world, ResourceLocation perm) {
@@ -423,12 +445,6 @@ public class Config {
 
     public static <V, K> Map<V, K> createHashMap(Consumer<Map<V, K>> cons) {
         Map<V, K> map = new HashMap<>();
-        cons.accept(map);
-        return map;
-    }
-
-    public static <V, K> Map<V, K> createLinkedHashMap(Consumer<Map<V, K>> cons) {
-        Map<V, K> map = new LinkedHashMap<>();
         cons.accept(map);
         return map;
     }

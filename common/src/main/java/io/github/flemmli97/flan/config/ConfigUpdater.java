@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
+import io.github.flemmli97.flan.api.permission.PermissionManager;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -19,6 +20,38 @@ import java.util.Map;
 public class ConfigUpdater {
 
     private static final Map<Integer, Updater> UPDATER = Config.createHashMap(map -> {
+        map.put(7, new Updater() {
+            @Override
+            public JsonObject configUpdater(JsonObject oldVals) {
+                return oldVals;
+            }
+
+            @Override
+            public void postUpdater(Config config) {
+                config.defaultGroups.computeIfPresent("Co-Owner", (k, v) -> {
+                    if (v.isEmpty()) {
+                        PermissionManager.getInstance().getAll().forEach(p -> v.put(p.getId(), true));
+                    }
+                    return v;
+                });
+                config.defaultGroups.computeIfPresent("Visitor", (k, v) -> {
+                    if (v.isEmpty()) {
+                        v.put(BuiltinPermission.BED, true);
+                        v.put(BuiltinPermission.DOOR, true);
+                        v.put(BuiltinPermission.FENCEGATE, true);
+                        v.put(BuiltinPermission.TRAPDOOR, true);
+                        v.put(BuiltinPermission.BUTTONLEVER, true);
+                        v.put(BuiltinPermission.PRESSUREPLATE, true);
+                        v.put(BuiltinPermission.ENDERCHEST, true);
+                        v.put(BuiltinPermission.ENCHANTMENTTABLE, true);
+                        v.put(BuiltinPermission.ITEMFRAMEROTATE, true);
+                        v.put(BuiltinPermission.PORTAL, true);
+                        v.put(BuiltinPermission.TRADING, true);
+                    }
+                    return v;
+                });
+            }
+        });
         map.put(6, new Updater() {
             @Override
             public JsonObject configUpdater(JsonObject oldVals) {
