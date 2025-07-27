@@ -2,6 +2,7 @@ Flan 1.11.15
 ================
 - Fix default groups config not working and always being empty
 - Move config permission verification after datapack load
+- Fix true/false translation key in command
 
 Flan 1.11.14
 ================
