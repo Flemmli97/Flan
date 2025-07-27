@@ -1,3 +1,8 @@
+Flan 1.11.15
+================
+- Fix default groups config not working and always being empty
+- Move config permission verification after datapack load
+
 Flan 1.11.14
 ================
 - Fix config global permission issue of outside being treated as in claim
