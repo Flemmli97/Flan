@@ -1,3 +1,11 @@
+Flan 1.12.0
+================
+- Fix datapack directory not updated. Now have a prefix `flan`
+  - `claim_permissions` -> `flan/claim_permission` (plural also removed)
+  - `claim_interactions_override` -> `flan/claim_interactions_override`
+  - Old datapacks also require update!
+- Update confirm command info
+
 Flan 1.11.15
 ================
 - Fix default groups config not working and always being empty
