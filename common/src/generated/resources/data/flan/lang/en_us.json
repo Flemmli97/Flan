@@ -173,7 +173,7 @@
   "flan.setLeaveSubMessage": "Set leave subtitle to %1$s",
   "flan.addIgnoreEntry": "Added %1$s to the claims ignore list %2$s",
   "flan.removeIgnoreEntry": "Removed %1$s from the claims ignore list %2$s",
-  "flan.confirmCommand": "Use '/flan confirm' to confirm running this command.",
+  "flan.confirmCommand": "Use '/flan confirm <confirm | deny>' to confirm or deny running this command.",
   "flan.confirmCommand.args": "No such option %s",
   "flan.confirmCommand.none": "No command to confirm!",
   "flan.confirmCancelled": "Command cancelled!",
