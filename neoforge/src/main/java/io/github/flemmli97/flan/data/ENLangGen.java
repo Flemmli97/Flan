@@ -223,7 +223,7 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.addIgnoreEntry", "Added %1$s to the claims ignore list %2$s");
         this.add("flan.removeIgnoreEntry", "Removed %1$s from the claims ignore list %2$s");
 
-        this.add("flan.confirmCommand", "Use '/flan confirm' to confirm running this command.");
+        this.add("flan.confirmCommand", "Use '/flan confirm <confirm | deny>' to confirm or deny running this command.");
         this.add("flan.confirmCommand.args", "No such option %s");
         this.add("flan.confirmCommand.none", "No command to confirm!");
         this.add("flan.confirmCancelled", "Command cancelled!");
