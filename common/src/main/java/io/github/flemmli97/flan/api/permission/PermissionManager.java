@@ -22,7 +22,7 @@ import java.util.Map;
 public class PermissionManager extends SimpleJsonResourceReloadListener<ClaimPermission.Builder> {
 
     public static final ResourceKey<? extends Registry<ClaimPermission.Builder>> ID =
-            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "claim_permissions"));
+            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "claim_permission"));
 
     private static PermissionManager INSTANCE;
 
