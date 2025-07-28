@@ -10,7 +10,9 @@ import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -71,6 +73,15 @@ public class PermissionManager extends SimpleJsonResourceReloadListener {
     public boolean isGlobalPermission(ResourceLocation id) {
         ClaimPermission perm = this.get(id);
         return perm != null && perm.global;
+    }
+
+    @Override
+    protected Map<ResourceLocation, JsonElement> prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
+        Map<ResourceLocation, Resource> legacy = FileToIdConverter.json("claim_permissions").listMatchingResources(resourceManager);
+        if (!legacy.isEmpty()) {
+            Flan.LOGGER.error("Legacy files detected. Please move these to the new directory. Permissions here will not work anymore! {}", legacy.keySet());
+        }
+        return super.prepare(resourceManager, profiler);
     }
 
     @Override
