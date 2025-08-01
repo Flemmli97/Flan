@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class AbstractBlockStateMixin {
 
     @Inject(method = "entityInside", at = @At(value = "HEAD"), cancellable = true)
-    private void collision(Level world, BlockPos pos, Entity entity, CallbackInfo info) {
-        if (BlockInteractEvents.cancelEntityBlockCollision(this.asState(), world, pos, entity)) {
+    private void collision(Level level, BlockPos pos, Entity entity, CallbackInfo info) {
+        if (BlockInteractEvents.cancelEntityBlockCollision(this.asState(), level, pos, entity)) {
             info.cancel();
         }
     }

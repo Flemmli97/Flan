@@ -40,13 +40,13 @@ public class PlayerDataHandler {
         return playerDatas;
     }
 
-    public static void deleteUnusedClaims(MinecraftServer server, ClaimStorage storage, ServerLevel world) {
+    public static void deleteUnusedClaims(MinecraftServer server, ClaimStorage storage, ServerLevel level) {
         if (inActivePlayerData == null)
             initInactivePlayers(server);
         inActivePlayerData.forEach((uuid, data) -> {
-            Flan.log("{} Deleting all claims for inactive player {} last seen {}", world.dimension(), data.owner, data.lastOnline);
+            Flan.log("{} Deleting all claims for inactive player {} last seen {}", level.dimension(), data.owner, data.lastOnline);
             storage.allClaimsFromPlayer(data.owner)
-                    .forEach(claim -> storage.deleteClaim(claim, true, ClaimMode.DEFAULT, world));
+                    .forEach(claim -> storage.deleteClaim(claim, true, ClaimMode.DEFAULT, level));
         });
     }
 

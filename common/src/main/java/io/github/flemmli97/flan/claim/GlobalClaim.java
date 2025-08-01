@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
-public record GlobalClaim(ServerLevel world) implements IPermissionContainer {
+public record GlobalClaim(ServerLevel level) implements IPermissionContainer {
 
     @Override
     public boolean canInteract(ServerPlayer player, ResourceLocation perm, BlockPos pos, boolean message) {
@@ -20,7 +20,7 @@ public record GlobalClaim(ServerLevel world) implements IPermissionContainer {
         if (permission == null)
             return false;
         message = message && player.getClass().equals(ServerPlayer.class); //dont send messages to fake players
-        Config.GlobalType global = ConfigHandler.CONFIG.getGlobal(this.world, perm);
+        Config.GlobalType global = ConfigHandler.CONFIG.getGlobal(this.level, perm);
         if (global != Config.GlobalType.NONE && (player == null || !this.isAdmin(player, permission))) {
             if (global.getValue())
                 return true;

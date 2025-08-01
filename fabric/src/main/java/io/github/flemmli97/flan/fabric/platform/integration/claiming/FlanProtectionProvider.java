@@ -33,23 +33,23 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean isProtected(Level world, BlockPos pos) {
-        if (!(world instanceof ServerLevel sl)) {
+    public boolean isProtected(Level level, BlockPos pos) {
+        if (!(level instanceof ServerLevel serverLevel)) {
             return false;
         }
 
-        return ClaimStorage.get(sl).getClaimAt(pos) != null;
+        return ClaimStorage.get(serverLevel).getClaimAt(pos) != null;
     }
 
     @Override
-    public boolean isAreaProtected(Level world, AABB area) {
-        if (!(world instanceof ServerLevel sl)) return false;
+    public boolean isAreaProtected(Level level, AABB area) {
+        if (!(level instanceof ServerLevel serverLevel)) return false;
 
         int minChunkX = (int) Math.floor(area.minX);
         int minChunkZ = (int) Math.floor(area.minZ);
         int maxChunkX = (int) Math.floor(area.maxX);
         int maxChunkZ = (int) Math.floor(area.maxZ);
-        ClaimStorage storage = ClaimStorage.get(sl);
+        ClaimStorage storage = ClaimStorage.get(serverLevel);
 
         for (int chunkX = minChunkX; chunkX < maxChunkX; chunkX++) {
             for (int chunkZ = minChunkZ; chunkZ < maxChunkZ; chunkZ++) {
@@ -65,58 +65,58 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean canBreakBlock(Level world, BlockPos pos, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return true;
+    public boolean canBreakBlock(Level level, BlockPos pos, GameProfile profile, @Nullable Player player) {
+        if (!(level instanceof ServerLevel serverLevel)) return true;
 
-        ServerPlayer sp = tryResolvePlayer(sl, profile);
+        ServerPlayer sp = tryResolvePlayer(serverLevel, profile);
 
-        return ClaimStorage.get(sl).getForPermissionCheck(pos).canInteract(sp, BuiltinPermission.BREAK, pos);
+        return ClaimStorage.get(serverLevel).getForPermissionCheck(pos).canInteract(sp, BuiltinPermission.BREAK, pos);
     }
 
     @Override
-    public boolean canExplodeBlock(Level world, BlockPos pos, Explosion explosion, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return true;
+    public boolean canExplodeBlock(Level level, BlockPos pos, Explosion explosion, GameProfile profile, @Nullable Player player) {
+        if (!(level instanceof ServerLevel serverLevel)) return true;
 
-        ServerPlayer sp = tryResolvePlayer(sl, profile);
+        ServerPlayer sp = tryResolvePlayer(serverLevel, profile);
 
-        return ClaimStorage.get(sl).getForPermissionCheck(pos).canInteract(sp, BuiltinPermission.EXPLOSIONS, pos);
+        return ClaimStorage.get(serverLevel).getForPermissionCheck(pos).canInteract(sp, BuiltinPermission.EXPLOSIONS, pos);
     }
 
     @Override
-    public boolean canPlaceBlock(Level world, BlockPos pos, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return true;
+    public boolean canPlaceBlock(Level level, BlockPos pos, GameProfile profile, @Nullable Player player) {
+        if (!(level instanceof ServerLevel serverLevel)) return true;
 
-        ServerPlayer sp = tryResolvePlayer(sl, profile);
+        ServerPlayer sp = tryResolvePlayer(serverLevel, profile);
 
-        return ClaimStorage.get(sl).getForPermissionCheck(pos).canInteract(sp, BuiltinPermission.PLACE, pos);
+        return ClaimStorage.get(serverLevel).getForPermissionCheck(pos).canInteract(sp, BuiltinPermission.PLACE, pos);
     }
 
     @Override
-    public boolean canInteractBlock(Level world, BlockPos pos, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return true;
+    public boolean canInteractBlock(Level level, BlockPos pos, GameProfile profile, @Nullable Player player) {
+        if (!(level instanceof ServerLevel serverLevel)) return true;
 
-        ServerPlayer sp = tryResolvePlayer(sl, profile);
+        ServerPlayer sp = tryResolvePlayer(serverLevel, profile);
 
-        ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract(sl.getBlockState(pos).getBlock());
+        ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract(serverLevel.getBlockState(pos).getBlock());
 
         if (perm != null && perm.equals(BuiltinPermission.PROJECTILES))
             perm = BuiltinPermission.OPENCONTAINER;
 
         if (perm == null) {
-            BlockEntity be = world.getBlockEntity(pos);
+            BlockEntity be = level.getBlockEntity(pos);
             perm = be != null && CrossPlatformStuff.INSTANCE.isInventoryTile(be)
                     ? BuiltinPermission.OPENCONTAINER
                     : BuiltinPermission.INTERACTBLOCK;
         }
 
-        return ClaimStorage.get(sl).getForPermissionCheck(pos).canInteract(sp, perm, pos);
+        return ClaimStorage.get(serverLevel).getForPermissionCheck(pos).canInteract(sp, perm, pos);
     }
 
     @Override
-    public boolean canInteractEntity(Level world, Entity entity, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return true;
+    public boolean canInteractEntity(Level level, Entity entity, GameProfile profile, @Nullable Player player) {
+        if (!(level instanceof ServerLevel serverLevel)) return true;
 
-        ServerPlayer sp = tryResolvePlayer(sl, profile);
+        ServerPlayer sp = tryResolvePlayer(serverLevel, profile);
 
         ResourceLocation permission;
 
@@ -127,14 +127,14 @@ public class FlanProtectionProvider implements ProtectionProvider {
         else
             return true;
 
-        return ClaimStorage.get(sl).getForPermissionCheck(entity.blockPosition()).canInteract(sp, permission, entity.blockPosition());
+        return ClaimStorage.get(serverLevel).getForPermissionCheck(entity.blockPosition()).canInteract(sp, permission, entity.blockPosition());
     }
 
     @Override
-    public boolean canDamageEntity(Level world, Entity entity, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return true;
+    public boolean canDamageEntity(Level level, Entity entity, GameProfile profile, @Nullable Player player) {
+        if (!(level instanceof ServerLevel serverLevel)) return true;
 
-        ServerPlayer sp = tryResolvePlayer(sl, profile);
+        ServerPlayer sp = tryResolvePlayer(serverLevel, profile);
 
         ResourceLocation permission;
 
@@ -145,11 +145,11 @@ public class FlanProtectionProvider implements ProtectionProvider {
         else
             permission = BuiltinPermission.HURTANIMAL;
 
-        if (entity.hasCustomName() && !ClaimStorage.get(sl).getForPermissionCheck(entity.blockPosition()).canInteract(sp, BuiltinPermission.HURTNAMED, entity.blockPosition())) {
+        if (entity.hasCustomName() && !ClaimStorage.get(serverLevel).getForPermissionCheck(entity.blockPosition()).canInteract(sp, BuiltinPermission.HURTNAMED, entity.blockPosition())) {
             return false;
         }
 
-        return ClaimStorage.get(sl).getForPermissionCheck(entity.blockPosition()).canInteract(sp, permission, entity.blockPosition());
+        return ClaimStorage.get(serverLevel).getForPermissionCheck(entity.blockPosition()).canInteract(sp, permission, entity.blockPosition());
     }
 
     private static ServerPlayer tryResolvePlayer(ServerLevel l, GameProfile profile) {
