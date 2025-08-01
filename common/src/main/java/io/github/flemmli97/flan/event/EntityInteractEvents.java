@@ -50,12 +50,12 @@ import net.minecraft.world.phys.Vec3;
 
 public class EntityInteractEvents {
 
-    public static InteractionResult useAtEntity(Player player, Level world, InteractionHand hand, Entity entity, EntityHitResult hitResult) {
+    public static InteractionResult useAtEntity(Player player, Level level, InteractionHand hand, Entity entity, EntityHitResult hitResult) {
         if (!(player instanceof ServerPlayer serverPlayer) || player.isSpectator() || canInteract(entity))
             return InteractionResult.PASS;
         if (entity instanceof Enemy)
             return InteractionResult.PASS;
-        ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
+        ClaimStorage storage = ClaimStorage.get((ServerLevel) level);
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
@@ -76,12 +76,12 @@ public class EntityInteractEvents {
         return InteractionResult.PASS;
     }
 
-    public static InteractionResult useEntity(Player p, Level world, InteractionHand hand, Entity entity) {
+    public static InteractionResult useEntity(Player p, Level level, InteractionHand hand, Entity entity) {
         if (!(p instanceof ServerPlayer player) || p.isSpectator() || canInteract(entity))
             return InteractionResult.PASS;
         if (entity instanceof Enemy)
             return InteractionResult.PASS;
-        ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
+        ClaimStorage storage = ClaimStorage.get((ServerLevel) level);
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
@@ -272,9 +272,9 @@ public class EntityInteractEvents {
         return true;
     }
 
-    public static boolean canFrostwalkerFreeze(ServerLevel world, BlockPos pos, LivingEntity entity) {
+    public static boolean canFrostwalkerFreeze(ServerLevel level, BlockPos pos, LivingEntity entity) {
         if (entity instanceof ServerPlayer) {
-            IPermissionContainer claim = ClaimStorage.get(world).getForPermissionCheck(pos);
+            IPermissionContainer claim = ClaimStorage.get(level).getForPermissionCheck(pos);
             return claim.canInteract((ServerPlayer) entity, BuiltinPermission.PLACE, pos, false);
         }
         return true;

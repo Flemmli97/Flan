@@ -70,14 +70,14 @@ public class ClaimStorage implements IPermissionStorage {
     private final Set<UUID> dirty = new HashSet<>();
     private final GlobalClaim globalClaim;
 
-    public static ClaimStorage get(ServerLevel world) {
-        return ((IClaimStorage) world).flan$get();
+    public static ClaimStorage get(ServerLevel level) {
+        return ((IClaimStorage) level).flan$get();
     }
 
-    public ClaimStorage(MinecraftServer server, ServerLevel world) {
-        this.globalClaim = new GlobalClaim(world);
-        this.read(server, world);
-        PlayerDataHandler.deleteUnusedClaims(server, this, world);
+    public ClaimStorage(MinecraftServer server, ServerLevel level) {
+        this.globalClaim = new GlobalClaim(level);
+        this.read(server, level);
+        PlayerDataHandler.deleteUnusedClaims(server, this, level);
     }
 
     public UUID generateUUID() {
@@ -186,7 +186,7 @@ public class ClaimStorage implements IPermissionStorage {
         return conflicted;
     }
 
-    public boolean deleteClaim(Claim claim, boolean updateClaim, ClaimMode mode, ServerLevel world) {
+    public boolean deleteClaim(Claim claim, boolean updateClaim, ClaimMode mode, ServerLevel level) {
         if (mode.isSubclaim) {
             if (claim.parentClaim() != null)
                 return claim.parentClaim().deleteSubClaim(claim);
@@ -407,9 +407,9 @@ public class ClaimStorage implements IPermissionStorage {
         return pos;
     }
 
-    public void read(MinecraftServer server, ServerLevel world) {
-        Flan.log("Loading claim data for world {}", world.dimension());
-        Path dir = ConfigHandler.getClaimSavePath(server, world.dimension());
+    public void read(MinecraftServer server, ServerLevel level) {
+        Flan.log("Loading claim data for world {}", level.dimension());
+        Path dir = ConfigHandler.getClaimSavePath(server, level.dimension());
         if (Files.exists(dir)) {
             try (Stream<Path> files = Files.walk(dir).filter(p -> Files.isRegularFile(p) && p.toString().endsWith(".json"))) {
                 files.forEach(file -> {
@@ -420,7 +420,7 @@ public class ClaimStorage implements IPermissionStorage {
                         Flan.debug("Reading claim data from json {} for player uuid {}", arr, uuid);
                         arr.forEach(el -> {
                             if (el.isJsonObject()) {
-                                this.addClaim(Claim.fromJson((JsonObject) el, uuid, world));
+                                this.addClaim(Claim.fromJson((JsonObject) el, uuid, level));
                             }
                         });
                     } catch (IOException e) {
@@ -589,10 +589,10 @@ public class ClaimStorage implements IPermissionStorage {
         List<String> accessors = readList(values, "Accessors");
         String[] lesserCorner = values.get("Lesser Boundary Corner").toString().split(";");
         String[] greaterCorner = values.get("Greater Boundary Corner").toString().split(";");
-        ServerLevel world = server.getLevel(worldRegFromString(lesserCorner[0]));
+        ServerLevel level = server.getLevel(worldRegFromString(lesserCorner[0]));
         Claim claim = new Claim(Integer.parseInt(lesserCorner[1]), Integer.parseInt(greaterCorner[1]),
                 Integer.parseInt(lesserCorner[3]), Integer.parseInt(greaterCorner[3]), ConfigHandler.CONFIG.defaultClaimDepth == 255 ? 0 :
-                Integer.parseInt(lesserCorner[2]), owner, world);
+                Integer.parseInt(lesserCorner[2]), owner, level);
         if (!builders.isEmpty() && !builders.contains(ownerString)) {
             if (builders.contains("public")) {
                 perms.get("builders").forEach(perm -> {
@@ -637,7 +637,7 @@ public class ClaimStorage implements IPermissionStorage {
                 accessors.forEach(s -> claim.setPlayerGroup(UUID.fromString(s), "Accessors", true));
             }
         }
-        return new Tuple<>(world, claim);
+        return new Tuple<>(level, claim);
     }
 
     @SuppressWarnings("unchecked")

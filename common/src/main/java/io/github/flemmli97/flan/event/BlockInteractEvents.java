@@ -44,19 +44,19 @@ import java.util.List;
 
 public class BlockInteractEvents {
 
-    public static InteractionResult startBreakBlocks(Player player, Level world, InteractionHand hand, BlockPos pos, Direction direction) {
-        BlockState state = world.getBlockState(pos);
-        InteractionResult result = breakBlocks(world, player, pos, state, world.getBlockEntity(pos), true) ? InteractionResult.PASS : InteractionResult.FAIL;
+    public static InteractionResult startBreakBlocks(Player player, Level level, InteractionHand hand, BlockPos pos, Direction direction) {
+        BlockState state = level.getBlockState(pos);
+        InteractionResult result = breakBlocks(level, player, pos, state, level.getBlockEntity(pos), true) ? InteractionResult.PASS : InteractionResult.FAIL;
         if (player instanceof ServerPlayer serverPlayer) {
             boolean failed = result == InteractionResult.FAIL;
-            ((BlockBreakAttemptHandler) serverPlayer.gameMode).flan$setBlockBreakAttemptFail(failed ? pos : null, failed && state.getDestroyProgress(player, world, pos) >= 1);
+            ((BlockBreakAttemptHandler) serverPlayer.gameMode).flan$setBlockBreakAttemptFail(failed ? pos : null, failed && state.getDestroyProgress(player, level, pos) >= 1);
         }
         return result;
     }
 
-    public static boolean breakBlocks(Level world, Player p, BlockPos pos, BlockState state, BlockEntity tile) {
-        if (!breakBlocks(world, p, pos, world.getBlockState(pos), world.getBlockEntity(pos), false)) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
+    public static boolean breakBlocks(Level level, Player p, BlockPos pos, BlockState state, BlockEntity tile) {
+        if (!breakBlocks(level, p, pos, level.getBlockState(pos), level.getBlockEntity(pos), false)) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
             if (p instanceof ServerPlayer player && blockEntity != null) {
                 Packet<ClientGamePacketListener> updatePacket = blockEntity.getUpdatePacket();
                 if (updatePacket != null) {
@@ -68,16 +68,16 @@ public class BlockInteractEvents {
         return true;
     }
 
-    public static boolean breakBlocks(Level world, Player p, BlockPos pos, BlockState state, BlockEntity tile, boolean attempt) {
+    public static boolean breakBlocks(Level level, Player p, BlockPos pos, BlockState state, BlockEntity tile, boolean attempt) {
         if (!(p instanceof ServerPlayer player) || p.isSpectator())
             return true;
-        ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
+        ClaimStorage storage = ClaimStorage.get((ServerLevel) level);
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
             if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.BLOCK_BREAK, state::is, state::is))
                 return true;
             ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
-            if (contains(id, world.getBlockEntity(pos), ConfigHandler.CONFIG.breakBlockBlacklist, ConfigHandler.CONFIG.breakBlockEntityTagBlacklist))
+            if (contains(id, level.getBlockEntity(pos), ConfigHandler.CONFIG.breakBlockBlacklist, ConfigHandler.CONFIG.breakBlockEntityTagBlacklist))
                 return true;
             if (attempt) {
                 ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockLeftClick(state.getBlock());
@@ -98,7 +98,7 @@ public class BlockInteractEvents {
     }
 
     //Right click block
-    public static InteractionResult useBlocks(Player p, Level world, InteractionHand hand, BlockHitResult hitResult) {
+    public static InteractionResult useBlocks(Player p, Level level, InteractionHand hand, BlockHitResult hitResult) {
         if (!(p instanceof ServerPlayer player))
             return InteractionResult.PASS;
         ItemStack stack = player.getItemInHand(hand);
@@ -110,14 +110,14 @@ public class BlockInteractEvents {
             ItemInteractEvents.inspect(player, hitResult.getBlockPos());
             return InteractionResult.SUCCESS;
         }
-        ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
+        ClaimStorage storage = ClaimStorage.get((ServerLevel) level);
         IPermissionContainer claim = storage.getForPermissionCheck(hitResult.getBlockPos());
         if (claim != null) {
-            BlockState state = world.getBlockState(hitResult.getBlockPos());
+            BlockState state = level.getBlockState(hitResult.getBlockPos());
             if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.BLOCK_USE, state::is, state::is))
                 return InteractionResult.PASS;
             ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
-            BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
+            BlockEntity blockEntity = level.getBlockEntity(hitResult.getBlockPos());
             if (contains(id, blockEntity, ConfigHandler.CONFIG.interactBlockBlacklist, ConfigHandler.CONFIG.interactBlockEntityTagBlacklist))
                 return InteractionResult.PASS;
             ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract(state.getBlock());
@@ -130,10 +130,10 @@ public class BlockInteractEvents {
                 if (state.getBlock() instanceof DoorBlock) {
                     DoubleBlockHalf half = state.getValue(DoorBlock.HALF);
                     if (half == DoubleBlockHalf.LOWER) {
-                        BlockState other = world.getBlockState(hitResult.getBlockPos().above());
+                        BlockState other = level.getBlockState(hitResult.getBlockPos().above());
                         player.connection.send(new ClientboundBlockUpdatePacket(hitResult.getBlockPos().above(), other));
                     } else {
-                        BlockState other = world.getBlockState(hitResult.getBlockPos().below());
+                        BlockState other = level.getBlockState(hitResult.getBlockPos().below());
                         player.connection.send(new ClientboundBlockUpdatePacket(hitResult.getBlockPos().below(), other));
                     }
                 }
@@ -189,8 +189,8 @@ public class BlockInteractEvents {
         return false;
     }
 
-    public static boolean cancelEntityBlockCollision(BlockState state, Level world, BlockPos pos, Entity entity) {
-        if (world.isClientSide || state.is(Blocks.AIR))
+    public static boolean cancelEntityBlockCollision(BlockState state, Level level, BlockPos pos, Entity entity) {
+        if (level.isClientSide || state.is(Blocks.AIR))
             return false;
         ServerPlayer player = null;
         if (entity instanceof ServerPlayer)
@@ -211,7 +211,7 @@ public class BlockInteractEvents {
             return false;
         if (!perm.equals(BuiltinPermission.PRESSUREPLATE) && !perm.equals(BuiltinPermission.PORTAL))
             return false;
-        ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
+        ClaimStorage storage = ClaimStorage.get((ServerLevel) level);
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null)
             return !claim.canInteract(player, perm, pos, false);
@@ -244,10 +244,10 @@ public class BlockInteractEvents {
         return false;
     }
 
-    public static boolean canBreakTurtleEgg(Level world, BlockPos pos, Entity entity) {
-        if (world.isClientSide)
+    public static boolean canBreakTurtleEgg(Level level, BlockPos pos, Entity entity) {
+        if (level.isClientSide)
             return false;
-        ServerLevel serverWorld = (ServerLevel) world;
+        ServerLevel serverWorld = (ServerLevel) level;
         if (entity instanceof ServerPlayer) {
             ClaimStorage storage = ClaimStorage.get(serverWorld);
             IPermissionContainer claim = storage.getForPermissionCheck(pos);

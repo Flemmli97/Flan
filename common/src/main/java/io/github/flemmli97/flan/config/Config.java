@@ -378,8 +378,8 @@ public class Config {
         }
     }
 
-    public boolean globallyDefined(ServerLevel world, ResourceLocation perm) {
-        return !this.getGlobal(world, perm).canModify();
+    public boolean globallyDefined(ServerLevel level, ResourceLocation perm) {
+        return !this.getGlobal(level, perm).canModify();
     }
 
     public void validatePermissionConfigs() {
@@ -407,11 +407,11 @@ public class Config {
         }
     }
 
-    public GlobalType getGlobal(ServerLevel world, ResourceLocation perm) {
+    public GlobalType getGlobal(ServerLevel level, ResourceLocation perm) {
         //Update permission map if not done already
         Map<ResourceLocation, GlobalType> allMap = ConfigHandler.CONFIG.globalDefaultPerms.get("*");
         if (allMap != null) {
-            world.getServer().getAllLevels().forEach(w -> {
+            level.getServer().getAllLevels().forEach(w -> {
                 Map<ResourceLocation, GlobalType> wMap = ConfigHandler.CONFIG.globalDefaultPerms.getOrDefault(w.dimension().location().toString(), new HashMap<>());
                 allMap.forEach((key, value) -> {
                     if (!wMap.containsKey(key))
@@ -422,14 +422,14 @@ public class Config {
             ConfigHandler.CONFIG.globalDefaultPerms.remove("*");
         }
 
-        Map<ResourceLocation, GlobalType> permMap = ConfigHandler.CONFIG.globalDefaultPerms.get(world.dimension().location().toString());
+        Map<ResourceLocation, GlobalType> permMap = ConfigHandler.CONFIG.globalDefaultPerms.get(level.dimension().location().toString());
         return permMap == null ? GlobalType.NONE : permMap.getOrDefault(perm, GlobalType.NONE);
     }
 
-    public Stream<Map.Entry<ResourceLocation, GlobalType>> getGloballyDefinedVals(ServerLevel world) {
+    public Stream<Map.Entry<ResourceLocation, GlobalType>> getGloballyDefinedVals(ServerLevel level) {
         Map<ResourceLocation, GlobalType> allMap = ConfigHandler.CONFIG.globalDefaultPerms.get("*");
         if (allMap != null) {
-            world.getServer().getAllLevels().forEach(w -> {
+            level.getServer().getAllLevels().forEach(w -> {
                 Map<ResourceLocation, GlobalType> wMap = ConfigHandler.CONFIG.globalDefaultPerms.getOrDefault(w.dimension().location().toString(), new HashMap<>());
                 allMap.forEach((key, value) -> {
                     if (!wMap.containsKey(key))
@@ -439,7 +439,7 @@ public class Config {
             });
             ConfigHandler.CONFIG.globalDefaultPerms.remove("*");
         }
-        Map<ResourceLocation, GlobalType> permMap = ConfigHandler.CONFIG.globalDefaultPerms.get(world.dimension().location().toString());
+        Map<ResourceLocation, GlobalType> permMap = ConfigHandler.CONFIG.globalDefaultPerms.get(level.dimension().location().toString());
         return permMap == null ? Stream.empty() : permMap.entrySet().stream().filter(e -> e.getValue().canModify());
     }
 

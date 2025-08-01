@@ -27,8 +27,8 @@ import java.util.List;
 
 public class WorldEvents {
 
-    public static void modifyExplosion(List<BlockPos> toExplode, ServerLevel world) {
-        ClaimStorage storage = ClaimStorage.get(world);
+    public static void modifyExplosion(List<BlockPos> toExplode, ServerLevel level) {
+        ClaimStorage storage = ClaimStorage.get(level);
         toExplode.removeIf(pos -> {
             IPermissionContainer claim = storage.getForPermissionCheck(pos);
             if (claim != null)
@@ -37,11 +37,11 @@ public class WorldEvents {
         });
     }
 
-    public static boolean pistonCanPush(BlockState state, Level world, BlockPos blockPos, Direction direction, Direction pistonDir) {
-        if (world.isClientSide)
+    public static boolean pistonCanPush(BlockState state, Level level, BlockPos blockPos, Direction direction, Direction pistonDir) {
+        if (level.isClientSide)
             return true;
         BlockPos dirPos = blockPos.relative(direction);
-        ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
+        ClaimStorage storage = ClaimStorage.get((ServerLevel) level);
         IPermissionContainer from = storage.getForPermissionCheck(blockPos);
         IPermissionContainer to = storage.getForPermissionCheck(dirPos);
         boolean flag = true;
@@ -55,17 +55,17 @@ public class WorldEvents {
         if (!flag) {
             //Idk enough about piston behaviour to update more blocks when slime is involved.
             //Ghost blocks appear when trying to push slime contraptions across border
-            world.sendBlockUpdated(blockPos, state, state, 20);
-            BlockState toState = world.getBlockState(dirPos);
-            world.sendBlockUpdated(dirPos, toState, toState, 20);
+            level.sendBlockUpdated(blockPos, state, state, 20);
+            BlockState toState = level.getBlockState(dirPos);
+            level.sendBlockUpdated(dirPos, toState, toState, 20);
         }
         return flag;
     }
 
-    public static boolean canFlow(BlockState fluidBlockState, BlockGetter world, BlockPos blockPos, Direction direction) {
-        if (!(world instanceof ServerLevel) || direction == Direction.UP || direction == Direction.DOWN)
+    public static boolean canFlow(BlockState fluidBlockState, BlockGetter level, BlockPos blockPos, Direction direction) {
+        if (!(level instanceof ServerLevel) || direction == Direction.UP || direction == Direction.DOWN)
             return true;
-        ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
+        ClaimStorage storage = ClaimStorage.get((ServerLevel) level);
         IPermissionContainer from = storage.getForPermissionCheck(blockPos);
         IPermissionContainer to = storage.getForPermissionCheck(blockPos.relative(direction));
         return from.equals(to) || to.canInteract(null, BuiltinPermission.WATERBORDER, blockPos);
@@ -76,30 +76,30 @@ public class WorldEvents {
         return claim.canInteract(player, BuiltinPermission.RAID, pos);
     }
 
-    public static boolean canFireSpread(ServerLevel world, BlockPos pos) {
-        IPermissionContainer claim = ClaimStorage.get(world).getForPermissionCheck(pos);
+    public static boolean canFireSpread(ServerLevel level, BlockPos pos) {
+        IPermissionContainer claim = ClaimStorage.get(level).getForPermissionCheck(pos);
         return claim.canInteract(null, BuiltinPermission.FIRESPREAD, pos);
     }
 
-    public static boolean preventMobSpawn(ServerLevel world, Mob entity) {
-        return preventMobSpawn(world, entity.blockPosition(), entity.getType().getCategory());
+    public static boolean preventMobSpawn(ServerLevel level, Mob entity) {
+        return preventMobSpawn(level, entity.blockPosition(), entity.getType().getCategory());
     }
 
-    public static boolean preventMobSpawn(ServerLevel world, BlockPos pos, MobCategory category) {
-        IPermissionContainer claim = ClaimStorage.get(world).getForPermissionCheck(pos);
+    public static boolean preventMobSpawn(ServerLevel level, BlockPos pos, MobCategory category) {
+        IPermissionContainer claim = ClaimStorage.get(level).getForPermissionCheck(pos);
         if (category == MobCategory.MONSTER)
             return claim.canInteract(null, BuiltinPermission.MOBSPAWN, pos);
         return claim.canInteract(null, BuiltinPermission.ANIMALSPAWN, pos);
     }
 
     public static boolean lightningFire(LightningBolt lightning) {
-        if (!(lightning.level() instanceof ServerLevel world))
+        if (!(lightning.level() instanceof ServerLevel level))
             return true;
         BlockPos.MutableBlockPos mutable = lightning.blockPosition().mutable();
         for (int x = -1; x <= 1; x++)
             for (int z = -1; z <= 1; z++) {
                 mutable.set(mutable.getX() + x, mutable.getY(), mutable.getZ() + z);
-                IPermissionContainer claim = ClaimStorage.get(world).getForPermissionCheck(mutable);
+                IPermissionContainer claim = ClaimStorage.get(level).getForPermissionCheck(mutable);
                 if (!claim.canInteract(null, BuiltinPermission.LIGHTNING, mutable))
                     return false;
             }

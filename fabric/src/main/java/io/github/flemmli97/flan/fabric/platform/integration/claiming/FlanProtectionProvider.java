@@ -33,8 +33,8 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean isProtected(Level world, BlockPos pos) {
-        if (!(world instanceof ServerLevel sl)) {
+    public boolean isProtected(Level level, BlockPos pos) {
+        if (!(level instanceof ServerLevel sl)) {
             return false;
         }
 
@@ -42,8 +42,8 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean isAreaProtected(Level world, AABB area) {
-        if (!(world instanceof ServerLevel sl)) return false;
+    public boolean isAreaProtected(Level level, AABB area) {
+        if (!(level instanceof ServerLevel sl)) return false;
 
         int minChunkX = (int) Math.floor(area.minX);
         int minChunkZ = (int) Math.floor(area.minZ);
@@ -65,8 +65,8 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean canBreakBlock(Level world, BlockPos pos, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return true;
+    public boolean canBreakBlock(Level level, BlockPos pos, GameProfile profile, @Nullable Player player) {
+        if (!(level instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
@@ -74,8 +74,8 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean canExplodeBlock(Level world, BlockPos pos, Explosion explosion, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return true;
+    public boolean canExplodeBlock(Level level, BlockPos pos, Explosion explosion, GameProfile profile, @Nullable Player player) {
+        if (!(level instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
@@ -83,8 +83,8 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean canPlaceBlock(Level world, BlockPos pos, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return true;
+    public boolean canPlaceBlock(Level level, BlockPos pos, GameProfile profile, @Nullable Player player) {
+        if (!(level instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
@@ -92,8 +92,8 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean canInteractBlock(Level world, BlockPos pos, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return true;
+    public boolean canInteractBlock(Level level, BlockPos pos, GameProfile profile, @Nullable Player player) {
+        if (!(level instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
@@ -103,7 +103,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
             perm = BuiltinPermission.OPENCONTAINER;
 
         if (perm == null) {
-            BlockEntity be = world.getBlockEntity(pos);
+            BlockEntity be = level.getBlockEntity(pos);
             perm = be != null && CrossPlatformStuff.INSTANCE.isInventoryTile(be)
                     ? BuiltinPermission.OPENCONTAINER
                     : BuiltinPermission.INTERACTBLOCK;
@@ -113,8 +113,8 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean canInteractEntity(Level world, Entity entity, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return true;
+    public boolean canInteractEntity(Level level, Entity entity, GameProfile profile, @Nullable Player player) {
+        if (!(level instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
@@ -131,8 +131,8 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean canDamageEntity(Level world, Entity entity, GameProfile profile, @Nullable Player player) {
-        if (!(world instanceof ServerLevel sl)) return true;
+    public boolean canDamageEntity(Level level, Entity entity, GameProfile profile, @Nullable Player player) {
+        if (!(level instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
