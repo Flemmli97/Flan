@@ -44,7 +44,8 @@ import java.util.function.Supplier;
  */
 public class InteractionOverrideManager extends SimpleJsonResourceReloadListener {
 
-    public static final String DIRECTORY = "claim_interactions_override";
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Flan.MODID, "claim_interactions_override");
+    public static final String DIRECTORY = String.format("%s/%s", ID.getNamespace(), ID.getPath());
 
     private static final Gson GSON = new GsonBuilder().create();
 

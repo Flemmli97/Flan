@@ -13,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class SpawnHelperMixin {
 
     @Inject(method = "isValidPositionForMob", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Mob;checkSpawnRules(Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/world/entity/MobSpawnType;)Z"), cancellable = true)
-    private static void isValidSpawn(ServerLevel world, Mob entity, double squaredDistance, CallbackInfoReturnable<Boolean> info) {
-        if (WorldEvents.preventMobSpawn(world, entity)) {
+    private static void isValidSpawn(ServerLevel level, Mob entity, double squaredDistance, CallbackInfoReturnable<Boolean> info) {
+        if (WorldEvents.preventMobSpawn(level, entity)) {
             info.setReturnValue(false);
             info.cancel();
         }

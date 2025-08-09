@@ -43,7 +43,7 @@ import java.util.Set;
 
 public class ItemInteractEvents {
 
-    public static InteractionResultHolder<ItemStack> useItem(Player p, Level world, InteractionHand hand) {
+    public static InteractionResultHolder<ItemStack> useItem(Player p, Level level, InteractionHand hand) {
         if (!(p instanceof ServerPlayer player) || p.isSpectator())
             return InteractionResultHolder.pass(p.getItemInHand(hand));
         ItemStack stack = player.getItemInHand(hand);
@@ -63,9 +63,9 @@ public class ItemInteractEvents {
             }
             return InteractionResultHolder.pass(stack);
         }
-        ClaimStorage storage = ClaimStorage.get((ServerLevel) world);
+        ClaimStorage storage = ClaimStorage.get((ServerLevel) level);
         BlockPos pos = player.blockPosition();
-        BlockHitResult hitResult = getPlayerHitResult(world, player, ClipContext.Fluid.SOURCE_ONLY);
+        BlockHitResult hitResult = getPlayerHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY);
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             pos = new BlockPlaceContext(player, hand, stack, hitResult).getClickedPos();
         }
@@ -85,7 +85,7 @@ public class ItemInteractEvents {
                     BlockHitResult upResult = hitResult.withPosition(hitResult.getBlockPos().above());
                     update = new BlockPlaceContext(new UseOnContext(player, hand, upResult)).getClickedPos();
                 }
-                player.connection.send(new ClientboundBlockUpdatePacket(update, world.getBlockState(update)));
+                player.connection.send(new ClientboundBlockUpdatePacket(update, level.getBlockState(update)));
                 PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
             }
             updateHeldItem(player);
@@ -149,9 +149,9 @@ public class ItemInteractEvents {
         player.connection.send(new ClientboundContainerSetSlotPacket(-2, 0, 40, player.getInventory().getItem(40)));
     }
 
-    private static boolean cantClaimInWorld(ServerLevel world) {
+    private static boolean cantClaimInWorld(ServerLevel level) {
         for (String s : ConfigHandler.CONFIG.blacklistedWorlds) {
-            if (s.equals(world.dimension().location().toString())) {
+            if (s.equals(level.dimension().location().toString())) {
                 return true;
             }
         }

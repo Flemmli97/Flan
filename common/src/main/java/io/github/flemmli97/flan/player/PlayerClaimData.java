@@ -466,8 +466,8 @@ public class PlayerClaimData implements IPlayerData {
     private int updateClaimScores() {
         int usedClaimsBlocks = 0;
         int claimsAmount = 0;
-        for (ServerLevel world : this.player.getServer().getAllLevels()) {
-            Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.player.getUUID());
+        for (ServerLevel level : this.player.getServer().getAllLevels()) {
+            Collection<Claim> claims = ClaimStorage.get(level).allClaimsFromPlayer(this.player.getUUID());
             if (claims != null) {
                 usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
                 claimsAmount += claims.size();
@@ -479,8 +479,8 @@ public class PlayerClaimData implements IPlayerData {
 
     private int calculateUsedClaimBlocks() {
         int usedClaimsBlocks = 0;
-        for (ServerLevel world : this.player.getServer().getAllLevels()) {
-            Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.player.getUUID());
+        for (ServerLevel level : this.player.getServer().getAllLevels()) {
+            Collection<Claim> claims = ClaimStorage.get(level).allClaimsFromPlayer(this.player.getUUID());
             if (claims != null) {
                 usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
             }

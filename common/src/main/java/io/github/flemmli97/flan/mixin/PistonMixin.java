@@ -19,8 +19,8 @@ public abstract class PistonMixin {
      * for this usecase. Would need to calculate all the affected blocks (specially in case of slime contraptions)
      */
     @Inject(method = "isPushable", at = @At(value = "HEAD"), cancellable = true)
-    private static void checkMovable(BlockState blockState, Level world, BlockPos blockPos, Direction direction, boolean canBreak, Direction pistonDir, CallbackInfoReturnable<Boolean> info) {
-        if (!WorldEvents.pistonCanPush(blockState, world, blockPos, direction, pistonDir)) {
+    private static void checkMovable(BlockState blockState, Level level, BlockPos blockPos, Direction direction, boolean canBreak, Direction pistonDir, CallbackInfoReturnable<Boolean> info) {
+        if (!WorldEvents.pistonCanPush(blockState, level, blockPos, direction, pistonDir)) {
             info.setReturnValue(false);
             info.cancel();
         }

@@ -20,8 +20,8 @@ public abstract class FireBlockMixin {
      * Stop ticking overall if fire is in claim
      */
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;getGameRules()Lnet/minecraft/world/level/GameRules;"), cancellable = true)
-    private void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random, CallbackInfo info) {
-        if (!WorldEvents.canFireSpread(world, pos)) {
+    private void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo info) {
+        if (!WorldEvents.canFireSpread(level, pos)) {
             info.cancel();
         }
     }

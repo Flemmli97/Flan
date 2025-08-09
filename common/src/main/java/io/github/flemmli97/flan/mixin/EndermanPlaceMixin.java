@@ -20,7 +20,7 @@ public abstract class EndermanPlaceMixin {
     private EnderMan enderman;
 
     @Inject(method = "canPlaceBlock(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;)Z", at = @At(value = "HEAD"), cancellable = true)
-    private void placeCheck(Level world, BlockPos posAbove, BlockState carriedState, BlockState stateAbove, BlockState state, BlockPos pos, CallbackInfoReturnable<Boolean> info) {
+    private void placeCheck(Level level, BlockPos posAbove, BlockState carriedState, BlockState stateAbove, BlockState state, BlockPos pos, CallbackInfoReturnable<Boolean> info) {
         if (!EntityInteractEvents.canEndermanInteract(this.enderman, pos)) {
             info.setReturnValue(false);
             info.cancel();
