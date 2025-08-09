@@ -40,13 +40,13 @@ public class Config {
     public int ticksForNextBlock = 600;
     public int minClaimsize = 100;
     public int defaultClaimDepth = 10;
-    public boolean subClaimsUseDefaultDepth = true;
+    public boolean subClaimsInheritParentDepth = true;
     public int maxClaims = -1;
     public String defaultClaimName = "";
     public String defaultEnterMessage = "";
     public String defaultLeaveMessage = "";
-    public int defaultClaimMinY = 0;
-    public int defaultClaimMaxY = 320;
+    public int defaultSubClaimMinY = 0;
+    public int defaultSubClaimMaxY = 320;
     public boolean noSpawnClaim;
     public int claimingCooldown;
 
@@ -176,13 +176,13 @@ public class Config {
             this.ticksForNextBlock = ConfigHandler.fromJson(obj, "ticksForNextBlock", this.ticksForNextBlock);
             this.minClaimsize = ConfigHandler.fromJson(obj, "minClaimsize", this.minClaimsize);
             this.defaultClaimDepth = ConfigHandler.fromJson(obj, "defaultClaimDepth", this.defaultClaimDepth);
-            this.subClaimsUseDefaultDepth = ConfigHandler.fromJson(obj, "subClaimsUseDefaultDepth", this.subClaimsUseDefaultDepth);
+            this.subClaimsInheritParentDepth = ConfigHandler.fromJson(obj, "subClaimsInheritParentDepth", this.subClaimsInheritParentDepth);
             this.maxClaims = ConfigHandler.fromJson(obj, "maxClaims", this.maxClaims);
             this.defaultClaimName = ConfigHandler.fromJson(obj, "defaultClaimName", this.defaultClaimName);
             this.defaultEnterMessage = ConfigHandler.fromJson(obj, "defaultEnterMessage", this.defaultEnterMessage);
             this.defaultLeaveMessage = ConfigHandler.fromJson(obj, "defaultLeaveMessage", this.defaultLeaveMessage);
-            this.defaultClaimMinY = ConfigHandler.fromJson(obj, "defaultClaimMinY", this.defaultClaimMinY);
-            this.defaultClaimMaxY = ConfigHandler.fromJson(obj, "defaultClaimMaxY", this.defaultClaimMaxY);
+            this.defaultSubClaimMinY = ConfigHandler.fromJson(obj, "defaultSubClaimMinY", this.defaultSubClaimMinY);
+            this.defaultSubClaimMaxY = ConfigHandler.fromJson(obj, "defaultSubClaimMaxY", this.defaultSubClaimMaxY);
             this.noSpawnClaim = ConfigHandler.fromJson(obj, "noSpawnClaim", this.noSpawnClaim);
             this.claimingCooldown = ConfigHandler.fromJson(obj, "claimingCooldown", this.claimingCooldown);
 
@@ -290,13 +290,13 @@ public class Config {
         obj.addProperty("ticksForNextBlock", this.ticksForNextBlock);
         obj.addProperty("minClaimsize", this.minClaimsize);
         obj.addProperty("defaultClaimDepth", this.defaultClaimDepth);
-        obj.addProperty("subClaimsUseDefaultDepth", this.subClaimsUseDefaultDepth);
+        obj.addProperty("subClaimsInheritParentDepth", this.subClaimsInheritParentDepth);
         obj.addProperty("maxClaims", this.maxClaims);
         obj.addProperty("defaultClaimName", this.defaultClaimName);
         obj.addProperty("defaultEnterMessage", this.defaultEnterMessage);
         obj.addProperty("defaultLeaveMessage", this.defaultLeaveMessage);
-        obj.addProperty("defaultClaimMinY", this.defaultClaimMinY);
-        obj.addProperty("defaultClaimMaxY", this.defaultClaimMaxY);
+        obj.addProperty("defaultSubClaimMinY", this.defaultSubClaimMinY);
+        obj.addProperty("defaultSubClaimMaxY", this.defaultSubClaimMaxY);
         obj.addProperty("noSpawnClaim", this.noSpawnClaim);
         obj.addProperty("claimingCooldown", this.claimingCooldown);
 

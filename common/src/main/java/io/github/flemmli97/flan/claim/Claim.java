@@ -418,12 +418,12 @@ public class Claim implements IPermissionContainer {
         Claim sub = new Claim(pos1, pos2, this.owner, this.level);
 
         if (is3d) {
-            if (ConfigHandler.subClaimsUseDefaultDepth) {
-                // Default-Höhe aus Config benutzen
-                sub.minY = ConfigHandler.defaultClaimMinY;
-                sub.withHeight(ConfigHandler.defaultClaimMaxY);
+            if (!ConfigHandler.CONFIG.subClaimsInheritParentDepth) {
+                // using default MIN and MAX
+                sub.minY = ConfigHandler.CONFIG.defaultSubClaimMinY;
+                sub.withHeight(ConfigHandler.CONFIG.defaultSubClaimMaxY);
             } else {
-                // Höhe vom obersten ParentClaim übernehmen
+                // if default using parent default depth
                 Claim firstParent = this;
                 while (firstParent.parentClaim() != null) {
                     firstParent = firstParent.parentClaim();
