@@ -17,14 +17,14 @@ public abstract class ServerWorldMixin implements IClaimStorage {
 
     @Inject(method = "<init>*", at = @At("RETURN"))
     private void initData(CallbackInfo info) {
-        ServerLevel world = ((ServerLevel) (Object) this);
-        this.flan$ClaimData = new ClaimStorage(world.getServer(), world);
+        ServerLevel level = ((ServerLevel) (Object) this);
+        this.flan$ClaimData = new ClaimStorage(level.getServer(), level);
     }
 
     @Inject(method = "saveLevelData", at = @At("RETURN"))
     private void saveClaimData(CallbackInfo info) {
-        ServerLevel world = ((ServerLevel) (Object) this);
-        this.flan$ClaimData.save(world.getServer(), world.dimension());
+        ServerLevel level = ((ServerLevel) (Object) this);
+        this.flan$ClaimData.save(level.getServer(), level.dimension());
     }
 
     @Override

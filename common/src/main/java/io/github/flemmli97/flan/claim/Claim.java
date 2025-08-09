@@ -118,33 +118,33 @@ public class Claim implements IPermissionContainer {
             this.leaveTitle = Component.literal(String.format(ConfigHandler.CONFIG.defaultLeaveMessage, this.claimName));
     }
 
-    public Claim(BlockPos pos1, BlockPos pos2, UUID creator, ServerLevel world) {
-        this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator, world);
+    public Claim(BlockPos pos1, BlockPos pos2, UUID creator, ServerLevel level) {
+        this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator, level);
     }
 
     //Griefprevention parsing
-    public Claim(int x1, int x2, int z1, int z2, int minY, UUID creator, ServerLevel world) {
-        this(x1, x2, z1, z2, minY, creator, world, true);
+    public Claim(int x1, int x2, int z1, int z2, int minY, UUID creator, ServerLevel level) {
+        this(x1, x2, z1, z2, minY, creator, level, true);
     }
 
-    public Claim(int x1, int x2, int z1, int z2, int minY, UUID creator, ServerLevel world, boolean setDefaultGroups) {
+    public Claim(int x1, int x2, int z1, int z2, int minY, UUID creator, ServerLevel level, boolean setDefaultGroups) {
         this.minX = Math.min(x1, x2);
         this.minZ = Math.min(z1, z2);
         this.maxX = Math.max(x1, x2);
         this.maxZ = Math.max(z1, z2);
-        this.minY = Math.max(world.getMinBuildHeight(), minY);
+        this.minY = Math.max(level.getMinBuildHeight(), minY);
         this.owner = creator;
-        this.level = world;
+        this.level = level;
         this.homePos = this.getInitCenterPos();
         this.setDirty(true);
         PermissionManager.getInstance().getAll().stream().filter(perm -> perm.defaultVal).forEach(perm -> this.globalPerm.put(perm.getId(), true));
-        ConfigHandler.CONFIG.getGloballyDefinedVals(world).forEach(e -> this.globalPerm.put(e.getKey(), e.getValue().getValue()));
+        ConfigHandler.CONFIG.getGloballyDefinedVals(level).forEach(e -> this.globalPerm.put(e.getKey(), e.getValue().getValue()));
         if (setDefaultGroups)
             ConfigHandler.CONFIG.defaultGroups.forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0, true)));
     }
 
-    public static Claim fromJson(JsonObject obj, UUID owner, ServerLevel world) {
-        Claim claim = new Claim(world);
+    public static Claim fromJson(JsonObject obj, UUID owner, ServerLevel level) {
+        Claim claim = new Claim(level);
         claim.readJson(obj, owner);
         ClaimUpdater.updateClaim(claim);
         return claim;

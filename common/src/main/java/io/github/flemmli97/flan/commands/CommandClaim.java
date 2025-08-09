@@ -442,8 +442,8 @@ public class CommandClaim {
         ServerPlayer player = context.getSource().getPlayerOrException();
         PlayerClaimData data = PlayerClaimData.get(context.getSource().getPlayerOrException());
         data.deferCommand(new PendingCommand(context, () -> {
-            for (ServerLevel world : context.getSource().getServer().getAllLevels()) {
-                ClaimStorage storage = ClaimStorage.get(world);
+            for (ServerLevel level : context.getSource().getServer().getAllLevels()) {
+                ClaimStorage storage = ClaimStorage.get(level);
                 storage.allClaimsFromPlayer(player.getUUID()).forEach((claim) -> storage.deleteClaim(claim, true, data.getClaimMode(), player.serverLevel()));
             }
             player.displayClientMessage(ClaimUtils.translatedText("flan.deleteAllClaim", ChatFormatting.GOLD), false);
@@ -515,9 +515,9 @@ public class CommandClaim {
         MinecraftServer server = context.getSource().getServer();
         ServerPlayer player = of == null ? context.getSource().getPlayerOrException() : server.getPlayerList().getPlayer(of);
         Map<Level, Collection<Claim>> claims = new HashMap<>();
-        for (ServerLevel world : server.getAllLevels()) {
-            ClaimStorage storage = ClaimStorage.get(world);
-            claims.put(world, storage.allClaimsFromPlayer(player != null ? player.getUUID() : of));
+        for (ServerLevel level : server.getAllLevels()) {
+            ClaimStorage storage = ClaimStorage.get(level);
+            claims.put(level, storage.allClaimsFromPlayer(player != null ? player.getUUID() : of));
         }
         if (ConfigHandler.CONFIG.maxClaimBlocks != -1) {
             if (player != null) {
@@ -582,9 +582,9 @@ public class CommandClaim {
             data.deferCommand(new PendingCommand(context, () -> {
                 List<String> players = new ArrayList<>();
                 for (GameProfile prof : profiles) {
-                    for (ServerLevel world : src.getLevel().getServer().getAllLevels()) {
-                        ClaimStorage storage = ClaimStorage.get(world);
-                        storage.allClaimsFromPlayer(prof.getId()).forEach((claim) -> storage.deleteClaim(claim, true, ClaimMode.DEFAULT, world));
+                    for (ServerLevel level : src.getLevel().getServer().getAllLevels()) {
+                        ClaimStorage storage = ClaimStorage.get(level);
+                        storage.allClaimsFromPlayer(prof.getId()).forEach((claim) -> storage.deleteClaim(claim, true, ClaimMode.DEFAULT, level));
                     }
                     players.add(prof.getName());
                 }
@@ -596,9 +596,9 @@ public class CommandClaim {
         }
         List<String> players = new ArrayList<>();
         for (GameProfile prof : profiles) {
-            for (ServerLevel world : src.getLevel().getServer().getAllLevels()) {
-                ClaimStorage storage = ClaimStorage.get(world);
-                storage.allClaimsFromPlayer(prof.getId()).forEach((claim) -> storage.deleteClaim(claim, true, ClaimMode.DEFAULT, world));
+            for (ServerLevel level : src.getLevel().getServer().getAllLevels()) {
+                ClaimStorage storage = ClaimStorage.get(level);
+                storage.allClaimsFromPlayer(prof.getId()).forEach((claim) -> storage.deleteClaim(claim, true, ClaimMode.DEFAULT, level));
             }
             players.add(prof.getName());
         }

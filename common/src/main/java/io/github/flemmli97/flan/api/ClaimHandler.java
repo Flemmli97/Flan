@@ -34,8 +34,8 @@ public class ClaimHandler {
      * to return an {@link IPermissionContainer} for which you can then check permissions against.
      * This can be the permissions for the world or a specific claim
      */
-    public static IPermissionStorage getPermissionStorage(ServerLevel world) {
-        return ClaimStorage.get(world);
+    public static IPermissionStorage getPermissionStorage(ServerLevel level) {
+        return ClaimStorage.get(level);
     }
 
     /**

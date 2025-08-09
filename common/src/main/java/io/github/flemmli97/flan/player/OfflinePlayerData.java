@@ -75,8 +75,8 @@ public class OfflinePlayerData implements IPlayerData {
     @Override
     public int usedClaimBlocks() {
         int usedClaimsBlocks = 0;
-        for (ServerLevel world : this.server.getAllLevels()) {
-            Collection<Claim> claims = ClaimStorage.get(world).allClaimsFromPlayer(this.owner);
+        for (ServerLevel level : this.server.getAllLevels()) {
+            Collection<Claim> claims = ClaimStorage.get(level).allClaimsFromPlayer(this.owner);
             if (claims != null)
                 usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
         }

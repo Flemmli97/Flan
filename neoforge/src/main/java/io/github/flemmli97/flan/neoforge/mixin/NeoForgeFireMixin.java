@@ -19,8 +19,8 @@ public abstract class NeoForgeFireMixin {
      * Check for blocks reacting to fire (e.g. tnt)
      */
     @Inject(method = "checkBurnOut", at = @At(value = "HEAD"), cancellable = true, remap = false)
-    private void spread(Level world, BlockPos pos, int spreadFactor, RandomSource rand, int currentAge, Direction dir, CallbackInfo info) {
-        if (!world.isClientSide && !WorldEvents.canFireSpread((ServerLevel) world, pos)) {
+    private void spread(Level level, BlockPos pos, int spreadFactor, RandomSource rand, int currentAge, Direction dir, CallbackInfo info) {
+        if (!level.isClientSide && !WorldEvents.canFireSpread((ServerLevel) level, pos)) {
             info.cancel();
         }
     }

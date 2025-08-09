@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class TurtleEggMixin {
 
     @Inject(method = "destroyEgg", at = @At(value = "HEAD"), cancellable = true)
-    private void collision(Level world, BlockState blockState, BlockPos pos, Entity entity, int chance, CallbackInfo info) {
-        if (BlockInteractEvents.canBreakTurtleEgg(world, pos, entity)) {
+    private void collision(Level level, BlockState blockState, BlockPos pos, Entity entity, int chance, CallbackInfo info) {
+        if (BlockInteractEvents.canBreakTurtleEgg(level, pos, entity)) {
             info.cancel();
         }
     }
