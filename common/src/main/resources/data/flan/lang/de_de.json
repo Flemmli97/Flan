@@ -408,5 +408,14 @@
   "flan.command.adminDelete.1": "Force deletes the current claim or deletes all claims from the specified player.",
   "flan.command.giveClaimBlocks.0": "giveClaimBlocks <amount> | { base <amount> }",
   "flan.command.giveClaimBlocks.1": "Gives a player additional claim blocks.",
-  "flan.command.giveClaimBlocks.2": "▶ base: Gives base blocks instead of additional blocks"
+  "flan.command.giveClaimBlocks.2": "▶ base: Gives base blocks instead of additional blocks",
+  "flan.invalidDistance": "Expansion distance must be greater than 0!",
+  "flan.expandTooLarge": "Claim would exceed maximum allowed size!",
+  "flan.expandBeyondParent": "Cannot expand subclaim beyond parent claim boundaries!",
+  "flan.expandConflict": "Expansion conflicts with existing subclaims!",
+  "flan.expandFailed": "Failed to expand claim due to an unknown error.",
+  "flan.expandSuccess": "Claim successfully expanded by %s blocks!",
+  "flan.expandUpDisabled": "Vertical expansion (upwards) is disabled!",
+  "flan.expandDownDisabled": "Vertical expansion (downwards) is disabled!",
+  "flan.expandError": "An error occurred during expansion."
 }

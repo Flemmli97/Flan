@@ -22,6 +22,13 @@ public record ClaimBox(int minX, int minY, int minZ, int maxX, int maxY, int max
         return this.minX < X && this.maxX > x && this.minY < Y && this.maxY > y && this.minZ < Z && this.maxZ > z;
     }
 
+    //help to get claims in other claims
+    public boolean contains(BlockPos pos) {
+        return pos.getX() >= minX() && pos.getX() <= maxX() &&
+                pos.getY() >= minY() && pos.getY() <= maxY() &&
+                pos.getZ() >= minZ() && pos.getZ() <= maxZ();
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this)

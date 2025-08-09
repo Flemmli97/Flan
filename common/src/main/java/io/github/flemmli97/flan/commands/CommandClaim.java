@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -890,26 +891,128 @@ public class CommandClaim {
 
     private static int expandClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        Claim claim = ClaimUtils.checkReturn(player, BuiltinPermission.EDITCLAIM, ClaimUtils.genericNoPermMessage(player));
-        if (claim == null)
-            return 0;
-
         ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        Claim claim = storage.getClaimAt(player.blockPosition());
         int amount = IntegerArgumentType.getInteger(context, "distance");
+
+        //if there is no claim
+        if (claim == null) {
+            ClaimUtils.noClaimMessage(player);
+            return 0;
+        }
+
+        // if distance is 0 it should not work and stop
+        if (amount <= 0) {
+            ClaimUtils.sendExpandError(player, "flan.invalidDistance");
+            return 0;
+        }
+
+        //Adding Subclaims on expand
+        if (claim.isSubclaim()) {
+            if (!ClaimUtils.checkSubclaimPerm(player, claim)) {
+                ClaimUtils.genericNoPermMessage(player).accept(Optional.of(false));
+                return 0;
+            }
+
+            Claim parent = claim.parentClaim();
+            BlockPos from = calculateExpansionStart(claim, player);
+            BlockPos to = from.relative(player.getDirection(), amount);
+
+            int currentSize = (player.getDirection().getAxis() == Direction.Axis.X)
+                    ? (claim.getDimensions().maxX() - claim.getDimensions().minX())
+                    : (claim.getDimensions().maxZ() - claim.getDimensions().minZ());
+            int newSize = currentSize + amount;
+            int sizeInBlocks = newSize * newSize;
+
+            if (sizeInBlocks > ConfigHandler.CONFIG.maxClaimBlocks) {
+                ClaimUtils.sendExpandError(player, "flan.expandTooLarge");
+                return 0;
+            }
+
+            //if subclaim would be bigger then parent claim
+            if (!parent.getDimensions().contains(to)) {
+                ClaimUtils.sendExpandError(player, "flan.expandBeyondParent");
+                return 0;
+            }
+
+            Set<Claim> conflicts = parent.resizeSubclaim(claim, from, to);
+
+            if (!conflicts.isEmpty()) {
+                ClaimUtils.sendExpandError(player, "flan.expandConflict");
+                return 0;
+            }
+            player.displayClientMessage(ClaimUtils.translatedText("flan.expandSuccess", amount, ChatFormatting.GREEN), false);
+            return Command.SINGLE_SUCCESS;
+        }
+
+        // main claim
+        if (!ClaimUtils.check(player, player.blockPosition(), claim, BuiltinPermission.EDITCLAIM, ClaimUtils.genericNoPermMessage(player))) {
+            return 0;
+        }
+
         ClaimBox dims = claim.getDimensions();
         Direction facing = player.getDirection();
-        Tuple<BlockPos, BlockPos> cornerPair = switch (facing) {
-            case SOUTH ->
-                    new Tuple<>(new BlockPos(dims.maxX(), dims.minY(), dims.maxZ()), new BlockPos(dims.maxX(), dims.maxY(), dims.maxZ() + amount));
-            case EAST ->
-                    new Tuple<>(new BlockPos(dims.maxX(), dims.minY(), dims.maxZ()), new BlockPos(dims.maxX() + amount, dims.maxY(), dims.maxZ()));
-            case NORTH ->
-                    new Tuple<>(new BlockPos(dims.minX(), dims.minY(), dims.minZ()), new BlockPos(dims.minX(), dims.maxY(), dims.minZ() - amount));
-            case WEST ->
-                    new Tuple<>(new BlockPos(dims.minX(), dims.minY(), dims.minZ()), new BlockPos(dims.minX() - amount, dims.maxY(), dims.minZ()));
+        Tuple<BlockPos, BlockPos> corners = calculateCorners(dims, facing, amount);
+
+        //reseizeclaim check maxClaim too large
+        int newWidth = dims.maxX() - dims.minX() + ((facing == Direction.EAST || facing == Direction.WEST) ? amount : 0);
+        int newLength = dims.maxZ() - dims.minZ() + ((facing == Direction.NORTH || facing == Direction.SOUTH) ? amount : 0);
+
+        //calculate total blocks in claim (area for default and 3D claims)
+        int totalBlocks;
+
+        if(PlayerClaimData.get(player).getClaimMode().is3d){
+            int height = dims.maxY() - dims.minY() + ((facing == Direction.UP || facing == Direction.DOWN) ? amount : 0);
+            totalBlocks = newWidth * newLength * height;
+        } else {
+            totalBlocks = newWidth * newLength;
+        }
+
+        if (totalBlocks > ConfigHandler.CONFIG.maxClaimBlocks) {
+            ClaimUtils.sendExpandError(player, "flan.expandTooLarge");
+            return 0;
+        }
+
+        if (!storage.resizeClaim(claim, corners.getA(), corners.getB(), player)) {
+            ClaimUtils.sendExpandError(player, "flan.expandFailed");
+            return 0;
+        }
+        player.displayClientMessage(ClaimUtils.translatedText("flan.expandSuccess", amount, ChatFormatting.GREEN), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    //change expand tuple to own methode for more usability
+    private static Tuple<BlockPos, BlockPos> calculateCorners(ClaimBox dims, Direction facing, int amount) {
+        return switch (facing) {
+            case SOUTH -> new Tuple<>(
+                    new BlockPos(dims.maxX(), dims.minY(), dims.maxZ()),
+                    new BlockPos(dims.maxX(), dims.maxY(), dims.maxZ() + amount));
+            case EAST -> new Tuple<>(
+                    new BlockPos(dims.maxX(), dims.minY(), dims.maxZ()),
+                    new BlockPos(dims.maxX() + amount, dims.maxY(), dims.maxZ()));
+            case NORTH -> new Tuple<>(
+                    new BlockPos(dims.minX(), dims.minY(), dims.minZ()),
+                    new BlockPos(dims.minX(), dims.maxY(), dims.minZ() - amount));
+            case WEST -> new Tuple<>(
+                    new BlockPos(dims.minX(), dims.minY(), dims.minZ()),
+                    new BlockPos(dims.minX() - amount, dims.maxY(), dims.minZ()));
+            //adding up and down to diagonical logic
+            case UP -> new Tuple<>(
+                    new BlockPos(dims.minX(), dims.maxY(), dims.minZ()),
+                    new BlockPos(dims.maxX(), dims.maxY() + amount, dims.maxZ()));
+            case DOWN -> new Tuple<>(
+                    new BlockPos(dims.minX(), dims.minY(), dims.minZ()),
+                    new BlockPos(dims.maxX(), dims.minY() - amount, dims.maxZ()));
             default -> throw new IllegalStateException("Unexpected value: " + facing);
         };
-        return storage.resizeClaim(claim, cornerPair.getA(), cornerPair.getB(), player) ? Command.SINGLE_SUCCESS : 0;
+    }
+
+    //help to calculating claim position
+    private static BlockPos calculateExpansionStart(Claim claim, ServerPlayer player) {
+        ClaimBox dims = claim.getDimensions();
+        return player.getDirection().getAxis() == Direction.Axis.X
+                ? new BlockPos(dims.maxX(), dims.minY(), player.getBlockZ())
+                : new BlockPos(player.getBlockX(), dims.minY(), dims.maxZ());
     }
 
     public static int teleport(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

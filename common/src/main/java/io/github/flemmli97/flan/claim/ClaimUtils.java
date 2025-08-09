@@ -49,6 +49,22 @@ public class ClaimUtils {
         });
     }
 
+    // if expand error is given
+    public static void sendExpandError(ServerPlayer player, String key, Object... args) {
+        player.displayClientMessage(
+                Component.translatable("flan.expandError")
+                        .append(translatedText(key, args))
+                        .withStyle(ChatFormatting.RED),
+                false
+        );
+    }
+
+    // only subclaim permission check
+    public static boolean checkSubclaimPerm(ServerPlayer player, Claim subclaim) {
+        Claim parent = subclaim.parentClaim();
+        return parent != null && parent.canInteract(player, BuiltinPermission.EDITCLAIM, player.blockPosition());
+    }
+
     public static MutableComponent translatedText(String key, Object... compArgs) {
         List<ChatFormatting> formattings = new ArrayList<>();
         List<Object> args = new ArrayList<>();
