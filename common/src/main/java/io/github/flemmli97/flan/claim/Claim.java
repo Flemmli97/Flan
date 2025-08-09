@@ -410,31 +410,56 @@ public class Claim implements IPermissionContainer {
     }
 
     public Set<Claim> tryCreateSubClaim(BlockPos pos1, BlockPos pos2, boolean is3d) {
-        //No sub sub claims
-        if (this.parentClaim() != null)
+        // No sub sub claims
+        if (this.parentClaim() != null) {
             return Set.of(this.parentClaim());
+        }
+
         Claim sub = new Claim(pos1, pos2, this.owner, this.level);
-        if (is3d)
-            sub.withHeight(Math.max(pos1.getY(), pos2.getY()));
+
+        if (is3d) {
+            if (ConfigHandler.subClaimsUseDefaultDepth) {
+                // Default-Höhe aus Config benutzen
+                sub.minY = ConfigHandler.defaultClaimMinY;
+                sub.withHeight(ConfigHandler.defaultClaimMaxY);
+            } else {
+                // Höhe vom obersten ParentClaim übernehmen
+                Claim firstParent = this;
+                while (firstParent.parentClaim() != null) {
+                    firstParent = firstParent.parentClaim();
+                }
+                sub.minY = firstParent.minY;
+                sub.withHeight(firstParent.maxY);
+            }
+        }
+
         sub.setClaimID(this.generateUUID());
+
         Set<Claim> conflicts = new HashSet<>();
-        for (Claim other : this.subClaims)
+        for (Claim other : this.subClaims) {
             if (sub.intersects(other)) {
                 conflicts.add(other);
             }
+        }
+
         if (conflicts.isEmpty()) {
             sub.parent = this.claimID;
             sub.parentClaim = this;
             this.subClaims.add(sub);
-            //Copy parent claims perms
+
+            // copy parent permissions
             sub.permissions.clear();
             sub.permissions.putAll(this.permissions);
+
             sub.playersGroups.clear();
             sub.playersGroups.putAll(this.playersGroups);
+
             sub.potions.clear();
             sub.potions.putAll(this.potions);
+
             this.setDirty(true);
         }
+
         return conflicts;
     }
 
@@ -929,7 +954,7 @@ public class Claim implements IPermissionContainer {
                 l.add(ClaimUtils.translatedText("flan.claimGroupInfoHeader", ChatFormatting.GOLD));
                 Map<String, List<String>> nameToGroup = new HashMap<>();
                 for (Map.Entry<UUID, String> e : this.playersGroups.entrySet()) {
-                    ClaimUtils.fetchUsername(this.owner, this.level.getServer(), true).ifPresent(name ->
+                    ClaimUtils.fetchUsername(e.getKey(), this.level.getServer(), true).ifPresent(name ->
                             nameToGroup.merge(e.getValue(), Lists.newArrayList(name), (old, val) -> {
                                 old.add(name);
                                 return old;
