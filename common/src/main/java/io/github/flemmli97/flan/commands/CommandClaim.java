@@ -909,6 +909,7 @@ public class CommandClaim {
 
         //what mode has player
         ClaimMode mode = PlayerClaimData.get(player).getClaimMode();
+        Direction facing = player.getDirection(); //saved the facing direction
 
         //Adding Subclaims on expand
         if (claim.isSubclaim()) {
@@ -918,40 +919,34 @@ public class CommandClaim {
             }
 
             Claim parent = claim.parentClaim();
+            ClaimBox dims = claim.getDimensions(); // definition here for better readable
 
-            //facing is not supported
-            Direction facing = player.getDirection(); //saved the facing direction
-
-            //up and down is dissabled
-            if (facing == Direction.UP) {
-                ClaimUtils.sendExpandError(player, "flan.expandUpDisabled");
-                return 0;
-            } else if (facing == Direction.DOWN) {
-                ClaimUtils.sendExpandError(player, "flan.expandDownDisabled");
+            //up and down only in 3d
+            if (!mode.is3d && (facing == Direction.UP || facing == Direction.DOWN)) {
+                ClaimUtils.sendExpandError(player,
+                        facing == Direction.UP ? "flan.expandUpDisabled" : "flan.expandDownDisabled");
                 return 0;
             }
 
             BlockPos from = calculateExpansionStart(claim, player);
-            BlockPos to = from.relative(player.getDirection(), amount);
+            BlockPos to = from.relative(facing, amount);
 
-            int currentSize = (facing.getAxis() == Direction.Axis.X)
-                    ? (claim.getDimensions().maxX() - claim.getDimensions().minX())
-                    : (claim.getDimensions().maxZ() - claim.getDimensions().minZ());
-            int newSize = currentSize + amount;
+            //dynamical resize
+            int currentX = dims.maxX() - dims.minX();
+            int currentZ = dims.maxZ() - dims.minZ();
+            int currentY = dims.maxY() - dims.minY();
 
-            int otherSize = (facing.getAxis() == Direction.Axis.X)
-                    ? (claim.getDimensions().maxZ() - claim.getDimensions().minZ())
-                    : (claim.getDimensions().maxX() - claim.getDimensions().minX());
-            int height = claim.getDimensions().maxY() - claim.getDimensions().minY();
+            int newX = currentX;
+            int newZ = currentZ;
+            int newY = currentY;
 
-            int sizeInBlocks;
-
-            //subdefault or 3d check
-            if(mode.is3d) {
-                sizeInBlocks = newSize * otherSize * height;
-            } else {
-                sizeInBlocks = newSize * otherSize;
+            switch (facing.getAxis()) {
+                case X -> newX += amount;
+                case Z -> newZ += amount;
+                case Y -> newY += amount;
             }
+
+            int sizeInBlocks = mode.is3d ? newX * newZ * newY : newX * newZ;
 
             if (sizeInBlocks > ConfigHandler.CONFIG.maxClaimBlocks) {
                 ClaimUtils.sendExpandError(player, "flan.expandTooLarge");
@@ -980,22 +975,21 @@ public class CommandClaim {
         }
 
         ClaimBox dims = claim.getDimensions();
-        Direction facing = player.getDirection();
         Tuple<BlockPos, BlockPos> corners = calculateCorners(dims, facing, amount);
 
         //reseizeclaim check maxClaim too large
-        int newWidth = dims.maxX() - dims.minX() + ((facing == Direction.EAST || facing == Direction.WEST) ? amount : 0);
-        int newLength = dims.maxZ() - dims.minZ() + ((facing == Direction.NORTH || facing == Direction.SOUTH) ? amount : 0);
+        int newWidth = dims.maxX() - dims.minX();
+        int newLength = dims.maxZ() - dims.minZ();
+        int newHeight = dims.maxY() - dims.minY();
+
+        switch (facing.getAxis()) {
+            case X -> newWidth += amount;
+            case Z -> newLength += amount;
+            case Y -> newHeight += amount;
+        }
 
         //calculate total blocks in claim (area for default and 3D claims)
-        int totalBlocks;
-
-        if(mode.is3d){
-            int height = dims.maxY() - dims.minY() + ((facing == Direction.UP || facing == Direction.DOWN) ? amount : 0);
-            totalBlocks = newWidth * newLength * height;
-        } else {
-            totalBlocks = newWidth * newLength;
-        }
+        int totalBlocks = mode.is3d ? newWidth * newLength * newHeight : newWidth * newLength;
 
         if (totalBlocks > ConfigHandler.CONFIG.maxClaimBlocks) {
             ClaimUtils.sendExpandError(player, "flan.expandTooLarge");
@@ -1039,9 +1033,25 @@ public class CommandClaim {
     //help to calculating claim position
     private static BlockPos calculateExpansionStart(Claim claim, ServerPlayer player) {
         ClaimBox dims = claim.getDimensions();
-        return player.getDirection().getAxis() == Direction.Axis.X
-                ? new BlockPos(dims.maxX(), dims.minY(), player.getBlockZ())
-                : new BlockPos(player.getBlockX(), dims.minY(), dims.maxZ());
+        Direction facing = player.getDirection();
+
+        return switch (facing.getAxis()) {
+            case X -> new BlockPos(
+                    facing == Direction.EAST ? dims.maxX() : dims.minX(),
+                    player.getBlockY(),
+                    player.getBlockZ()
+            );
+            case Z -> new BlockPos(
+                    player.getBlockX(),
+                    player.getBlockY(),
+                    facing == Direction.SOUTH ? dims.maxZ() : dims.minZ()
+            );
+            case Y -> new BlockPos(
+                    player.getBlockX(),
+                    facing == Direction.UP ? dims.maxY() : dims.minY(),
+                    player.getBlockZ()
+            );
+        };
     }
 
     public static int teleport(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

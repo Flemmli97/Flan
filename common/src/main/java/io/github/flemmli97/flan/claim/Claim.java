@@ -490,19 +490,41 @@ public class Claim implements IPermissionContainer {
 
     public Set<Claim> resizeSubclaim(Claim claim, BlockPos from, BlockPos to) {
         ClaimBox dims = claim.getDimensions();
-        int minY = claim.is3d() && dims.minY() == from.getY() ? dims.maxY() : dims.minY();
-        BlockPos opposite = new BlockPos(dims.minX() == from.getX() ? dims.maxX() : dims.minX(),
-                minY, dims.minZ() == from.getZ() ? dims.maxZ() : dims.minZ());
+
+        BlockPos opposite = new BlockPos(
+                (from.getX() == dims.minX()) ? dims.maxX() : dims.minX(),
+                (from.getY() == dims.minY()) ? dims.maxY() : dims.minY(),
+                (from.getZ() == dims.minZ()) ? dims.maxZ() : dims.minZ()
+        );
+
         Claim newClaim = new Claim(opposite, to, claim.claimID, this.level);
+
         if (claim.is3d()) {
-            newClaim.withHeight(Math.max(minY, to.getY()));
+            //resize in 3d
+            newClaim.minY = Math.min(opposite.getY(), to.getY());
+            newClaim.maxY = Math.max(opposite.getY(), to.getY());
+        } else {
+            //standard resize
+            newClaim.minY = dims.minY();
+            newClaim.maxY = dims.maxY();
         }
+
         Set<Claim> conflicts = new HashSet<>();
         for (Claim other : this.subClaims)
-            if (!claim.equals(other) && newClaim.intersects(other))
+            if (!claim.equals(other) && newClaim.getDimensions().intersects(other.getDimensions())) {
                 conflicts.add(other);
+            }
+
         if (conflicts.isEmpty()) {
-            claim.copySizes(newClaim);
+            // refresh new subclaims
+            claim.minX = Math.min(opposite.getX(), to.getX());
+            claim.maxX = Math.max(opposite.getX(), to.getX());
+            claim.minZ = Math.min(opposite.getZ(), to.getZ());
+            claim.maxZ = Math.max(opposite.getZ(), to.getZ());
+            claim.minY = newClaim.minY;
+            claim.maxY = newClaim.maxY;
+
+            claim.setDirty(true);
             this.setDirty(true);
         }
         return conflicts;
