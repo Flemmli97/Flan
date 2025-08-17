@@ -918,22 +918,39 @@ public class CommandClaim {
             }
 
             Claim parent = claim.parentClaim();
+
+            //facing is not supported
+            Direction facing = player.getDirection(); //saved the facing direction
+
+            //up and down is dissabled
+            if (facing == Direction.UP) {
+                ClaimUtils.sendExpandError(player, "flan.expandUpDisabled");
+                return 0;
+            } else if (facing == Direction.DOWN) {
+                ClaimUtils.sendExpandError(player, "flan.expandDownDisabled");
+                return 0;
+            }
+
             BlockPos from = calculateExpansionStart(claim, player);
             BlockPos to = from.relative(player.getDirection(), amount);
 
-            int currentSize = (player.getDirection().getAxis() == Direction.Axis.X)
+            int currentSize = (facing.getAxis() == Direction.Axis.X)
                     ? (claim.getDimensions().maxX() - claim.getDimensions().minX())
                     : (claim.getDimensions().maxZ() - claim.getDimensions().minZ());
             int newSize = currentSize + amount;
+
+            int otherSize = (facing.getAxis() == Direction.Axis.X)
+                    ? (claim.getDimensions().maxZ() - claim.getDimensions().minZ())
+                    : (claim.getDimensions().maxX() - claim.getDimensions().minX());
+            int height = claim.getDimensions().maxY() - claim.getDimensions().minY();
 
             int sizeInBlocks;
 
             //subdefault or 3d check
             if(mode.is3d) {
-                int height = claim.getDimensions().maxY() - claim.getDimensions().minY();
-                sizeInBlocks = newSize * newSize * height;
+                sizeInBlocks = newSize * otherSize * height;
             } else {
-                sizeInBlocks = newSize * newSize;
+                sizeInBlocks = newSize * otherSize;
             }
 
             if (sizeInBlocks > ConfigHandler.CONFIG.maxClaimBlocks) {
@@ -1008,7 +1025,7 @@ public class CommandClaim {
             case WEST -> new Tuple<>(
                     new BlockPos(dims.minX(), dims.minY(), dims.minZ()),
                     new BlockPos(dims.minX() - amount, dims.maxY(), dims.minZ()));
-            //adding up and down to diagonical logic
+            //adding up and down for diagonical logic in future
             case UP -> new Tuple<>(
                     new BlockPos(dims.minX(), dims.maxY(), dims.minZ()),
                     new BlockPos(dims.maxX(), dims.maxY() + amount, dims.maxZ()));
