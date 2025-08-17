@@ -1051,22 +1051,14 @@ public class CommandClaim {
         ClaimBox dims = claim.getDimensions();
         Direction facing = player.getDirection();
 
-        return switch (facing.getAxis()) {
-            case X -> new BlockPos(
-                    facing == Direction.EAST ? dims.maxX() : dims.minX(),
-                    player.getBlockY(),
-                    player.getBlockZ()
-            );
-            case Z -> new BlockPos(
-                    player.getBlockX(),
-                    player.getBlockY(),
-                    facing == Direction.SOUTH ? dims.maxZ() : dims.minZ()
-            );
-            case Y -> new BlockPos(
-                    player.getBlockX(),
-                    facing == Direction.UP ? dims.maxY() : dims.minY(),
-                    player.getBlockZ()
-            );
+        return switch (facing) {
+            case EAST -> new BlockPos(dims.maxX(), dims.minY(), dims.minZ());
+            case WEST -> new BlockPos(dims.minX(), dims.minY(), dims.minZ());
+            case SOUTH -> new BlockPos(dims.minX(), dims.minY(), dims.maxZ());
+            case NORTH -> new BlockPos(dims.minX(), dims.minY(), dims.minZ());
+            case UP -> new BlockPos(dims.minX(), dims.maxY(), dims.minZ());
+            case DOWN -> new BlockPos(dims.minX(), dims.minY(), dims.minZ());
+            default -> throw new IllegalStateException("Unexpected direction: " + facing);
         };
     }
 
