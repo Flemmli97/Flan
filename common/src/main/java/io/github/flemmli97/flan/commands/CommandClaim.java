@@ -892,7 +892,7 @@ public class CommandClaim {
     private static int expandClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ClaimStorage storage = ClaimStorage.get(player.serverLevel());
-        Claim claim = storage.getClaimAt(player.blockPosition());
+        Claim claim = ClaimUtils.getClaimOrSubclaimAt(storage, player.blockPosition());
         int amount = IntegerArgumentType.getInteger(context, "distance");
 
         //if there is no claim
@@ -906,6 +906,9 @@ public class CommandClaim {
             ClaimUtils.sendExpandError(player, "flan.invalidDistance");
             return 0;
         }
+
+        //what mode has player
+        ClaimMode mode = PlayerClaimData.get(player).getClaimMode();
 
         //Adding Subclaims on expand
         if (claim.isSubclaim()) {
@@ -922,7 +925,16 @@ public class CommandClaim {
                     ? (claim.getDimensions().maxX() - claim.getDimensions().minX())
                     : (claim.getDimensions().maxZ() - claim.getDimensions().minZ());
             int newSize = currentSize + amount;
-            int sizeInBlocks = newSize * newSize;
+
+            int sizeInBlocks;
+
+            //subdefault or 3d check
+            if(mode.is3d) {
+                int height = claim.getDimensions().maxY() - claim.getDimensions().minY();
+                sizeInBlocks = newSize * newSize * height;
+            } else {
+                sizeInBlocks = newSize * newSize;
+            }
 
             if (sizeInBlocks > ConfigHandler.CONFIG.maxClaimBlocks) {
                 ClaimUtils.sendExpandError(player, "flan.expandTooLarge");
@@ -961,7 +973,7 @@ public class CommandClaim {
         //calculate total blocks in claim (area for default and 3D claims)
         int totalBlocks;
 
-        if(PlayerClaimData.get(player).getClaimMode().is3d){
+        if(mode.is3d){
             int height = dims.maxY() - dims.minY() + ((facing == Direction.UP || facing == Direction.DOWN) ? amount : 0);
             totalBlocks = newWidth * newLength * height;
         } else {
