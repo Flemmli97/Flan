@@ -435,5 +435,6 @@
   "flan.command.confirm.1": "Confirmation for sensitive commands",
   "flan.command.bypass.0": "bypass",
   "flan.command.bypass.1": "Switches to admin mode ignoring all claims and permissions.",
-  "flan.command.giveClaimBlocks.2": "▶ base: Gives base blocks instead of additional blocks"
+  "flan.command.giveClaimBlocks.2": "▶ base: Gives base blocks instead of additional blocks",
+  "flan.noSubClaim": "There is no subclaim here"
 }

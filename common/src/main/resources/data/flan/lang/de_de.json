@@ -417,5 +417,6 @@
   "flan.expandSuccess": "Claim erfolgreich um %s Blöcke erweitert!",
   "flan.expandUpDisabled": "Vertikale Erweiterung nach oben ist deaktiviert!",
   "flan.expandDownDisabled": "Vertikale Erweiterung nach unten ist deaktiviert!",
-  "flan.expandError": "Beim Erweitern ist ein Fehler aufgetreten."
+  "flan.expandError": "Beim Erweitern ist ein Fehler aufgetreten.",
+  "flan.noSubClaim": "Hier befindet sich kein Subclaim"
 }

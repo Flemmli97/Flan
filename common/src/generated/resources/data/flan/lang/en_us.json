@@ -52,6 +52,7 @@
   "flan.resizeSuccess": "Resized Claims",
   "flan.claimCreateSuccess": "Created a new claim",
   "flan.subClaimCreateSuccess": "Created a new subclaim",
+  "flan.noSubClaim": "There is no subclaim here",
   "flan.deleteClaim": "Claim deleted",
   "flan.deleteAllClaimConfirm": "Are you sure you want to delete all claims? Type it again to confirm",
   "flan.deleteAllClaim": "All claims deleted",

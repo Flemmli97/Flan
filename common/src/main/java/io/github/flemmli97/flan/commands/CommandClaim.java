@@ -892,13 +892,31 @@ public class CommandClaim {
     private static int expandClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ClaimStorage storage = ClaimStorage.get(player.serverLevel());
-        Claim claim = ClaimUtils.getClaimOrSubclaimAt(storage, player.blockPosition());
+        ClaimMode mode = PlayerClaimData.get(player).getClaimMode();
+
         int amount = IntegerArgumentType.getInteger(context, "distance");
 
-        //if there is no claim
-        if (claim == null) {
-            ClaimUtils.noClaimMessage(player);
-            return 0;
+        Claim claim;
+        if(mode.isSubclaim){
+            //Subclaim mode only use Subclaim
+            Claim mainClaim = storage.getClaimAt(player.blockPosition());
+            if (mainClaim == null) {
+                ClaimUtils.noClaimMessage(player);
+                return 0;
+            }
+            claim = mainClaim.getSubClaim(player.blockPosition());
+            if (claim == null) {
+                player.displayClientMessage(ClaimUtils.translatedText("flan.noSubClaim", ChatFormatting.RED), false);
+                return 0;
+             }
+        } else {
+            //if in default claim
+            claim = storage.getClaimAt(player.blockPosition());
+            //if there is no claim
+            if (claim == null) {
+                ClaimUtils.noClaimMessage(player);
+                return 0;
+            }
         }
 
         // if distance is 0 it should not work and stop
@@ -907,8 +925,6 @@ public class CommandClaim {
             return 0;
         }
 
-        //what mode has player
-        ClaimMode mode = PlayerClaimData.get(player).getClaimMode();
         Direction facing = player.getDirection(); //saved the facing direction
 
         //Adding Subclaims on expand

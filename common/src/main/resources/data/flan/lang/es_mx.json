@@ -417,5 +417,6 @@
   "flan.expandDownDisabled": "Vertical expansion (downwards) is disabled!",
   "flan.expandError": "An error occurred during expansion.",
   "flan.command.confirm.0": "confirm <confirmg | deny>",
-  "flan.command.confirm.1": "Confirmation for sensitive commands"
+  "flan.command.confirm.1": "Confirmation for sensitive commands",
+  "flan.noSubClaim": "There is no subclaim here"
 }
