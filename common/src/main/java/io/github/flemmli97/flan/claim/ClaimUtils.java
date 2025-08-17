@@ -11,6 +11,7 @@ import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 
 import java.util.ArrayList;
 import java.util.List;
