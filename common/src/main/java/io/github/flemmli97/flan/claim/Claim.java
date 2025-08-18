@@ -506,7 +506,7 @@ public class Claim implements IPermissionContainer {
         } else {
             //standard resize
             newClaim.minY = dims.minY();
-            newClaim.maxY = dims.maxY();
+            newClaim.maxY = null;
         }
 
         Set<Claim> conflicts = new HashSet<>();
