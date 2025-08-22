@@ -45,8 +45,6 @@ public class Config {
     public String defaultClaimName = "";
     public String defaultEnterMessage = "";
     public String defaultLeaveMessage = "";
-    public int defaultSubClaimMinY = 0;
-    public int defaultSubClaimMaxY = 320;
     public boolean noSpawnClaim;
     public int claimingCooldown;
 
@@ -181,8 +179,6 @@ public class Config {
             this.defaultClaimName = ConfigHandler.fromJson(obj, "defaultClaimName", this.defaultClaimName);
             this.defaultEnterMessage = ConfigHandler.fromJson(obj, "defaultEnterMessage", this.defaultEnterMessage);
             this.defaultLeaveMessage = ConfigHandler.fromJson(obj, "defaultLeaveMessage", this.defaultLeaveMessage);
-            this.defaultSubClaimMinY = ConfigHandler.fromJson(obj, "defaultSubClaimMinY", this.defaultSubClaimMinY);
-            this.defaultSubClaimMaxY = ConfigHandler.fromJson(obj, "defaultSubClaimMaxY", this.defaultSubClaimMaxY);
             this.noSpawnClaim = ConfigHandler.fromJson(obj, "noSpawnClaim", this.noSpawnClaim);
             this.claimingCooldown = ConfigHandler.fromJson(obj, "claimingCooldown", this.claimingCooldown);
 
@@ -295,8 +291,6 @@ public class Config {
         obj.addProperty("defaultClaimName", this.defaultClaimName);
         obj.addProperty("defaultEnterMessage", this.defaultEnterMessage);
         obj.addProperty("defaultLeaveMessage", this.defaultLeaveMessage);
-        obj.addProperty("defaultSubClaimMinY", this.defaultSubClaimMinY);
-        obj.addProperty("defaultSubClaimMaxY", this.defaultSubClaimMaxY);
         obj.addProperty("noSpawnClaim", this.noSpawnClaim);
         obj.addProperty("claimingCooldown", this.claimingCooldown);
 

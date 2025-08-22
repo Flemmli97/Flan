@@ -418,19 +418,28 @@ public class Claim implements IPermissionContainer {
         Claim sub = new Claim(pos1, pos2, this.owner, this.level);
 
         if (is3d) {
-            if (!ConfigHandler.CONFIG.subClaimsInheritParentDepth) {
-                // using default MIN and MAX
-                sub.minY = ConfigHandler.CONFIG.defaultSubClaimMinY;
-                sub.withHeight(ConfigHandler.CONFIG.defaultSubClaimMaxY);
-            } else {
-                // if default using parent default depth
+            //only if 3d sub, use only math from selected points
+            sub.maxY = Math.max(pos1.getY(), pos2.getY());
+        } else {
+            if (ConfigHandler.CONFIG.subClaimsInheritParentDepth) {
+                //if parent inherit depth true, use parent minY
                 Claim firstParent = this;
                 while (firstParent.parentClaim() != null) {
                     firstParent = firstParent.parentClaim();
                 }
                 sub.minY = firstParent.minY;
-                sub.withHeight(firstParent.maxY);
+                // maxY should be null
             }
+            //for 2d use y from player
+        }
+
+        // subclaim is not bigger as parent
+        ClaimBox parentBox = this.getDimensions();
+        ClaimBox subBox = sub.getDimensions();
+
+        if (subBox.minY() < parentBox.minY() || subBox.maxY() > parentBox.maxY()) {
+            // Subclaim geht über Parent-Grenzen hinaus - als Konflikt behandeln
+            return Set.of(this);
         }
 
         sub.setClaimID(this.generateUUID());
