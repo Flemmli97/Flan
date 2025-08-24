@@ -59,7 +59,7 @@ dependencies {
     //modRuntimeOnly "dev.ftb.mods:ftb-chunks-fabric:${ftb_chunks}"
     //CompileOnly cause too many dependency
     modCompileOnly goml_reserved
-    modCompileOnly include("com.jamieswhiteshirt:rtree-3i-lite-fabric:0.3.0")
+    modCompileOnly "com.jamieswhiteshirt:rtree-3i-lite-fabric:0.3.0"
 
     modCompileOnly harvest_with_ease_fabric
     modCompileOnly "eu.pb4:common-protection-api:${common_prot_api}"
