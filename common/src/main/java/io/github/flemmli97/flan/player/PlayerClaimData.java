@@ -539,9 +539,9 @@ public class PlayerClaimData implements IPlayerData {
         Flan.log("Saving player data for player {} with uuid {}", this.player.getName(), this.player.getUUID());
         Path dir = ConfigHandler.getPlayerSavePath(server);
         try {
-            Files.createDirectories(dir);
             Path file = dir.resolve(this.player.getUUID() + ".json");
             try {
+                Files.createDirectories(dir);
                 Files.createFile(file);
             } catch (FileAlreadyExistsException ignored) {
             }
@@ -605,12 +605,11 @@ public class PlayerClaimData implements IPlayerData {
         Flan.log("Adding {} addional claimblocks for offline player with uuid {}", additionalClaimBlocks, uuid);
         Path dir = ConfigHandler.getPlayerSavePath(server);
         try {
-            Files.createDirectories(dir);
             Path file = dir.resolve(uuid.toString() + ".json");
             try {
+                Files.createDirectories(dir);
                 Files.createFile(file);
-            } catch (FileAlreadyExistsException e) {
-                Flan.LOGGER.error(e);
+            } catch (FileAlreadyExistsException ignored) {
             }
             JsonReader reader = ConfigHandler.GSON.newJsonReader(Files.newBufferedReader(file, StandardCharsets.UTF_8));
             JsonObject obj = ConfigHandler.GSON.fromJson(reader, JsonObject.class);
