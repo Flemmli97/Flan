@@ -5,8 +5,8 @@ import io.github.flemmli97.flan.claim.ClaimBox;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 
@@ -18,12 +18,12 @@ public class TeleportUtils {
         return BlockPos.containing(pos);
     }
 
-    public static Vec3 getTeleportPos(ServerPlayer player, Vec3 playerPos, ClaimStorage storage, Area2D dim, BlockPos.MutableBlockPos bPos, BiFunction<Claim, BlockPos, Boolean> check) {
-        return getTeleportPos(player, playerPos, storage, dim, false, bPos, check);
+    public static Vec3 getTeleportPos(Entity entity, Vec3 playerPos, ClaimStorage storage, Area2D dim, BlockPos.MutableBlockPos bPos, BiFunction<Claim, BlockPos, Boolean> check) {
+        return getTeleportPos(entity, playerPos, storage, dim, false, bPos, check);
     }
 
-    public static Vec3 getTeleportPos(ServerPlayer player, Vec3 playerPos, ClaimStorage storage, Area2D dim, boolean checkSub, BlockPos.MutableBlockPos bPos, BiFunction<Claim, BlockPos, Boolean> check) {
-        Tuple<Direction, Vec3> pos = nearestOutside(dim, playerPos);
+    public static Vec3 getTeleportPos(Entity entity, Vec3 entityPos, ClaimStorage storage, Area2D dim, boolean checkSub, BlockPos.MutableBlockPos bPos, BiFunction<Claim, BlockPos, Boolean> check) {
+        Tuple<Direction, Vec3> pos = nearestOutside(dim, entityPos);
         bPos.set(pos.getB().x(), pos.getB().y(), pos.getB().z());
         Claim claim = storage.getClaimAt(bPos);
         if (checkSub) {
@@ -34,10 +34,10 @@ public class TeleportUtils {
         if (claim == null || check.apply(claim, bPos)) {
             Vec3 ret = pos.getB();
             BlockPos rounded = roundedBlockPos(ret);
-            int y = player.serverLevel().getChunk(rounded.getX() >> 4, rounded.getZ() >> 4)
+            int y = entity.level().getChunk(rounded.getX() >> 4, rounded.getZ() >> 4)
                     .getHeight(Heightmap.Types.MOTION_BLOCKING, rounded.getX() & 15, rounded.getZ() & 15);
             Vec3 dest = new Vec3(ret.x, y + 1, ret.z);
-            if (player.level().noCollision(player, player.getBoundingBox().move(dest.subtract(player.position()))))
+            if (entity.level().noCollision(entity, entity.getBoundingBox().move(dest.subtract(entity.position()))))
                 return dest;
             return new Vec3(rounded.getX() + 0.5, y + 1, rounded.getZ() + 0.5);
         }
@@ -48,7 +48,7 @@ public class TeleportUtils {
             case EAST -> dim.maxX = newDim.maxX();
             default -> dim.minX = newDim.minX();
         }
-        return getTeleportPos(player, playerPos, storage, dim, checkSub, bPos, check);
+        return getTeleportPos(entity, entityPos, storage, dim, checkSub, bPos, check);
     }
 
     private static Tuple<Direction, Vec3> nearestOutside(Area2D dim, Vec3 from) {
