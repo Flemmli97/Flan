@@ -87,6 +87,7 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.resizeSuccess", "Resized Claims");
         this.add("flan.claimCreateSuccess", "Created a new claim");
         this.add("flan.subClaimCreateSuccess", "Created a new subclaim");
+        this.add("flan.noSubClaim", "There is no subclaim here");
         this.add("flan.deleteClaim", "Claim deleted");
         this.add("flan.deleteAllClaimConfirm", "Are you sure you want to delete all claims? Type it again to confirm");
         this.add("flan.deleteAllClaim", "All claims deleted");
@@ -223,7 +224,7 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.addIgnoreEntry", "Added %1$s to the claims ignore list %2$s");
         this.add("flan.removeIgnoreEntry", "Removed %1$s from the claims ignore list %2$s");
 
-        this.add("flan.confirmCommand", "Use '/flan confirm <confirm | deny>' to confirm or deny running this command.");
+        this.add("flan.confirmCommand", "Use '/flan confirm + <confirm | deny>' to confirm or deny running this command.");
         this.add("flan.confirmCommand.args", "No such option %s");
         this.add("flan.confirmCommand.none", "No command to confirm!");
         this.add("flan.confirmCancelled", "Command cancelled!");
@@ -249,6 +250,15 @@ public class ENLangGen extends ServerLangGen {
                 "▶ all: Uses up all remaining blocks for a squared claim centered around the player",
                 "▶ rect: Creates a rectangular claim of given size centered around the player");
         this.add("flan.command.expand", "expand <amount>", "Expands the current claim by the given amount in the direction the player is looking");
+        this.add("flan.invalidDistance", "Expansion distance must be greater than 0!");
+        this.add("flan.expandTooLarge", "Claim would exceed maximum allowed size!");
+        this.add("flan.expandBeyondParent", "Cannot expand subclaim beyond parent claim boundaries!");
+        this.add("flan.expandConflict", "Expansion conflicts with existing subclaims!");
+        this.add("flan.expandFailed", "Failed to expand claim due to an unknown error.");
+        this.add("flan.expandSuccess", "Claim successfully expanded by <amount> blocks!");
+        this.add("flan.expandUpDisabled", "Vertical expansion (upwards) is disabled!");
+        this.add("flan.expandDownDisabled", "Vertical expansion (downwards) is disabled!");
+        this.add("flan.expandError", "An error occurred during expansion.");
         this.add("flan.command.menu", "menu", "Opens the claim menu at the players position");
         this.add("flan.command.setHome", "setHome", "Standing in a claim with sufficient permission sets that claims home to the players position");
         this.add("flan.command.trapped", "trapped", "If in a claim not owned by the player attempts to teleport the player out of it after 5 seconds.");
