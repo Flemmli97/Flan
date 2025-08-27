@@ -259,9 +259,28 @@ public class Claim implements IPermissionContainer {
 
     public ClaimBox getDimensions() {
         boolean is3d = this.is3d();
-        int minY = is3d || ConfigHandler.CONFIG.defaultClaimDepth != -1 ? this.minY
-                : this.getLevel().getMinBuildHeight() - 10;
-        return new ClaimBox(this.minX, minY, this.minZ, this.maxX, Math.max(minY + 1, is3d ? this.maxY : (this.getLevel().getMaxBuildHeight() + 10)), this.maxZ);
+        int minY;
+        int maxY;
+
+        if (is3d) {
+            minY = this.minY;
+            maxY = this.maxY;
+        } else {
+            if (ConfigHandler.CONFIG.subClaimsInheritParentDepth && this.isSubclaim()) {
+                // inherit parent depth
+                Claim rootParent = this;
+                while (rootParent.parentClaim() != null) {
+                    rootParent = rootParent.parentClaim();
+                }
+                minY = rootParent.minY;
+            } else {
+                minY = ConfigHandler.CONFIG.defaultClaimDepth != -1 ? this.minY
+                        : this.getLevel().getMinBuildHeight() - 10;
+            }
+            maxY = this.getLevel().getMaxBuildHeight() + 10;
+        }
+
+        return new ClaimBox(this.minX, minY, this.minZ, this.maxX, maxY, this.maxZ);
     }
 
     public boolean is3d() {
@@ -419,14 +438,17 @@ public class Claim implements IPermissionContainer {
 
         if (is3d) {
             sub.withHeight(Math.max(pos1.getY(), pos2.getY()));
-        } else {
-            if (ConfigHandler.CONFIG.subClaimsInheritParentDepth && this.parentClaim() != null) {
-                sub.minY = this.parentClaim().minY;
-            }
         }
+
+        //temp parent dimensional math
+        sub.parent = this.claimID;
+        sub.parentClaim = this;
+
         ClaimBox parentBox = this.getDimensions();
         ClaimBox subBox = sub.getDimensions();
         if (subBox.minY() < parentBox.minY() || subBox.maxY() > parentBox.maxY()) {
+            sub.parent = null;
+            sub.parentClaim = null;
             return Set.of(this);
         }
         sub.setClaimID(this.generateUUID());
@@ -437,8 +459,6 @@ public class Claim implements IPermissionContainer {
             }
         }
         if (conflicts.isEmpty()) {
-            sub.parent = this.claimID;
-            sub.parentClaim = this;
             this.subClaims.add(sub);
             // copy parent permissions
             sub.permissions.clear();
@@ -448,6 +468,9 @@ public class Claim implements IPermissionContainer {
             sub.potions.clear();
             sub.potions.putAll(this.potions);
             this.setDirty(true);
+        } else {
+            sub.parent = null;
+            sub.parentClaim = null;
         }
         return conflicts;
     }
@@ -494,7 +517,7 @@ public class Claim implements IPermissionContainer {
             newClaim.maxY = Math.max(opposite.getY(), to.getY());
         } else {
             //standard resize
-            newClaim.minY = dims.minY();
+            newClaim.minY = claim.minY;
             newClaim.maxY = null;
         }
 
@@ -510,8 +533,10 @@ public class Claim implements IPermissionContainer {
             claim.maxX = Math.max(opposite.getX(), to.getX());
             claim.minZ = Math.min(opposite.getZ(), to.getZ());
             claim.maxZ = Math.max(opposite.getZ(), to.getZ());
-            claim.minY = newClaim.minY;
-            claim.maxY = newClaim.maxY;
+            if (claim.is3d()) {
+                claim.minY = newClaim.minY;
+                claim.maxY = newClaim.maxY;
+            }
 
             claim.setDirty(true);
             this.setDirty(true);
