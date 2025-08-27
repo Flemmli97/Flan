@@ -98,6 +98,7 @@ public class BuiltinPermission {
     public static final ResourceLocation LOCKITEMS = register("lock_items", new ItemStack(Items.FIREWORK_STAR), true, true, "If items should be locked on death");
     public static final ResourceLocation FAKEPLAYER = register("fake_player", new ItemStack(Items.CARROT_ON_A_STICK), false, true, "Allow fakeplayers to interact in this claim", "Some mods fakeplayer has the users uuid", "For those mods this permission is not needed");
     public static final ResourceLocation PLAYERMOBSPAWN = register("player_mob_spawn", new ItemStack(Items.WARDEN_SPAWN_EGG), false, true, "Permission for affected players to spawn mobs with interactions", "E.g. wardens, or endermites with enderpearls");
+    public static final ResourceLocation VEHICLE_PASS = register("vehicle_pass", new ItemStack(Items.CHEST_MINECART), false, true, "Allows vehicles such as minecarts or boats to pass claim borders", "Prevents e.g. hopper minecarts from coming inside claims");
     public static final ResourceLocation SCULK = register("sculk", new ItemStack(Items.SCULK_SENSOR), false, true, "Permission for sculk sensors.", "Shriekers are handled under PLAYERMOBSPAWN");
 
     private static ResourceLocation register(String id, ItemStack item, String... description) {

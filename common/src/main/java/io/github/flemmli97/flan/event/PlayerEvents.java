@@ -29,7 +29,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.VehicleEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
@@ -241,13 +241,17 @@ public class PlayerEvents {
                     BlockPos.MutableBlockPos bPos = rounded.mutable();
                     boolean isSub = currentClaim.parentClaim() != null;
                     Claim mainClaim = isSub ? currentClaim.parentClaim() : currentClaim;
-                    Entity passenger = player.getVehicle();
-                    if (!mainClaim.canInteract(player, BuiltinPermission.CANSTAY, bPos, true) || (passenger instanceof Boat && !mainClaim.canInteract(player, BuiltinPermission.BOAT, bPos, true))) {
+                    Entity vehicle = player.getVehicle();
+                    if (!mainClaim.canInteract(player, BuiltinPermission.CANSTAY, bPos, true) ||
+                            (vehicle instanceof VehicleEntity && !vehicle.isControlledByLocalInstance() && !mainClaim.canInteract(player, BuiltinPermission.VEHICLE_PASS, bPos, true))) {
                         Claim sub = isSub ? currentClaim : null;
                         Vec3 tp = TeleportUtils.getTeleportPos(player, pos, storage, new TeleportUtils.Area2D(sub != null ? sub.getDimensions() : mainClaim.getDimensions()), true, bPos, (claim, nPos) -> claim.canInteract(player, BuiltinPermission.CANSTAY, nPos, false));
-                        if (passenger != null) {
-                            player.stopRiding();
-                            passenger.teleportTo(tp.x(), tp.y(), tp.z());
+                        if (vehicle != null) {
+                            if (!vehicle.isControlledByLocalInstance()) {
+                                // Otherwise cannot teleport as the client controls it
+                                player.stopRiding();
+                            }
+                            vehicle.teleportTo(tp.x(), tp.y(), tp.z());
                         }
                         player.teleportTo(tp.x(), tp.y(), tp.z());
                     }

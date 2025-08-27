@@ -2,7 +2,7 @@
   "default_value": false,
   "global": true,
   "gui_item": {
-    "id": "minecraft:sculk_sensor"
+    "id": "minecraft:chest_minecart"
   },
-  "order": 66
+  "order": 65
 }
