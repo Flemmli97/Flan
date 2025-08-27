@@ -418,57 +418,37 @@ public class Claim implements IPermissionContainer {
         Claim sub = new Claim(pos1, pos2, this.owner, this.level);
 
         if (is3d) {
-            //only if 3d sub, use only math from selected points
-            sub.maxY = Math.max(pos1.getY(), pos2.getY());
+            sub.withHeight(Math.max(pos1.getY(), pos2.getY()));
         } else {
-            if (ConfigHandler.CONFIG.subClaimsInheritParentDepth) {
-                //if parent inherit depth true, use parent minY
-                Claim firstParent = this;
-                while (firstParent.parentClaim() != null) {
-                    firstParent = firstParent.parentClaim();
-                }
-                sub.minY = firstParent.minY;
-                // maxY should be null
+            if (ConfigHandler.CONFIG.subClaimsInheritParentDepth && this.parentClaim() != null) {
+                sub.minY = this.parentClaim().minY;
             }
-            //for 2d use y from player
         }
-
-        // subclaim is not bigger as parent
         ClaimBox parentBox = this.getDimensions();
         ClaimBox subBox = sub.getDimensions();
-
         if (subBox.minY() < parentBox.minY() || subBox.maxY() > parentBox.maxY()) {
-            // Subclaim geht über Parent-Grenzen hinaus - als Konflikt behandeln
             return Set.of(this);
         }
-
         sub.setClaimID(this.generateUUID());
-
         Set<Claim> conflicts = new HashSet<>();
         for (Claim other : this.subClaims) {
             if (sub.intersects(other)) {
                 conflicts.add(other);
             }
         }
-
         if (conflicts.isEmpty()) {
             sub.parent = this.claimID;
             sub.parentClaim = this;
             this.subClaims.add(sub);
-
             // copy parent permissions
             sub.permissions.clear();
             sub.permissions.putAll(this.permissions);
-
             sub.playersGroups.clear();
             sub.playersGroups.putAll(this.playersGroups);
-
             sub.potions.clear();
             sub.potions.putAll(this.potions);
-
             this.setDirty(true);
         }
-
         return conflicts;
     }
 
