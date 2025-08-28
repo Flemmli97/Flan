@@ -61,22 +61,6 @@ public class ClaimUtils {
         );
     }
 
-    // only subclaim permission check
-    public static boolean checkSubclaimPerm(ServerPlayer player, Claim subclaim) {
-        Claim parent = subclaim.parentClaim();
-        return parent != null && parent.canInteract(player, BuiltinPermission.EDITCLAIM, player.blockPosition());
-    }
-
-    //check if claim or subclaim (yet not in use but could in future usable)
-    public static Claim getClaimOrSubclaimAt(ClaimStorage storage, BlockPos pos) {
-        Claim claim = storage.getClaimAt(pos);
-
-        if (claim == null) return null;
-
-        Claim sub = claim.getSubClaim(pos);
-        return sub != null ? sub : claim;
-    }
-
     public static MutableComponent translatedText(String key, Object... compArgs) {
         List<ChatFormatting> formattings = new ArrayList<>();
         List<Object> args = new ArrayList<>();

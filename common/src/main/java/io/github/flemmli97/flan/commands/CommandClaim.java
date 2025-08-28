@@ -1025,7 +1025,8 @@ public class CommandClaim {
 
     private static boolean checkExpandPermission(ServerPlayer player, Claim claim, ClaimMode mode) {
         if (mode.isSubclaim) {
-            if (!ClaimUtils.checkSubclaimPerm(player, claim)) {
+            Claim parent = claim.parentClaim();
+            if (parent == null || !parent.canInteract(player, BuiltinPermission.EDITCLAIM, player.blockPosition())) {
                 player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
                 return false;
             }
