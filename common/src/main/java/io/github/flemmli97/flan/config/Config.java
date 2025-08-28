@@ -114,6 +114,9 @@ public class Config {
 
     public int offlineProtectActivation = -1;
 
+    public boolean dynmapIntegration;
+    public boolean bluemapIntegration;
+
     public boolean log;
 
     public int configVersion = 7;
@@ -239,6 +242,8 @@ public class Config {
             this.deletePlayerFile = ConfigHandler.fromJson(obj, "deletePlayerFile", this.deletePlayerFile);
             this.bannedDeletionTime = ConfigHandler.fromJson(obj, "bannedDeletionTime", this.bannedDeletionTime);
             this.offlineProtectActivation = ConfigHandler.fromJson(obj, "offlineProtectActivation", this.offlineProtectActivation);
+            this.dynmapIntegration = ConfigHandler.fromJson(obj, "dynmapIntegration", this.dynmapIntegration);
+            this.bluemapIntegration = ConfigHandler.fromJson(obj, "bluemapIntegration", this.bluemapIntegration);
             this.log = ConfigHandler.fromJson(obj, "enableLogs", this.log);
 
             this.defaultGroups.clear();
@@ -351,6 +356,8 @@ public class Config {
         obj.addProperty("deletePlayerFile", this.deletePlayerFile);
         obj.addProperty("bannedDeletionTime", this.bannedDeletionTime);
         obj.addProperty("offlineProtectActivation", this.offlineProtectActivation);
+        obj.addProperty("dynmapIntegration", this.dynmapIntegration);
+        obj.addProperty("bluemapIntegration", this.bluemapIntegration);
         obj.addProperty("enableLogs", this.log);
 
         JsonObject defPerm = new JsonObject();
