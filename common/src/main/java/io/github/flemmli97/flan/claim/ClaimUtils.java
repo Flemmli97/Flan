@@ -54,11 +54,7 @@ public class ClaimUtils {
     // if expand error is given
     public static void sendExpandError(ServerPlayer player, String key, Object... args) {
         player.displayClientMessage(
-                Component.translatable("flan.expandError")
-                        .append(translatedText(key, args))
-                        .withStyle(ChatFormatting.RED),
-                false
-        );
+                translatedText("flan.expandError", translatedText(key, args)).withStyle(ChatFormatting.RED),false);
     }
 
     public static MutableComponent translatedText(String key, Object... compArgs) {
