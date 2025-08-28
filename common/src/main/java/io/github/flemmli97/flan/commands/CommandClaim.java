@@ -889,122 +889,51 @@ public class CommandClaim {
         return Command.SINGLE_SUCCESS;
     }
 
+
     private static int expandClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ClaimStorage storage = ClaimStorage.get(player.serverLevel());
         ClaimMode mode = PlayerClaimData.get(player).getClaimMode();
-
         int amount = IntegerArgumentType.getInteger(context, "distance");
 
-        Claim claim;
-        if(mode.isSubclaim){
-            //Subclaim mode only use Subclaim
-            Claim mainClaim = storage.getClaimAt(player.blockPosition());
-            if (mainClaim == null) {
-                ClaimUtils.noClaimMessage(player);
-                return 0;
-            }
-            claim = mainClaim.getSubClaim(player.blockPosition());
-            if (claim == null) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.noSubClaim", ChatFormatting.RED), false);
-                return 0;
-             }
-        } else {
-            //if in default claim
-            claim = storage.getClaimAt(player.blockPosition());
-            //if there is no claim
-            if (claim == null) {
-                ClaimUtils.noClaimMessage(player);
-                return 0;
-            }
-        }
+        //is claim parent or subclaim
+        Claim claim = findClaim(player, storage, mode);
+        if (claim == null) return 0;
 
-        // if distance is 0 it should not work and stop
+        //check if we had perm
+        if (!checkExpandPermission(player, claim, mode)) return 0;
+
         if (amount <= 0) {
             ClaimUtils.sendExpandError(player, "flan.invalidDistance");
             return 0;
         }
 
-        Direction facing = player.getDirection(); //saved the facing direction
+        Direction facing = player.getDirection();
 
-        //Adding Subclaims on expand
-        if (claim.isSubclaim()) {
-            if (!ClaimUtils.checkSubclaimPerm(player, claim)) {
-                ClaimUtils.genericNoPermMessage(player).accept(Optional.of(false));
-                return 0;
-            }
-
-            Claim parent = claim.parentClaim();
-            ClaimBox dims = claim.getDimensions(); // definition here for better readable
-
-            //up and down only in 3d
-            if (!mode.is3d && (facing == Direction.UP || facing == Direction.DOWN)) {
-                ClaimUtils.sendExpandError(player,
-                        facing == Direction.UP ? "flan.expandUpDisabled" : "flan.expandDownDisabled");
-                return 0;
-            }
-
-            BlockPos from = calculateExpansionStart(claim, player);
-            BlockPos to = from.relative(facing, amount);
-
-            //dynamical resize
-            int currentX = dims.maxX() - dims.minX();
-            int currentZ = dims.maxZ() - dims.minZ();
-            int currentY = dims.maxY() - dims.minY();
-
-            int newX = currentX;
-            int newZ = currentZ;
-            int newY = currentY;
-
-            switch (facing.getAxis()) {
-                case X -> newX += amount;
-                case Z -> newZ += amount;
-                case Y -> newY += amount;
-            }
-
-            int sizeInBlocks = mode.is3d ? newX * newZ * newY : newX * newZ;
-
-            if (sizeInBlocks > ConfigHandler.CONFIG.maxClaimBlocks) {
-                ClaimUtils.sendExpandError(player, "flan.expandTooLarge");
-                return 0;
-            }
-
-            //if subclaim would be bigger then parent claim
-            if (!parent.getDimensions().contains(to)) {
-                ClaimUtils.sendExpandError(player, "flan.expandBeyondParent");
-                return 0;
-            }
-
-            Set<Claim> conflicts = parent.resizeSubclaim(claim, from, to);
-
-            if (!conflicts.isEmpty()) {
-                ClaimUtils.sendExpandError(player, "flan.expandConflict");
-                return 0;
-            }
-            player.displayClientMessage(ClaimUtils.translatedText("flan.expandSuccess", amount, ChatFormatting.GREEN), false);
-            return Command.SINGLE_SUCCESS;
-        }
-
-        // main claim
-        if (!ClaimUtils.check(player, player.blockPosition(), claim, BuiltinPermission.EDITCLAIM, ClaimUtils.genericNoPermMessage(player))) {
+        //up and down only on 3d
+        if (!mode.is3d && (facing == Direction.UP || facing == Direction.DOWN)) {
+            ClaimUtils.sendExpandError(player,
+                    facing == Direction.UP ? "flan.expandUpDisabled" : "flan.expandDownDisabled");
             return 0;
         }
 
         ClaimBox dims = claim.getDimensions();
         Tuple<BlockPos, BlockPos> corners = calculateCorners(dims, facing, amount);
 
-        //reseizeclaim check maxClaim too large
-        int newWidth = dims.maxX() - dims.minX();
-        int newLength = dims.maxZ() - dims.minZ();
-        int newHeight = dims.maxY() - dims.minY();
+        ClaimBox newBox = new ClaimBox(
+                Math.min(corners.getA().getX(), corners.getB().getX()),
+                Math.min(corners.getA().getY(), corners.getB().getY()),
+                Math.min(corners.getA().getZ(), corners.getB().getZ()),
+                Math.max(corners.getA().getX(), corners.getB().getX()),
+                Math.max(corners.getA().getY(), corners.getB().getY()),
+                Math.max(corners.getA().getZ(), corners.getB().getZ())
+        );
 
-        switch (facing.getAxis()) {
-            case X -> newWidth += amount;
-            case Z -> newLength += amount;
-            case Y -> newHeight += amount;
-        }
+        // math from blocks!
+        int newWidth = newBox.maxX() - newBox.minX() + 1;
+        int newLength = newBox.maxZ() - newBox.minZ() + 1;
+        int newHeight = newBox.maxY() - newBox.minY() + 1;
 
-        //calculate total blocks in claim (area for default and 3D claims)
         int totalBlocks = mode.is3d ? newWidth * newLength * newHeight : newWidth * newLength;
 
         if (totalBlocks > ConfigHandler.CONFIG.maxClaimBlocks) {
@@ -1012,10 +941,22 @@ public class CommandClaim {
             return 0;
         }
 
-        if (!storage.resizeClaim(claim, corners.getA(), corners.getB(), player)) {
+        //check if inherit of parent
+        if (claim.isSubclaim()) {
+            Claim parent = claim.parentClaim();
+            if (parent != null && !parent.getDimensions().contains(newBox)) {
+                ClaimUtils.sendExpandError(player, "flan.expandBeyondParent");
+                return 0;
+            }
+        }
+
+        //do expansion
+        boolean success = performExpansion(player, storage, claim, corners);
+        if (!success) {
             ClaimUtils.sendExpandError(player, "flan.expandFailed");
             return 0;
         }
+
         player.displayClientMessage(ClaimUtils.translatedText("flan.expandSuccess", amount, ChatFormatting.GREEN), false);
         return Command.SINGLE_SUCCESS;
     }
@@ -1046,20 +987,55 @@ public class CommandClaim {
         };
     }
 
-    //help to calculating claim position
-    private static BlockPos calculateExpansionStart(Claim claim, ServerPlayer player) {
-        ClaimBox dims = claim.getDimensions();
-        Direction facing = player.getDirection();
+    private static Claim findClaim(ServerPlayer player, ClaimStorage storage, ClaimMode mode) {
+        if (mode.isSubclaim) {
+            Claim mainClaim = storage.getClaimAt(player.blockPosition());
+            if (mainClaim == null) {
+                ClaimUtils.noClaimMessage(player);
+                return null;
+            }
+            Claim subClaim = mainClaim.getSubClaim(player.blockPosition());
+            if (subClaim == null) {
+                player.displayClientMessage(ClaimUtils.translatedText("flan.noSubClaim", ChatFormatting.RED), false);
+                return null;
+            }
+            return subClaim;
+        } else {
+            Claim claim = storage.getClaimAt(player.blockPosition());
+            if (claim == null) {
+                ClaimUtils.noClaimMessage(player);
+                return null;
+            }
+            return claim;
+        }
+    }
 
-        return switch (facing) {
-            case EAST -> new BlockPos(dims.maxX(), dims.minY(), dims.minZ());
-            case WEST -> new BlockPos(dims.minX(), dims.minY(), dims.minZ());
-            case SOUTH -> new BlockPos(dims.minX(), dims.minY(), dims.maxZ());
-            case NORTH -> new BlockPos(dims.minX(), dims.minY(), dims.minZ());
-            case UP -> new BlockPos(dims.minX(), dims.maxY(), dims.minZ());
-            case DOWN -> new BlockPos(dims.minX(), dims.minY(), dims.minZ());
-            default -> throw new IllegalStateException("Unexpected direction: " + facing);
-        };
+    private static boolean performExpansion(ServerPlayer player, ClaimStorage storage, Claim claim, Tuple<BlockPos, BlockPos> corners) {
+        if (claim.isSubclaim()) {
+            Claim parent = claim.parentClaim();
+            if (parent == null) {
+                return false;
+            }
+            Set<Claim> conflicts = parent.resizeSubclaim(claim, corners.getA(), corners.getB());
+            return conflicts.isEmpty();
+        } else {
+            return storage.resizeClaim(claim, corners.getA(), corners.getB(), player);
+        }
+    }
+
+    private static boolean checkExpandPermission(ServerPlayer player, Claim claim, ClaimMode mode) {
+        if (mode.isSubclaim) {
+            if (!ClaimUtils.checkSubclaimPerm(player, claim)) {
+                player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
+                return false;
+            }
+        } else {
+            if (!claim.canInteract(player, BuiltinPermission.EDITCLAIM, player.blockPosition())) {
+                player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
+                return false;
+            }
+        }
+        return true;
     }
 
     public static int teleport(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

@@ -6,8 +6,13 @@ import net.minecraft.world.phys.AABB;
 public record ClaimBox(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 
     public boolean insideClaim(BlockPos pos) {
-        return this.minX <= pos.getX() && this.maxX >= pos.getX() && this.minZ <= pos.getZ() && this.maxZ >= pos.getZ() && this.minY <= pos.getY()
-                && this.maxY >= pos.getY();
+        return
+                this.minX <= pos.getX() &&
+                this.maxX >= pos.getX() &&
+                this.minZ <= pos.getZ() &&
+                this.maxZ >= pos.getZ() &&
+                this.minY <= pos.getY() &&
+                this.maxY >= pos.getY();
     }
 
     public boolean intersects(ClaimBox other) {
@@ -22,13 +27,6 @@ public record ClaimBox(int minX, int minY, int minZ, int maxX, int maxY, int max
         return this.minX < X && this.maxX > x && this.minY < Y && this.maxY > y && this.minZ < Z && this.maxZ > z;
     }
 
-    //help to get claims in other claims
-    public boolean contains(BlockPos pos) {
-        return pos.getX() >= minX() && pos.getX() <= maxX() &&
-                pos.getY() >= minY() && pos.getY() <= maxY() &&
-                pos.getZ() >= minZ() && pos.getZ() <= maxZ();
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == this)
@@ -36,6 +34,16 @@ public record ClaimBox(int minX, int minY, int minZ, int maxX, int maxY, int max
         if (!(obj instanceof ClaimBox(int x1, int y1, int z1, int x2, int y2, int z2)))
             return false;
         return this.minX == x1 && this.minY == y1 && this.minZ == z1
-                && this.maxX == x1 && this.maxY == y1 && this.maxZ == z1;
+                && this.maxX == x2 && this.maxY == y2 && this.maxZ == z2;
+    }
+
+    public boolean contains(ClaimBox other) {
+        return
+                this.minX <= other.minX &&
+                this.maxX >= other.maxX &&
+                this.minY <= other.minY &&
+                this.maxY >= other.maxY &&
+                this.minZ <= other.minZ &&
+                this.maxZ >= other.maxZ;
     }
 }

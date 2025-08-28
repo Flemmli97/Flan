@@ -429,38 +429,23 @@ public class Claim implements IPermissionContainer {
     }
 
     public Set<Claim> tryCreateSubClaim(BlockPos pos1, BlockPos pos2, boolean is3d) {
-        // No sub sub claims
-        if (this.parentClaim() != null) {
+        //No sub sub claims
+        if (this.parentClaim() != null)
             return Set.of(this.parentClaim());
-        }
-
         Claim sub = new Claim(pos1, pos2, this.owner, this.level);
-
-        if (is3d) {
+        if (is3d)
             sub.withHeight(Math.max(pos1.getY(), pos2.getY()));
-        }
-
-        //temp parent dimensional math
-        sub.parent = this.claimID;
-        sub.parentClaim = this;
-
-        ClaimBox parentBox = this.getDimensions();
-        ClaimBox subBox = sub.getDimensions();
-        if (subBox.minY() < parentBox.minY() || subBox.maxY() > parentBox.maxY()) {
-            sub.parent = null;
-            sub.parentClaim = null;
-            return Set.of(this);
-        }
         sub.setClaimID(this.generateUUID());
         Set<Claim> conflicts = new HashSet<>();
-        for (Claim other : this.subClaims) {
+        for (Claim other : this.subClaims)
             if (sub.intersects(other)) {
                 conflicts.add(other);
             }
-        }
         if (conflicts.isEmpty()) {
+            sub.parent = this.claimID;
+            sub.parentClaim = this;
             this.subClaims.add(sub);
-            // copy parent permissions
+            //Copy parent claims perms
             sub.permissions.clear();
             sub.permissions.putAll(this.permissions);
             sub.playersGroups.clear();
@@ -468,9 +453,6 @@ public class Claim implements IPermissionContainer {
             sub.potions.clear();
             sub.potions.putAll(this.potions);
             this.setDirty(true);
-        } else {
-            sub.parent = null;
-            sub.parentClaim = null;
         }
         return conflicts;
     }
@@ -502,43 +484,19 @@ public class Claim implements IPermissionContainer {
 
     public Set<Claim> resizeSubclaim(Claim claim, BlockPos from, BlockPos to) {
         ClaimBox dims = claim.getDimensions();
-
-        BlockPos opposite = new BlockPos(
-                (from.getX() == dims.minX()) ? dims.maxX() : dims.minX(),
-                (from.getY() == dims.minY()) ? dims.maxY() : dims.minY(),
-                (from.getZ() == dims.minZ()) ? dims.maxZ() : dims.minZ()
-        );
-
+        int minY = claim.is3d() && dims.minY() == from.getY() ? dims.maxY() : dims.minY();
+        BlockPos opposite = new BlockPos(dims.minX() == from.getX() ? dims.maxX() : dims.minX(),
+                minY, dims.minZ() == from.getZ() ? dims.maxZ() : dims.minZ());
         Claim newClaim = new Claim(opposite, to, claim.claimID, this.level);
-
         if (claim.is3d()) {
-            //resize in 3d
-            newClaim.minY = Math.min(opposite.getY(), to.getY());
-            newClaim.maxY = Math.max(opposite.getY(), to.getY());
-        } else {
-            //standard resize
-            newClaim.minY = claim.minY;
-            newClaim.maxY = null;
+            newClaim.withHeight(Math.max(minY, to.getY()));
         }
-
         Set<Claim> conflicts = new HashSet<>();
         for (Claim other : this.subClaims)
-            if (!claim.equals(other) && newClaim.getDimensions().intersects(other.getDimensions())) {
+            if (!claim.equals(other) && newClaim.intersects(other))
                 conflicts.add(other);
-            }
-
         if (conflicts.isEmpty()) {
-            // refresh new subclaims
-            claim.minX = Math.min(opposite.getX(), to.getX());
-            claim.maxX = Math.max(opposite.getX(), to.getX());
-            claim.minZ = Math.min(opposite.getZ(), to.getZ());
-            claim.maxZ = Math.max(opposite.getZ(), to.getZ());
-            if (claim.is3d()) {
-                claim.minY = newClaim.minY;
-                claim.maxY = newClaim.maxY;
-            }
-
-            claim.setDirty(true);
+            claim.copySizes(newClaim);
             this.setDirty(true);
         }
         return conflicts;
@@ -653,7 +611,7 @@ public class Claim implements IPermissionContainer {
     }
 
     public boolean setHomePos(BlockPos homePos) {
-        if (this.insideClaim(homePos)) {
+        if (this.getDimensions().insideClaim(homePos)) {
             this.homePos = homePos;
             this.setDirty(true);
             return true;

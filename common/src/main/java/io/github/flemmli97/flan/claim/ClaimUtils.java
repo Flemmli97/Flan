@@ -31,10 +31,10 @@ public class ClaimUtils {
         return hasPerm;
     }
 
-    //check if Claim or Subclaim at positions
+    //only for main claims!!
     public static Claim checkReturn(ServerPlayer player, ResourceLocation perm, Consumer<Optional<Boolean>> cons) {
         BlockPos pos = player.blockPosition();
-        Claim claim = getClaimOrSubclaimAt(ClaimStorage.get(player.serverLevel()), pos);
+        Claim claim = ClaimStorage.get(player.serverLevel()).getClaimAt(pos);
         return check(player, pos, claim, perm, cons) ? claim : null;
     }
 
@@ -67,7 +67,7 @@ public class ClaimUtils {
         return parent != null && parent.canInteract(player, BuiltinPermission.EDITCLAIM, player.blockPosition());
     }
 
-    //check if claim or subclaim
+    //check if claim or subclaim (yet not in use but could in future usable)
     public static Claim getClaimOrSubclaimAt(ClaimStorage storage, BlockPos pos) {
         Claim claim = storage.getClaimAt(pos);
 
