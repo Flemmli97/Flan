@@ -898,7 +898,10 @@ public class CommandClaim {
 
         //is claim parent or subclaim
         Claim claim = findClaim(player, storage, mode);
-        if (claim == null) return 0;
+        if (claim == null) {
+            player.displayClientMessage(Component.translatable("flan.noClaim").withStyle(ChatFormatting.RED), false);
+            return 0;
+        }
 
         //check if we had perm
         if (!checkExpandPermission(player, claim, mode)) return 0;
@@ -934,19 +937,48 @@ public class CommandClaim {
         int newLength = newBox.maxZ() - newBox.minZ() + 1;
         int newHeight = newBox.maxY() - newBox.minY() + 1;
 
-        int totalBlocks = mode.is3d ? newWidth * newLength * newHeight : newWidth * newLength;
+        // math for blocks if enough
+        int currentBlocks = claim.getPlane();
+        int newBlocks = mode.is3d ? newWidth * newLength * newHeight : newWidth * newLength;
+        int additionalBlocks = newBlocks - currentBlocks;
 
-        if (totalBlocks > ConfigHandler.CONFIG.maxClaimBlocks) {
-            ClaimUtils.sendExpandError(player, "flan.expandTooLarge");
-            return 0;
+        // only main claim, no claim blocks for subclaim
+        if (!claim.isSubclaim() && additionalBlocks > 0) {
+            if (!PlayerClaimData.get(player).canUseClaimBlocks(additionalBlocks)) {
+                player.displayClientMessage(Component.translatable("flan.notEnoughBlocks"), false);
+                return 0;
+            }
         }
 
         //check if inherit of parent
         if (claim.isSubclaim()) {
             Claim parent = claim.parentClaim();
-            if (parent != null && !parent.getDimensions().contains(newBox)) {
-                ClaimUtils.sendExpandError(player, "flan.expandBeyondParent");
-                return 0;
+            if (parent != null) {
+                ClaimBox parentBox = parent.getDimensions();
+
+                // should be adjust to parent
+                int adjustedMinX = Math.max(newBox.minX(), parentBox.minX());
+                int adjustedMinY = Math.max(newBox.minY(), parentBox.minY());
+                int adjustedMinZ = Math.max(newBox.minZ(), parentBox.minZ());
+                int adjustedMaxX = Math.min(newBox.maxX(), parentBox.maxX());
+                int adjustedMaxY = Math.min(newBox.maxY(), parentBox.maxY());
+                int adjustedMaxZ = Math.min(newBox.maxZ(), parentBox.maxZ());
+
+                // is the expand inherit of parent?
+                if (adjustedMinX >= adjustedMaxX || adjustedMinY >= adjustedMaxY || adjustedMinZ >= adjustedMaxZ) {
+                    ClaimUtils.sendExpandError(player, "flan.expandBeyondParent");
+                    return 0;
+                }
+
+                // new box with right borders
+                newBox = new ClaimBox(adjustedMinX, adjustedMinY, adjustedMinZ,
+                        adjustedMaxX, adjustedMaxY, adjustedMaxZ);
+
+                // better to give the adjusted values for expand
+                corners = new Tuple<>(
+                        new BlockPos(adjustedMinX, adjustedMinY, adjustedMinZ),
+                        new BlockPos(adjustedMaxX, adjustedMaxY, adjustedMaxZ)
+                );
             }
         }
 
