@@ -49,6 +49,10 @@ public class ClaimUtils {
         });
     }
 
+    public static void sendExpandError(ServerPlayer player, String key, Object... args) {
+        player.displayClientMessage(translatedText("flan.expandError", translatedText(key, args)).withStyle(ChatFormatting.RED), false);
+    }
+
     public static MutableComponent translatedText(String key, Object... compArgs) {
         List<ChatFormatting> formattings = new ArrayList<>();
         List<Object> args = new ArrayList<>();
