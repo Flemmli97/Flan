@@ -258,29 +258,16 @@ public class Claim implements IPermissionContainer {
     }
 
     public ClaimBox getDimensions() {
-        boolean is3d = this.is3d();
-        int minY;
-        int maxY;
-
-        if (is3d) {
-            minY = this.minY;
-            maxY = this.maxY;
-        } else {
+        int minY = this.minY;
+        int maxY = this.is3d() ? this.maxY : this.getLevel().getMaxBuildHeight() + 10;
+        if (!this.is3d()) {
             if (ConfigHandler.CONFIG.subClaimsInheritParentDepth && this.isSubclaim()) {
-                // inherit parent depth
-                Claim rootParent = this;
-                while (rootParent.parentClaim() != null) {
-                    rootParent = rootParent.parentClaim();
-                }
-                minY = rootParent.minY;
+                minY = this.parentClaim().minY;
             } else {
-                minY = ConfigHandler.CONFIG.defaultClaimDepth != -1 ? this.minY
-                        : this.getLevel().getMinBuildHeight() - 10;
+                minY = ConfigHandler.CONFIG.defaultClaimDepth != -1 ? this.minY : this.getLevel().getMinBuildHeight() - 10;
             }
-            maxY = this.getLevel().getMaxBuildHeight() + 10;
         }
-
-        return new ClaimBox(this.minX, minY, this.minZ, this.maxX, maxY, this.maxZ);
+        return new ClaimBox(this.minX, minY, this.minZ, this.maxX, Math.max(minY + 1, maxY), this.maxZ);
     }
 
     public boolean is3d() {
@@ -611,7 +598,7 @@ public class Claim implements IPermissionContainer {
     }
 
     public boolean setHomePos(BlockPos homePos) {
-        if (this.getDimensions().insideClaim(homePos)) {
+        if (this.insideClaim(homePos)) {
             this.homePos = homePos;
             this.setDirty(true);
             return true;

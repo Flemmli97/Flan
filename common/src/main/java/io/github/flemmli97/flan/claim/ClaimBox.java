@@ -6,13 +6,9 @@ import net.minecraft.world.phys.AABB;
 public record ClaimBox(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 
     public boolean insideClaim(BlockPos pos) {
-        return
-                this.minX <= pos.getX() &&
-                this.maxX >= pos.getX() &&
-                this.minZ <= pos.getZ() &&
-                this.maxZ >= pos.getZ() &&
-                this.minY <= pos.getY() &&
-                this.maxY >= pos.getY();
+        return this.minX <= pos.getX() && this.maxX >= pos.getX()
+                && this.minZ <= pos.getZ() && this.maxZ >= pos.getZ()
+                && this.minY <= pos.getY() && this.maxY >= pos.getY();
     }
 
     public boolean intersects(ClaimBox other) {
@@ -38,12 +34,8 @@ public record ClaimBox(int minX, int minY, int minZ, int maxX, int maxY, int max
     }
 
     public boolean contains(ClaimBox other) {
-        return
-                this.minX <= other.minX &&
-                this.maxX >= other.maxX &&
-                this.minY <= other.minY &&
-                this.maxY >= other.maxY &&
-                this.minZ <= other.minZ &&
-                this.maxZ >= other.maxZ;
+        return this.minX <= other.minX && this.maxX >= other.maxX
+                && this.minY <= other.minY && this.maxY >= other.maxY
+                && this.minZ <= other.minZ && this.maxZ >= other.maxZ;
     }
 }

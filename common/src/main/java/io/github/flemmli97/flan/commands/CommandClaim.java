@@ -58,10 +58,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -889,157 +889,78 @@ public class CommandClaim {
         return Command.SINGLE_SUCCESS;
     }
 
-
     private static int expandClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ClaimStorage storage = ClaimStorage.get(player.serverLevel());
         ClaimMode mode = PlayerClaimData.get(player).getClaimMode();
         int amount = IntegerArgumentType.getInteger(context, "distance");
-
-        //is claim parent or subclaim
         Claim claim = findClaim(player, storage, mode);
         if (claim == null) {
-            player.displayClientMessage(Component.translatable("flan.noClaim").withStyle(ChatFormatting.RED), false);
             return 0;
         }
-
-        //check if we had perm
-        if (!checkExpandPermission(player, claim, mode)) return 0;
-
+        if (!checkExpandPermission(player, claim, mode)) {
+            return 0;
+        }
         if (amount <= 0) {
             ClaimUtils.sendExpandError(player, "flan.invalidDistance");
             return 0;
         }
-
         Direction facing = player.getDirection();
-
-        //up and down only on 3d
-        if (!mode.is3d && (facing == Direction.UP || facing == Direction.DOWN)) {
-            ClaimUtils.sendExpandError(player,
-                    facing == Direction.UP ? "flan.expandUpDisabled" : "flan.expandDownDisabled");
+        if ((!claim.is3d() || !mode.is3d) && (facing == Direction.UP || facing == Direction.DOWN)) {
+            ClaimUtils.sendExpandError(player, facing == Direction.UP ? "flan.expandUpDisabled" : "flan.expandDownDisabled");
             return 0;
         }
-
         ClaimBox dims = claim.getDimensions();
-        Tuple<BlockPos, BlockPos> corners = calculateCorners(dims, facing, amount);
-
-        ClaimBox newBox = new ClaimBox(
-                Math.min(corners.getA().getX(), corners.getB().getX()),
-                Math.min(corners.getA().getY(), corners.getB().getY()),
-                Math.min(corners.getA().getZ(), corners.getB().getZ()),
-                Math.max(corners.getA().getX(), corners.getB().getX()),
-                Math.max(corners.getA().getY(), corners.getB().getY()),
-                Math.max(corners.getA().getZ(), corners.getB().getZ())
-        );
-
-        // math from blocks!
-        int newWidth = newBox.maxX() - newBox.minX() + 1;
-        int newLength = newBox.maxZ() - newBox.minZ() + 1;
-        int newHeight = newBox.maxY() - newBox.minY() + 1;
-
-        // math for blocks if enough
-        int currentBlocks = claim.getPlane();
-        int newBlocks = mode.is3d ? newWidth * newLength * newHeight : newWidth * newLength;
-        int additionalBlocks = newBlocks - currentBlocks;
-
-        // only main claim, no claim blocks for subclaim
-        if (!claim.isSubclaim() && additionalBlocks > 0) {
-            if (!PlayerClaimData.get(player).canUseClaimBlocks(additionalBlocks)) {
-                player.displayClientMessage(Component.translatable("flan.notEnoughBlocks"), false);
-                return 0;
-            }
-        }
-
-        //check if inherit of parent
-        if (claim.isSubclaim()) {
-            Claim parent = claim.parentClaim();
-            if (parent != null) {
-                ClaimBox parentBox = parent.getDimensions();
-
-                // should be adjust to parent
-                int adjustedMinX = Math.max(newBox.minX(), parentBox.minX());
-                int adjustedMinY = Math.max(newBox.minY(), parentBox.minY());
-                int adjustedMinZ = Math.max(newBox.minZ(), parentBox.minZ());
-                int adjustedMaxX = Math.min(newBox.maxX(), parentBox.maxX());
-                int adjustedMaxY = Math.min(newBox.maxY(), parentBox.maxY());
-                int adjustedMaxZ = Math.min(newBox.maxZ(), parentBox.maxZ());
-
-                // is the expand inherit of parent?
-                if (adjustedMinX >= adjustedMaxX || adjustedMinY >= adjustedMaxY || adjustedMinZ >= adjustedMaxZ) {
-                    ClaimUtils.sendExpandError(player, "flan.expandBeyondParent");
-                    return 0;
-                }
-
-                // new box with right borders
-                newBox = new ClaimBox(adjustedMinX, adjustedMinY, adjustedMinZ,
-                        adjustedMaxX, adjustedMaxY, adjustedMaxZ);
-
-                // better to give the adjusted values for expand
-                corners = new Tuple<>(
-                        new BlockPos(adjustedMinX, adjustedMinY, adjustedMinZ),
-                        new BlockPos(adjustedMaxX, adjustedMaxY, adjustedMaxZ)
-                );
-            }
-        }
-
-        //do expansion
+        Tuple<BlockPos, BlockPos> corners = calculateCorners(dims, facing, amount, claim.parentClaim() != null ? claim.parentClaim().getDimensions() : null);
         boolean success = performExpansion(player, storage, claim, corners);
         if (!success) {
             ClaimUtils.sendExpandError(player, "flan.expandFailed");
             return 0;
         }
-
         player.displayClientMessage(ClaimUtils.translatedText("flan.expandSuccess", amount, ChatFormatting.GREEN), false);
         return Command.SINGLE_SUCCESS;
     }
 
     //change expand tuple to own methode for more usability
-    private static Tuple<BlockPos, BlockPos> calculateCorners(ClaimBox dims, Direction facing, int amount) {
+    private static Tuple<BlockPos, BlockPos> calculateCorners(ClaimBox dims, Direction facing, int amount, ClaimBox restriction) {
         return switch (facing) {
             case SOUTH -> new Tuple<>(
                     new BlockPos(dims.maxX(), dims.minY(), dims.maxZ()),
-                    new BlockPos(dims.maxX(), dims.maxY(), dims.maxZ() + amount));
+                    new BlockPos(dims.maxX(), dims.maxY(), restriction != null ? Math.min(dims.maxZ() + amount, restriction.maxZ()) : dims.maxZ() + amount));
             case EAST -> new Tuple<>(
                     new BlockPos(dims.maxX(), dims.minY(), dims.maxZ()),
-                    new BlockPos(dims.maxX() + amount, dims.maxY(), dims.maxZ()));
+                    new BlockPos(restriction != null ? Math.min(dims.maxX() + amount, restriction.maxX()) : dims.maxX() + amount, dims.maxY(), dims.maxZ()));
             case NORTH -> new Tuple<>(
                     new BlockPos(dims.minX(), dims.minY(), dims.minZ()),
-                    new BlockPos(dims.minX(), dims.maxY(), dims.minZ() - amount));
+                    new BlockPos(dims.minX(), dims.maxY(), restriction != null ? Math.max(dims.minZ() - amount, restriction.minZ()) : dims.minZ() - amount));
             case WEST -> new Tuple<>(
                     new BlockPos(dims.minX(), dims.minY(), dims.minZ()),
-                    new BlockPos(dims.minX() - amount, dims.maxY(), dims.minZ()));
+                    new BlockPos(restriction != null ? Math.max(dims.minX() - amount, restriction.minX()) : dims.minX() - amount, dims.maxY(), dims.minZ()));
             //adding up and down for diagonical logic in future
             case UP -> new Tuple<>(
                     new BlockPos(dims.minX(), dims.maxY(), dims.minZ()),
-                    new BlockPos(dims.maxX(), dims.maxY() + amount, dims.maxZ()));
+                    new BlockPos(dims.maxX(), restriction != null ? Math.min(dims.maxY() + amount, restriction.maxY()) : dims.maxY() + amount, dims.maxZ()));
             case DOWN -> new Tuple<>(
                     new BlockPos(dims.minX(), dims.minY(), dims.minZ()),
-                    new BlockPos(dims.maxX(), dims.minY() - amount, dims.maxZ()));
-            default -> throw new IllegalStateException("Unexpected value: " + facing);
+                    new BlockPos(dims.maxX(), restriction != null ? Math.max(dims.minY() - amount, restriction.minY()) : dims.minY() - amount, dims.maxZ()));
         };
     }
 
     private static Claim findClaim(ServerPlayer player, ClaimStorage storage, ClaimMode mode) {
+        Claim claim = storage.getClaimAt(player.blockPosition());
+        if (claim == null) {
+            ClaimUtils.noClaimMessage(player);
+            return null;
+        }
         if (mode.isSubclaim) {
-            Claim mainClaim = storage.getClaimAt(player.blockPosition());
-            if (mainClaim == null) {
-                ClaimUtils.noClaimMessage(player);
-                return null;
-            }
-            Claim subClaim = mainClaim.getSubClaim(player.blockPosition());
+            Claim subClaim = claim.getSubClaim(player.blockPosition());
             if (subClaim == null) {
                 player.displayClientMessage(ClaimUtils.translatedText("flan.noSubClaim", ChatFormatting.RED), false);
                 return null;
             }
             return subClaim;
-        } else {
-            Claim claim = storage.getClaimAt(player.blockPosition());
-            if (claim == null) {
-                ClaimUtils.noClaimMessage(player);
-                return null;
-            }
-            return claim;
         }
+        return claim;
     }
 
     private static boolean performExpansion(ServerPlayer player, ClaimStorage storage, Claim claim, Tuple<BlockPos, BlockPos> corners) {

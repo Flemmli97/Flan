@@ -258,7 +258,7 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.expandSuccess", "Claim successfully expanded by <amount> blocks!");
         this.add("flan.expandUpDisabled", "Vertical expansion (upwards) is disabled!");
         this.add("flan.expandDownDisabled", "Vertical expansion (downwards) is disabled!");
-        this.add("flan.expandError", "An error occurred during expansion.");
+        this.add("flan.expandError", "An error occurred during expansion: %s");
         this.add("flan.command.menu", "menu", "Opens the claim menu at the players position");
         this.add("flan.command.setHome", "setHome", "Standing in a claim with sufficient permission sets that claims home to the players position");
         this.add("flan.command.trapped", "trapped", "If in a claim not owned by the player attempts to teleport the player out of it after 5 seconds.");

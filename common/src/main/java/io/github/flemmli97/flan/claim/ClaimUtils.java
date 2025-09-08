@@ -11,7 +11,6 @@ import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,6 @@ public class ClaimUtils {
         return hasPerm;
     }
 
-    //only for main claims!!
     public static Claim checkReturn(ServerPlayer player, ResourceLocation perm, Consumer<Optional<Boolean>> cons) {
         BlockPos pos = player.blockPosition();
         Claim claim = ClaimStorage.get(player.serverLevel()).getClaimAt(pos);
@@ -51,10 +49,8 @@ public class ClaimUtils {
         });
     }
 
-    // if expand error is given
     public static void sendExpandError(ServerPlayer player, String key, Object... args) {
-        player.displayClientMessage(
-                translatedText("flan.expandError", translatedText(key, args)).withStyle(ChatFormatting.RED),false);
+        player.displayClientMessage(translatedText("flan.expandError", translatedText(key, args)).withStyle(ChatFormatting.RED), false);
     }
 
     public static MutableComponent translatedText(String key, Object... compArgs) {
