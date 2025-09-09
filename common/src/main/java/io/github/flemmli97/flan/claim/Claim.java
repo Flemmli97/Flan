@@ -294,7 +294,7 @@ public class Claim implements IPermissionContainer {
     }
 
     /**
-     * Check if a player in a certain position owns a defined permission.
+     * Check if a player, in a certain position, has a defined permission.
      *
      * @param player  The player doing the action. Can be null
      * @param perm    Permission that is going to be checked
@@ -380,7 +380,7 @@ public class Claim implements IPermissionContainer {
     }
 
     /**
-     * Can a player ignore a specified permission.
+     * Can a permission be ignored for a specific player.
      *
      * @param player Player that is going to be checked.
      * @param perm   Permission that is going to be checked.
