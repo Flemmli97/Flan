@@ -49,16 +49,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class Claim implements IPermissionContainer {
 
@@ -302,6 +293,15 @@ public class Claim implements IPermissionContainer {
         return this.removed;
     }
 
+    /**
+     * Check if a player in a certain position owns a defined permission.
+     *
+     * @param player  The player doing the action. Can be null
+     * @param perm    Permission that is going to be checked
+     * @param pos     Block position of said player
+     * @param message Should it send a message to the player that they do not have that permission.
+     * @return Does the player have that permission. TRUE if yes, FALSE if no.
+     */
     @Override
     public boolean canInteract(ServerPlayer player, ResourceLocation perm, BlockPos pos, boolean message) {
         boolean realPlayer = player != null && player.getClass().equals(ServerPlayer.class);
@@ -322,8 +322,10 @@ public class Claim implements IPermissionContainer {
         if (!this.isAdminClaim()) {
             Config.GlobalType global = ConfigHandler.CONFIG.getGlobal(this.level, perm);
             if (!global.canModify()) {
-                if (global.getValue() || (player != null && this.playerBypassesPermission(player, perm)))
+
+                if (global.getValue() || (player != null && this.playerBypassesPermission(player, perm))) {
                     return true;
+                }
                 if (message)
                     player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
                 if (perm.equals(BuiltinPermission.FAKEPLAYER))
@@ -377,14 +379,29 @@ public class Claim implements IPermissionContainer {
         return false;
     }
 
+    /**
+     * Can a player ignore a specified permission.
+     *
+     * @param player Player that is going to be checked.
+     * @param perm   Permission that is going to be checked.
+     * @return TRUE if the player can ignore that permission, FALSE if otherwise
+     */
     private boolean playerBypassesPermission(ServerPlayer player, ResourceLocation perm) {
         if (player == null)
             return true;
         ClaimPermission permission = PermissionManager.getInstance().get(perm);
-        if (permission != null && permission.requireExplicitSet)
+        if (permission == null)
+            return false; //Extracted this so that we don't need to check for null twice. -lukeonuke 09/09/2025
+
+        //Nobody bypasses unmodifiable (ALLTRUE/ALLFALSE) global permissions. #415
+        Config.GlobalType globalType = ConfigHandler.CONFIG.getGlobal(player.level(), perm);
+        if (!globalType.canModify()) return false;
+
+        if (permission.requireExplicitSet)
             return false;
-        if (player.getUUID().equals(this.owner))
+        if (player.getUUID().equals(this.owner)) {
             return true;
+        }
         if (PlayerClaimData.get(player).isAdminIgnoreClaim())
             return !this.isAdminClaim() || PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.ADMIN_BYPASS, true);
         return this.isAdminClaim() && player.hasPermissions(2);
@@ -398,10 +415,12 @@ public class Claim implements IPermissionContainer {
     }
 
     private boolean hasPerm(ResourceLocation perm) {
-        if (this.parentClaim() == null)
+        if (this.parentClaim() == null) {
             return this.permEnabled(perm) == 1;
-        if (this.permEnabled(perm) == -1)
+        }
+        if (this.permEnabled(perm) == -1) {
             return this.parentClaim().permEnabled(perm) == 1;
+        }
         return this.permEnabled(perm) == 1;
     }
 
