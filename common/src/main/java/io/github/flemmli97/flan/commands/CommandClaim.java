@@ -1030,7 +1030,7 @@ public class CommandClaim {
     public static int addClaimListEntries(CommandContext<CommandSourceStack> context, CustomInteractListScreenHandler.Type type) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         PlayerClaimData data = PlayerClaimData.get(player);
-        Claim rootClaim = ClaimUtils.checkReturn(player, BuiltinPermission.CLAIMMESSAGE, ClaimUtils.genericNoPermMessage(player));
+        Claim rootClaim = ClaimUtils.checkReturn(player, BuiltinPermission.EDITCLAIM, ClaimUtils.genericNoPermMessage(player));
         if (rootClaim == null)
             return 0;
         Claim claim = data.getClaimMode().isSubclaim ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
@@ -1052,7 +1052,7 @@ public class CommandClaim {
     public static int removeClaimListEntries(CommandContext<CommandSourceStack> context, CustomInteractListScreenHandler.Type type) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         PlayerClaimData data = PlayerClaimData.get(player);
-        Claim rootClaim = ClaimUtils.checkReturn(player, BuiltinPermission.CLAIMMESSAGE, ClaimUtils.genericNoPermMessage(player));
+        Claim rootClaim = ClaimUtils.checkReturn(player, BuiltinPermission.EDITCLAIM, ClaimUtils.genericNoPermMessage(player));
         if (rootClaim == null)
             return 0;
         Claim claim = data.getClaimMode().isSubclaim ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
