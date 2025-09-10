@@ -71,7 +71,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 case 5 -> {
                     ItemStack stack = ServerScreenHelper.createStack(Items.OAK_SIGN,
                             ServerScreenHelper.coloredGuiText("flan.screenMenuClaimText", ChatFormatting.GOLD));
-                    if (!this.hasPerm(this.data, this.player, BuiltinPermission.EDITCLAIM))
+                    if (!this.hasPerm(this.data, this.player, BuiltinPermission.CLAIMMESSAGE))
                         ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText("flan.screenNoPerm", ChatFormatting.DARK_RED));
                     this.slots.get(i).set(stack);
                 }
