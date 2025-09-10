@@ -53,7 +53,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
         if (inst != null) {
             if (flag && !inst.hasModifier(Flan.CLAIM_FLIGHT_ID)) {
                 inst.addTransientModifier(new AttributeModifier(Flan.CLAIM_FLIGHT_ID, 1, AttributeModifier.Operation.ADD_VALUE));
-            } else if (flag && inst.hasModifier(Flan.CLAIM_FLIGHT_ID)) {
+            } else if (!flag && inst.hasModifier(Flan.CLAIM_FLIGHT_ID)) {
                 inst.removeModifier(Flan.CLAIM_FLIGHT_ID);
             }
         }
