@@ -1,8 +1,10 @@
 {
   "default_value": false,
   "global": false,
+  "global_default_value": false,
   "gui_item": {
     "id": "minecraft:cooked_beef"
   },
-  "order": 48
+  "order": 48,
+  "require_explicit": true
 }
