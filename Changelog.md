@@ -1,6 +1,7 @@
 Flan 1.11.15
 ================
 - Add `de_de` translation
+- Add block place allow list [@SaloEater](https://github.com/SaloEater)
 - Fix subclaims not synced with parent height
 - Fix player in groups always displayed as the owner
 - Fix global config ignored
