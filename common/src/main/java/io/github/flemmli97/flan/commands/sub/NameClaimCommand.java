@@ -32,7 +32,7 @@ public class NameClaimCommand {
             nameUsed = claim.getAllSubclaims()
                     .stream().map(Claim::getClaimName).anyMatch(name -> name.equals(StringArgumentType.getString(context, "name")));
         } else {
-            nameUsed = ClaimStorage.get(player.serverLevel()).allClaimsFromPlayer(claim.getOwner())
+            nameUsed = ClaimStorage.get(context.getSource().getLevel()).allClaimsFromPlayer(claim.getOwner())
                     .stream().map(Claim::getClaimName).anyMatch(name -> name.equals(StringArgumentType.getString(context, "name")));
         }
         if (!nameUsed) {

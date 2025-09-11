@@ -39,7 +39,7 @@ public class DeleteClaimCommand {
 
     private static int deleteClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(context.getSource().getLevel());
         Claim claim = CommandClaim.fromContext(context);
         boolean check = CommandClaim.check(player, player.blockPosition(), claim, BuiltinPermission.EDITCLAIM, b -> {
             if (b.isEmpty())
@@ -49,7 +49,7 @@ public class DeleteClaimCommand {
         });
         if (!check)
             return 0;
-        if (!storage.deleteClaim(claim, true, PlayerClaimData.get(player).getClaimMode(), player.serverLevel())) {
+        if (!storage.deleteClaim(claim, true, PlayerClaimData.get(player).getClaimMode(), context.getSource().getLevel())) {
             context.getSource().sendFailure(ClaimUtils.translatedText("flan.deleteSubClaimError", ChatFormatting.DARK_RED));
             return 0;
         } else {
@@ -64,7 +64,7 @@ public class DeleteClaimCommand {
         data.deferCommand(new PendingCommand(context, () -> {
             for (ServerLevel level : context.getSource().getServer().getAllLevels()) {
                 ClaimStorage storage = ClaimStorage.get(level);
-                storage.allClaimsFromPlayer(player.getUUID()).forEach((claim) -> storage.deleteClaim(claim, true, data.getClaimMode(), player.serverLevel()));
+                storage.allClaimsFromPlayer(player.getUUID()).forEach((claim) -> storage.deleteClaim(claim, true, data.getClaimMode(), level));
             }
             context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.deleteAllClaim", ChatFormatting.GOLD), false);
             return Command.SINGLE_SUCCESS;
