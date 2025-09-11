@@ -8,7 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimUtils;
-import io.github.flemmli97.flan.player.PlayerClaimData;
+import io.github.flemmli97.flan.commands.CommandClaim;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -43,11 +43,7 @@ public class ClaimMessageCommand {
             ((MutableComponent) text).setStyle(style);
         }
         ServerPlayer player = context.getSource().getPlayerOrException();
-        PlayerClaimData data = PlayerClaimData.get(player);
-        Claim rootClaim = ClaimUtils.checkReturn(player, BuiltinPermission.CLAIMMESSAGE, ClaimUtils.genericNoPermMessage(player));
-        if (rootClaim == null)
-            return 0;
-        Claim claim = data.getClaimMode().isSubclaim ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
+        Claim claim = CommandClaim.getClaimFromMode(context, player, BuiltinPermission.CLAIMMESSAGE);
         if (claim == null)
             return 0;
         boolean sub = StringArgumentType.getString(context, "title").equals("subtitle");

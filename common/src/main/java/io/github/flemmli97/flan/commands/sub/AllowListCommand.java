@@ -11,9 +11,9 @@ import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
+import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.commands.CommandHelpers;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
-import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -51,11 +51,7 @@ public class AllowListCommand {
 
     private static int addClaimListEntries(CommandContext<CommandSourceStack> context, ClaimAllowListKey<?> key) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        PlayerClaimData data = PlayerClaimData.get(player);
-        Claim rootClaim = ClaimUtils.checkReturn(player, BuiltinPermission.CLAIMMESSAGE, ClaimUtils.genericNoPermMessage(player));
-        if (rootClaim == null)
-            return 0;
-        Claim claim = data.getClaimMode().isSubclaim ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
+        Claim claim = CommandClaim.getClaimFromMode(context, player, BuiltinPermission.EDITCLAIM);
         if (claim == null)
             return 0;
         String result = addClaimListEntry(context, key, claim);
@@ -66,11 +62,7 @@ public class AllowListCommand {
 
     private static int removeClaimListEntries(CommandContext<CommandSourceStack> context, ClaimAllowListKey<?> key) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        PlayerClaimData data = PlayerClaimData.get(player);
-        Claim rootClaim = ClaimUtils.checkReturn(player, BuiltinPermission.CLAIMMESSAGE, ClaimUtils.genericNoPermMessage(player));
-        if (rootClaim == null)
-            return 0;
-        Claim claim = data.getClaimMode().isSubclaim ? rootClaim.getSubClaim(player.blockPosition()) : rootClaim;
+        Claim claim = CommandClaim.getClaimFromMode(context, player, BuiltinPermission.EDITCLAIM);
         if (claim == null)
             return 0;
         String value = context.getArgument("entry", ResourceOrTagKeyArgument.Result.class).asPrintable();

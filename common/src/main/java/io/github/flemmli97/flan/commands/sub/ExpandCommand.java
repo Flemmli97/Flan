@@ -35,30 +35,30 @@ public class ExpandCommand {
         ClaimStorage storage = ClaimStorage.get(player.level());
         ClaimMode mode = PlayerClaimData.get(player).getClaimMode();
         int amount = IntegerArgumentType.getInteger(context, "distance");
-        Claim claim = findClaim(player, storage, mode);
+        Claim claim = findClaim(context.getSource(), player, storage, mode);
         if (claim == null) {
             return 0;
         }
-        if (!checkExpandPermission(player, claim, mode)) {
+        if (!checkExpandPermission(context.getSource(), player, claim, mode)) {
             return 0;
         }
         if (amount <= 0) {
-            ClaimUtils.sendExpandError(player, "flan.invalidDistance");
+            sendExpandError(context.getSource(), "flan.invalidDistance");
             return 0;
         }
         Direction facing = player.getDirection();
         if ((!claim.is3d() || !mode.is3d) && (facing == Direction.UP || facing == Direction.DOWN)) {
-            ClaimUtils.sendExpandError(player, facing == Direction.UP ? "flan.expandUpDisabled" : "flan.expandDownDisabled");
+            sendExpandError(context.getSource(), facing == Direction.UP ? "flan.expandUpDisabled" : "flan.expandDownDisabled");
             return 0;
         }
         ClaimBox dims = claim.getDimensions();
         Tuple<BlockPos, BlockPos> corners = calculateCorners(dims, facing, amount, claim.parentClaim() != null ? claim.parentClaim().getDimensions() : null);
         boolean success = performExpansion(player, storage, claim, corners);
         if (!success) {
-            ClaimUtils.sendExpandError(player, "flan.expandFailed");
+            sendExpandError(context.getSource(), "flan.expandFailed");
             return 0;
         }
-        player.displayClientMessage(ClaimUtils.translatedText("flan.expandSuccess", amount, ChatFormatting.GREEN), false);
+        context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.expandSuccess", amount, ChatFormatting.GREEN), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -87,16 +87,16 @@ public class ExpandCommand {
         };
     }
 
-    private static Claim findClaim(ServerPlayer player, ClaimStorage storage, ClaimMode mode) {
+    private static Claim findClaim(CommandSourceStack source, ServerPlayer player, ClaimStorage storage, ClaimMode mode) {
         Claim claim = storage.getClaimAt(player.blockPosition());
         if (claim == null) {
-            ClaimUtils.noClaimMessage(player);
+            source.sendFailure(ClaimUtils.translatedText("flan.noClaim", ChatFormatting.DARK_RED));
             return null;
         }
         if (mode.isSubclaim) {
             Claim subClaim = claim.getSubClaim(player.blockPosition());
             if (subClaim == null) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.noSubClaim", ChatFormatting.RED), false);
+                source.sendFailure(ClaimUtils.translatedText("flan.noSubClaim", ChatFormatting.RED));
                 return null;
             }
             return subClaim;
@@ -117,19 +117,24 @@ public class ExpandCommand {
         }
     }
 
-    private static boolean checkExpandPermission(ServerPlayer player, Claim claim, ClaimMode mode) {
+    private static boolean checkExpandPermission(CommandSourceStack source, ServerPlayer player, Claim claim, ClaimMode mode) {
         if (mode.isSubclaim) {
             Claim parent = claim.parentClaim();
-            if (parent == null || !parent.canInteract(player, BuiltinPermission.EDITCLAIM, player.blockPosition())) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
+            if (parent == null || !claim.canInteract(player, BuiltinPermission.EDITCLAIM, player.blockPosition())
+                    || !parent.canInteract(player, BuiltinPermission.EDITCLAIM, player.blockPosition())) {
+                source.sendFailure(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED));
                 return false;
             }
         } else {
             if (!claim.canInteract(player, BuiltinPermission.EDITCLAIM, player.blockPosition())) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
+                source.sendFailure(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED));
                 return false;
             }
         }
         return true;
+    }
+
+    private static void sendExpandError(CommandSourceStack source, String key, Object... args) {
+        source.sendFailure(ClaimUtils.translatedText("flan.expandError", ClaimUtils.translatedText(key, args)).withStyle(ChatFormatting.RED));
     }
 }

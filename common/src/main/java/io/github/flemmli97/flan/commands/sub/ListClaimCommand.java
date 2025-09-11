@@ -69,19 +69,28 @@ public class ListClaimCommand {
             }
         }
         context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.listClaims", ChatFormatting.GOLD), false);
-        for (Map.Entry<Level, Collection<Claim>> entry : claims.entrySet())
-            for (Claim claim : entry.getValue())
+        for (Map.Entry<Level, Collection<Claim>> entry : claims.entrySet()) {
+            for (Claim claim : entry.getValue()) {
                 context.getSource().sendSuccess(() -> ClaimUtils.translatedText(
                         entry.getKey().dimension().location() + " # " + claim.formattedClaim(), ChatFormatting.YELLOW), false);
+            }
+        }
         return Command.SINGLE_SUCCESS;
     }
 
     private static int listAdminClaims(CommandContext<CommandSourceStack> context) {
         CommandSourceStack src = context.getSource();
-        Collection<Claim> claims = ClaimStorage.get(src.getLevel()).getAdminClaims();
+        Map<Level, Collection<Claim>> claims = new HashMap<>();
+        for (ServerLevel level : src.getServer().getAllLevels()) {
+            claims.put(level, ClaimStorage.get(level).getAdminClaims());
+        }
         src.sendSuccess(() -> ClaimUtils.translatedText("flan.listAdminClaims", src.getLevel().dimension().location(), ChatFormatting.GOLD), false);
-        for (Claim claim : claims)
-            src.sendSuccess(() -> ClaimUtils.translatedText(claim.formattedClaim(), ChatFormatting.YELLOW), false);
+        for (Map.Entry<Level, Collection<Claim>> entry : claims.entrySet()) {
+            for (Claim claim : entry.getValue()) {
+                src.sendSuccess(() -> ClaimUtils.translatedText(
+                        entry.getKey().dimension().location() + " # " + claim.formattedClaim(), ChatFormatting.YELLOW), false);
+            }
+        }
         return Command.SINGLE_SUCCESS;
     }
 }

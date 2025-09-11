@@ -22,7 +22,7 @@ public class AdminModeCommand {
         ServerPlayer player = context.getSource().getPlayerOrException();
         PlayerClaimData data = PlayerClaimData.get(player);
         data.setAdminIgnoreClaim(!data.isAdminIgnoreClaim());
-        player.displayClientMessage(ClaimUtils.translatedText("flan.adminMode", data.isAdminIgnoreClaim(), ChatFormatting.GOLD), false);
+        context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.adminMode", data.isAdminIgnoreClaim(), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 }

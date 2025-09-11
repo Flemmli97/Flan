@@ -11,11 +11,10 @@ import io.github.flemmli97.flan.gui.ClaimMenuScreenHandler;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.player.display.EnumDisplayType;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
-
-import java.util.Objects;
 
 public class OpenMenuCommand {
 
@@ -25,18 +24,22 @@ public class OpenMenuCommand {
 
     private static int openMenu(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        PlayerClaimData data = PlayerClaimData.get(player);
         Claim claim = ClaimStorage.get(player.level()).getClaimAt(player.blockPosition());
         if (claim == null) {
-            ClaimUtils.noClaimMessage(player);
+            context.getSource().sendFailure(ClaimUtils.translatedText("flan.noClaim", ChatFormatting.DARK_RED));
             return 0;
         }
+        PlayerClaimData data = PlayerClaimData.get(player);
         if (!data.getClaimMode().isSubclaim) {
             ClaimMenuScreenHandler.openClaimMenu(player, claim);
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
         } else {
             Claim sub = claim.getSubClaim(player.blockPosition());
-            ClaimMenuScreenHandler.openClaimMenu(player, Objects.requireNonNullElse(sub, claim));
+            if (sub == null) {
+                context.getSource().sendFailure(ClaimUtils.translatedText("flan.noSubClaim", ChatFormatting.DARK_RED));
+                return 0;
+            }
+            ClaimMenuScreenHandler.openClaimMenu(player, sub);
         }
         return Command.SINGLE_SUCCESS;
     }

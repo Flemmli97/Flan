@@ -9,6 +9,7 @@ import io.github.flemmli97.flan.api.data.IPlayerData;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
 import io.github.flemmli97.flan.player.PlayerClaimData;
@@ -35,10 +36,10 @@ public class TransferClaimCommand {
             return 0;
         }
         GameProfile prof = profs.iterator().next();
-        ClaimStorage storage = ClaimStorage.get(player.level());
-        Claim claim = storage.getClaimAt(player.blockPosition());
+        ClaimStorage storage = ClaimStorage.get(context.getSource().getLevel());
+        Claim claim = CommandClaim.fromContext(context);
         if (claim == null) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.noClaim", ChatFormatting.RED), false);
+            context.getSource().sendFailure(ClaimUtils.translatedText("flan.noClaim", ChatFormatting.RED));
             return 0;
         }
         PlayerClaimData data = PlayerClaimData.get(player);
@@ -50,16 +51,16 @@ public class TransferClaimCommand {
             enoughBlocks = newData.canUseClaimBlocks(claim.getPlane());
         }
         if (!enoughBlocks) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.ownerTransferNoBlocks", ChatFormatting.RED), false);
+            context.getSource().sendFailure(ClaimUtils.translatedText("flan.ownerTransferNoBlocks", ChatFormatting.RED));
             if (PermissionNodeHandler.INSTANCE.perm(context.getSource(), PermissionNodeHandler.CMD_BYPASS_MODE, true))
-                player.displayClientMessage(ClaimUtils.translatedText("flan.ownerTransferNoBlocksAdmin", ChatFormatting.RED), false);
+                context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.ownerTransferNoBlocksAdmin", ChatFormatting.RED), false);
             return 0;
         }
         if (!storage.transferOwner(claim, player, prof.getId())) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.ownerTransferFail", ChatFormatting.RED), false);
+            context.getSource().sendFailure(ClaimUtils.translatedText("flan.ownerTransferFail", ChatFormatting.RED));
             return 0;
         }
-        player.displayClientMessage(ClaimUtils.translatedText("flan.ownerTransferSuccess", prof.getName(), ChatFormatting.GOLD), false);
+        context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.ownerTransferSuccess", prof.getName(), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 }

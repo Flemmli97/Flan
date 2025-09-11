@@ -1,7 +1,6 @@
 package io.github.flemmli97.flan.commands.sub;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -47,6 +46,6 @@ public class ClaimBlocksCommand {
             players.add(prof.getName());
         }
         src.sendSuccess(() -> ClaimUtils.translatedText(base ? "flan.giveClaimBlocks" : "flan.giveClaimBlocksBonus", players, amount, ChatFormatting.GOLD), true);
-        return Command.SINGLE_SUCCESS;
+        return players.size();
     }
 }

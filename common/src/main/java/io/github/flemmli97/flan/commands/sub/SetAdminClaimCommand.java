@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -22,8 +23,8 @@ public class SetAdminClaimCommand {
 
     private static int toggleAdminClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        ClaimStorage storage = ClaimStorage.get(player.level());
-        Claim claim = storage.getClaimAt(player.blockPosition());
+        ClaimStorage storage = ClaimStorage.get(context.getSource().getLevel());
+        Claim claim = CommandClaim.fromContext(context);
         if (claim == null) {
             context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.noClaim", ChatFormatting.RED), false);
             return 0;

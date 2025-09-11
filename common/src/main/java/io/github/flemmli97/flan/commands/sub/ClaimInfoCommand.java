@@ -6,14 +6,15 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.flemmli97.flan.claim.Claim;
-import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.commands.CommandHelpers;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -32,25 +33,25 @@ public class ClaimInfoCommand {
 
     private static int claimInfo(CommandContext<CommandSourceStack> context, Claim.InfoType infoType) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        Claim claim = ClaimStorage.get(player.level()).getClaimAt(player.blockPosition());
-        PlayerClaimData data = PlayerClaimData.get(player);
+        Claim claim = CommandClaim.fromContext(context);
         if (claim == null) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.noClaim", ChatFormatting.RED), false);
+            context.getSource().sendFailure(ClaimUtils.translatedText("flan.noClaim", ChatFormatting.RED));
             return 0;
         }
+        PlayerClaimData data = PlayerClaimData.get(player);
         if (data.getClaimMode().isSubclaim) {
-            Claim sub = claim.getSubClaim(player.blockPosition());
+            Claim sub = claim.getSubClaim(BlockPos.containing(context.getSource().getPosition()));
             if (sub != null) {
                 List<Component> info = sub.infoString(player, infoType);
-                player.displayClientMessage(ClaimUtils.translatedText("flan.claimSubHeader", ChatFormatting.AQUA), false);
+                context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.claimSubHeader", ChatFormatting.AQUA), false);
                 for (Component text : info)
-                    player.displayClientMessage(text, false);
+                    context.getSource().sendSuccess(() -> text, false);
                 return Command.SINGLE_SUCCESS;
             }
         }
         List<Component> info = claim.infoString(player, infoType);
         for (Component text : info)
-            player.displayClientMessage(text, false);
+            context.getSource().sendSuccess(() -> text, false);
         return Command.SINGLE_SUCCESS;
     }
 }

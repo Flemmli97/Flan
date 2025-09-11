@@ -45,7 +45,7 @@ public class TeleportCommand {
     private static int teleport(CommandContext<CommandSourceStack> context, UUID owner) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         String name = StringArgumentType.getString(context, "claim");
-        Optional<Claim> claims = ClaimStorage.get(player.level()).allClaimsFromPlayer(owner)
+        Optional<Claim> claims = ClaimStorage.get(context.getSource().getLevel()).allClaimsFromPlayer(owner)
                 .stream().filter(claim -> {
                     if (claim.getClaimName().isEmpty())
                         return claim.getClaimID().toString().equals(name);
