@@ -243,11 +243,11 @@ public class PlayerEvents {
                     Claim mainClaim = isSub ? currentClaim.parentClaim() : currentClaim;
                     Entity vehicle = player.getVehicle();
                     if (!mainClaim.canInteract(player, BuiltinPermission.CANSTAY, bPos, true) ||
-                            (vehicle instanceof VehicleEntity && !vehicle.isControlledByLocalInstance() && !mainClaim.canInteract(player, BuiltinPermission.VEHICLE_PASS, bPos, true))) {
+                            (vehicle instanceof VehicleEntity && !vehicle.isLocalInstanceAuthoritative() && !mainClaim.canInteract(player, BuiltinPermission.VEHICLE_PASS, bPos, true))) {
                         Claim sub = isSub ? currentClaim : null;
                         Vec3 tp = TeleportUtils.getTeleportPos(player, pos, storage, new TeleportUtils.Area2D(sub != null ? sub.getDimensions() : mainClaim.getDimensions()), true, bPos, (claim, nPos) -> claim.canInteract(player, BuiltinPermission.CANSTAY, nPos, false));
                         if (vehicle != null) {
-                            if (!vehicle.isControlledByLocalInstance()) {
+                            if (!vehicle.isLocalInstanceAuthoritative()) {
                                 // Otherwise cannot teleport as the client controls it
                                 player.stopRiding();
                             }

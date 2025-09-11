@@ -294,7 +294,7 @@ public class EntityInteractEvents {
      * E.g. this applies to boats with a player in them
      */
     public static void handleVehiclePass(Entity entity) {
-        if (entity.level().isClientSide || !entity.isControlledByLocalInstance())
+        if (entity.level().isClientSide || !entity.isLocalInstanceAuthoritative())
             return;
         ClaimStorage storage = ClaimStorage.get((ServerLevel) entity.level());
         Claim claim = storage.getClaimAt(entity.blockPosition());
