@@ -1,6 +1,7 @@
 package io.github.flemmli97.flan.gui;
 
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimUtils;
@@ -57,7 +58,7 @@ public class PotionEditScreenHandler extends PagedServerOnlyScreenHandler<Claim>
 
     @Override
     protected void fillInventoryWith() {
-        Map<Holder<MobEffect>, Integer> potions = this.data.getPotions();
+        Map<Holder<MobEffect>, Pair<Integer, Integer>> potions = this.data.getPotions();
         List<Holder<MobEffect>> key = Lists.newArrayList(potions.keySet());
         key.sort(Comparator.comparing(Holder::getRegisteredName));
         for (int i = 0; i < 54; i++) {
@@ -81,7 +82,7 @@ public class PotionEditScreenHandler extends PagedServerOnlyScreenHandler<Claim>
                 if (id < potions.size()) {
                     Holder<MobEffect> effect = key.get(id);
                     ItemStack stack = ServerScreenHelper.createStack(Items.POTION, ServerScreenHelper.coloredGuiText("flan.screenEffectText", ChatFormatting.YELLOW));
-                    Collection<MobEffectInstance> inst = Collections.singleton(new MobEffectInstance(effect, 0, potions.get(effect) - 1));
+                    Collection<MobEffectInstance> inst = Collections.singleton(new MobEffectInstance(effect, potions.get(effect).getFirst(), potions.get(effect).getSecond() - 1));
                     stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.of(PotionContents.getColor(inst)), List.copyOf(inst)));
                     CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putString("FlanEffect", effect.getRegisteredName()));
                     this.slots.get(i).set(stack);
@@ -114,14 +115,22 @@ public class PotionEditScreenHandler extends PagedServerOnlyScreenHandler<Claim>
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                     return;
                 }
-                if (potion.length > 1) {
+                int duration = holder.get().is(MobEffects.NIGHT_VISION) ? 400 : 200;
+                if (potion.length == 2) {
                     try {
                         amp = Integer.parseInt(potion[1]);
                     } catch (NumberFormatException e) {
                         Flan.LOGGER.error(e);
                     }
+                } else if (potion.length == 3) {
+                    try {
+                        duration = Integer.parseInt(potion[1]);
+                        amp = Integer.parseInt(potion[2]);
+                    } catch (NumberFormatException e) {
+                        Flan.LOGGER.error(e);
+                    }
                 }
-                this.data.addPotion(holder.get(), amp);
+                this.data.addPotion(holder.get(), duration, amp);
                 player.closeContainer();
                 player.getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.data));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
