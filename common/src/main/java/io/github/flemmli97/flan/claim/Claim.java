@@ -7,6 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.Flan;
@@ -41,6 +42,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -90,7 +92,7 @@ public class Claim implements IPermissionContainer {
 
     private final ServerLevel level;
 
-    private final Map<Holder<MobEffect>, Integer> potions = new HashMap<>();
+    private final Map<Holder<MobEffect>, Pair<Integer, Integer>> potions = new HashMap<>();
 
     public final AllowedRegistryListHolder allowedEntries = new AllowedRegistryListHolder(this);
 
@@ -615,8 +617,8 @@ public class Claim implements IPermissionContainer {
         return false;
     }
 
-    public void addPotion(Holder<MobEffect> effect, int amplifier) {
-        this.potions.put(effect, amplifier);
+    public void addPotion(Holder<MobEffect> effect, int duration, int amplifier) {
+        this.potions.put(effect, Pair.of(duration, amplifier));
         this.setDirty(true);
     }
 
@@ -625,13 +627,20 @@ public class Claim implements IPermissionContainer {
         this.setDirty(true);
     }
 
-    public Map<Holder<MobEffect>, Integer> getPotions() {
+    public Map<Holder<MobEffect>, Pair<Integer, Integer>> getPotions() {
         return this.potions;
     }
 
+    @SuppressWarnings("deprecation")
     public void applyEffects(ServerPlayer player) {
-        if (player.level().getGameTime() % 80 == 0)
-            this.potions.forEach((effect, amp) -> player.forceAddEffect(new MobEffectInstance(effect, effect == MobEffects.NIGHT_VISION ? 400 : 200, amp - 1, true, false), null));
+        if (player.level().getGameTime() % 20 == 0) {
+            this.potions.forEach((effect, meta) -> {
+                MobEffectInstance inst = player.getEffect(effect);
+                if (inst == null || inst.getDuration() <= 20 || (effect.is(MobEffects.NIGHT_VISION) && inst.getDuration() <= 220)) {
+                    player.addEffect(new MobEffectInstance(effect, meta.getFirst(), meta.getSecond() - 1, true, false), null);
+                }
+            });
+        }
     }
 
     public BlockPos getHomePos() {
@@ -743,7 +752,15 @@ public class Claim implements IPermissionContainer {
             JsonObject potion = ConfigHandler.fromJson(obj, "Potions");
             potion.entrySet().forEach(e ->
                     BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(e.getKey()))
-                            .ifPresent(effect -> this.potions.put(effect, e.getValue().getAsInt())));
+                            .ifPresent(effect -> {
+                                if (e.getValue().isJsonObject()) {
+                                    JsonObject potionObj = e.getValue().getAsJsonObject();
+                                    this.potions.put(effect, Pair.of(GsonHelper.getAsInt(potionObj, "Duration"), GsonHelper.getAsInt(potionObj, "Amplifier")));
+                                } else {
+                                    int duration = effect.is(MobEffects.NIGHT_VISION) ? 400 : 200;
+                                    this.potions.put(effect, Pair.of(duration, e.getValue().getAsInt()));
+                                }
+                            }));
             if (ConfigHandler.fromJson(obj, "AdminClaim", false))
                 this.owner = null;
             else
@@ -837,7 +854,12 @@ public class Claim implements IPermissionContainer {
         obj.add("LeaveTitle", this.leaveTitle == null ? JsonNull.INSTANCE : ComponentSerialization.CODEC.encodeStart(ops, this.leaveTitle).getOrThrow());
         obj.add("LeaveSubtitle", this.leaveSubtitle == null ? JsonNull.INSTANCE : ComponentSerialization.CODEC.encodeStart(ops, this.leaveSubtitle).getOrThrow());
         JsonObject potions = new JsonObject();
-        this.potions.forEach((effect, amp) -> potions.addProperty(effect.getRegisteredName(), amp));
+        this.potions.forEach((effect, meta) -> {
+            JsonObject potionObj = new JsonObject();
+            potionObj.addProperty("Duration", meta.getFirst());
+            potionObj.addProperty("Amplifier", meta.getSecond());
+            potions.add(effect.getRegisteredName(), potionObj);
+        });
         obj.add("Potions", potions);
         if (this.parent != null)
             obj.addProperty("Parent", this.parent.toString());
