@@ -125,6 +125,7 @@ public class CommandHelpers {
             switch (type) {
                 case ITEM -> list = claim.allowedItems.asString();
                 case BLOCKBREAK -> list = claim.allowedBreakBlocks.asString();
+                case BLOCKPLACE -> list = claim.allowedPlaceBlocks.asString();
                 case BLOCKUSE -> list = claim.allowedUseBlocks.asString();
                 case ENTITYATTACK -> list = claim.allowedEntityAttack.asString();
                 case ENTITYUSE -> list = claim.allowedEntityUse.asString();

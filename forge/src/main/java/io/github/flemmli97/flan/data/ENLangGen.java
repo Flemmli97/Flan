@@ -168,6 +168,7 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.screenDelete", "Use \"$empty\" to delete the message");
         this.add(CustomInteractListScreenHandler.Type.ITEM.translationKey, "Allowed item use");
         this.add(CustomInteractListScreenHandler.Type.BLOCKBREAK.translationKey, "Allowed block break");
+        this.add(CustomInteractListScreenHandler.Type.BLOCKPLACE.translationKey, "Allowed block place");
         this.add(CustomInteractListScreenHandler.Type.BLOCKUSE.translationKey, "Allowed block use");
         this.add(CustomInteractListScreenHandler.Type.ENTITYATTACK.translationKey, "Allowed entities to attack");
         this.add(CustomInteractListScreenHandler.Type.ENTITYUSE.translationKey, "Allowed entity interactions");

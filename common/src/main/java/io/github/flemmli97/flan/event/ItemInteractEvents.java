@@ -128,8 +128,8 @@ public class ItemInteractEvents {
                 return InteractionResult.FAIL;
             }
         }
-        if (claim.canInteract(player, BuiltinPermission.PLACE, placePos, false)) {
-            if (column != null && stack.getItem() instanceof BlockItem) {
+        if (canPlaceThisBlock(stack, claim) || claim.canInteract(player, BuiltinPermission.PLACE, placePos, false)) {
+            if (column != null) {
                 column.extendDownwards(placePos);
             }
             return InteractionResult.PASS;
@@ -140,6 +140,10 @@ public class ItemInteractEvents {
         PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
         updateHeldItem(player);
         return InteractionResult.FAIL;
+    }
+
+    private static boolean canPlaceThisBlock(ItemStack stack, IPermissionContainer claim) {
+        return claim instanceof Claim real && stack.getItem() instanceof BlockItem block && real.canPlaceBlockItem(block.getBlock().defaultBlockState());
     }
 
     /**

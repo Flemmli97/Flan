@@ -125,6 +125,7 @@
   "flan.screenDelete": "使用 \"$empty\" 删除消息",
   "flan.screenMenuItemUse": "使用出租物品",
   "flan.screenMenuBlockBreak": "允许破坏方块",
+  "flan.screenMenuBlockPlace": "允许放置方块",
   "flan.screenMenuBlockUse": "允许使用方块",
   "flan.screenMenuEntityAttack": "允许攻击实体",
   "flan.screenMenuEntityUse": "允许与实体互动",
