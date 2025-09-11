@@ -765,7 +765,6 @@ public class Claim implements IPermissionContainer {
                             .ifPresent(effect -> {
                                 if (e.getValue().isJsonObject()) {
                                     JsonObject potionObj = e.getValue().getAsJsonObject();
-                                    ;
                                     this.potions.put(effect, Pair.of(GsonHelper.getAsInt(potionObj, "Duration"), GsonHelper.getAsInt(potionObj, "Amplifier")));
                                 } else {
                                     int duration = effect.is(MobEffects.NIGHT_VISION) ? 400 : 200;
