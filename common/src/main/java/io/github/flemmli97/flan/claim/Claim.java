@@ -958,7 +958,7 @@ public class Claim implements IPermissionContainer {
         }
         if (perms) {
             if (infoType == InfoType.ALL || infoType == InfoType.GLOBAL)
-                l.add(fromPermissionMap("claimInfoPerms", this.globalPerm));
+                l.add(fromPermissionMap("flan.claimInfoPerms", this.globalPerm));
             if (infoType == InfoType.ALL || infoType == InfoType.GROUP) {
                 l.add(ClaimUtils.translatedText("flan.claimGroupInfoHeader", ChatFormatting.GOLD));
                 Map<String, List<String>> nameToGroup = new HashMap<>();
@@ -972,7 +972,7 @@ public class Claim implements IPermissionContainer {
                 }
                 for (Map.Entry<String, Map<ResourceLocation, Boolean>> e : this.permissions.entrySet()) {
                     l.add(ClaimUtils.translatedText(String.format("  %s:", e.getKey()), ChatFormatting.YELLOW));
-                    l.add(fromPermissionMap("claimGroupPerms", e.getValue()));
+                    l.add(fromPermissionMap("flan.claimGroupPerms", e.getValue()));
                     l.add(ClaimUtils.translatedText("flan.claimGroupPlayers", nameToGroup.getOrDefault(e.getKey(), new ArrayList<>()), ChatFormatting.RED));
                 }
             }
