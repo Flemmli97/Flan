@@ -1,3 +1,26 @@
+Flan 1.12.1
+================
+- Add `vehicle_pass` permission:
+  - Blocks vehicles (boats, minecarts etc.) from crossing claim border
+- Add config to disable webmap integrations
+- Add `de_de` translation
+- Add configurable potion duration.
+  - As such format is now `effect;duration;amplifier` or `effect;amplifier`
+  - Duration is in ticks
+- Commands now respect the position of the executor
+- Fix subclaims not synced with parent height
+- Fix player in groups always displayed as the owner
+- Fix global config ignored
+- Fix flight not properly removed on neoforge
+- Fix no hunger for claim owner 
+  - partially caused by global config ignored but now also requires explicit set to true to affect owner
+- Fix allow list menu command checking wrong permission
+- Fix list adminclaims only listing claims in current dimension
+- Loosen constraint on commands making them respect different positions through /execute
+- Fix command info permission using wrong translation key
+- Remove a bundled unused dependency
+- Remove an expected log with offline players
+
 Flan 1.12.0
 ================
 - Datapack directory now updated. Now have a prefix `flan`. This is a backport from future version requirements
