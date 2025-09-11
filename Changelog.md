@@ -1,3 +1,16 @@
+Flan 1.11.15
+================
+- Add `de_de` translation
+- Fix subclaims not synced with parent height
+- Fix player in groups always displayed as the owner
+- Fix global config ignored
+- Fix no hunger for claim owner 
+  - partially caused by global config ignored but now also requires explicit set to true to affect owner
+- Fix allow list menu command checking wrong permission
+- Fix command info permission using wrong translation key
+- Remove a bundled unused dependency
+- Remove an expected log with offline players
+
 Flan 1.11.14
 ================
 - Fix config global permission issue of outside being treated as in claim
