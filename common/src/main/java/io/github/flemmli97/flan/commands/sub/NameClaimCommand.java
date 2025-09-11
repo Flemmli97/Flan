@@ -9,8 +9,8 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
-import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -24,45 +24,24 @@ public class NameClaimCommand {
 
     private static int nameClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        PlayerClaimData data = PlayerClaimData.get(player);
-        if (!data.getClaimMode().isSubclaim) {
-            Claim claim = ClaimUtils.checkReturn(player, BuiltinPermission.EDITPERMS, ClaimUtils.genericNoPermMessage(player));
-            if (claim == null)
-                return 0;
-            boolean nameUsed = ClaimStorage.get(player.serverLevel()).allClaimsFromPlayer(claim.getOwner())
+        Claim claim = CommandClaim.getClaimFromMode(context, player, BuiltinPermission.EDITPERMS);
+        if (claim == null)
+            return 0;
+        boolean nameUsed;
+        if (claim.isSubclaim()) {
+            nameUsed = claim.getAllSubclaims()
                     .stream().map(Claim::getClaimName).anyMatch(name -> name.equals(StringArgumentType.getString(context, "name")));
-            if (!nameUsed) {
-                String name = StringArgumentType.getString(context, "name");
-                claim.setClaimName(name);
-                player.displayClientMessage(ClaimUtils.translatedText("flan.claimNameSet", name, ChatFormatting.GOLD), false);
-            } else {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.claimNameUsed", ChatFormatting.DARK_RED), false);
-            }
         } else {
-            Claim claim = ClaimStorage.get(player.serverLevel()).getClaimAt(player.blockPosition());
-            Claim sub = claim.getSubClaim(player.blockPosition());
-            if (sub != null && (claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition()) || sub.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition()))) {
-                boolean nameUsed = claim.getAllSubclaims()
-                        .stream().map(Claim::getClaimName).anyMatch(name -> name.equals(StringArgumentType.getString(context, "name")));
-                if (!nameUsed) {
-                    String name = StringArgumentType.getString(context, "name");
-                    sub.setClaimName(name);
-                    player.displayClientMessage(ClaimUtils.translatedText("flan.claimNameSet", name, ChatFormatting.GOLD), false);
-                } else {
-                    player.displayClientMessage(ClaimUtils.translatedText("flan.claimNameUsedSub", ChatFormatting.DARK_RED), false);
-                }
-            } else if (claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
-                boolean nameUsed = ClaimStorage.get(player.serverLevel()).allClaimsFromPlayer(claim.getOwner())
-                        .stream().map(Claim::getClaimName).anyMatch(name -> name.equals(StringArgumentType.getString(context, "name")));
-                if (!nameUsed) {
-                    String name = StringArgumentType.getString(context, "name");
-                    claim.setClaimName(name);
-                    player.displayClientMessage(ClaimUtils.translatedText("flan.claimNameSet", name, ChatFormatting.GOLD), false);
-                } else {
-                    player.displayClientMessage(ClaimUtils.translatedText("flan.claimNameUsed", ChatFormatting.DARK_RED), false);
-                }
-            } else
-                player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
+            nameUsed = ClaimStorage.get(player.serverLevel()).allClaimsFromPlayer(claim.getOwner())
+                    .stream().map(Claim::getClaimName).anyMatch(name -> name.equals(StringArgumentType.getString(context, "name")));
+        }
+        if (!nameUsed) {
+            String name = StringArgumentType.getString(context, "name");
+            claim.setClaimName(name);
+            context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.claimNameSet", name, ChatFormatting.GOLD), false);
+        } else {
+            context.getSource().sendFailure(ClaimUtils.translatedText("flan.claimNameUsed", ChatFormatting.DARK_RED));
+            return 0;
         }
         return Command.SINGLE_SUCCESS;
     }

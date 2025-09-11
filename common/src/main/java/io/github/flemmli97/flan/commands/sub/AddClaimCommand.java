@@ -44,9 +44,9 @@ public class AddClaimCommand {
 
     private static int addClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        if (!ItemInteractEvents.canClaimWorld(player.serverLevel(), player))
+        if (!ItemInteractEvents.canClaimWorld(context.getSource().getLevel(), player))
             return 0;
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(context.getSource().getLevel());
         BlockPos from = BlockPosArgument.getLoadedBlockPos(context, "from");
         BlockPos to = BlockPosArgument.getLoadedBlockPos(context, "to");
         storage.createClaim(from, to, player);
@@ -95,9 +95,9 @@ public class AddClaimCommand {
 
     private static int addClaimRect(CommandContext<CommandSourceStack> context, int x, int z) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        if (!ItemInteractEvents.canClaimWorld(player.serverLevel(), player))
+        if (!ItemInteractEvents.canClaimWorld(context.getSource().getLevel(), player))
             return 0;
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
+        ClaimStorage storage = ClaimStorage.get(context.getSource().getLevel());
         boolean evenX = x % 2 == 0;
         boolean evenZ = z % 2 == 0;
         BlockPos from = player.blockPosition().offset(evenX ? -(int) ((x - 1) * 0.5) : -(int) (x * 0.5), -5, evenZ ? -(int) ((z - 1) * 0.5) : -(int) (z * 0.5));

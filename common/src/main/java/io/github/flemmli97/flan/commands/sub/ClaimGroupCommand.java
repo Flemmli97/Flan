@@ -10,6 +10,7 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.commands.CommandHelpers;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
@@ -18,6 +19,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.GameProfileArgument;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
@@ -60,32 +62,32 @@ public class ClaimGroupCommand {
     private static int modifyGroup(CommandContext<CommandSourceStack> context, boolean remove) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         String group = StringArgumentType.getString(context, "group");
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
-        Claim claim = storage.getClaimAt(player.blockPosition());
+        Claim claim = CommandClaim.fromContext(context);
         if (claim == null) {
-            ClaimUtils.noClaimMessage(player);
+            context.getSource().sendFailure(ClaimUtils.translatedText("flan.noClaim", ChatFormatting.DARK_RED));
             return 0;
         }
+        BlockPos pos = CommandClaim.pos(context);
         if (PlayerClaimData.get(player).getClaimMode().isSubclaim) {
-            Claim sub = claim.getSubClaim(player.blockPosition());
+            Claim sub = claim.getSubClaim(pos);
             if (sub != null)
                 claim = sub;
         }
         if (remove) {
             if (claim.removePermGroup(player, group))
-                player.displayClientMessage(ClaimUtils.translatedText("flan.groupRemove", group, ChatFormatting.GOLD), false);
+                context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.groupRemove", group, ChatFormatting.GOLD), false);
             else {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
+                context.getSource().sendFailure(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED));
                 return 0;
             }
         } else {
             if (claim.groups().contains(group)) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.groupExist", group, ChatFormatting.RED), false);
+                context.getSource().sendFailure(ClaimUtils.translatedText("flan.groupExist", group, ChatFormatting.RED));
                 return 0;
             } else if (claim.editPerms(player, group, BuiltinPermission.EDITPERMS, -1))
-                player.displayClientMessage(ClaimUtils.translatedText("flan.groupAdd", group, ChatFormatting.GOLD), false);
+                context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.groupAdd", group, ChatFormatting.GOLD), false);
             else {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
+                context.getSource().sendFailure(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED));
                 return 0;
             }
         }
@@ -108,19 +110,19 @@ public class ClaimGroupCommand {
 
     private static int modifyPlayer(CommandContext<CommandSourceStack> context, String group, boolean force) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
-        Claim claim = storage.getClaimAt(player.blockPosition());
+        Claim claim = CommandClaim.fromContext(context);
         if (claim == null) {
-            ClaimUtils.noClaimMessage(player);
+            context.getSource().sendFailure(ClaimUtils.translatedText("flan.noClaim", ChatFormatting.DARK_RED));
             return 0;
         }
+        BlockPos pos = CommandClaim.pos(context);
         if (PlayerClaimData.get(player).getClaimMode().isSubclaim) {
-            Claim sub = claim.getSubClaim(player.blockPosition());
+            Claim sub = claim.getSubClaim(pos);
             if (sub != null)
                 claim = sub;
         }
         if (!claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
+            context.getSource().sendFailure(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED));
             return 0;
         }
         List<String> modified = new ArrayList<>();
@@ -130,14 +132,14 @@ public class ClaimGroupCommand {
         }
         if (group == null) {
             if (!modified.isEmpty())
-                player.displayClientMessage(ClaimUtils.translatedText("flan.playerRemove", modified, ChatFormatting.GOLD), false);
+                context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.playerRemove", modified, ChatFormatting.GOLD), false);
             else
-                player.displayClientMessage(ClaimUtils.translatedText("flan.playerRemoveNo", ChatFormatting.RED), false);
+                context.getSource().sendFailure(ClaimUtils.translatedText("flan.playerRemoveNo", ChatFormatting.RED));
         } else {
             if (!modified.isEmpty())
-                player.displayClientMessage(ClaimUtils.translatedText("flan.playerModify", group, modified, ChatFormatting.GOLD), false);
+                context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.playerModify", group, modified, ChatFormatting.GOLD), false);
             else
-                player.displayClientMessage(ClaimUtils.translatedText("flan.playerModifyNo", group, ChatFormatting.RED), false);
+                context.getSource().sendFailure(ClaimUtils.translatedText("flan.playerModifyNo", group, ChatFormatting.RED));
         }
         return modified.size();
     }

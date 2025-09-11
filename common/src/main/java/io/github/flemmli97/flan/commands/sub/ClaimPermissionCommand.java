@@ -8,8 +8,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.claim.Claim;
-import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.commands.CommandHelpers;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
@@ -57,37 +57,25 @@ public class ClaimPermissionCommand {
 
     private static int editPerms(CommandContext<CommandSourceStack> context, String group, int mode) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        Claim claim = ClaimStorage.get(player.serverLevel()).getClaimAt(player.blockPosition());
-        PlayerClaimData data = PlayerClaimData.get(player);
-        if (data.getClaimMode().isSubclaim) {
-            Claim sub = claim.getSubClaim(player.blockPosition());
-            if (sub != null)
-                claim = sub;
-        }
-        if (claim == null) {
-            ClaimUtils.noClaimMessage(player);
+        Claim claim = CommandClaim.getClaimFromMode(context, player, BuiltinPermission.EDITPERMS);
+        if (claim == null)
             return 0;
-        }
-        if (!claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
-            return 0;
-        }
         ResourceLocation perm = ResourceLocationArgument.getId(context, "permission");
         if (group != null && PermissionManager.getInstance().isGlobalPermission(perm)) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.nonGlobalOnly", perm, ChatFormatting.DARK_RED), false);
+            context.getSource().sendFailure(ClaimUtils.translatedText("flan.nonGlobalOnly", perm, ChatFormatting.DARK_RED));
             return 0;
         }
         if (PermissionManager.getInstance().get(perm) == null) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.noSuchPerm", perm, ChatFormatting.DARK_RED), false);
+            context.getSource().sendFailure(ClaimUtils.translatedText("flan.noSuchPerm", perm, ChatFormatting.DARK_RED));
             return 0;
         }
         String setPerm = mode == 1 ? "true" : mode == 0 ? "false" : "default";
         if (group == null) {
             claim.editGlobalPerms(player, perm, mode);
-            player.displayClientMessage(ClaimUtils.translatedText("flan.editPerm", perm, setPerm, ChatFormatting.GOLD), false);
+            context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.editPerm", perm, setPerm, ChatFormatting.GOLD), false);
         } else {
             claim.editPerms(player, group, perm, mode);
-            player.displayClientMessage(ClaimUtils.translatedText("flan.editPermGroup", perm, group, setPerm, ChatFormatting.GOLD), false);
+            context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.editPermGroup", perm, group, setPerm, ChatFormatting.GOLD), false);
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -102,16 +90,16 @@ public class ClaimPermissionCommand {
         };
         ResourceLocation perm = ResourceLocationArgument.getId(context, "permission");
         if (PermissionManager.getInstance().isGlobalPermission(perm)) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.nonGlobalOnly", perm, ChatFormatting.DARK_RED), false);
+            context.getSource().sendFailure(ClaimUtils.translatedText("flan.nonGlobalOnly", perm, ChatFormatting.DARK_RED));
             return 0;
         }
         if (PermissionManager.getInstance().get(perm) == null) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.noSuchPerm", perm, ChatFormatting.DARK_RED), false);
+            context.getSource().sendFailure(ClaimUtils.translatedText("flan.noSuchPerm", perm, ChatFormatting.DARK_RED));
             return 0;
         }
         String setPerm = mode == 1 ? "true" : mode == 0 ? "false" : "default";
         if (PlayerClaimData.get(player).editDefaultPerms(group, perm, mode))
-            player.displayClientMessage(ClaimUtils.translatedText("flan.editPersonalGroup", group, perm, setPerm, ChatFormatting.GOLD), false);
+            context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.editPersonalGroup", group, perm, setPerm, ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 }

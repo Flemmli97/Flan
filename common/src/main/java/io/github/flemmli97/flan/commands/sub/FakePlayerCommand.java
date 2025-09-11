@@ -7,6 +7,7 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
@@ -42,7 +43,7 @@ public class FakePlayerCommand {
         ServerPlayer player = context.getSource().getPlayerOrException();
         PlayerClaimData data = PlayerClaimData.get(player);
         data.setFakePlayerNotif(!data.hasFakePlayerNotificationOn());
-        player.displayClientMessage(ClaimUtils.translatedText("flan.fakePlayerNotification", data.hasFakePlayerNotificationOn(), ChatFormatting.GOLD), false);
+        context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.fakePlayerNotification", data.hasFakePlayerNotificationOn(), ChatFormatting.GOLD), false);
         return 1;
     }
 
@@ -56,30 +57,19 @@ public class FakePlayerCommand {
 
     private static int modifyFakePlayer(CommandContext<CommandSourceStack> context, boolean remove) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        ClaimStorage storage = ClaimStorage.get(player.serverLevel());
-        Claim claim = storage.getClaimAt(player.blockPosition());
+        Claim claim = CommandClaim.getClaimFromMode(context, player, BuiltinPermission.EDITPERMS);
         if (claim == null) {
-            ClaimUtils.noClaimMessage(player);
-            return 0;
-        }
-        if (PlayerClaimData.get(player).getClaimMode().isSubclaim) {
-            Claim sub = claim.getSubClaim(player.blockPosition());
-            if (sub != null)
-                claim = sub;
-        }
-        if (!claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
             return 0;
         }
         UUID uuid = UuidArgument.getUuid(context, "uuid");
         if (claim.modifyFakePlayerUUID(uuid, remove)) {
             if (!remove)
-                player.displayClientMessage(ClaimUtils.translatedText("flan.uuidFakeAdd", uuid, ChatFormatting.GOLD), false);
+                context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.uuidFakeAdd", uuid, ChatFormatting.GOLD), false);
             else
-                player.displayClientMessage(ClaimUtils.translatedText("flan.uuidFakeRemove", uuid, ChatFormatting.GOLD), false);
+                context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.uuidFakeRemove", uuid, ChatFormatting.GOLD), false);
             return 1;
         }
-        player.displayClientMessage(ClaimUtils.translatedText("flan.uuidFakeModifyNo", ChatFormatting.RED), false);
+        context.getSource().sendFailure(ClaimUtils.translatedText("flan.uuidFakeModifyNo", ChatFormatting.RED));
         return 0;
     }
 }

@@ -20,12 +20,12 @@ public class BlockPurchaseCommand {
     }
 
     private static int sellClaimBlocks(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        boolean b = ConfigHandler.CONFIG.buySellHandler.sell(context.getSource().getPlayerOrException(), Math.max(0, IntegerArgumentType.getInteger(context, "amount")), m -> context.getSource().sendSuccess(() -> m, false));
-        return b ? Command.SINGLE_SUCCESS : 0;
+        boolean result = ConfigHandler.CONFIG.buySellHandler.sell(context.getSource().getPlayerOrException(), Math.max(0, IntegerArgumentType.getInteger(context, "amount")), m -> context.getSource().sendSuccess(() -> m, false));
+        return result ? Command.SINGLE_SUCCESS : 0;
     }
 
     private static int buyClaimBlocks(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        boolean b = ConfigHandler.CONFIG.buySellHandler.buy(context.getSource().getPlayerOrException(), Math.max(0, IntegerArgumentType.getInteger(context, "amount")), m -> context.getSource().sendSuccess(() -> m, false));
-        return b ? Command.SINGLE_SUCCESS : 0;
+        boolean result = ConfigHandler.CONFIG.buySellHandler.buy(context.getSource().getPlayerOrException(), Math.max(0, IntegerArgumentType.getInteger(context, "amount")), m -> context.getSource().sendSuccess(() -> m, false));
+        return result ? Command.SINGLE_SUCCESS : 0;
     }
 }
