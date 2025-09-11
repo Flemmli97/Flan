@@ -74,7 +74,7 @@ public class BuiltinPermission {
     public static ResourceLocation MAY_FLIGHT = register("may_flight", order -> new ClaimPermission.Builder(new ItemStack(Items.FEATHER), order, List.of("Allows player to fly in this claim.", "Flight permission needs to be true!")).requireExplicitSet(true).globalVal(false));
     public static ResourceLocation CANSTAY = register("can_stay", new ItemStack(Items.PAPER), true, "Allow players to enter your claim");
     public static ResourceLocation TELEPORT = register("teleport", new ItemStack(Items.END_PORTAL_FRAME), false, "Allow player to teleport to your claim home position");
-    public static ResourceLocation NOHUNGER = register("no_hunger", new ItemStack(Items.COOKED_BEEF), false, "Disable hunger");
+    public static ResourceLocation NOHUNGER = register("no_hunger", order -> new ClaimPermission.Builder(new ItemStack(Items.COOKED_BEEF), order, List.of("Disable hunger")).globalVal(false).requireExplicitSet(true));
     public static ResourceLocation CLAIMMESSAGE = register("claim_message", new ItemStack(Items.OAK_SIGN), false, "Permission to edit the enter/leave message");
     public static ResourceLocation ARCHAEOLOGY = register("archeology", new ItemStack(Items.BRUSH), false, false, "Allow players to brush blocks in this claim");
 
