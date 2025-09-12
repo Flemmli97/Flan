@@ -8,6 +8,7 @@ Flan 1.12.1
   - As such format is now `effect;duration;amplifier` or `effect;amplifier`
   - Duration is in ticks
 - Commands now respect the position of the executor
+- Update language lib
 - Fix subclaims not synced with parent height
 - Fix player in groups always displayed as the owner
 - Fix global config ignored
