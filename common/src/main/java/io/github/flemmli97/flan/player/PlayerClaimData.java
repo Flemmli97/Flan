@@ -585,7 +585,7 @@ public class PlayerClaimData implements IPlayerData {
 
             JsonElement additionalBlockEl = obj.get("AdditionalBlocks");
             // Check if the element exists and is a primitive (number) before accessing its value
-            if (additionalBlockEl == null) this.additionalClaimBlocks = ConfigHandler.CONFIG.startingBlocks;
+            if (additionalBlockEl == null) this.additionalClaimBlocks = 0;
             else this.additionalClaimBlocks = obj.get("AdditionalBlocks").getAsInt();
 
             JsonObject defP = ConfigHandler.fromJson(obj, "DefaultGroups");
