@@ -161,8 +161,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
                 JsonElement values = obj.get("values");
                 this.appendTo(this.getHolder(type), values, ops);
             } catch (Exception ex) {
-                Flan.LOGGER.error("Couldnt parse claim permission json {} {}", res, ex);
-                ex.fillInStackTrace();
+                Flan.LOGGER.error("Couldnt parse claim permission json {} {}", res, ex, ex.fillInStackTrace());
             }
         });
     }

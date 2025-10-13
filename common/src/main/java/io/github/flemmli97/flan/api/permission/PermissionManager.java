@@ -95,8 +95,7 @@ public class PermissionManager extends SimpleJsonResourceReloadListener {
                 if (props.verify())
                     builder.put(res, props.build(res));
             } catch (Exception ex) {
-                Flan.LOGGER.error("Couldn't parse claim permission json {} {}", res, ex);
-                ex.fillInStackTrace();
+                Flan.LOGGER.error("Couldn't parse claim permission json {} {}", res, ex, ex.fillInStackTrace());
             }
         });
         this.permissions = builder.build();
