@@ -173,30 +173,47 @@ public class PlayerEvents {
         return true;
     }
 
-    public static boolean canDropItem(Player player, ItemStack stack) {
-        if (!player.isDeadOrDying() && player instanceof ServerPlayer) {
-            ClaimStorage storage = ClaimStorage.get((ServerLevel) player.level());
-            BlockPos pos = player.blockPosition();
-            IPermissionContainer claim = storage.getForPermissionCheck(pos);
-            boolean allow = true;
-            if (claim != null) {
-                if (!(claim instanceof Claim real) || !real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_DROP, stack::is, stack::is)) {
-                    allow = claim.canInteract((ServerPlayer) player, BuiltinPermission.DROP, pos, false);
-                }
-            }
-            if (!allow) {
-                player.getInventory().add(stack);
-                NonNullList<ItemStack> stacks = NonNullList.create();
-                for (int j = 0; j < player.containerMenu.slots.size(); ++j) {
-                    ItemStack itemStack2 = player.containerMenu.slots.get(j).getItem();
-                    stacks.add(itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2);
-                }
-                ((ServerPlayer) player).connection.send(new ClientboundContainerSetContentPacket(player.containerMenu.containerId, 0, stacks, player.inventoryMenu.getCarried()));
-            }
-            return allow;
-        }
-        return true;
+  public static boolean canDropItem(Player player, ItemStack stack) {
+    if (player.isDeadOrDying() || !(player instanceof ServerPlayer serverPlayer)) {
+      return true; // Dead players can drop freely
     }
+
+    ClaimStorage storage = ClaimStorage.get((ServerLevel) player.level());
+    BlockPos pos = player.blockPosition();
+    IPermissionContainer claim = storage.getForPermissionCheck(pos);
+
+    boolean allow = true;
+
+    if (claim != null) {
+      if (!(claim instanceof Claim real) || !real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_DROP, stack::is, stack::is)) {
+        allow = claim.canInteract(serverPlayer, BuiltinPermission.DROP, pos, false);
+      }
+    }
+
+    if (!allow) {
+      // Return item to player's hand if necessary
+      if (serverPlayer.inventory.getCarried().isEmpty()) {
+        serverPlayer.inventory.setCarried(stack.copy());
+      }
+
+      // Sync container inventory with client
+      NonNullList<ItemStack> slots = NonNullList.withSize(serverPlayer.containerMenu.slots.size(), ItemStack.EMPTY);
+      for (int i = 0; i < slots.size(); i++) {
+        ItemStack item = serverPlayer.containerMenu.slots.get(i).getItem();
+        slots.set(i, item.isEmpty() ? ItemStack.EMPTY : item);
+      }
+
+      serverPlayer.connection.send(new ClientboundContainerSetContentPacket(
+        serverPlayer.containerMenu.containerId,
+        0,
+        slots,
+        serverPlayer.inventory.getCarried()
+      ));
+    }
+
+    return allow;
+  }
+
 
     public static void updateDroppedItem(Player player, ItemEntity entity) {
         ((IOwnedItem) entity).flan$setOriginPlayer((player));
