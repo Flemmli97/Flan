@@ -1,0 +1,556 @@
+{
+  "noClaim": "Não há nenhuma reivindicação aqui.",
+  "inspectBlockOwner": "Esta é uma propriedade de %1$s",
+  "inspectNoClaim": "Ninguém possui este bloco",
+  "claimBlocksFormat": "Blocos de Reivindicação: %1$d + (Bônus) %2$d); Usados: %3$d; Restantes: %4$d",
+  "listClaims": "Listando todas as propriedades:",
+  "listAdminClaims": "Listando todas as propriedades de Admin em %1$s:",
+  "onlyOnePlayer": "Apenas um jogador pode ser usado como argumento",
+  "ownerTransferSuccess": "O novo proprietário da área é: %1$s",
+  "ownerTransferFail": "Apenas o proprietário pode transferir suas reivindicações",
+  "ownerTransferNoBlocks": "O novo proprietário não tem blocos de reivindicação suficientes",
+  "ownerTransferNoBlocksAdmin": "Você pode ignorar isso mudando para o modo Admin",
+  "noSuchLevel": "A dimensão com id %s não existe",
+  "noSuchPlayer": "O jogador com uuid/nome %s não existe",
+  "claimCreationFailCommand": "Não foi possível criar uma reivindicação nesta posição",
+  "noPermission": "Você não tem as permissões necessárias para fazer isso aqui!",
+  "noPermissionSimple": "Desculpe, você não pode fazer isso aqui!",
+  "noPermissionTooClose": "Desculpe, você está muito perto de uma reivindicação para fazer isso!",
+  "tooCloseClaim": "Você está muito perto de uma área protegida para fazer isso!",
+  "configReload": "Configurações recarregadas",
+  "cantClaimHere": "Desculpe, você não pode reivindicar aqui!",
+  "minClaimSize": "Área muito pequena! O tamanho mínimo para reivindicar é de %d blocos",
+  "maxClaims": "Quantidade máxima de reivindicações atingida",
+  "landClaimDisabledWorld": "Reivindicações estão desativadas neste mundo",
+  "editMode": "Modo de edição definido para %1$s",
+  "notEnoughBlocks": "Blocos de reivindicação insuficientes",
+  "conflictOther": "A reivindicação sobreporia outras reivindicações",
+  "wrongMode": "Modo de reivindicação incorreto. Você está em modo %1$s",
+  "stringScreenReturn": "Clique no papel para retornar",
+  "conflictSpawn": "A reivindicação afetaria área de proteção do spawn",
+  "claimCooldown": "Você precisa esperar %s ticks antes de criar outra reivindicação",
+  "groupAdd": "Grupo %1$s adicionado",
+  "groupRemove": "Grupo %1$s removido!",
+  "groupExist": "Este grupo já existe!",
+  "uuidFakeAdd": "Jogador falso com uuid %1$s adicionado à reivindicação",
+  "uuidFakeRemove": "Jogador falso com uuid %1$s removido da reivindicação",
+  "uuidFakeModifyNo": "Jogador falso com o uuid fornecido já está adicionado",
+  "playerModify": "Grupo de permissão modificado para os seguintes jogadores para %1$s: %2$s",
+  "playerModifyNo": "Não foi possível setar o grupo de permissão para os jogadores. Provavelmente eles já pertencem a um grupo",
+  "playerGroupAddFail": "Não foi possível adicionar o jogador ao grupo! O jogador já está em um grupo ou nenhum jogador com esse nome foi encontrado",
+  "resizeClaim": "Redimensionando reivindicação",
+  "resizeSuccess": "Reivindicações redimensionadas",
+  "claimCreateSuccess": "Criada uma nova propriedade!",
+  "subClaimCreateSuccess": "Criada uma nova propriedade secundária!",
+  "deleteClaim": "Propriedade deletada",
+  "deleteAllClaimConfirm": "Tem certeza que deseja deletar todas as propriedades? Digite novamente para confirmar",
+  "deleteAllClaim": "Todas as propriedades foram deletadas",
+  "deleteClaimError": "Você não pode deletar esta propriedade aqui",
+  "deleteSubClaim": "Propriedade secundária deletada",
+  "deleteSubClaimError": "Não há uma propriedade secundária aqui. Mude o modo de reivindicação para deletar a propriedade principal.",
+  "deleteSubClaimAll": "Todas as propriedades secundárias foram deletadas",
+  "noSuchPerm": "Nenhuma permissão para %1$s",
+  "editPerm": "%1$s agora definido como %2$s",
+  "editPermGroup": "%1$s para %2$s agora definido como %3$s",
+  "editPersonalGroup": "Permissão padrão %1$s para o grupo %2$s agora foi definida como %3$s",
+  "nonGlobalOnly": "Não é possível editar %1$s aqui pois é uma permissão global",
+  "adminMode": "Modo admin (Ignorar Reivindicações) definido para: %1$s",
+  "adminDeleteAll": "Deletadas todas as reivindicações dos seguintes jogadores: %1$s",
+  "setAdminClaim": "O dono desta propriedade agora é: %1$s",
+  "readGriefpreventionData": "Lendo dados do GriefPrevention",
+  "readGriefpreventionClaimDataSuccess": "Dados de propriedade lidos com sucesso",
+  "readGriefpreventionPlayerDataSuccess": "Dados de jogador lidos com sucesso",
+  "cantFindData": "Nenhum dado do GriefPrevention em %1$s",
+  "errorFile": "Erro ao ler o arquivo %1$s",
+  "readConflict": "%1$s conflita com reivindicações existentes. Não adicionado ao mundo! Conflitos:",
+  "giveClaimBlocks": "Deu aos seguintes jogadores %2$d blocos de reivindicação: %1$s",
+  "giveClaimBlocksBonus": "Deu aos seguintes jogadores %2$d blocos de reivindicação bônus: %1$s",
+  "fakePlayerNotification1": "Um jogador falso tentou interagir com sua reivindicação em %1$s em %2$s.",
+  "fakePlayerNotification2": "Clique %s enquanto estiver dentro da sua reivindicação para adicionar o jogador falso à reivindicação.",
+  "clickableComponent": "aqui",
+  "fakePlayerNotification3": "Clique %s para desativar esta notificação.",
+  "fakePlayerNotification": "Notificação de jogador falso configurada para %s",
+  "claimBasicInfo": "Proprietário: %1$s, de: [x=%2$d,z=%3$d] até [x=%4$d,z=%5$d]); Quantidade de propriedades secundárias: %6$d",
+  "claimBasicInfoNamed": "Propriedade: %7$s, Proprietário: %1$s, de: [x=%2$d,z=%3$d] até [x=%4$d,z=%5$d]); Quantidade de propriedades secundárias: %6$d",
+  "claimSubHeader": "==Informações de Propriedades Secundárias==",
+  "claimBasicInfoSub": "Proprietário: %1$s, de: [x=%2$d,z=%3$d] até [x=%4$d,z=%5$d]",
+  "claimBasicInfoSubNamed": "Prorpriedade: %6$s, Proprietário: %1$s, de: [x=%2$d,z=%3$d] até [x=%4$d,z=%5$d]",
+  "claimInfoPerms": "Permissões: %1$s",
+  "claimGroupInfoHeader": "Grupos: ",
+  "claimGroupPerms": "    Permissões: %1$s",
+  "claimGroupPlayers": "    Jogadores: %1$s",
+  "helpHeader": "Subcomandos disponíveis (página %d):",
+  "helpCmdHeader": "====================",
+  "helpCmdSyntax": "Sintaxe: %1$s",
+  "screenEnableText": "Ativado: %1$s",
+  "screenUneditable": "Não editável!",
+  "screenClose": "Fechar",
+  "screenNext": "Próximo",
+  "screenPrevious": "Anterior",
+  "screenAdd": "Adicionar",
+  "screenBack": "Voltar",
+  "screenNoPerm": "Sem Permissão",
+  "screenFalse": "falso",
+  "screenTrue": "verdadeiro",
+  "screenDefault": "padrão",
+  "screenMenu": "Menu de Propriedade",
+  "screenMenuSub": "Menu de Propriedade Secundária",
+  "screenMenuGlobal": "Editar Permissões Globais",
+  "screenMenuGroup": "Editar Grupos de Permissão",
+  "screenMenuPotion": "Editar Efeitos de Poções",
+  "screenMenuClaimText": "Editar Textos de Entrada/Saída",
+  "screenMenuFakePlayers": "Jogadores Falsos",
+  "screenMenuDelete": "Deletar Propriedade",
+  "screenConfirm": "Confirmar",
+  "screenYes": "Sim",
+  "screenNo": "Não",
+  "screenGroupPlayers": "Jogadores de %1$s",
+  "screenRemoveMode": "Modo de Remoção: %1$s",
+  "screenGlobalPerms": "Permissões Globais",
+  "screenGroupName": "%s",
+  "screenGroups": "Grupos de Reivindicação",
+  "screenGroupPerms": "Permissões de %1$s",
+  "screenPersonalGroups": "Grupos Pessoais",
+  "screenPersonalPermissions": "Permissões Pessoais para %1$s",
+  "screenFakePlayerNameUUID": "%s",
+  "screenPotions": "Poções da Propriedade",
+  "screenPotionText": "%s",
+  "screenTitleEditor": "Mensagens da Propriedade",
+  "screenTitleEditorSub": "Mensagens da Propriedade Secundária",
+  "screenTextJson": "Clique com o botão direito para usar texto JSON. Veja a Wiki do MC para isso.",
+  "screenEnterText": "Editar título ao entrar.",
+  "screenEnterSubText": "Editar subtítulo ao entrar.",
+  "screenLeaveText": "Editar título ao sair.",
+  "screenLeaveSubText": "Editar subtítulo ao sair.",
+  "screenDelete": "Use \"$empty\" para deletar a mensagem",
+  "screenMenuItemUse": "Uso de item permitido",
+  "screenMenuBlockBreak": "Quebra de blocos permitida",
+  "screenMenuBlockUse": "Uso de blocos permitido",
+  "screenMenuEntityAttack": "Entidades permitidas para atacar",
+  "screenMenuEntityUse": "Interações de entidades permitidas",
+  "allowListEmptyTag": "Tag vazia",
+  "chatClaimTextEdit": "[Clique para comando]",
+  "sellDisabled": "Venda de blocos de reivindicação está desabilitada",
+  "buyDisabled": "Compra de blocos de reivindicação está desabilitada",
+  "sellFail": "Blocos de reivindicação insuficientes para vender",
+  "buyFail": "Dinheiro insuficiente",
+  "buyFailItem": "Itens insuficientes",
+  "buyFailXP": "Pontos de experiência insuficientes",
+  "sellSuccess": "Vendeu %1$s blocos de reivindicação por %2$s",
+  "sellSuccessItem": "Vendeu %1$s blocos de reivindicação por %3$s x%2$s",
+  "sellSuccessXP": "Vendeu %1$s blocos de reivindicação por %2$s pontos de experiência",
+  "buySuccess": "Comprou %1$s blocos de reivindicação por %2$s",
+  "buySuccessItem": "Comprou %1$s blocos de reivindicação com %2$s itens",
+  "buySuccessXP": "Comprou %1$s blocos de reivindicação com %2$s pontos de experiência",
+  "currencyMissing": "Está faltando um mod de moeda suportado",
+  "trappedRescue": "Resgatando! Não se mova por 5 segundos",
+  "trappedFail": "Resgate não necessário ou já em andamento",
+  "trappedMove": "Você se moveu. Teleporte abortado!",
+  "unlockDropsCmd": "Seus itens de morte estão protegidos. Use %1$s para desbloqueá-los para outros jogadores",
+  "unlockDrops": "Seus itens de morte agora estão desbloqueados por %1$s ticks",
+  "unlockDropsMulti": "Itens desbloqueados por %1$s",
+  "claimNameSet": "Nome da propriedade definido para %1$s",
+  "claimNameUsed": "O dono da propriedade já possui outra com o mesmo nome",
+  "claimNameUsedSub": "Uma das propriedades secundárias desta propriedade já tem este nome",
+  "setHome": "Casa definida para [x=%1$s,y=%2$s,z=%3$s]",
+  "teleportNoClaim": "Nenhuma propriedade com esse nome para teleportar",
+  "teleportHome": "Teleportando para a Casa. Não se mova por 5 segundos",
+  "teleportHomeFail": "Teleporte já em andamento",
+  "setEnterMessage": "Título de entrada definido para %1$s",
+  "setEnterSubMessage": "Subtítulo de entrada definido para %1$s",
+  "setLeaveMessage": "Título de saída definido para %1$s",
+  "setLeaveSubMessage": "Subtítulo de saída definido para %1$s",
+  "addIgnoreEntry": "Adicionado %1$s à lista de ignorar da propriedade %2$s",
+  "removeIgnoreEntry": "Removido %1$s da lista de ignorar da propriedade %2$s",
+  "wiki": "Para mais informações, consulte a wiki:",
+  "flan:edit_claim": "Editar Propriedade",
+  "flan:edit_perms": "Editar Permissões",
+  "flan:edit_potions": "Editar Poções",
+  "flan:break": "Quebrar",
+  "flan:place": "Colocar",
+  "flan:open_container": "Abrir Container",
+  "flan:interact_block": "Interagir com Bloco",
+  "flan:interact_sign": "Interagir com Placa",
+  "flan:anvil": "Bigorna",
+  "flan:bed": "Cama",
+  "flan:beacon": "Farol",
+  "flan:door": "Porta",
+  "flan:fence_gate": "Portão de Cerca",
+  "flan:trapdoor": "Alçapão",
+  "flan:button_lever": "Botão/Alavanca",
+  "flan:pressure_plate": "Placa de Pressão",
+  "flan:noteblock": "Bloco de Notas",
+  "flan:redstone": "Redstone",
+  "flan:jukebox": "Caixa de Música",
+  "flan:enderchest": "Baú do End",
+  "flan:enchantment": "Mesa de Encantamentos",
+  "flan:itemframe_rotate": "Girar Quadro de Item",
+  "flan:lectern_take": "Pegar do Atril",
+  "flan:endcrystal_place": "Colocar Cristal do End",
+  "flan:target_block": "Bloco de Alvo",
+  "flan:projectiles": "Projéteis",
+  "flan:trample": "Pisar (trample)",
+  "flan:frost_walker": "Frost Walker",
+  "flan:portal": "Portal",
+  "flan:raid": "Raid",
+  "flan:boat": "Barco",
+  "flan:minecart": "Vagão",
+  "flan:bucket": "Balde",
+  "flan:ender_pearl": "Ender Pearl",
+  "flan:chorus_fruit": "Fruta do Coro (Chorus Fruit)",
+  "flan:animal_interact": "Interagir com Animal",
+  "flan:hurt_animal": "Ferir Animal",
+  "flan:xp": "XP",
+  "flan:trading": "Comércio",
+  "flan:armorstand": "Suporte de Armadura",
+  "flan:break_non_living": "Quebrar Não Vivos",
+  "flan:drop": "Dropar",
+  "flan:pickup": "Pegar",
+  "flan:flight": "Vôo",
+  "flan:can_stay": "Pode Permanecer",
+  "flan:teleport": "Teleporte",
+  "flan:no_hunger": "Sem Fome",
+  "flan:claim_message": "Mensagem da Reivindicação",
+  "flan:hurt_player": "Ferir Jogador",
+  "flan:explosions": "Explosões",
+  "flan:wither": "Wither",
+  "flan:enderman": "Enderman",
+  "flan:snow_golem": "Golem de Neve",
+  "flan:fire_spread": "Propagação de Fogo",
+  "flan:water_border": "Água Atravessar Fronteira",
+  "flan:piston_border": "Pistão Atravessar Fronteira",
+  "flan:mob_spawn": "Spawn de mobs hostis",
+  "flan:animal_spawn": "Spawn de animais",
+  "flan:lightning": "Raio",
+  "flan:lock_items": "Travar itens na morte",
+  "flan:fake_player": "Jogador Falso",
+  "flan:player_mob_spawn": "Spawn de mobs por jogador",
+  "flan:sculk": "Sculk",
+  "flan:archeology": "Arqueologia",
+  "flan:edit_claim.desc": [
+    "Concede permissão para editar (redimensionar, deletar...) a propriedade"
+  ],
+  "flan:edit_perms.desc": [
+    "Concede permissão para alterar as permissões da propriedade"
+  ],
+  "flan:edit_potions.desc": [
+    "Concede permissão para editar o efeito de poções da propriedade"
+  ],
+  "flan:break.desc": [
+    "Permissão para quebrar blocos na propriedade"
+  ],
+  "flan:place.desc": [
+    "Permissão para colocar blocos na propriedade"
+  ],
+  "flan:open_container.desc": [
+    "Permissão para abrir containers",
+    "(baú, fornalha etc.)"
+  ],
+  "flan:interact_block.desc": [
+    "Permissão genérica para interação com blocos.",
+    "Alternativa à permissão de abrir containers",
+    "Usado para todos os blocos que OPENCONTAINER não permite"
+  ],
+  "flan:interact_sign.desc": [
+    "Permissão para editar placas (ex: pintá-las)"
+  ],
+  "flan:anvil.desc": [
+    "Permissão para usar bigornas"
+  ],
+  "flan:bed.desc": [
+    "Permissão para usar camas"
+  ],
+  "flan:beacon.desc": [
+    "Permissão para usar faróis (beacon)"
+  ],
+  "flan:door.desc": [
+    "Permissão para usar portas"
+  ],
+  "flan:fence_gate.desc": [
+    "Permissão para usar portões de cerca"
+  ],
+  "flan:trapdoor.desc": [
+    "Permissão para usar alçapões"
+  ],
+  "flan:button_lever.desc": [
+    "Permissão para acionar botões e alavancas"
+  ],
+  "flan:pressure_plate.desc": [
+    "Permissão para acionar placas de pressão"
+  ],
+  "flan:noteblock.desc": [
+    "Permissão para alterar blocos de notas"
+  ],
+  "flan:redstone.desc": [
+    "Permissão para alterar componentes de redstone"
+  ],
+  "flan:jukebox.desc": [
+    "Permissão para inserir/retirar discos de música"
+  ],
+  "flan:enderchest.desc": [
+    "Permissão para usar baús do ender"
+  ],
+  "flan:enchantment.desc": [
+    "Permissão para usar mesas de encantamento"
+  ],
+  "flan:itemframe_rotate.desc": [
+    "Permissão para girar itens em quadros"
+  ],
+  "flan:lectern_take.desc": [
+    "Permissão para trocar livros no atril"
+  ],
+  "flan:endcrystal_place.desc": [
+    "Permissão para colocar cristais do end"
+  ],
+  "flan:target_block.desc": [
+    "Permissão para acionar blocos de alvo"
+  ],
+  "flan:projectiles.desc": [
+    "Permissão para projéteis interagirem com blocos (ex: flecha em botão)"
+  ],
+  "flan:trample.desc": [
+    "Permissão para pisar em blocos",
+    "(terra molhada, ovos de tartaruga...)"
+  ],
+  "flan:frost_walker.desc": [
+    "Permissão para Frost Walker ativar"
+  ],
+  "flan:portal.desc": [
+    "Permissão para usar portais do Nether"
+  ],
+  "flan:raid.desc": [
+    "Permissão para iniciar raids dentro da propriedade.",
+    "Não impedirá raids!"
+  ],
+  "flan:boat.desc": [
+    "Permissão para usar barcos"
+  ],
+  "flan:minecart.desc": [
+    "Permissão para sentar em vagões"
+  ],
+  "flan:bucket.desc": [
+    "Permissão para pegar líquidos com baldes"
+  ],
+  "flan:ender_pearl.desc": [
+    "Permissão para usar enderpearls"
+  ],
+  "flan:chorus_fruit.desc": [
+    "Permissão para comer frutas do coro (chorus fruit)"
+  ],
+  "flan:animal_interact.desc": [
+    "Permissão para interagir com animais",
+    "(ex: tosar ovelhas)"
+  ],
+  "flan:hurt_animal.desc": [
+    "Permissão para ferir animais"
+  ],
+  "flan:xp.desc": [
+    "Permissão para pegar orbs de XP"
+  ],
+  "flan:trading.desc": [
+    "Permissão para negociar com aldeões"
+  ],
+  "flan:armorstand.desc": [
+    "Permissão para interagir com suportes de armadura"
+  ],
+  "flan:break_non_living.desc": [
+    "Permissão para quebrar coisas não-vivas (ex: vagões ou suportes de armadura)"
+  ],
+  "flan:drop.desc": [
+    "Permitir queda de itens (dropar itens)"
+  ],
+  "flan:pickup.desc": [
+    "Permitir coleta de itens (pegar itens dropados)"
+  ],
+  "flan:flight.desc": [
+    "Permitir vôo não-criativo"
+  ],
+  "flan:can_stay.desc": [
+    "Permitir jogadores entrarem na sua propriedade"
+  ],
+  "flan:teleport.desc": [
+    "Permitir jogador teleportar para a porpriedade Casa"
+  ],
+  "flan:no_hunger.desc": [
+    "Desativar fome"
+  ],
+  "flan:claim_message.desc": [
+    "Permissão para editar mensagens de entrada/saída"
+  ],
+  "flan:hurt_player.desc": [
+    "Permissão para ferir outros jogadores"
+  ],
+  "flan:explosions.desc": [
+    "Ativar explosões na propriedae"
+  ],
+  "flan:wither.desc": [
+    "Ativar wither quebrando blocos na propriedade"
+  ],
+  "flan:enderman.desc": [
+    "Permitir enderman pegar e colocar blocos"
+  ],
+  "flan:snow_golem.desc": [
+    "Permitir camadas de neve de golems de neve (neve no chão)"
+  ],
+  "flan:fire_spread.desc": [
+    "Permitir propagação de fogo na propriedade"
+  ],
+  "flan:water_border.desc": [
+    "Permitir água vazar pelos limites da propriedade"
+  ],
+  "flan:piston_border.desc": [
+    "Permitir pistão puxar/empurrar através das bordas da propriedade"
+  ],
+  "flan:mob_spawn.desc": [
+    "Impedir spawn de mobs hostis na propriedade"
+  ],
+  "flan:animal_spawn.desc": [
+    "Impedir outros spawns (animais) na propriedade"
+  ],
+  "flan:lightning.desc": [
+    "Permitir raios afetarem propriedades,",
+    "ex: colocar fogo em blocos,",
+    "ou afetar animais (mobs são excluídos)"
+  ],
+  "flan:lock_items.desc": [
+    "Travar itens ao morrer"
+  ],
+  "flan:fake_player.desc": [
+    "Permitir que jogadores falsos interajam nesta propriedade",
+    "Alguns mods fazem fakeplayer usar o uuid do usuário",
+    "Para esses mods essa permissão pode não ser necessária"
+  ],
+  "flan:player_mob_spawn.desc": [
+    "Permissão para jogadores afetados gerarem mobs com interações",
+    "ex: wardens, ou endermites com enderpearls"
+  ],
+  "flan:sculk.desc": [
+    "Permissão para sculk sensors."
+  ],
+  "flan:archeology.desc": [
+    "Permitir jogadores escavarem/escovar blocos nesta propriedade"
+  ],
+  "command.help": [
+    "/help <page> | (cmd <command>)",
+    "Mostra todos os subcomandos disponíveis ou informações sobre o comando especificado."
+  ],
+  "command.menu": [
+    "/menu",
+    "Quando estiver dentro de uma propriedade que você tem permissão, abre o menu da propriedade."
+  ],
+  "command.claimInfo": [
+    "/claimInfo",
+    "Exibe informações sobre a propriedade em que você está."
+  ],
+  "command.delete": [
+    "/delete",
+    "Deleta a propriedade atual."
+  ],
+  "command.deleteAll": [
+    "/deleteAll",
+    "Deleta todas as suas propriedade (é necessário digitar duas vezes para confirmar para evitar acidentes)."
+  ],
+  "command.deleteSubClaim": [
+    "/deleteSubClaim",
+    "Deleta a propriedade secundária atual."
+  ],
+  "command.deleteAllSubClaims": [
+    "/deleteAllSubClaims",
+    "Deleta todas as propriedades secundárias da propriedade atual."
+  ],
+  "command.list": [
+    "/list <player>",
+    "Lista todas as propriedades que você tem. Se for OP (Admin do mundo ou server), também permite listar as propriedade de outros jogadores."
+  ],
+  "command.switchMode": [
+    "/switchMode",
+    "Alterna entre o modo normal e o modo subreivindicação."
+  ],
+  "command.group": [
+    "/group (add | remove <name>) | (players add | remove <player> [overwrite])",
+    "- Adiciona/remove o grupo com esse nome. Também editável pelo menu da propriedade.",
+    "- Adiciona/remove um jogador do grupo. Se overwrite então sobrescreve o grupo atual do jogador, caso contrário não faz nada. Também editável pelo menu da propriedade."
+  ],
+  "command.transferClaim": [
+    "/transferClaim <player>",
+    "Passa a propriedade para o jogador especificado. Só funciona se você for o dono da propriedade."
+  ],
+  "command.addClaim": [
+    "/addClaim (<x y z> <x y z>) | all | (rect x z)",
+    "Cria uma propriedade com as posições dadas. Igual a usar a ferramenta de reivindicação.",
+    "<all> usa todos os blocos restantes para uma propriedade quadrada centrada no jogador",
+    "<rect> cria uma propriedade retangular centrada no jogador"
+  ],
+  "command.permission": [
+    "/permission {global | (group <name>) | (personal <name>)} <permission> true | false | default",
+    "Define permissões global/grupo/pessoal. Também editável pelo menu da propriedade (para permissão de grupo clique com o botão direito no grupo no menu)."
+  ],
+  "command.personalGroups": [
+    "/personalGroups",
+    "Abre a GUI para editar grupos pessoais."
+  ],
+  "command.sellBlocks": [
+    "/sellBlocks <amount>",
+    "Vende <amount> blocos de reivindicação. Requer um mod de moeda instalado."
+  ],
+  "command.buyBlocks": [
+    "/buyBlocks <amount>",
+    "Compra <amount> blocos de reivindicação. Requer um mod de moeda instalado."
+  ],
+  "command.trapped": [
+    "/trapped",
+    "Se estiver em uma propriedade que não é sua, tenta teleportar você para fora após 5 segundos."
+  ],
+  "command.unlockDrops": [
+    "/unlockDrops <players>",
+    "Destrava os itens droppados na morte para que outros jogadores possam pegá-los também. Para jogadores especificos precisa ser OP"
+  ],
+  "command.setHome": [
+    "/setHome",
+    "Estando em uma propriedade com permissão suficiente define a Casa para a posição do jogador"
+  ],
+  "command.teleport": [
+    "/teleport self | admin | (other <player>) (<claim name> | <claim uuid>)",
+    "Teleporta para a posição Casa. Use admin para teleportar para adminclaim"
+  ],
+  "command.name": [
+    "/name self <name>",
+    "Define o nome da propriedade atual"
+  ],
+  "command.claimMessage": [
+    "/claimMessage (enter | leave) (title | subtitle) (string | text) <value>",
+    "Define a mensagem da propriedade. Use \"$empty\" para remover a mensagem"
+  ],
+  "command.ignoreList": [
+    "/ignoreList (add | remove) <type> <value>",
+    "Adiciona/Remove uma entrada na lista de ignorar específica da propriedade"
+  ],
+  "command.reload": [
+    "/reload",
+    "Recarrega a configuração no jogo."
+  ],
+  "command.adminMode": [
+    "/adminMode",
+    "Alterna para o modo admin ignorando todas as reivindicações."
+  ],
+  "command.readGriefPrevention": [
+    "/readGriefPreventionData",
+    "Faz uma análise dos dados do plugin GriefPrevention para o Flan"
+  ],
+  "command.setAdminClaim": [
+    "/setAdminClaim",
+    "Define uma reivindicação como propriedade de admin."
+  ],
+  "command.listAdminClaims": [
+    "/listAdminClaim",
+    "Lista todas as propriedades de admin no mundo atual."
+  ],
+  "command.adminDelete": [
+    "/adminDelete [all <player>]",
+    "Força a deleção da propriedade atual ou deleta todas as propriedades do jogador especificado."
+  ],
+  "command.giveClaimBlocks": [
+    "/giveClaimBlocks <amount>",
+    "Dá a um jogador blocos de reivindicação adicionais."
+  ]
+}
