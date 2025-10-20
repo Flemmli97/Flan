@@ -8,7 +8,7 @@
     "Flemmli97"
   ],
   "contact": {
-    "homepage": "${homepage}",
+    "homepage": "${homepage_fabric}",
     "issues": "https://github.com/Flemmli97/Flan/issues",
     "sources": "https://github.com/Flemmli97/Flan"
   },

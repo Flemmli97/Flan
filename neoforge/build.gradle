@@ -1,66 +1,53 @@
-apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/arch-loom-v2/neoforge.gradle"
+plugins {
+    id 'io.github.flemmli97.multiloader.platform-neoforge'
+}
 
-loom {
+neoForge {
     runs {
+        var common = project(":common")
         data {
             serverData()
-            programArgs "--all", "--mod", "flan"
-            programArgs "--output", project(":common").file("src/generated/resources").absolutePath
+            programArguments.addAll "--all", "--mod", "flan"
+            programArguments.addAll "--output", common.file("src/generated/resources").absolutePath
+        }
+        client {
+            jvmArgument "-XX:+AllowEnhancedClassRedefinition"
         }
     }
 }
 
 repositories {
-    mavenLocal()
-    mavenCentral()
-    maven {
-        name = "FTB"
-        url = "https://maven.ftb.dev/releases"
-    }
-    maven {
-        name = "CurseMaven"
-        url "https://www.cursemaven.com"
-    }
     maven {
         name = "minecolonies"
         url "https://ldtteam.jfrog.io/ldtteam/modding/"
     }
-    maven {
-        name = "LinguaBib"
-        url "https://maven.blazing-coop.net/releases"
-    }
 }
 
 dependencies {
-    modCompileOnly dicemcmm
+    jarJar(implementation("io.github.flemmli97:lingua_bib:${lingua_bib}-neoforge"))
+    jarJar(implementation('org.yaml:snakeyaml:2.4'))
 
-    //modRuntimeOnly "dev.ftb.mods:ftb-ranks-forge:${ftb_ranks}"
-    //modRuntimeOnly "dev.ftb.mods:ftb-chunks-forge:${ftb_chunks}"
+    compileOnly dicemcmm
+
+    //runtimeOnly "dev.ftb.mods:ftb-ranks-neoforge:${ftb_ranks}"
+    //runtimeOnly "dev.ftb.mods:ftb-chunks-neoforge:${ftb_chunks}"
 
     //CompileOnly cause dependencies
-    modCompileOnly "com.ldtteam:minecolonies:${minecolonies}"
-
-    modImplementation include("io.github.flemmli97:lingua_bib:${lingua_bib}-neoforge")
+    compileOnly "com.ldtteam:minecolonies:${minecolonies}"
 }
 
-task apiJar(type: Jar, dependsOn: classes) {
-    archiveClassifier.set "api-source"
-    from project(":common").sourceSets.main.output + sourceSets.main.output
-    include "io/github/flemmli97/flan/api/**"
-}
-
-task remapApiJar(type: net.fabricmc.loom.task.RemapJarTask) {
+tasks.register('apiJar', Jar) {
+    dependsOn classes
     archiveClassifier.set "api"
-    input.set apiJar.archiveFile
-    addNestedDependencies = false
-    dependsOn apiJar
+    from sourceSets.main.output
+    include "io/github/flemmli97/flan/api/**"
 }
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact(remapApiJar) {
-                builtBy remapApiJar
+            artifact(apiJar) {
+                builtBy apiJar
             }
         }
     }
