@@ -169,9 +169,9 @@ public class EntityInteractEvents {
                         ((IPersistentProjectileVars) pers).setPiercingLevel((byte) 0);
                         pers.setSoundEvent(SoundEvents.ARROW_HIT);
                         ((IPersistentProjectileVars) pers).resetPiercingStatus();
+                    } else {
+                        proj.discard();
                     }
-                    if (proj instanceof ThrownEnderpearl)
-                        proj.remove(Entity.RemovalReason.KILLED);
                 }
                 return flag;
             } else if (res.getType() == HitResult.Type.ENTITY) {
