@@ -1,14 +1,41 @@
 pluginManagement {
     repositories {
         maven {
-            name = 'Fabric'
-            url = 'https://maven.fabricmc.net/'
+            name = 'Sponge'
+            url = uri('https://repo.spongepowered.org/repository/maven-public')
+            content {
+                includeGroupAndSubgroups("org.spongepowered")
+            }
         }
-        maven { url "https://maven.architectury.dev/" }
-        maven { url "https://repo1.maven.org/maven2/" }
-        maven { url "https://maven.minecraftforge.net/" }
+        maven {
+            name = 'Fabric'
+            url = uri('https://maven.fabricmc.net')
+            content {
+                includeGroupByRegex('net.fabricmc.*')
+                includeGroup('fabric-loom')
+            }
+        }
+        maven {
+            name = 'Forge'
+            url = uri('https://maven.minecraftforge.net')
+            content {
+                includeGroupAndSubgroups('net.minecraftforge')
+            }
+        }
+        maven {
+            name = 'Multiloader'
+            url = uri('https://maven.blazing-coop.net/releases')
+            content {
+                includeGroupAndSubgroups('io.github.flemmli97.multiloader')
+            }
+        }
         gradlePluginPortal()
+        mavenCentral()
     }
+}
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
 }
 
 include("common")

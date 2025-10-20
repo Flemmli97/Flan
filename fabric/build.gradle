@@ -1,16 +1,12 @@
-apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/arch-loom-v2/fabric.gradle"
+plugins {
+    id 'fabric-loom'
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id 'com.modrinth.minotaur' version '2.+'
+    id 'io.github.flemmli97.multiloader.platform-fabric'
+}
 
 repositories {
-    mavenLocal()
     mavenCentral()
-    maven {
-        name = 'Fabric-Permission-API'
-        url 'https://oss.sonatype.org/content/repositories/snapshots'
-    }
-    maven {
-        name = "Gunpowder"
-        url = "https://maven.martmists.com/releases"
-    }
     maven {
         name = 'Ladysnake Mods'
         url = 'https://maven.ladysnake.org/releases'
@@ -20,34 +16,37 @@ repositories {
         }
     }
     maven {
-        name = "HavenKing"
-        url = "https://hephaestus.dev/release"
-    }
-    maven {
-        name = "FTB"
-        url = "https://maven.ftb.dev/releases"
-    }
-    maven {
-        name = "CurseMaven"
-        url "https://www.cursemaven.com"
-    }
-    maven { url = "https://jitpack.io" }
-    maven {
         url = "https://maven.jamieswhiteshirt.com/libs-release/"
         content {
             includeGroup 'com.jamieswhiteshirt'
         }
     }
-    maven { url "https://maven.nucleoid.xyz/" }
     maven {
-        name = "LinguaBib"
-        url "https://maven.blazing-coop.net/releases"
+        url = "https://maven.nucleoid.xyz/"
+        content {
+            includeGroup 'eu.pb4'
+        }
+    }
+    maven {
+        name = "Create Fabric"
+        url = "https://mvn.devos.one/snapshots"
+        content {
+            includeGroupByRegex 'io.github.fabricators_of_create.*'
+            includeGroup 'com.simibubi.create'
+        }
     }
 }
 
 dependencies {
-    modImplementation "me.lucko:fabric-permissions-api:${fabric_permissions_api}"
+    modImplementation include("io.github.flemmli97:lingua_bib:${lingua_bib}-fabric")
+    implementation include('org.yaml:snakeyaml:2.4')
 
+    remapCommon(modCompileOnly("io.github.fabricators_of_create.Porting-Lib:entity:${porting_lib}"))
+    remapCommon(modCompileOnly("com.simibubi.create:create-fabric-1.20.1:${create_fabric}")) {
+        transitive = false
+    }
+
+    modImplementation "me.lucko:fabric-permissions-api:${fabric_permissions_api}"
     modImplementation (octo_economy_api) {
         exclude group: "net.fabricmc.fabric-api"
     }
@@ -63,19 +62,18 @@ dependencies {
 
     modCompileOnly harvest_with_ease_fabric
     modCompileOnly "eu.pb4:common-protection-api:${common_prot_api}"
-
-    modImplementation include("io.github.flemmli97:lingua_bib:${lingua_bib}-fabric")
 }
 
-task apiJar(type: Jar, dependsOn: classes) {
+tasks.register('apiJar', Jar) {
+    dependsOn classes
     archiveClassifier.set "api-source"
-    from project(":common").sourceSets.main.output + sourceSets.main.output
+    from sourceSets.main.output
     include "io/github/flemmli97/flan/api/**"
     include "fabric.mod_api.json" //Include this so it gets remapped as a dependency
     rename("fabric.mod_api.json", "fabric.mod.json")
 }
 
-task remapApiJar(type: net.fabricmc.loom.task.RemapJarTask) {
+tasks.register('remapApiJar', net.fabricmc.loom.task.RemapJarTask) {
     archiveClassifier.set "api"
     input.set apiJar.archiveFile
     addNestedDependencies = false

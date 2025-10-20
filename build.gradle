@@ -1,6 +1,59 @@
 plugins {
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.10-SNAPSHOT" apply false
+    id 'fabric-loom' version '1.10-SNAPSHOT' apply false
+    id 'net.neoforged.moddev' version '2.0.107' apply false
+    id 'io.github.flemmli97.multiloader.platform-common' version '1.+' apply false
 }
 
-apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/arch-loom-v2/main.gradle"
+subprojects {
+    repositories {
+        mavenLocal()
+        maven {
+            name = "FTB"
+            url = "https://maven.ftb.dev/releases"
+            content {
+                includeGroup 'dev.ftb.mods'
+            }
+        }
+        maven {
+            name = "Architectury"
+            url "https://maven.architectury.dev/"
+            content {
+                includeGroup 'dev.architectury'
+            }
+        }
+        maven {
+            name = "LinguaBib"
+            url "https://maven.blazing-coop.net/releases"
+            content {
+                includeGroup 'io.github.flemmli97'
+            }
+        }
+        maven {
+            name = "Modrinth"
+            url = "https://api.modrinth.com/maven"
+            content {
+                includeGroup 'maven.modrinth'
+            }
+        }
+        maven {
+            name = "CurseMaven"
+            url "https://www.cursemaven.com"
+            content {
+                includeGroup 'curse.maven'
+            }
+        }
+        maven {
+            url "https://maven.impactdev.net/repository/development/"
+            content {
+                includeGroupByRegex 'net.impactdev.*'
+                includeGroup 'net.impactdev'
+            }
+        }
+        maven {
+            url 'https://jitpack.io'
+            content {
+                includeGroupByRegex 'com.github.*'
+            }
+        }
+    }
+}
