@@ -13,7 +13,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -99,17 +98,6 @@ public class StringResultScreenHandler extends AnvilMenu {
         }
         this.broadcastChanges();
         return ItemStack.EMPTY;
-    }
-
-    @Override
-    public void broadcastChanges() {
-        int j;
-        for (j = 0; j < this.slots.size(); ++j) {
-            ItemStack stack = this.slots.get(j).getItem();
-            for (ContainerListener screenHandlerListener : ((AbstractContainerAccessor) this).listeners()) {
-                screenHandlerListener.slotChanged(this, j, stack.copy());
-            }
-        }
     }
 
     /**
