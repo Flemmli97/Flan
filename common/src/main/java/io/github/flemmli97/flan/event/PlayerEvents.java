@@ -15,10 +15,12 @@ import io.github.flemmli97.flan.utils.IOwnedItem;
 import io.github.flemmli97.flan.utils.TeleportUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.CaveFeatures;
 import net.minecraft.data.worldgen.features.NetherFeatures;
+import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.ResourceKey;
@@ -172,18 +174,27 @@ public class PlayerEvents {
     }
 
     public static boolean canDropItem(Player player, ItemStack stack) {
-        ServerLevel level = (ServerLevel) player.level();
-        ClaimStorage storage = ClaimStorage.get(level);
-        BlockPos pos = player.blockPosition();
-        IPermissionContainer claim = storage.getForPermissionCheck(pos);
+        if (!player.isDeadOrDying() && player instanceof ServerPlayer) {
+            ClaimStorage storage = ClaimStorage.get((ServerLevel) player.level());
+            BlockPos pos = player.blockPosition();
+            IPermissionContainer claim = storage.getForPermissionCheck(pos);
+            boolean allow = true;
+            if (claim != null && (!(claim instanceof Claim real) || !real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_DROP, stack::is, stack::is))) {
+                allow = claim.canInteract((ServerPlayer) player, BuiltinPermission.DROP, pos, false);
+            }
 
-        if (claim == null) return true;
-
-        if (claim instanceof Claim real) {
-            return real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_DROP, stack::is, stack::is);
-        } else {
-            return claim.canInteract((ServerPlayer) player, BuiltinPermission.DROP, pos, false);
+            if (!allow) {
+                player.getInventory().add(stack);
+                NonNullList<ItemStack> stacks = NonNullList.create();
+                for (int j = 0; j < player.containerMenu.slots.size(); ++j) {
+                    ItemStack itemStack2 = player.containerMenu.slots.get(j).getItem();
+                    stacks.add(itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2);
+                }
+                ((ServerPlayer) player).connection.send(new ClientboundContainerSetContentPacket(player.containerMenu.containerId, 0, stacks, player.inventoryMenu.getCarried()));
+            }
+            return allow;
         }
+        return true;
     }
 
     public static void updateDroppedItem(Player player, ItemEntity entity) {

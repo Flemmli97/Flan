@@ -36,13 +36,8 @@ public abstract class PlayerDropMixin {
         Player player = (Player) (Object) this;
 
         if (!PlayerEvents.canDropItem(player, stack)) {
-
-            // Cancel the drop entirely; no need to restore item manually
-            var inventory = player.getInventory();
-            if (inventory.add(stack)) {
-                cir.setReturnValue(null);
-                cir.cancel();
-            }
+            cir.setReturnValue(null);
+            cir.cancel();
         }
     }
 }
