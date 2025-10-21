@@ -315,8 +315,11 @@ public class Claim implements IPermissionContainer {
             //For those mods we dont pass them as fake players
             if (this.fakePlayers.contains(player.getUUID()))
                 return true;
-            if (!player.getUUID().equals(this.owner) && !this.playersGroups.containsKey(player.getUUID())) {
-                perm = BuiltinPermission.FAKEPLAYER;
+            // Assume that if the profile cache contains the uuid that the fake player is based on a real player
+            if (this.level.getServer().getProfileCache().get(player.getUUID()).isEmpty()) {
+                if (!player.getUUID().equals(this.owner) && !this.playersGroups.containsKey(player.getUUID())) {
+                    perm = BuiltinPermission.FAKEPLAYER;
+                }
             }
         }
         InteractionResult res = ClaimEvents.INSTANCE.claimCheck(player, perm, pos);
