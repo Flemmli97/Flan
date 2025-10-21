@@ -19,6 +19,7 @@
     "EntityMixin",
     "FireBlockMixin",
     "FluidMixin",
+    "GiveCommandMixin",
     "IHungerAccessor",
     "ILecternBlockValues",
     "IPersistentProjectileVars",
