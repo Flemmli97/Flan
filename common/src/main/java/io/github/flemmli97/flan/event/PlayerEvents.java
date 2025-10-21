@@ -15,12 +15,10 @@ import io.github.flemmli97.flan.utils.IOwnedItem;
 import io.github.flemmli97.flan.utils.TeleportUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.CaveFeatures;
 import net.minecraft.data.worldgen.features.NetherFeatures;
-import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.ResourceKey;
@@ -114,7 +112,7 @@ public class PlayerEvents {
     public static float canSpawnFromPlayer(Entity entity, float old) {
         BlockPos pos;
         if (entity instanceof ServerPlayer player &&
-                !ClaimStorage.get(player.serverLevel()).getForPermissionCheck(pos = player.blockPosition()).canInteract(player, BuiltinPermission.PLAYERMOBSPAWN, pos, false))
+            !ClaimStorage.get(player.serverLevel()).getForPermissionCheck(pos = player.blockPosition()).canInteract(player, BuiltinPermission.PLAYERMOBSPAWN, pos, false))
             return -1;
         return old;
     }
@@ -174,28 +172,18 @@ public class PlayerEvents {
     }
 
     public static boolean canDropItem(Player player, ItemStack stack) {
-        if (!player.isDeadOrDying() && player instanceof ServerPlayer) {
-            ClaimStorage storage = ClaimStorage.get((ServerLevel) player.level());
-            BlockPos pos = player.blockPosition();
-            IPermissionContainer claim = storage.getForPermissionCheck(pos);
-            boolean allow = true;
-            if (claim != null) {
-                if (!(claim instanceof Claim real) || !real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_DROP, stack::is, stack::is)) {
-                    allow = claim.canInteract((ServerPlayer) player, BuiltinPermission.DROP, pos, false);
-                }
-            }
-            if (!allow) {
-                player.getInventory().add(stack);
-                NonNullList<ItemStack> stacks = NonNullList.create();
-                for (int j = 0; j < player.containerMenu.slots.size(); ++j) {
-                    ItemStack itemStack2 = player.containerMenu.slots.get(j).getItem();
-                    stacks.add(itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2);
-                }
-                ((ServerPlayer) player).connection.send(new ClientboundContainerSetContentPacket(player.containerMenu.containerId, 0, stacks, player.inventoryMenu.getCarried()));
-            }
-            return allow;
+        ServerLevel level = (ServerLevel) player.level();
+        ClaimStorage storage = ClaimStorage.get(level);
+        BlockPos pos = player.blockPosition();
+        IPermissionContainer claim = storage.getForPermissionCheck(pos);
+
+        if (claim == null) return true;
+
+        if (claim instanceof Claim real) {
+            return real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_DROP, stack::is, stack::is);
+        } else {
+            return claim.canInteract((ServerPlayer) player, BuiltinPermission.DROP, pos, false);
         }
-        return true;
     }
 
     public static void updateDroppedItem(Player player, ItemEntity entity) {
@@ -244,7 +232,7 @@ public class PlayerEvents {
                     Claim mainClaim = isSub ? currentClaim.parentClaim() : currentClaim;
                     Entity vehicle = player.getVehicle();
                     if (!mainClaim.canInteract(player, BuiltinPermission.CANSTAY, bPos, true) ||
-                            (vehicle instanceof VehicleEntity && !vehicle.isControlledByLocalInstance() && !mainClaim.canInteract(player, BuiltinPermission.VEHICLE_PASS, bPos, true))) {
+                        (vehicle instanceof VehicleEntity && !vehicle.isControlledByLocalInstance() && !mainClaim.canInteract(player, BuiltinPermission.VEHICLE_PASS, bPos, true))) {
                         Claim sub = isSub ? currentClaim : null;
                         Vec3 tp = TeleportUtils.getTeleportPos(player, pos, storage, new TeleportUtils.Area2D(sub != null ? sub.getDimensions() : mainClaim.getDimensions()), true, bPos, (claim, nPos) -> claim.canInteract(player, BuiltinPermission.CANSTAY, nPos, false));
                         if (vehicle != null) {

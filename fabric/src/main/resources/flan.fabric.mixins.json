@@ -7,6 +7,7 @@
     "EntityDamageMixin",
     "FabricFireMixin",
     "LevelMixin",
+	  "GiveCommandMixin",
     "LightningHitMixin",
     "PatrolSpawnerMixin",
     "PhantomSpawnerMixin",
