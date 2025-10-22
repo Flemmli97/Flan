@@ -16,14 +16,14 @@ subprojects {
         }
         maven {
             name = "Architectury"
-            url "https://maven.architectury.dev/"
+            url = "https://maven.architectury.dev/"
             content {
                 includeGroup 'dev.architectury'
             }
         }
         maven {
             name = "LinguaBib"
-            url "https://maven.blazing-coop.net/releases"
+            url = "https://maven.blazing-coop.net/releases"
             content {
                 includeGroup 'io.github.flemmli97'
             }
@@ -37,20 +37,20 @@ subprojects {
         }
         maven {
             name = "CurseMaven"
-            url "https://www.cursemaven.com"
+            url = "https://www.cursemaven.com"
             content {
                 includeGroup 'curse.maven'
             }
         }
         maven {
-            url "https://maven.impactdev.net/repository/development/"
+            url = "https://maven.impactdev.net/repository/development/"
             content {
                 includeGroupByRegex 'net.impactdev.*'
                 includeGroup 'net.impactdev'
             }
         }
         maven {
-            url 'https://jitpack.io'
+            url = 'https://jitpack.io'
             content {
                 includeGroupByRegex 'com.github.*'
             }

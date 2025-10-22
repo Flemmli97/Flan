@@ -19,7 +19,7 @@ neoForge {
 repositories {
     maven {
         name = "minecolonies"
-        url "https://ldtteam.jfrog.io/ldtteam/modding/"
+        url = "https://ldtteam.jfrog.io/ldtteam/modding/"
     }
 }
 
