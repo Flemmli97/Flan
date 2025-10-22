@@ -1,7 +1,8 @@
 package io.github.flemmli97.flan.fabric.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import io.github.flemmli97.flan.event.PlayerEvents;
-import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -9,11 +10,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(Player.class)
-public abstract class PlayerDropMixin {
+@Mixin(ServerPlayer.class)
+public abstract class ServerPlayerDropMixin {
 
-    @Inject(method = "drop", at = @At(value = "RETURN"), cancellable = true)
-    private void onDrop(ItemStack stack, boolean includeThrowerName, CallbackInfoReturnable<ItemEntity> info) {
+    @Inject(method = "drop(Z)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;drop(Lnet/minecraft/world/item/ItemStack;ZZ)Lnet/minecraft/world/entity/item/ItemEntity;"), cancellable = true)
+    private void onDrop(boolean dropStack, CallbackInfoReturnable<Boolean> info, @Local ItemStack stack) {
         if (!PlayerEvents.canDropItem((Player) (Object) this, stack)) {
             info.setReturnValue(null);
             info.cancel();

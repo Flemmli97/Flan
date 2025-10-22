@@ -13,6 +13,7 @@ import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.utils.IOwnedItem;
+import io.github.flemmli97.flan.utils.PlayerDropHandler;
 import io.github.flemmli97.flan.utils.TeleportUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -173,7 +174,8 @@ public class PlayerEvents {
     }
 
     public static boolean canDropItem(Player player, ItemStack stack) {
-        if (!player.isDeadOrDying() && player instanceof ServerPlayer) {
+        PlayerDropHandler dropHandler = ((PlayerDropHandler) player);
+        if (!dropHandler.flan$forcedDropState() && !player.isDeadOrDying() && player instanceof ServerPlayer) {
             ClaimStorage storage = ClaimStorage.get((ServerLevel) player.level());
             BlockPos pos = player.blockPosition();
             IPermissionContainer claim = storage.getForPermissionCheck(pos);
@@ -184,7 +186,15 @@ public class PlayerEvents {
                 }
             }
             if (!allow) {
-                player.getInventory().add(stack);
+                if (player.getInventory().add(stack) && !stack.isEmpty()) {
+                    dropHandler.flan$setForcedDrop(true);
+                    ItemEntity itemEntity = player.drop(stack, false);
+                    dropHandler.flan$setForcedDrop(false);
+                    if (itemEntity != null) {
+                        itemEntity.setNoPickUpDelay();
+                        itemEntity.setTarget(player.getUUID());
+                    }
+                }
                 NonNullList<ItemStack> stacks = NonNullList.create();
                 for (int j = 0; j < player.containerMenu.slots.size(); ++j) {
                     ItemStack itemStack2 = player.containerMenu.slots.get(j).getItem();
