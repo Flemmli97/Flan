@@ -6,6 +6,7 @@ import io.github.flemmli97.flan.event.PlayerEvents;
 import io.github.flemmli97.flan.platform.ClaimEvents;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.utils.IPlayerClaimImpl;
+import io.github.flemmli97.flan.utils.PlayerDropHandler;
 import io.github.flemmli97.flan.utils.VanillaFlightStateTracker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
-public abstract class PlayerClaimMixin extends Player implements IPlayerClaimImpl, VanillaFlightStateTracker {
+public abstract class PlayerClaimMixin extends Player implements IPlayerClaimImpl, VanillaFlightStateTracker, PlayerDropHandler {
 
     @Unique
     private PlayerClaimData flan$ClaimData;
@@ -27,7 +28,7 @@ public abstract class PlayerClaimMixin extends Player implements IPlayerClaimImp
     private Claim flan$CurrentClaim;
 
     @Unique
-    private boolean flan$claimFlight, flan$togglingFlight, flan$otherFlightState;
+    private boolean flan$claimFlight, flan$togglingFlight, flan$otherFlightState, flan$forcedDropState;
 
     private PlayerClaimMixin(Level level, BlockPos pos, float yRot, GameProfile gameProfile) {
         super(level, pos, yRot, gameProfile);
@@ -95,5 +96,15 @@ public abstract class PlayerClaimMixin extends Player implements IPlayerClaimImp
         this.flan$togglingFlight = true;
         this.onUpdateAbilities();
         this.flan$togglingFlight = false;
+    }
+
+    @Override
+    public void flan$setForcedDrop(boolean drop) {
+        this.flan$forcedDropState = drop;
+    }
+
+    @Override
+    public boolean flan$forcedDropState() {
+        return this.flan$forcedDropState;
     }
 }
