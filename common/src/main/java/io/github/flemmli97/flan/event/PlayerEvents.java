@@ -184,7 +184,9 @@ public class PlayerEvents {
             }
 
             if (!allow) {
-                player.getInventory().add(stack);
+                if (!player.getInventory().add(stack)) {
+                    allow = true;
+                }
                 NonNullList<ItemStack> stacks = NonNullList.create();
                 for (int j = 0; j < player.containerMenu.slots.size(); ++j) {
                     ItemStack itemStack2 = player.containerMenu.slots.get(j).getItem();
