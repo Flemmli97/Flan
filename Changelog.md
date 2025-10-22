@@ -2,10 +2,10 @@ Flan 1.12.2
 ================
 - Projectile now vanish with no permission hits instead of phasing through blocks
 - Fix anvil text screen item not visible
-- Add pt-br
+- Add pt-br lang
 - Add another check to determine fake player. Fixes universal shop not accessible
 - Rewrite fabric drop handling to match neos event
-- Fix give command giving twitce the amount if drop is not allowed
+- Fix give command giving twice the amount if drop is not allowed
 
 Flan 1.12.1
 ================
