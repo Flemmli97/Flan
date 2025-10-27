@@ -1,3 +1,7 @@
+Flan 1.12.3
+================
+- Fix drop handler error when on client
+
 Flan 1.12.2
 ================
 - Projectile now vanish with no permission hits instead of phasing through blocks

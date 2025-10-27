@@ -175,8 +175,8 @@ public class PlayerEvents {
     }
 
     public static boolean canDropItem(Player player, ItemStack stack) {
-        PlayerDropHandler dropHandler = ((PlayerDropHandler) player);
-        if (!dropHandler.flan$forcedDropState() && !player.isDeadOrDying() && player instanceof ServerPlayer) {
+        PlayerDropHandler dropHandler;
+        if (!player.isDeadOrDying() && player instanceof ServerPlayer && !(dropHandler = ((PlayerDropHandler) player)).flan$forcedDropState()) {
             ClaimStorage storage = ClaimStorage.get((ServerLevel) player.level());
             BlockPos pos = player.blockPosition();
             IPermissionContainer claim = storage.getForPermissionCheck(pos);
