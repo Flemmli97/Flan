@@ -35,11 +35,8 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.AbstractThrownPotion;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.ThrownEgg;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
-import net.minecraft.world.entity.projectile.windcharge.WindCharge;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.AbstractMinecartContainer;
 import net.minecraft.world.entity.vehicle.Boat;
@@ -133,30 +130,26 @@ public class EntityInteractEvents {
             return false;
         Entity owner = proj.getOwner();
         if (owner instanceof ServerPlayer player) {
+            ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(proj.getType());
+            if (ConfigHandler.CONFIG.ignoredProjectileTypes.contains(id.getNamespace()) || ConfigHandler.CONFIG.ignoredProjectileTypes.contains(id.toString())) {
+                return false;
+            }
             if (res.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult blockRes = (BlockHitResult) res;
                 BlockPos pos = blockRes.getBlockPos();
                 BlockState state = proj.level().getBlockState(pos);
-                ResourceLocation perm;
-                if (proj instanceof ThrownEnderpearl)
-                    perm = BuiltinPermission.ENDERPEARL;
-                else if (proj instanceof WindCharge)
-                    perm = BuiltinPermission.WIND_CHARGE;
-                else if (proj instanceof ThrownEgg || proj instanceof AbstractThrownPotion)
-                    perm = BuiltinPermission.PROJECTILES;
-                else
-                    perm = InteractionOverrideManager.getInstance().getBlockInteract(state.getBlock());
-                if (perm != BuiltinPermission.ENDERPEARL
-                        && perm != BuiltinPermission.TARGETBLOCK
-                        && perm != BuiltinPermission.PROJECTILES
-                        && perm != BuiltinPermission.WIND_CHARGE)
+                ResourceLocation perm = InteractionOverrideManager.getInstance().getProjectileEntityInteract(proj);
+                if (perm == null)
+                    perm = InteractionOverrideManager.getInstance().getProjectileBlockInteract(state.getBlock());
+                if (perm == null) {
                     return false;
+                }
                 ClaimStorage storage = ClaimStorage.get((ServerLevel) proj.level());
                 IPermissionContainer claim = storage.getForPermissionCheck(pos);
                 if (claim == null)
                     return false;
-                boolean flag = !claim.canInteract(player, perm, pos, true);
-                if (flag) {
+                boolean fail = !claim.canInteract(player, perm, pos, true);
+                if (fail) {
                     if (proj instanceof AbstractArrow pers) {
                         ((IPersistentProjectileVars) pers).setInBlockState(pers.level().getBlockState(pos));
                         Vec3 vec3d = blockRes.getLocation().subtract(pers.getX(), pers.getY(), pers.getZ());
@@ -174,7 +167,7 @@ public class EntityInteractEvents {
                         proj.discard();
                     }
                 }
-                return flag;
+                return fail;
             } else if (res.getType() == HitResult.Type.ENTITY) {
                 if (proj instanceof ThrownEnderpearl) {
                     ClaimStorage storage = ClaimStorage.get((ServerLevel) proj.level());

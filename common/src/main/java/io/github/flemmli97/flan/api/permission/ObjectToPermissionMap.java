@@ -1,6 +1,11 @@
 package io.github.flemmli97.flan.api.permission;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.AbstractThrownPotion;
+import net.minecraft.world.entity.projectile.ThrownEgg;
+import net.minecraft.world.entity.projectile.ThrownEnderpearl;
+import net.minecraft.world.entity.projectile.windcharge.WindCharge;
 import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.BrushItem;
@@ -48,6 +53,8 @@ public class ObjectToPermissionMap {
 
     public static final Map<Predicate<Block>, Supplier<ResourceLocation>> BLOCK_PERMISSION_BUILDER = new HashMap<>();
     public static final Map<Predicate<Item>, Supplier<ResourceLocation>> ITEM_PERMISSION_BUILDER = new HashMap<>();
+    public static final Map<Predicate<Block>, Supplier<ResourceLocation>> PROJECTILE_BLOCK_PERMISSION_BUILDER = new HashMap<>();
+    public static final Map<Predicate<Entity>, Supplier<ResourceLocation>> PROJECTILE_PERMISSION_BUILDER = new HashMap<>();
 
     /**
      * Register a custom permission to check for the given blocks. Used when trying to interact with blocks
@@ -69,6 +76,26 @@ public class ObjectToPermissionMap {
         ITEM_PERMISSION_BUILDER.put(pred, perm);
     }
 
+    /**
+     * Register a custom permission to check for the given block when hit with a projectile
+     *
+     * @param pred Predicate for blocks that should return the given permission
+     * @param perm The given permission
+     */
+    public static void registerProjectileBlockPredicateMap(Predicate<Block> pred, Supplier<ResourceLocation> perm) {
+        PROJECTILE_BLOCK_PERMISSION_BUILDER.put(pred, perm);
+    }
+
+    /**
+     * Register a custom permission to check for the given projectiles
+     *
+     * @param pred Predicate for entities that should return the given permission
+     * @param perm The given permission
+     */
+    public static void registerProjectilePredicateMap(Predicate<Entity> pred, Supplier<ResourceLocation> perm) {
+        PROJECTILE_PERMISSION_BUILDER.put(pred, perm);
+    }
+
     static {
         registerBlockPredicateMap(block -> block instanceof AnvilBlock, () -> BuiltinPermission.ANVIL);
         registerBlockPredicateMap(block -> block instanceof BedBlock, () -> BuiltinPermission.BED);
@@ -83,10 +110,6 @@ public class ObjectToPermissionMap {
         registerBlockPredicateMap(block -> block instanceof BasePressurePlateBlock, () -> BuiltinPermission.PRESSUREPLATE);
         registerBlockPredicateMap(block -> block instanceof NetherPortalBlock, () -> BuiltinPermission.PORTAL);
         registerBlockPredicateMap(block -> block instanceof TurtleEggBlock || block instanceof FarmBlock, () -> BuiltinPermission.TRAMPLE);
-        registerBlockPredicateMap(block -> block instanceof TargetBlock, () -> BuiltinPermission.TARGETBLOCK);
-        registerBlockPredicateMap(block -> block instanceof BellBlock || block instanceof CampfireBlock
-                || block instanceof TntBlock || block instanceof ChorusFlowerBlock
-                || block instanceof DecoratedPotBlock, () -> BuiltinPermission.PROJECTILES);
         registerBlockPredicateMap(block -> block instanceof EnderChestBlock, () -> BuiltinPermission.ENDERCHEST);
         registerBlockPredicateMap(block -> block instanceof EnchantingTableBlock, () -> BuiltinPermission.ENCHANTMENTTABLE);
         registerBlockPredicateMap(block -> block instanceof BrushableBlock, () -> BuiltinPermission.ARCHAEOLOGY);
@@ -100,5 +123,15 @@ public class ObjectToPermissionMap {
         registerItemPredicateMap(item -> item instanceof BoatItem, () -> BuiltinPermission.BOAT);
         registerItemPredicateMap(item -> item instanceof BrushItem, () -> BuiltinPermission.ARCHAEOLOGY);
         registerItemPredicateMap(item -> item == Items.WIND_CHARGE, () -> BuiltinPermission.WIND_CHARGE);
+
+        registerBlockPredicateMap(block -> block instanceof TargetBlock, () -> BuiltinPermission.TARGETBLOCK);
+        registerProjectileBlockPredicateMap(block -> block instanceof BellBlock || block instanceof CampfireBlock
+                || block instanceof TntBlock || block instanceof ChorusFlowerBlock
+                || block instanceof DecoratedPotBlock, () -> BuiltinPermission.PROJECTILES);
+
+        registerProjectilePredicateMap(entity -> entity instanceof ThrownEnderpearl, () -> BuiltinPermission.ENDERPEARL);
+        registerProjectilePredicateMap(entity -> entity instanceof WindCharge, () -> BuiltinPermission.WIND_CHARGE);
+        registerProjectilePredicateMap(entity -> entity instanceof ThrownEgg || entity instanceof AbstractThrownPotion, () -> BuiltinPermission.PROJECTILES);
+        registerProjectilePredicateMap(entity -> entity instanceof ThrownEnderpearl, () -> BuiltinPermission.ENDERPEARL);
     }
 }

@@ -7,12 +7,14 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
+import io.github.flemmli97.flan.api.permission.interactions.InteractionType;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
@@ -66,14 +68,11 @@ public abstract class InteractionOverrideProvider implements DataProvider {
 
     public static class Builder<T> {
 
-        private static final Codec<List<Pair<Either<TagKey<Block>, ResourceLocation>, ResourceLocation>>> BLOCK_CODEC = InteractionOverrideManager.tagOrEntryCodec(Registries.BLOCK,
-                ResourceLocation.CODEC).listOf();
-        private static final Codec<List<Pair<Either<TagKey<Item>, ResourceLocation>, ResourceLocation>>> ITEM_CODEC = InteractionOverrideManager.tagOrEntryCodec(Registries.ITEM,
-                ResourceLocation.CODEC).listOf();
-        private static final Codec<List<Pair<Either<TagKey<EntityType<?>>, ResourceLocation>, ResourceLocation>>> ENTITY_CODEC = InteractionOverrideManager.tagOrEntryCodec(Registries.ENTITY_TYPE,
-                ResourceLocation.CODEC).listOf();
+        private static final Codec<List<Pair<Either<TagKey<Block>, ResourceLocation>, ResourceLocation>>> BLOCK_CODEC = idBasedCodec(Registries.BLOCK);
+        private static final Codec<List<Pair<Either<TagKey<Item>, ResourceLocation>, ResourceLocation>>> ITEM_CODEC = idBasedCodec(Registries.ITEM);
+        private static final Codec<List<Pair<Either<TagKey<EntityType<?>>, ResourceLocation>, ResourceLocation>>> ENTITY_CODEC = idBasedCodec(Registries.ENTITY_TYPE);
 
-        public final InteractionOverrideManager.InteractionType<T> type;
+        public final InteractionType<T> type;
 
         private final Registry<T> registry;
 
@@ -81,32 +80,26 @@ public abstract class InteractionOverrideProvider implements DataProvider {
 
         private final List<Pair<Either<TagKey<T>, ResourceLocation>, ResourceLocation>> entries = new ArrayList<>();
 
-        private Builder(InteractionOverrideManager.InteractionType<T> type, Registry<T> registry, Codec<List<Pair<Either<TagKey<T>, ResourceLocation>, ResourceLocation>>> codec) {
+        private Builder(InteractionType<T> type, Registry<T> registry, Codec<List<Pair<Either<TagKey<T>, ResourceLocation>, ResourceLocation>>> codec) {
             this.type = type;
             this.registry = registry;
             this.codec = codec;
         }
 
-        public static Builder<Block> blockInteractions(InteractionOverrideManager.InteractionType<Block> type) {
-            if (type != InteractionOverrideManager.BLOCK_LEFT_CLICK
-                    && type != InteractionOverrideManager.BLOCK_INTERACT) {
-                throw new IllegalStateException("Unsupported Type");
-            }
+        public static <T> Codec<List<Pair<Either<TagKey<T>, ResourceLocation>, ResourceLocation>>> idBasedCodec(ResourceKey<? extends Registry<T>> registry) {
+            Codec<Either<TagKey<T>, ResourceLocation>> tagOrEntry = Codec.either(TagKey.hashedCodec(registry), ResourceLocation.CODEC);
+            return InteractionType.valueCodec(tagOrEntry);
+        }
+
+        public static Builder<Block> blockInteractions(InteractionType<Block> type) {
             return new Builder<>(type, BuiltInRegistries.BLOCK, BLOCK_CODEC);
         }
 
-        public static Builder<Item> itemInteractions(InteractionOverrideManager.InteractionType<Item> type) {
-            if (type != InteractionOverrideManager.ITEM_USE) {
-                throw new IllegalStateException("Unsupported Type");
-            }
+        public static Builder<Item> itemInteractions(InteractionType<Item> type) {
             return new Builder<>(type, BuiltInRegistries.ITEM, ITEM_CODEC);
         }
 
-        public static Builder<EntityType<?>> entityInteractions(InteractionOverrideManager.InteractionType<EntityType<?>> type) {
-            if (type != InteractionOverrideManager.ENTITY_ATTACK
-                    && type != InteractionOverrideManager.ENTITY_INTERACT) {
-                throw new IllegalStateException("Unsupported Type");
-            }
+        public static Builder<EntityType<?>> entityInteractions(InteractionType<EntityType<?>> type) {
             return new Builder<>(type, BuiltInRegistries.ENTITY_TYPE, ENTITY_CODEC);
         }
 
