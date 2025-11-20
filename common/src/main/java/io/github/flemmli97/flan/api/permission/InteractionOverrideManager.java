@@ -3,35 +3,29 @@ package io.github.flemmli97.flan.api.permission;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.api.permission.interactions.InteractionType;
+import io.github.flemmli97.flan.api.permission.interactions.ResolvableEntry;
+import io.github.flemmli97.flan.api.permission.interactions.ResolvableHolderSet;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * Prob overengineered but anyway...
@@ -49,15 +43,17 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
 
     private static final Gson GSON = new GsonBuilder().create();
 
-    public static final Codec<List<Pair<Either<TagKey<Block>, Block>, ResourceLocation>>> BLOCK_CODEC = tagOrEntryCodec(BuiltInRegistries.BLOCK).listOf();
-    public static final Codec<List<Pair<Either<TagKey<Item>, Item>, ResourceLocation>>> ITEM_CODEC = tagOrEntryCodec(BuiltInRegistries.ITEM).listOf();
-    public static final Codec<List<Pair<Either<TagKey<EntityType<?>>, EntityType<?>>, ResourceLocation>>> ENTITY_CODEC = tagOrEntryCodec(BuiltInRegistries.ENTITY_TYPE).listOf();
+    public static final Codec<ResolvableEntry<Block>> BLOCK_CODEC = ResolvableHolderSet.codec(BuiltInRegistries.BLOCK);
+    public static final Codec<ResolvableEntry<Item>> ITEM_CODEC = ResolvableHolderSet.codec(BuiltInRegistries.ITEM);
+    public static final Codec<ResolvableEntry<EntityType<?>>> ENTITY_CODEC = ResolvableHolderSet.codec(BuiltInRegistries.ENTITY_TYPE);
 
-    public static final InteractionType<Block> BLOCK_LEFT_CLICK = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "block_left_click"), () -> new InteractionHolder<>(BuiltInRegistries.BLOCK, BLOCK_CODEC));
-    public static final InteractionType<Block> BLOCK_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "block_interact"), () -> new InteractionHolder<>(BuiltInRegistries.BLOCK, BLOCK_CODEC));
-    public static final InteractionType<Item> ITEM_USE = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "item_use"), () -> new InteractionHolder<>(BuiltInRegistries.ITEM, ITEM_CODEC));
-    public static final InteractionType<EntityType<?>> ENTITY_ATTACK = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "entity_attack"), () -> new InteractionHolder<>(BuiltInRegistries.ENTITY_TYPE, ENTITY_CODEC));
-    public static final InteractionType<EntityType<?>> ENTITY_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "entity_interact"), () -> new InteractionHolder<>(BuiltInRegistries.ENTITY_TYPE, ENTITY_CODEC));
+    public static final InteractionType<Block> BLOCK_LEFT_CLICK = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "block_left_click"), BLOCK_CODEC, InteractionHolder::new);
+    public static final InteractionType<Block> BLOCK_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "block_interact"), BLOCK_CODEC, InteractionHolder::new);
+    public static final InteractionType<Item> ITEM_USE = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "item_use"), ITEM_CODEC, InteractionHolder::new);
+    public static final InteractionType<EntityType<?>> ENTITY_ATTACK = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "entity_attack"), ENTITY_CODEC, InteractionHolder::new);
+    public static final InteractionType<EntityType<?>> ENTITY_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "entity_interact"), ENTITY_CODEC, InteractionHolder::new);
+    public static final InteractionType<Block> PROJECTILE_BLOCK_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "projectile_block_interact"), BLOCK_CODEC, InteractionHolder::new);
+    public static final InteractionType<EntityType<?>> PROJECTILE_ENTITY_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "projectile_entity_interact"), ENTITY_CODEC, InteractionHolder::new);
 
     private static InteractionOverrideManager INSTANCE;
 
@@ -77,33 +73,6 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
 
     public static InteractionOverrideManager getInstance() {
         return INSTANCE;
-    }
-
-    public static <T> Codec<Pair<Either<TagKey<T>, T>, ResourceLocation>> tagOrEntryCodec(Registry<T> registry) {
-        return tagOrEntryCodec(registry.key(), registry.byNameCodec());
-    }
-
-    public static <T, O> Codec<Pair<Either<TagKey<T>, O>, ResourceLocation>> tagOrEntryCodec(
-            ResourceKey<? extends Registry<T>> key, Codec<O> codec) {
-        Codec<Either<TagKey<T>, O>> tagOrEntry = Codec.either(Codec.STRING.flatXmap(
-                r -> {
-                    if (r.startsWith("#"))
-                        return DataResult.success(TagKey.create(key, ResourceLocation.parse(r.substring(1))));
-                    return DataResult.error(() -> "Not a tag value" + r);
-                },
-                l -> DataResult.success("#" + l.location())
-        ), codec);
-        return RecordCodecBuilder.create(builder -> builder.group(
-                        tagOrEntry.fieldOf("entry").forGetter(Pair::getFirst),
-                        ResourceLocation.CODEC.fieldOf("permission").forGetter(Pair::getSecond))
-                .apply(builder, Pair::of));
-    }
-
-    public static <T> List<T> expandTag(Registry<T> registry, TagKey<T> tag) {
-        List<T> elements = new ArrayList<>();
-        registry.getTag(tag)
-                .ifPresent(n -> n.forEach(h -> elements.add(h.value())));
-        return elements;
     }
 
     public ResourceLocation getBlockLeftClick(Block block) {
@@ -126,6 +95,25 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
         return this.getOverride(ENTITY_INTERACT, entity);
     }
 
+    public ResourceLocation getProjectileBlockInteract(Block block) {
+        return this.getOverride(PROJECTILE_BLOCK_INTERACT, block);
+    }
+
+    public ResourceLocation getProjectileEntityInteract(Projectile entity) {
+        InteractionHolder<EntityType<?>> holder = this.getHolder(PROJECTILE_ENTITY_INTERACT);
+        if (!holder.unresolved()) {
+            // Needs to be done here because it needs level access for instantiation
+            for (EntityType<?> type : BuiltInRegistries.ENTITY_TYPE) {
+                InteractionHolder<EntityType<?>> map = this.getHolder(PROJECTILE_ENTITY_INTERACT);
+                ObjectToPermissionMap.PROJECTILE_PERMISSION_BUILDER.entrySet().stream().filter(e -> {
+                    Entity dummy = type.create(entity.level());
+                    return e.getKey().test(dummy);
+                }).map(Map.Entry::getValue).findFirst().ifPresent(sub -> map.defaults.put(type, sub.get()));
+            }
+        }
+        return this.getOverride(PROJECTILE_ENTITY_INTERACT, entity.getType());
+    }
+
     /**
      * Returns the overriden permission for the given type and value
      */
@@ -135,7 +123,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
 
     @SuppressWarnings("unchecked")
     private <T> InteractionHolder<T> getHolder(InteractionType<T> type) {
-        return (InteractionHolder<T>) this.overrides.computeIfAbsent(type, k -> type.gen.get());
+        return (InteractionHolder<T>) this.overrides.computeIfAbsent(type, k -> type.getGen().get());
     }
 
     @Override
@@ -151,52 +139,47 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
             ObjectToPermissionMap.ITEM_PERMISSION_BUILDER.entrySet().stream().filter(e -> e.getKey().test(item))
                     .map(Map.Entry::getValue).findFirst().ifPresent(sub -> map.defaults.put(item, sub.get()));
         }
+        for (Block block : BuiltInRegistries.BLOCK) {
+            InteractionHolder<Block> map = this.getHolder(PROJECTILE_BLOCK_INTERACT);
+            ObjectToPermissionMap.PROJECTILE_BLOCK_PERMISSION_BUILDER.entrySet().stream().filter(e -> e.getKey().test(block))
+                    .map(Map.Entry::getValue).findFirst().ifPresent(sub -> map.defaults.put(block, sub.get()));
+        }
         DynamicOps<JsonElement> ops = this.provider.createSerializationContext(JsonOps.INSTANCE);
         data.forEach((res, el) -> {
             try {
-                JsonObject obj = el.getAsJsonObject();
-                InteractionType<?> type = InteractionType.LOOKUP.get(ResourceLocation.parse(obj.get("type").getAsString()));
-                if (type == null)
-                    throw new JsonParseException("InteractionType of value " + obj.get("type").getAsString() + " does not exist");
-                JsonElement values = obj.get("values");
-                this.appendTo(this.getHolder(type), values, ops);
+                InteractionEntry<?> entry = InteractionEntry.CODEC.parse(ops, el).getOrThrow();
+                this.appendTo(entry);
             } catch (Exception ex) {
-                Flan.LOGGER.error("Couldnt parse claim permission json {} {}", res, ex, ex.fillInStackTrace());
+                Flan.LOGGER.error("Couldn't parse interaction override json {} {}", res, ex, ex.fillInStackTrace());
             }
         });
     }
 
-    private <T> void appendTo(InteractionHolder<T> map, JsonElement element, DynamicOps<JsonElement> ops) {
-        List<Pair<Either<TagKey<T>, T>, ResourceLocation>> elements = map.codec.parse(ops, element)
-                .getOrThrow();
-        elements.forEach(pair -> pair.getFirst().ifLeft(tag -> map.unresolvedTags.put(tag, pair.getSecond()))
-                .ifRight(val -> map.direct.put(val, pair.getSecond())));
+    private <T> void appendTo(InteractionEntry<T> entry) {
+        InteractionHolder<T> map = this.getHolder(entry.type());
+        entry.elements().forEach(pair -> map.unresolvedTags.put(pair.getFirst(), pair.getSecond()));
     }
 
     public static class InteractionHolder<T> {
 
-        private final Registry<T> registry;
-        private final Codec<List<Pair<Either<TagKey<T>, T>, ResourceLocation>>> codec;
-
         private final Map<T, ResourceLocation> direct = new HashMap<>();
-        private final Map<TagKey<T>, ResourceLocation> unresolvedTags = new HashMap<>();
+        private final Map<ResolvableEntry<T>, ResourceLocation> unresolvedTags = new HashMap<>();
         private final Map<T, ResourceLocation> defaults = new HashMap<>();
 
-        public InteractionHolder(Registry<T> registry, Codec<List<Pair<Either<TagKey<T>, T>, ResourceLocation>>> codec) {
-            this.registry = registry;
-            this.codec = codec;
-        }
-
         public ResourceLocation get(T val) {
-            if (!this.unresolvedTags.isEmpty() || !this.defaults.isEmpty()) {
+            if (this.unresolved()) {
                 this.resolve();
             }
             return this.direct.get(val);
         }
 
+        public boolean unresolved() {
+            return !this.unresolvedTags.isEmpty() || !this.defaults.isEmpty();
+        }
+
         private void resolve() {
-            this.unresolvedTags.entrySet().stream().sorted(Comparator.comparing(e -> e.getKey().location()))
-                    .forEach(entry -> expandTag(this.registry, entry.getKey()).forEach(item -> {
+            this.unresolvedTags.entrySet().stream().sorted(Map.Entry.comparingByKey())
+                    .forEach(entry -> entry.getKey().resolve().forEach(item -> {
                         if (!this.direct.containsKey(item))
                             this.direct.put(item, entry.getValue());
                     }));
@@ -209,15 +192,11 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
         }
     }
 
-    public record InteractionType<T>(ResourceLocation id, Supplier<InteractionHolder<T>> gen) {
+    public record InteractionEntry<T>(InteractionType<T> type,
+                                      List<Pair<ResolvableEntry<T>, ResourceLocation>> elements) {
 
-        static final Map<ResourceLocation, InteractionType<?>> LOOKUP = new HashMap<>();
-
-        public InteractionType(ResourceLocation id, Supplier<InteractionHolder<T>> gen) {
-            this.id = id;
-            this.gen = gen;
-            if (LOOKUP.put(id, this) != null)
-                throw new IllegalStateException("Type already registered");
-        }
+        public static final Codec<InteractionEntry<?>> CODEC = ResourceLocation.CODEC.dispatch(e -> e.type().getId(),
+                t -> InteractionType.get(t).getCodec());
     }
+
 }

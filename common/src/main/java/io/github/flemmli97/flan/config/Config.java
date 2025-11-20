@@ -99,6 +99,7 @@ public class Config {
     public List<String> entityTagIgnore = Lists.newArrayList(
             "graves.marker" //vanilla tweaks
     );
+    public List<String> ignoredProjectileTypes = Lists.newArrayList();
 
     private List<String> legacyOverrides = Lists.newArrayList(
             "@c:wrenches-flan:interact_block",
@@ -230,6 +231,8 @@ public class Config {
             ConfigHandler.arrayFromJson(obj, "ignoredEntities").forEach(e -> this.ignoredEntityTypes.add(e.getAsString()));
             this.entityTagIgnore.clear();
             ConfigHandler.arrayFromJson(obj, "entityTagIgnore").forEach(e -> this.entityTagIgnore.add(e.getAsString()));
+            this.ignoredProjectileTypes.clear();
+            ConfigHandler.arrayFromJson(obj, "ignoredProjectileTypes").forEach(e -> this.ignoredProjectileTypes.add(e.getAsString()));
 
             this.legacyOverrides.clear();
             ConfigHandler.arrayFromJson(obj, "legacyOverrides").forEach(e -> this.legacyOverrides.add(e.getAsString()));
@@ -348,6 +351,9 @@ public class Config {
         JsonArray entitiesTags = new JsonArray();
         this.entityTagIgnore.forEach(entitiesTags::add);
         obj.add("entityTagIgnore", entitiesTags);
+        JsonArray projectiles = new JsonArray();
+        this.ignoredProjectileTypes.forEach(projectiles::add);
+        obj.add("ignoredProjectileTypes", projectiles);
 
         JsonArray overrides = new JsonArray();
         this.legacyOverrides.forEach(overrides::add);
