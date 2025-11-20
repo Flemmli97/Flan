@@ -1,3 +1,15 @@
+Flan 1.12.4
+================
+- Update vehicle pass check, fixes boat issues
+- Remove pt_br translation as the file using older format
+- Separate projectile handling from current system
+  - Add `flan:projectile_block_interact` and `flan:projectile_entity_interact` to interaction overrides
+  - `flan:projectile_entity_interact` takes precedence and only if this is not defined it checks `flan:projectile_block_interact`
+  - Add `ignoredProjectileTypes` to config
+- Rename `flan:mob_spawn` permission to `flan:disable_monster_spawn`
+- Rename `flan:animal_spawn` permission to `flan:disable_mob_spawn`
+- Fix some permission flags not checked for globalDefaultPerms config within claims causing e.g. flight permission being ignored
+
 Flan 1.12.3
 ================
 - Fix drop handler error when on client
