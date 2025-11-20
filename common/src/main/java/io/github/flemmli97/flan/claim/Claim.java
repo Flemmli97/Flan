@@ -328,8 +328,13 @@ public class Claim implements IPermissionContainer {
         if (!this.isAdminClaim()) {
             Config.GlobalType global = ConfigHandler.CONFIG.getGlobal(this.level, perm);
             if (!global.canModify()) {
-                if (global.getValue() || (player != null && this.isAdminIgnore(player)))
+                if (global.getValue())
                     return true;
+                if (player != null && this.isAdminIgnore(player)) {
+                    ClaimPermission permission = PermissionManager.getInstance().get(perm);
+                    if (permission != null && !permission.requireExplicitSet)
+                        return true;
+                }
                 if (message)
                     player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
                 if (perm.equals(BuiltinPermission.FAKEPLAYER))
