@@ -144,7 +144,7 @@ public class Config {
     protected final Map<String, Map<ResourceLocation, GlobalType>> globalDefaultPerms = createHashMap(map -> map.put("*", createHashMap(perms -> {
         perms.put(BuiltinPermission.ALLOW_FLIGHT, GlobalType.ALLTRUE);
         perms.put(BuiltinPermission.MAY_FLIGHT, GlobalType.ALLFALSE);
-        perms.put(BuiltinPermission.MOBSPAWN, GlobalType.ALLFALSE);
+        perms.put(BuiltinPermission.MONSTERSPAWN, GlobalType.ALLFALSE);
         perms.put(BuiltinPermission.TELEPORT, GlobalType.ALLFALSE);
         perms.put(BuiltinPermission.NOHUNGER, GlobalType.ALLFALSE);
         perms.put(BuiltinPermission.EDITPOTIONS, GlobalType.ALLFALSE);
