@@ -87,8 +87,8 @@ public class WorldEvents {
     public static boolean preventMobSpawn(ServerLevel level, BlockPos pos, MobCategory category) {
         IPermissionContainer claim = ClaimStorage.get(level).getForPermissionCheck(pos);
         if (category == MobCategory.MONSTER)
-            return claim.canInteract(null, BuiltinPermission.MOBSPAWN, pos);
-        return claim.canInteract(null, BuiltinPermission.ANIMALSPAWN, pos);
+            return claim.canInteract(null, BuiltinPermission.MONSTERSPAWN, pos);
+        return claim.canInteract(null, BuiltinPermission.MOBSPAWN, pos);
     }
 
     public static boolean lightningFire(LightningBolt lightning) {
