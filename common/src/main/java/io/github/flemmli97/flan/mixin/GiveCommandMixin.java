@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(GiveCommand.class)
-public class GiveCommandMixin {
+public abstract class GiveCommandMixin {
 
     @WrapOperation(method = "giveItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;drop(Lnet/minecraft/world/item/ItemStack;Z)Lnet/minecraft/world/entity/item/ItemEntity;"))
     private static ItemEntity handleDrop(ServerPlayer player, ItemStack stack, boolean thrower, Operation<ItemEntity> original) {

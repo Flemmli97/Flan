@@ -9,6 +9,7 @@ import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.mixin.IPersistentProjectileVars;
 import io.github.flemmli97.flan.utils.TeleportUtils;
+import io.github.flemmli97.flan.utils.VehiclePositionTracker;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -289,15 +290,15 @@ public class EntityInteractEvents {
         return !claim.canInteract(null, BuiltinPermission.LIGHTNING, entity.blockPosition(), false);
     }
 
-    /**
-     * Note this won't work if the entity is controlled by the player on the client side.
-     * E.g. this applies to boats with a player in them
-     */
     public static void handleVehiclePass(Entity entity) {
-        if (entity.level().isClientSide || !entity.isControlledByLocalInstance())
+        if (entity.level().isClientSide)
             return;
         ClaimStorage storage = ClaimStorage.get((ServerLevel) entity.level());
         Claim claim = storage.getClaimAt(entity.blockPosition());
+        Vec3 last = null;
+        if (entity instanceof VehiclePositionTracker tracker) {
+            last = tracker.flan$updateAndGetLastPosition();
+        }
         if (claim == null) {
             return;
         }
@@ -305,7 +306,8 @@ public class EntityInteractEvents {
         if (sub != null) {
             claim = sub;
         }
-        Claim claimOld = storage.getClaimAt(BlockPos.containing(entity.xo, entity.yo, entity.zo));
+        BlockPos oldPos = last != null ? ofPos(last) : BlockPos.containing(entity.xo, entity.yo, entity.zo);
+        Claim claimOld = storage.getClaimAt(oldPos);
         if (claimOld != null) {
             sub = claimOld.getSubClaim(entity.blockPosition());
             if (sub != null) {
@@ -317,7 +319,15 @@ public class EntityInteractEvents {
             Vec3 tp = TeleportUtils.getTeleportPos(entity, entity.position(), storage,
                     new TeleportUtils.Area2D(claim.getDimensions()), true, rounded.mutable(),
                     (c, nPos) -> c.canInteract(null, BuiltinPermission.VEHICLE_PASS, nPos, false));
+            if (!entity.isControlledByLocalInstance()) {
+                // Otherwise cannot teleport as the client controls it
+                entity.ejectPassengers();
+            }
             entity.teleportTo(tp.x(), tp.y(), tp.z());
         }
+    }
+
+    private static BlockPos ofPos(Vec3 pos) {
+        return BlockPos.containing(pos.x(), pos.y(), pos.z());
     }
 }

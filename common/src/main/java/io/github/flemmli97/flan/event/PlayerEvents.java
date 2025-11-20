@@ -31,7 +31,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.VehicleEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
@@ -253,8 +252,7 @@ public class PlayerEvents {
                     boolean isSub = currentClaim.parentClaim() != null;
                     Claim mainClaim = isSub ? currentClaim.parentClaim() : currentClaim;
                     Entity vehicle = player.getVehicle();
-                    if (!mainClaim.canInteract(player, BuiltinPermission.CANSTAY, bPos, true) ||
-                            (vehicle instanceof VehicleEntity && !vehicle.isControlledByLocalInstance() && !mainClaim.canInteract(player, BuiltinPermission.VEHICLE_PASS, bPos, true))) {
+                    if (!mainClaim.canInteract(player, BuiltinPermission.CANSTAY, bPos, true)) {
                         Claim sub = isSub ? currentClaim : null;
                         Vec3 tp = TeleportUtils.getTeleportPos(player, pos, storage, new TeleportUtils.Area2D(sub != null ? sub.getDimensions() : mainClaim.getDimensions()), true, bPos, (claim, nPos) -> claim.canInteract(player, BuiltinPermission.CANSTAY, nPos, false));
                         if (vehicle != null) {
