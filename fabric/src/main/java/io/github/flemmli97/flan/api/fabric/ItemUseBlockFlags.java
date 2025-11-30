@@ -19,7 +19,7 @@ public interface ItemUseBlockFlags {
     boolean flan$allowUseBlocks();
 
     /**
-     * If false prevents right clicking with an item on a block
+     * If false prevents right-clicking with an item on a block
      */
     boolean flan$allowUseItems();
 

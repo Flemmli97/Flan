@@ -46,6 +46,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -131,8 +132,8 @@ public class FlanFabric implements ModInitializer {
             private final PreparableReloadListener listener = factory.apply(provider);
 
             @Override
-            public CompletableFuture<Void> reload(PreparationBarrier barrier, ResourceManager manager, Executor backgroundExecutor, Executor gameExecutor) {
-                return this.listener.reload(barrier, manager, backgroundExecutor, gameExecutor);
+            public @NotNull CompletableFuture<Void> reload(@NotNull SharedState sharedState, @NotNull Executor executor, @NotNull PreparationBarrier barrier, @NotNull Executor applyExecutor) {
+                return this.listener.reload(sharedState, executor, barrier, applyExecutor);
             }
 
             @Override

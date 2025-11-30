@@ -24,4 +24,6 @@ public abstract class WorldSaveHandlerMixin {
     private void load(Player player, String suffix, CallbackInfoReturnable<Optional<CompoundTag>> cir) {
         PlayerEvents.readClaimData(player);
     }
+
+
 }

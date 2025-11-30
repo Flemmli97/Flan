@@ -25,6 +25,7 @@ import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -48,18 +49,20 @@ import net.minecraft.world.phys.Vec3;
 public class PlayerEvents {
 
     public static void saveClaimData(Player player) {
-        if (player instanceof ServerPlayer)
-            PlayerClaimData.get((ServerPlayer) player).save(player.getServer());
+        if (player instanceof ServerPlayer serverPlayer)
+            PlayerClaimData.get(serverPlayer).save(getServer(serverPlayer));
     }
 
     public static void readClaimData(Player player) {
-        if (player instanceof ServerPlayer)
-            PlayerClaimData.get((ServerPlayer) player).read(player.getServer());
+        if (player instanceof ServerPlayer serverPlayer)
+            PlayerClaimData.get(serverPlayer).read(getServer(serverPlayer));
     }
 
     public static void onLogout(Player player) {
-        if (player.getServer() != null)
-            LogoutTracker.getInstance(player.getServer()).track(player.getUUID());
+        if(player instanceof ServerPlayer serverPlayer) {
+            MinecraftServer server = getServer(serverPlayer);
+            LogoutTracker.getInstance(server).track(player.getUUID());
+        }
     }
 
     public static boolean growBonemeal(UseOnContext context) {
@@ -152,7 +155,7 @@ public class PlayerEvents {
             if (entity instanceof ItemEntity itemEntity) {
                 IOwnedItem ownedItem = (IOwnedItem) entity;
                 if (ownedItem.flan$getDeathPlayer() != null) {
-                    ServerPlayer other = sPlayer.getServer().getPlayerList().getPlayer(ownedItem.flan$getDeathPlayer());
+                    ServerPlayer other = getServer(sPlayer).getPlayerList().getPlayer(ownedItem.flan$getDeathPlayer());
                     if (other == null)
                         return false;
                     return ownedItem.flan$getDeathPlayer().equals(player.getUUID()) || PlayerClaimData.get(other).deathItemsUnlocked();
@@ -296,5 +299,9 @@ public class PlayerEvents {
 
     protected static boolean gameModeCanFly(GameType gameType) {
         return gameType == GameType.CREATIVE || gameType == GameType.SPECTATOR;
+    }
+
+    private static MinecraftServer getServer(ServerPlayer sp){
+        return sp.level().getServer();
     }
 }
