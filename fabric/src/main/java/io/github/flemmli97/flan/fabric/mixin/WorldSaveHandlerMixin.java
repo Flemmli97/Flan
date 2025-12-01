@@ -20,10 +20,5 @@ public abstract class WorldSaveHandlerMixin {
         PlayerEvents.saveClaimData(player);
     }
 
-    @Inject(method = "load(Lnet/minecraft/world/entity/player/Player;Ljava/lang/String;)Ljava/util/Optional;", at = @At(value = "RETURN"))
-    private void load(Player player, String suffix, CallbackInfoReturnable<Optional<CompoundTag>> cir) {
-        PlayerEvents.readClaimData(player);
-    }
-
-
+    // Since the .10 port, the load method moved to ServerPlayerMixin.
 }
