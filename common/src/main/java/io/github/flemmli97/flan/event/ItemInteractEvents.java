@@ -17,13 +17,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerInventoryPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -145,8 +146,8 @@ public class ItemInteractEvents {
      * -2 == Main inventory update
      */
     private static void updateHeldItem(ServerPlayer player) {
-        player.connection.send(new ClientboundContainerSetSlotPacket(-2, 0, player.getInventory().getSelectedSlot(), player.getInventory().getSelectedItem()));
-        player.connection.send(new ClientboundContainerSetSlotPacket(-2, 0, 40, player.getInventory().getItem(40)));
+        player.connection.send(new ClientboundSetPlayerInventoryPacket(player.getInventory().getSelectedSlot(), player.getInventory().getSelectedItem()));
+        player.connection.send(new ClientboundSetPlayerInventoryPacket(Inventory.SLOT_OFFHAND, player.getInventory().getItem(Inventory.SLOT_OFFHAND)));
     }
 
     private static boolean cantClaimInWorld(ServerLevel level) {

@@ -83,16 +83,16 @@ public class FakePlayerScreenHandler extends PagedServerOnlyScreenHandler<Claim>
     protected boolean handleSlotClicked(ServerPlayer player, int index, Slot slot, int clickType) {
         if (index == 0) {
             player.closeContainer();
-            player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data));
+            player.level().getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;
         }
         if (index == 3) {
             player.closeContainer();
-            player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
-                boolean fl = player.getServer().getProfileCache().get(s).map(prof -> this.data.modifyFakePlayerUUID(prof.getId(), false)).orElse(true);
+            player.level().getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
+                boolean fl = player.level().getServer().services().nameToIdCache().get(s).map(prof -> this.data.modifyFakePlayerUUID(prof.id(), false)).orElse(true);
                 player.closeContainer();
-                player.getServer().execute(() -> FakePlayerScreenHandler.open(player, this.data));
+                player.level().getServer().execute(() -> FakePlayerScreenHandler.open(player, this.data));
                 if (fl)
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
                 else {
@@ -101,7 +101,7 @@ public class FakePlayerScreenHandler extends PagedServerOnlyScreenHandler<Claim>
                 }
             }, () -> {
                 player.closeContainer();
-                player.getServer().execute(() -> FakePlayerScreenHandler.open(player, this.data));
+                player.level().getServer().execute(() -> FakePlayerScreenHandler.open(player, this.data));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
             }));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);

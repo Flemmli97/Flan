@@ -466,7 +466,7 @@ public class PlayerClaimData implements IPlayerData {
     private int updateClaimScores() {
         int usedClaimsBlocks = 0;
         int claimsAmount = 0;
-        for (ServerLevel level : this.player.getServer().getAllLevels()) {
+        for (ServerLevel level : this.player.level().getServer().getAllLevels()) {
             Collection<Claim> claims = ClaimStorage.get(level).allClaimsFromPlayer(this.player.getUUID());
             if (claims != null) {
                 usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
@@ -479,7 +479,7 @@ public class PlayerClaimData implements IPlayerData {
 
     private int calculateUsedClaimBlocks() {
         int usedClaimsBlocks = 0;
-        for (ServerLevel level : this.player.getServer().getAllLevels()) {
+        for (ServerLevel level : this.player.level().getServer().getAllLevels()) {
             Collection<Claim> claims = ClaimStorage.get(level).allClaimsFromPlayer(this.player.getUUID());
             if (claims != null) {
                 usedClaimsBlocks += claims.stream().filter(claim -> !claim.isAdminClaim()).mapToInt(Claim::getPlane).sum();
@@ -495,7 +495,7 @@ public class PlayerClaimData implements IPlayerData {
             BlockPos rounded = TeleportUtils.roundedBlockPos(this.player.position().add(0, this.player.getEyeHeight(this.player.getPose()), 0));
             this.shouldProtectDrop = ClaimStorage.get(this.player.level()).getForPermissionCheck(rounded)
                     .canInteract(this.player, BuiltinPermission.LOCKITEMS, rounded)
-                    && !this.player.getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
+                    && !this.player.level().getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
             this.calculateShouldDrop = false;
         }
         return this.shouldProtectDrop;
@@ -598,7 +598,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public static void updateScoreFor(ServerPlayer player, ObjectiveCriteria criterion, int val) {
-        player.getScoreboard().forAllObjectives(criterion, player, (scoreboardPlayerScore) -> scoreboardPlayerScore.set(val));
+        player.level().getScoreboard().forAllObjectives(criterion, player, (scoreboardPlayerScore) -> scoreboardPlayerScore.set(val));
     }
 
     public static void editForOfflinePlayer(MinecraftServer server, UUID uuid, int additionalClaimBlocks, boolean base) {

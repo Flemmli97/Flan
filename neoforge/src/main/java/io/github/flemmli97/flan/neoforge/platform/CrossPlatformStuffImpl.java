@@ -37,7 +37,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     @Override
     public boolean isInventoryTile(BlockEntity blockEntity) {
         return blockEntity instanceof Container || blockEntity instanceof WorldlyContainerHolder ||
-                blockEntity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, blockEntity.getBlockPos(),
+                blockEntity.getLevel().getCapability(Capabilities.Item.BLOCK, blockEntity.getBlockPos(),
                         null) != null;
     }
 

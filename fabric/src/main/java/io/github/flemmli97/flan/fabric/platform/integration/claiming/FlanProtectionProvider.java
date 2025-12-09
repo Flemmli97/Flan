@@ -156,7 +156,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
         if (profile.equals(UNKNOWN))
             return null;
 
-        ServerPlayer online = l.getServer().getPlayerList().getPlayer(profile.getId());
+        ServerPlayer online = l.getServer().getPlayerList().getPlayer(profile.id());
 
         if (online != null) return online;
 

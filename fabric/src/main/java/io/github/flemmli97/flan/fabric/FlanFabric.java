@@ -131,8 +131,8 @@ public class FlanFabric implements ModInitializer {
             private final PreparableReloadListener listener = factory.apply(provider);
 
             @Override
-            public CompletableFuture<Void> reload(PreparationBarrier barrier, ResourceManager manager, Executor backgroundExecutor, Executor gameExecutor) {
-                return this.listener.reload(barrier, manager, backgroundExecutor, gameExecutor);
+            public CompletableFuture<Void> reload(SharedState sharedState, Executor executor, PreparationBarrier preparationBarrier, Executor executor2) {
+                return this.listener.reload(sharedState, executor, preparationBarrier, executor2);
             }
 
             @Override

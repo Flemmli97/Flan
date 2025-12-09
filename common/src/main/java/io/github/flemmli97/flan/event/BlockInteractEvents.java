@@ -190,7 +190,7 @@ public class BlockInteractEvents {
     }
 
     public static boolean cancelEntityBlockCollision(BlockState state, Level level, BlockPos pos, Entity entity) {
-        if (level.isClientSide || state.is(Blocks.AIR))
+        if (level.isClientSide() || state.is(Blocks.AIR))
             return false;
         ServerPlayer player = null;
         if (entity instanceof ServerPlayer)
@@ -219,7 +219,7 @@ public class BlockInteractEvents {
     }
 
     public static boolean preventFallOn(Entity entity, double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
-        if (entity.level().isClientSide)
+        if (entity.level().isClientSide())
             return false;
         if (entity instanceof ServerPlayer) {
             ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract(landedState.getBlock());
@@ -245,7 +245,7 @@ public class BlockInteractEvents {
     }
 
     public static boolean canBreakTurtleEgg(Level level, BlockPos pos, Entity entity) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return false;
         ServerLevel serverWorld = (ServerLevel) level;
         if (entity instanceof ServerPlayer) {

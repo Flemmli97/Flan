@@ -109,7 +109,7 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
     protected boolean handleSlotClicked(ServerPlayer player, int index, Slot slot, int clickType) {
         if (index == 0) {
             player.closeContainer();
-            player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data));
+            player.level().getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
         } else {
             Consumer<Component> cons = switch (index) {
@@ -122,14 +122,14 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
             if (cons != null) {
                 player.closeContainer();
                 if (clickType == 0) {
-                    player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
+                    player.level().getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
                         player.closeContainer();
                         cons.accept(Component.literal(s).withStyle(Style.EMPTY.withItalic(false).applyFormat(ChatFormatting.WHITE)));
-                        player.getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.data));
+                        player.level().getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.data));
                         ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
                     }, () -> {
                         player.closeContainer();
-                        player.getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.data));
+                        player.level().getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.data));
                         ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                     }));
                 } else {

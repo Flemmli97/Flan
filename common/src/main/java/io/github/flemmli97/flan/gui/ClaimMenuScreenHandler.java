@@ -116,7 +116,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
             case 2:
                 if (this.hasEditPerm(this.data, player)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> PermissionScreenHandler.openClaimMenu(player, this.data, null));
+                    player.level().getServer().execute(() -> PermissionScreenHandler.openClaimMenu(player, this.data, null));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
@@ -124,7 +124,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
             case 3:
                 if (this.hasEditPerm(this.data, player)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.data));
+                    player.level().getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.data));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
@@ -132,7 +132,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
             case 4:
                 if (this.hasPerm(this.data, player, BuiltinPermission.EDITPOTIONS)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.data));
+                    player.level().getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.data));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
@@ -140,7 +140,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
             case 5:
                 if (this.hasPerm(this.data, player, BuiltinPermission.CLAIMMESSAGE)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.data));
+                    player.level().getServer().execute(() -> ClaimTextHandler.openClaimMenu(player, this.data));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
@@ -148,7 +148,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
             case 6:
                 if (this.hasPerm(this.data, player, BuiltinPermission.EDITPERMS)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> FakePlayerScreenHandler.open(player, this.data));
+                    player.level().getServer().execute(() -> FakePlayerScreenHandler.open(player, this.data));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
@@ -156,7 +156,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
             case 8:
                 if (this.hasPerm(this.data, player, BuiltinPermission.EDITCLAIM)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> ConfirmScreenHandler.openConfirmScreen(player, (bool) -> {
+                    player.level().getServer().execute(() -> ConfirmScreenHandler.openConfirmScreen(player, (bool) -> {
                         if (bool) {
                             ClaimStorage storage = ClaimStorage.get(player.level());
                             storage.deleteClaim(this.data, true, PlayerClaimData.get(player).getClaimMode(), player.level());
@@ -165,7 +165,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
                             ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_PLACE, 1, 1f);
                         } else {
                             player.closeContainer();
-                            player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data));
+                            player.level().getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data));
                             ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                         }
                     }));
@@ -175,7 +175,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
             case 11:
                 if (this.hasPerm(this.data, player, BuiltinPermission.EDITPERMS)) {
                     player.closeContainer();
-                    player.getServer().execute(() -> ClaimAllowListEntryScreenHandler.openScreen(player, this.data));
+                    player.level().getServer().execute(() -> ClaimAllowListEntryScreenHandler.openScreen(player, this.data));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
                 } else
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);

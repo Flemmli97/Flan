@@ -1,27 +1,25 @@
 package io.github.flemmli97.flan.fabric.mixin;
 
 import io.github.flemmli97.flan.event.PlayerEvents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.storage.PlayerDataStorage;
+import net.minecraft.network.Connection;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.players.PlayerList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Optional;
+@Mixin(PlayerList.class)
+public class WorldSaveHandlerMixin {
 
-@Mixin(PlayerDataStorage.class)
-public abstract class WorldSaveHandlerMixin {
-
-    @Inject(method = "save", at = @At(value = "RETURN"))
-    private void save(Player player, CallbackInfo info) {
-        PlayerEvents.saveClaimData(player);
+    @Inject(method = "placeNewPlayer", at = @At(value = "HEAD"))
+    private void readClaimData(Connection connection, ServerPlayer player, CommonListenerCookie cookie, CallbackInfo ci) {
+        PlayerEvents.readClaimData(player);
     }
 
-    @Inject(method = "load(Lnet/minecraft/world/entity/player/Player;Ljava/lang/String;)Ljava/util/Optional;", at = @At(value = "RETURN"))
-    private void load(Player player, String suffix, CallbackInfoReturnable<Optional<CompoundTag>> cir) {
-        PlayerEvents.readClaimData(player);
+    @Inject(method = "save", at = @At(value = "RETURN"))
+    private void saveClaimData(ServerPlayer player, CallbackInfo ci) {
+        PlayerEvents.saveClaimData(player);
     }
 }

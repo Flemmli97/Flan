@@ -20,7 +20,7 @@ public abstract class NeoForgeFireMixin {
      */
     @Inject(method = "checkBurnOut", at = @At(value = "HEAD"), cancellable = true, remap = false)
     private void spread(Level level, BlockPos pos, int spreadFactor, RandomSource rand, int currentAge, Direction dir, CallbackInfo info) {
-        if (!level.isClientSide && !WorldEvents.canFireSpread((ServerLevel) level, pos)) {
+        if (!level.isClientSide() && !WorldEvents.canFireSpread((ServerLevel) level, pos)) {
             info.cancel();
         }
     }

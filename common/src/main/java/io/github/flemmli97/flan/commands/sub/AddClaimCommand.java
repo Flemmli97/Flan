@@ -25,6 +25,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.NameAndId;
 
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -63,7 +64,7 @@ public class AddClaimCommand {
         }
         UUID uuid = null;
         if (!as.equals("+Admin")) {
-            uuid = context.getSource().getServer().getProfileCache().get(as).map(GameProfile::getId).orElse(null);
+            uuid = context.getSource().getServer().services().nameToIdCache().get(as).map(NameAndId::id).orElse(null);
             if (uuid == null) {
                 context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.noSuchPlayer", as), true);
                 return 0;

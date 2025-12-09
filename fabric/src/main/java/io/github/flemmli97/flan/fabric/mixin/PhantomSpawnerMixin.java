@@ -17,7 +17,7 @@ public class PhantomSpawnerMixin {
     @Inject(method = "tick",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/DifficultyInstance;getDifficulty()Lnet/minecraft/world/Difficulty;"),
             cancellable = true)
-    private void phantomSpawnCheck(ServerLevel level, boolean spawnEnemies, boolean spawnFriendlies, CallbackInfo info, @Local(ordinal = 1) BlockPos pos) {
+    private void phantomSpawnCheck(ServerLevel level, boolean spawnEnemies, CallbackInfo info, @Local(ordinal = 1) BlockPos pos) {
         if (WorldEvents.preventMobSpawn(level, pos, MobCategory.MONSTER))
             info.cancel();
     }
