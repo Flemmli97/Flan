@@ -3,7 +3,9 @@ package io.github.flemmli97.flan.player;
 import com.google.common.collect.Sets;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
+import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
@@ -82,7 +84,11 @@ public class ClientBlockDisplayTracker {
                     this.lookup.remove(d.pos);
                 }
             }
-            this.player.connection.send(new ClientboundBlockUpdatePacket(d.pos, state == null ? this.player.level().getBlockState(d.pos) : state));
+
+            ServerChunkCache source = player.serverLevel().getChunkSource();
+            if (source.hasChunk(d.pos.getX() >> 4, d.pos.getZ() >> 4) && source.chunkMap.getPlayers(new ChunkPos(d.pos), false).contains(this.player)){
+                this.player.connection.send(new ClientboundBlockUpdatePacket(d.pos, state == null ? this.player.level().getBlockState(d.pos) : state));
+            }
         });
     }
 
