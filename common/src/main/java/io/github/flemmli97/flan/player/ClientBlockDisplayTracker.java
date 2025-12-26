@@ -86,7 +86,7 @@ public class ClientBlockDisplayTracker {
             }
 
             ServerChunkCache source = player.serverLevel().getChunkSource();
-            if (source.hasChunk(d.pos.getX() >> 4, d.pos.getZ() >> 4) && source.chunkMap.getPlayers(new ChunkPos(d.pos), false).contains(this.player)){
+            if (source.hasChunk(d.pos.getX() >> 4, d.pos.getZ() >> 4) && source.chunkMap.getPlayers(new ChunkPos(d.pos), false).contains(this.player)) {
                 this.player.connection.send(new ClientboundBlockUpdatePacket(d.pos, state == null ? this.player.level().getBlockState(d.pos) : state));
             }
         });

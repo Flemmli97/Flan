@@ -575,7 +575,7 @@ public class ClaimStorage implements IPermissionStorage {
     }
 
     private static Pair<ServerLevel, Claim> parseFromYaml(File file, Yaml yml, MinecraftServer server,
-                                                           Map<String, Set<ResourceLocation>> perms) throws IOException {
+                                                          Map<String, Set<ResourceLocation>> perms) throws IOException {
         FileReader reader = new FileReader(file);
         Map<String, Object> values = yml.load(reader);
         reader.close();

@@ -1,10 +1,13 @@
 package io.github.flemmli97.flan.fabric.platform;
 
 import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.fabric.platform.integration.playerability.PlayerAbilityEvents;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
+import io.github.flemmli97.flan.platform.integration.webmap.BluemapIntegration;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainerHolder;
@@ -32,6 +35,13 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     @Override
     public boolean blockDataContains(CompoundTag nbt, String tag) {
         return nbt.contains(tag);
+    }
+
+    @Override
+    public void reloadConfig(MinecraftServer server) {
+        ConfigHandler.reloadConfigs(server);
+        if (FabricLoader.getInstance().isModLoaded("bluemap"))
+            BluemapIntegration.updateBluemapState(server);
     }
 
     @Override

@@ -12,6 +12,7 @@ import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimBox;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 
@@ -25,20 +26,49 @@ public class BluemapIntegration {
 
     private static final String MARKER_3D = "flan.claims", MARKER_2D = "flan.claims.2d";
 
+    private static boolean lastEnabled;
+
     public static void reg(MinecraftServer server) {
-        BlueMapAPI.onEnable(api -> {
-            for (ServerLevel level : server.getAllLevels()) {
-                api.getWorld(level).ifPresent(world -> world.getMaps().forEach(map -> {
-                    MarkerSet markerSet = MarkerSet.builder().label("Claims (3D)")
-                            .defaultHidden(true).build();
-                    MarkerSet markerSet2 = MarkerSet.builder().label("Claims (2D)").build();
-                    map.getMarkerSets().put(MARKER_3D, markerSet);
-                    map.getMarkerSets().put(MARKER_2D, markerSet2);
-                }));
-                processClaims(level);
+        if (ConfigHandler.CONFIG.bluemapIntegration) {
+            BlueMapAPI.onEnable(api -> {
+                initMaps(server, api);
+                WebmapCalls.bluemapLoaded = true;
+                lastEnabled = true;
+            });
+        }
+    }
+
+    public static void updateBluemapState(MinecraftServer server) {
+        if (!WebmapCalls.bluemapLoaded)
+            return;
+        if (lastEnabled == ConfigHandler.CONFIG.bluemapIntegration)
+            return;
+        BlueMapAPI.getInstance().ifPresent(api -> {
+            if (ConfigHandler.CONFIG.bluemapIntegration) {
+                initMaps(server, api);
+            } else {
+                for (ServerLevel level : server.getAllLevels()) {
+                    api.getWorld(level).ifPresent(world -> world.getMaps().forEach(map -> {
+                        map.getMarkerSets().remove(MARKER_3D);
+                        map.getMarkerSets().remove(MARKER_2D);
+                    }));
+                }
             }
-            WebmapCalls.bluemapLoaded = true;
         });
+        lastEnabled = ConfigHandler.CONFIG.bluemapIntegration;
+    }
+
+    private static void initMaps(MinecraftServer server, BlueMapAPI api) {
+        for (ServerLevel level : server.getAllLevels()) {
+            api.getWorld(level).ifPresent(world -> world.getMaps().forEach(map -> {
+                MarkerSet markerSet = MarkerSet.builder().label("Claims (3D)")
+                        .defaultHidden(true).build();
+                MarkerSet markerSet2 = MarkerSet.builder().label("Claims (2D)").build();
+                map.getMarkerSets().put(MARKER_3D, markerSet);
+                map.getMarkerSets().put(MARKER_2D, markerSet2);
+            }));
+            processClaims(level);
+        }
     }
 
     public static void processClaims(ServerLevel level) {

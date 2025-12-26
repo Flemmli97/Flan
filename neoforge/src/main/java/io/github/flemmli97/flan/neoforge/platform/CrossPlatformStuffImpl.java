@@ -1,8 +1,11 @@
 package io.github.flemmli97.flan.neoforge.platform;
 
 import io.github.flemmli97.flan.Flan;
+import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
+import io.github.flemmli97.flan.platform.integration.webmap.BluemapIntegration;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainerHolder;
@@ -44,6 +47,13 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     @Override
     public boolean blockDataContains(CompoundTag nbt, String tag) {
         return nbt.contains(tag) || nbt.getCompound("ForgeData").contains(tag);
+    }
+
+    @Override
+    public void reloadConfig(MinecraftServer server) {
+        ConfigHandler.reloadConfigs(server);
+        if (ModList.get().isLoaded("bluemap"))
+            BluemapIntegration.updateBluemapState(server);
     }
 
     @Override
