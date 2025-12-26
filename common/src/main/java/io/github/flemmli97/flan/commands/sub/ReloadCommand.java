@@ -4,7 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import io.github.flemmli97.flan.claim.ClaimUtils;
-import io.github.flemmli97.flan.config.ConfigHandler;
+import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -16,7 +16,7 @@ public class ReloadCommand {
     }
 
     private static int reloadConfig(CommandContext<CommandSourceStack> context) {
-        ConfigHandler.reloadConfigs(context.getSource().getServer());
+        CrossPlatformStuff.INSTANCE.reloadConfig(context.getSource().getServer());
         context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.configReload"), true);
         return Command.SINGLE_SUCCESS;
     }
