@@ -141,10 +141,7 @@ public class ItemInteractEvents {
         updateHeldItem(player);
         return InteractionResult.FAIL;
     }
-
-    /**
-     * -2 == Main inventory update
-     */
+    
     private static void updateHeldItem(ServerPlayer player) {
         player.connection.send(new ClientboundSetPlayerInventoryPacket(player.getInventory().getSelectedSlot(), player.getInventory().getSelectedItem()));
         player.connection.send(new ClientboundSetPlayerInventoryPacket(Inventory.SLOT_OFFHAND, player.getInventory().getItem(Inventory.SLOT_OFFHAND)));
