@@ -83,10 +83,10 @@ public class PermissionScreenHandler extends PagedServerOnlyScreenHandler<ClaimG
         if (index == 0) {
             if (this.data.getGroup() == null) {
                 player.closeContainer();
-                player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data.getClaim()));
+                player.level().getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data.getClaim()));
             } else {
                 player.closeContainer();
-                player.getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.data.getClaim()));
+                player.level().getServer().execute(() -> GroupScreenHandler.openGroupMenu(player, this.data.getClaim()));
             }
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;

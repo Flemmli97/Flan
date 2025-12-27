@@ -38,7 +38,7 @@ public class WorldEvents {
     }
 
     public static boolean pistonCanPush(BlockState state, Level level, BlockPos blockPos, Direction direction, Direction pistonDir) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return true;
         BlockPos dirPos = blockPos.relative(direction);
         ClaimStorage storage = ClaimStorage.get((ServerLevel) level);

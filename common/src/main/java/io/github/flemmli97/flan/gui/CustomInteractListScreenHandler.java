@@ -81,20 +81,20 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
     protected boolean handleSlotClicked(ServerPlayer player, int index, Slot slot, int clickType) {
         if (index == 0) {
             player.closeContainer();
-            player.getServer().execute(() -> ClaimAllowListEntryScreenHandler.openScreen(player, this.data.claim));
+            player.level().getServer().execute(() -> ClaimAllowListEntryScreenHandler.openScreen(player, this.data.claim));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;
         }
         if (index == 3) {
             player.closeContainer();
-            player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
+            player.level().getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
                 this.data.claim.allowedEntries.get(this.data.key).addAllowedItem(s);
                 player.closeContainer();
-                player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, this.data.key, this.data.claim));
+                player.level().getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, this.data.key, this.data.claim));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
             }, () -> {
                 player.closeContainer();
-                player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, this.data.key, this.data.claim));
+                player.level().getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, this.data.key, this.data.claim));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
             }));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);

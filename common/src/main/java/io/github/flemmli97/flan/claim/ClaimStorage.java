@@ -35,11 +35,14 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraft.server.dedicated.DedicatedServerProperties;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.AABB;
 import org.yaml.snakeyaml.Yaml;
@@ -121,8 +124,9 @@ public class ClaimStorage implements IPermissionStorage {
         Claim claim = new Claim(pos1, pos2, player);
         if (use3D)
             claim.withHeight(Math.max(pos1.getY(), pos2.getY()));
-        if (ConfigHandler.CONFIG.noSpawnClaim && player.level().dimension() == Level.OVERWORLD && player.getServer().getSpawnProtectionRadius() > 0) {
-            AABB aabb = new AABB(player.level().getSharedSpawnPos()).inflate(player.getServer().getSpawnProtectionRadius());
+        LevelData.RespawnData respawnData = player.level().getRespawnData();
+        if (ConfigHandler.CONFIG.noSpawnClaim && player.level().dimension() == respawnData.dimension() && player.level().getServer() instanceof DedicatedServer server && server.spawnProtectionRadius() > 0) {
+            AABB aabb = new AABB(respawnData.pos()).inflate(server.spawnProtectionRadius());
             ClaimBox dim = claim.getDimensions();
             if (dim.minX() <= aabb.maxX && dim.maxX() >= aabb.minX && dim.minZ() <= aabb.maxZ && dim.maxZ() >= aabb.minZ) {
                 player.displayClientMessage(ClaimUtils.translatedText("flan.conflictSpawn", ChatFormatting.RED), false);
@@ -253,7 +257,7 @@ public class ClaimStorage implements IPermissionStorage {
             if (o == player || claim.isAdminClaim())
                 return data;
             return (IPlayerData) PlayerClaimData.get(o);
-        }).orElse(new OfflinePlayerData(player.getServer(), claim.getOwner()));
+        }).orElse(new OfflinePlayerData(player.level().getServer(), claim.getOwner()));
         boolean enoughBlocks = claim.isAdminClaim() || data.isAdminIgnoreClaim() || newData.canUseClaimBlocks(diff);
         if (enoughBlocks) {
             Flan.log("Resizing claim {}", claim);

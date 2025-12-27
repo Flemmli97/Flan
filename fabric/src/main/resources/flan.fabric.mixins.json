@@ -12,7 +12,6 @@
     "PatrolSpawnerMixin",
     "PhantomSpawnerMixin",
     "PlayerDropMixin",
-    "PlayerManagerMixin",
     "ProjectileMixin",
     "ServerPlayerDropMixin",
     "ServerPlayerGameModeMixin",

@@ -87,14 +87,14 @@ public class PersonalGroupScreenHandler extends PagedServerOnlyScreenHandler<Obj
         }
         if (index == 3) {
             player.closeContainer();
-            player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
+            player.level().getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
                 PlayerClaimData.get(player).editDefaultPerms(s, BuiltinPermission.EDITPERMS, -1);
                 player.closeContainer();
-                player.getServer().execute(() -> PersonalGroupScreenHandler.openGroupMenu(player));
+                player.level().getServer().execute(() -> PersonalGroupScreenHandler.openGroupMenu(player));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
             }, () -> {
                 player.closeContainer();
-                player.getServer().execute(() -> PersonalGroupScreenHandler.openGroupMenu(player));
+                player.level().getServer().execute(() -> PersonalGroupScreenHandler.openGroupMenu(player));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
             }));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
@@ -117,7 +117,7 @@ public class PersonalGroupScreenHandler extends PagedServerOnlyScreenHandler<Obj
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.BAT_DEATH, 1, 1f);
             } else {
                 player.closeContainer();
-                player.getServer().execute(() -> PersonalPermissionScreenHandler.openClaimMenu(player, name));
+                player.level().getServer().execute(() -> PersonalPermissionScreenHandler.openClaimMenu(player, name));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             }
         }

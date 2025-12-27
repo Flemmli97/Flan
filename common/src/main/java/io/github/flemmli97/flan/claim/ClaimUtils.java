@@ -8,6 +8,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.players.NameAndId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +41,10 @@ public class ClaimUtils {
     }
 
     public static Optional<String> fetchUsername(UUID uuid, MinecraftServer server, boolean fetch) {
-        String ownerName = server.getProfileCache().get(uuid).map(GameProfile::getName).orElse(null);
+        String ownerName = server.services().nameToIdCache().get(uuid).map(NameAndId::name).orElse(null);
         if (ownerName == null && fetch) {
-            ProfileResult res = server.getSessionService().fetchProfile(uuid, true);
-            ownerName = res != null ? res.profile().getName() : null;
+            ProfileResult res = server.services().sessionService().fetchProfile(uuid, true);
+            ownerName = res != null ? res.profile().name() : null;
         }
         return Optional.ofNullable(ownerName);
     }

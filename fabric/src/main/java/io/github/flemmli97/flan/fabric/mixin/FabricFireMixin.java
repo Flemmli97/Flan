@@ -19,7 +19,7 @@ public abstract class FabricFireMixin {
      */
     @Inject(method = "checkBurnOut", at = @At(value = "HEAD"), cancellable = true)
     private void spread(Level level, BlockPos pos, int spreadFactor, RandomSource rand, int currentAge, CallbackInfo info) {
-        if (!level.isClientSide && !WorldEvents.canFireSpread((ServerLevel) level, pos)) {
+        if (!level.isClientSide() && !WorldEvents.canFireSpread((ServerLevel) level, pos)) {
             info.cancel();
         }
     }

@@ -74,7 +74,7 @@ public class PersonalPermissionScreenHandler extends PagedServerOnlyScreenHandle
     protected boolean handleSlotClicked(ServerPlayer player, int index, Slot slot, int clickType) {
         if (index == 0) {
             player.closeContainer();
-            player.getServer().execute(() -> PersonalGroupScreenHandler.openGroupMenu(player));
+            player.level().getServer().execute(() -> PersonalGroupScreenHandler.openGroupMenu(player));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;
         }

@@ -25,6 +25,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.NameAndId;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,8 +46,8 @@ public class CommandHelpers {
                 .stream().map(claim -> claim.getClaimName().isEmpty() ? claim.getClaimID().toString() : claim.getClaimName()).collect(Collectors.toList()), build);
     }
 
-    public static GameProfile singleProfile(CommandContext<CommandSourceStack> context, String arg) throws CommandSyntaxException {
-        Collection<GameProfile> profs = GameProfileArgument.getGameProfiles(context, arg);
+    public static NameAndId singleProfile(CommandContext<CommandSourceStack> context, String arg) throws CommandSyntaxException {
+        Collection<NameAndId> profs = GameProfileArgument.getGameProfiles(context, arg);
         if (profs.size() != 1) {
             throw new SimpleCommandExceptionType(ClaimUtils.translatedText("flan.onlyOnePlayer")).create();
         }

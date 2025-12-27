@@ -48,17 +48,17 @@ public class PlayerEvents {
 
     public static void saveClaimData(Player player) {
         if (player instanceof ServerPlayer)
-            PlayerClaimData.get((ServerPlayer) player).save(player.getServer());
+            PlayerClaimData.get((ServerPlayer) player).save(player.level().getServer());
     }
 
     public static void readClaimData(Player player) {
         if (player instanceof ServerPlayer)
-            PlayerClaimData.get((ServerPlayer) player).read(player.getServer());
+            PlayerClaimData.get((ServerPlayer) player).read(player.level().getServer());
     }
 
     public static void onLogout(Player player) {
-        if (player.getServer() != null)
-            LogoutTracker.getInstance(player.getServer()).track(player.getUUID());
+        if (player.level().getServer() != null)
+            LogoutTracker.getInstance(player.level().getServer()).track(player.getUUID());
     }
 
     public static boolean growBonemeal(UseOnContext context) {
@@ -151,7 +151,7 @@ public class PlayerEvents {
             if (entity instanceof ItemEntity itemEntity) {
                 IOwnedItem ownedItem = (IOwnedItem) entity;
                 if (ownedItem.flan$getDeathPlayer() != null) {
-                    ServerPlayer other = sPlayer.getServer().getPlayerList().getPlayer(ownedItem.flan$getDeathPlayer());
+                    ServerPlayer other = sPlayer.level().getServer().getPlayerList().getPlayer(ownedItem.flan$getDeathPlayer());
                     if (other == null)
                         return false;
                     return ownedItem.flan$getDeathPlayer().equals(player.getUUID()) || PlayerClaimData.get(other).deathItemsUnlocked();

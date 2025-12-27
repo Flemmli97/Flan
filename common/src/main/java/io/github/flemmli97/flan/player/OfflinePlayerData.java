@@ -117,7 +117,7 @@ public class OfflinePlayerData implements IPlayerData {
     }
 
     public boolean isExpired(LocalDateTime now) {
-        UserBanListEntry entry = this.server.getProfileCache().get(this.owner).map(this.server.getPlayerList().getBans()::get).orElse(null);
+        UserBanListEntry entry = this.server.services().nameToIdCache().get(this.owner).map(this.server.getPlayerList().getBans()::get).orElse(null);
         boolean banned = entry != null && entry.getExpires() == null;
         if (banned) {
             LocalDateTime bannedTime = LocalDateTime.ofInstant(((BannedEntryAccessor) entry).getCreationDate().toInstant(), ZoneId.systemDefault());

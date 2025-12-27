@@ -19,6 +19,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.NameAndId;
 
 import java.util.Collection;
 
@@ -30,12 +31,12 @@ public class TransferClaimCommand {
 
     private static int transferClaim(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        Collection<GameProfile> profs = GameProfileArgument.getGameProfiles(context, "player");
+        Collection<NameAndId> profs = GameProfileArgument.getGameProfiles(context, "player");
         if (profs.size() != 1) {
             context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.onlyOnePlayer", ChatFormatting.RED), false);
             return 0;
         }
-        GameProfile prof = profs.iterator().next();
+        NameAndId prof = profs.iterator().next();
         ClaimStorage storage = ClaimStorage.get(context.getSource().getLevel());
         Claim claim = CommandClaim.fromContext(context);
         if (claim == null) {
@@ -46,8 +47,8 @@ public class TransferClaimCommand {
         boolean enoughBlocks = true;
         if (!data.isAdminIgnoreClaim()) {
             MinecraftServer server = context.getSource().getServer();
-            ServerPlayer newOwner = server.getPlayerList().getPlayer(prof.getId());
-            IPlayerData newData = newOwner != null ? PlayerClaimData.get(newOwner) : new OfflinePlayerData(server, prof.getId());
+            ServerPlayer newOwner = server.getPlayerList().getPlayer(prof.id());
+            IPlayerData newData = newOwner != null ? PlayerClaimData.get(newOwner) : new OfflinePlayerData(server, prof.id());
             enoughBlocks = newData.canUseClaimBlocks(claim.getPlane());
         }
         if (!enoughBlocks) {
@@ -56,11 +57,11 @@ public class TransferClaimCommand {
                 context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.ownerTransferNoBlocksAdmin", ChatFormatting.RED), false);
             return 0;
         }
-        if (!storage.transferOwner(claim, player, prof.getId())) {
+        if (!storage.transferOwner(claim, player, prof.id())) {
             context.getSource().sendFailure(ClaimUtils.translatedText("flan.ownerTransferFail", ChatFormatting.RED));
             return 0;
         }
-        context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.ownerTransferSuccess", prof.getName(), ChatFormatting.GOLD), false);
+        context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.ownerTransferSuccess", prof.name(), ChatFormatting.GOLD), false);
         return Command.SINGLE_SUCCESS;
     }
 }

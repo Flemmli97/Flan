@@ -98,13 +98,13 @@ public class PotionEditScreenHandler extends PagedServerOnlyScreenHandler<Claim>
     protected boolean handleSlotClicked(ServerPlayer player, int index, Slot slot, int clickType) {
         if (index == 0) {
             player.closeContainer();
-            player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data));
+            player.level().getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;
         }
         if (index == 3) {
             player.closeContainer();
-            player.getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
+            player.level().getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
                 String[] potion = s.contains("-") ? s.split("-") : s.split(";");
                 int amp = 1;
                 Optional<Holder.Reference<MobEffect>> holder = BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(potion[0]));
@@ -129,11 +129,11 @@ public class PotionEditScreenHandler extends PagedServerOnlyScreenHandler<Claim>
                 }
                 this.data.addPotion(holder.get(), duration, amp);
                 player.closeContainer();
-                player.getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.data));
+                player.level().getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.data));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
             }, () -> {
                 player.closeContainer();
-                player.getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.data));
+                player.level().getServer().execute(() -> PotionEditScreenHandler.openPotionMenu(player, this.data));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
             }));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);

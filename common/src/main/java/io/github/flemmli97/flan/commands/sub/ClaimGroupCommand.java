@@ -21,6 +21,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.NameAndId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ public class ClaimGroupCommand {
                                     ClaimStorage storage = ClaimStorage.get(src.getLevel());
                                     Claim claim = storage.getClaimAt(src.getPlayerOrException().blockPosition());
                                     if (claim != null && claim.canInteract(src.getPlayerOrException(), BuiltinPermission.EDITPERMS, src.getPlayerOrException().blockPosition())) {
-                                        list = claim.playersFromGroup(player.getServer(), group).stream().map(GameProfile::getName).toList();
+                                        list = claim.playersFromGroup(player.level().getServer(), group).stream().map(NameAndId::name).toList();
                                     }
                                     return SharedSuggestionProvider.suggest(list, build);
                                 }).executes(ClaimGroupCommand::removePlayer))))));
@@ -126,9 +127,9 @@ public class ClaimGroupCommand {
             return 0;
         }
         List<String> modified = new ArrayList<>();
-        for (GameProfile prof : GameProfileArgument.getGameProfiles(context, "players")) {
-            if (claim.setPlayerGroup(prof.getId(), group, force))
-                modified.add(prof.getName());
+        for (NameAndId prof : GameProfileArgument.getGameProfiles(context, "players")) {
+            if (claim.setPlayerGroup(prof.id(), group, force))
+                modified.add(prof.name());
         }
         if (group == null) {
             if (!modified.isEmpty())

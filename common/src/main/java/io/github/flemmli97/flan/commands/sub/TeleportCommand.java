@@ -30,8 +30,8 @@ public class TeleportCommand {
                         .executes(TeleportCommand::teleport)))
                 .then(Commands.literal("global").then(Commands.argument("claim", StringArgumentType.string()).suggests((ctx, b) -> CommandHelpers.claimSuggestions(ctx, b, null))
                         .executes(TeleportCommand::teleportAdminClaims)))
-                .then(Commands.literal("other").then(Commands.argument("player", GameProfileArgument.gameProfile()).then(Commands.argument("claim", StringArgumentType.string()).suggests((ctx, b) -> CommandHelpers.claimSuggestions(ctx, b, CommandHelpers.singleProfile(ctx, "player").getId()))
-                        .executes(src -> TeleportCommand.teleport(src, CommandHelpers.singleProfile(src, "player").getId()))))));
+                .then(Commands.literal("other").then(Commands.argument("player", GameProfileArgument.gameProfile()).then(Commands.argument("claim", StringArgumentType.string()).suggests((ctx, b) -> CommandHelpers.claimSuggestions(ctx, b, CommandHelpers.singleProfile(ctx, "player").id()))
+                        .executes(src -> TeleportCommand.teleport(src, CommandHelpers.singleProfile(src, "player").id()))))));
     }
 
     private static int teleport(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

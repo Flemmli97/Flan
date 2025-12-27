@@ -84,13 +84,13 @@ public class ClaimAllowListEntryScreenHandler extends ServerOnlyScreenHandler<Cl
         if (val != null) {
             if (this.hasPerm(this.data, player, BuiltinPermission.EDITPERMS)) {
                 player.closeContainer();
-                player.getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, val, this.data));
+                player.level().getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, val, this.data));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             } else
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
         } else if (index == 0) {
             player.closeContainer();
-            player.getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data));
+            player.level().getServer().execute(() -> ClaimMenuScreenHandler.openClaimMenu(player, this.data));
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
         }
         return true;

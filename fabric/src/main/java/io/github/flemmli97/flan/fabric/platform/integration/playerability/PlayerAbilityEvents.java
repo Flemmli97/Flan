@@ -23,7 +23,7 @@ public class PlayerAbilityEvents {
     }
 
     public static boolean checkAbility(Player player, PlayerAbility ability, AbilitySource abilitySource) {
-        if (player.level().isClientSide || ability != VanillaAbilities.ALLOW_FLYING)
+        if (player.level().isClientSide() || ability != VanillaAbilities.ALLOW_FLYING)
             return true;
         BlockPos pos = player.blockPosition();
         ClaimStorage storage = ClaimStorage.get((ServerLevel) player.level());

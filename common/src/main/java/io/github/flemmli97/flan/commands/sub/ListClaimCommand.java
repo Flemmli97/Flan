@@ -19,6 +19,7 @@ import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.NameAndId;
 import net.minecraft.world.level.Level;
 
 import java.util.Collection;
@@ -38,15 +39,15 @@ public class ListClaimCommand {
         return listClaimsFromUUID(context, null);
     }
 
-    private static int listClaims(CommandContext<CommandSourceStack> context, Collection<GameProfile> profs) throws CommandSyntaxException {
+    private static int listClaims(CommandContext<CommandSourceStack> context, Collection<NameAndId> profs) throws CommandSyntaxException {
         if (profs.size() != 1) {
             context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.onlyOnePlayer", ChatFormatting.RED), false);
             return 0;
         }
-        GameProfile prof = profs.iterator().next();
-        if (prof == null || prof.getId() == null)
+        NameAndId prof = profs.iterator().next();
+        if (prof == null || prof.id() == null)
             return 0;
-        return listClaimsFromUUID(context, prof.getId());
+        return listClaimsFromUUID(context, prof.id());
     }
 
     private static int listClaimsFromUUID(CommandContext<CommandSourceStack> context, UUID of) throws CommandSyntaxException {

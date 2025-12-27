@@ -42,6 +42,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.NameAndId;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffect;
@@ -321,7 +322,7 @@ public class Claim implements IPermissionContainer {
             if (this.fakePlayers.contains(player.getUUID()))
                 return true;
             // Assume that if the profile cache contains the uuid that the fake player is based on a real player
-            if (this.level.getServer().getProfileCache().get(player.getUUID()).isEmpty()) {
+            if (this.level.getServer().services().nameToIdCache().get(player.getUUID()).isEmpty()) {
                 if (!player.getUUID().equals(this.owner) && !this.playersGroups.containsKey(player.getUUID())) {
                     perm = BuiltinPermission.FAKEPLAYER;
                 }
@@ -530,15 +531,15 @@ public class Claim implements IPermissionContainer {
         return this.fakePlayers.add(uuid);
     }
 
-    public List<GameProfile> playersFromGroup(MinecraftServer server, String group) {
+    public List<NameAndId> playersFromGroup(MinecraftServer server, String group) {
         List<UUID> l = new ArrayList<>();
         this.playersGroups.forEach((uuid, g) -> {
             if (g.equals(group))
                 l.add(uuid);
         });
-        List<GameProfile> profs = new ArrayList<>();
-        l.forEach(uuid -> server.getProfileCache().get(uuid).ifPresent(profs::add));
-        profs.sort(Comparator.comparing(GameProfile::getName));
+        List<NameAndId> profs = new ArrayList<>();
+        l.forEach(uuid -> server.services().nameToIdCache().get(uuid).ifPresent(profs::add));
+        profs.sort(Comparator.comparing(NameAndId::name));
         return profs;
     }
 
