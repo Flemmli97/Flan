@@ -29,27 +29,18 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.v1.DataResourceLoader;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.resources.PreparableReloadListener;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.function.Function;
 
 public class FlanFabric implements ModInitializer {
 
@@ -73,8 +64,8 @@ public class FlanFabric implements ModInitializer {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PlayerEvents.onLogout(handler.player));
         CommandRegistrationCallback.EVENT.register((dispatcher, reg, env) -> CommandClaim.register(dispatcher, reg, env == Commands.CommandSelection.DEDICATED));
 
-        registerListener(PermissionManager.ID.location(), PermissionManager::create);
-        registerListener(InteractionOverrideManager.ID.location(), InteractionOverrideManager::create);
+        DataResourceLoader.get().registerReloader(PermissionManager.ID.location(), PermissionManager::create);
+        DataResourceLoader.get().registerReloader(InteractionOverrideManager.ID.location(), InteractionOverrideManager::create);
 
         Flan.permissionAPI = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
         Flan.playerAbilityLib = FabricLoader.getInstance().isModLoaded("playerabilitylib");
@@ -124,21 +115,5 @@ public class FlanFabric implements ModInitializer {
                 return InteractionResult.FAIL;
         }
         return InteractionResult.PASS;
-    }
-
-    private static void registerListener(ResourceLocation id, Function<HolderLookup.Provider, PreparableReloadListener> factory) {
-        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(id, provider -> new IdentifiableResourceReloadListener() {
-            private final PreparableReloadListener listener = factory.apply(provider);
-
-            @Override
-            public CompletableFuture<Void> reload(SharedState sharedState, Executor executor, PreparationBarrier preparationBarrier, Executor executor2) {
-                return this.listener.reload(sharedState, executor, preparationBarrier, executor2);
-            }
-
-            @Override
-            public ResourceLocation getFabricId() {
-                return id;
-            }
-        });
     }
 }
