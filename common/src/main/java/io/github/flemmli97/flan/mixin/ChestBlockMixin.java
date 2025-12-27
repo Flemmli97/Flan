@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(ChestBlock.class)
 public abstract class ChestBlockMixin {
 
-    @ModifyVariable(method = "getStateForPlacement", index = 2, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/ChestBlock;defaultBlockState()Lnet/minecraft/world/level/block/state/BlockState;"))
+    @ModifyVariable(method = "getStateForPlacement", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/ChestBlock;defaultBlockState()Lnet/minecraft/world/level/block/state/BlockState;"))
     private ChestType modifyChestType(ChestType type, BlockPlaceContext context, @Local(ordinal = 0) Direction placeDirection) {
         if (type == ChestType.SINGLE) {
             return type;

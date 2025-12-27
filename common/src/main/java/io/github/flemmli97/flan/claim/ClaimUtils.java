@@ -1,6 +1,5 @@
 package io.github.flemmli97.flan.claim;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.yggdrasil.ProfileResult;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
