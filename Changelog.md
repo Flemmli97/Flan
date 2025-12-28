@@ -1,3 +1,11 @@
+Flan 1.12.5
+================
+- Update to 1.21.10 [@Wesley1808](https://github.com/Wesley1808)
+- Fix fake blocks: Don't load chunks that aren't already loaded, or out of range [@JayPeaSize](https://github.com/JayPeaSize)
+- Update bluemap integration
+  - Updates map on config changes
+  - Fix claims added to map despite config disabled
+
 Flan 1.12.4
 ================
 - Update vehicle pass check, fixes boat issues
