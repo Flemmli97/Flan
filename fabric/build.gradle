@@ -64,6 +64,12 @@ dependencies {
     modCompileOnly "eu.pb4:common-protection-api:${common_prot_api}"
 }
 
+processResources {
+    filesMatching(['fabric.mod_api.json']) {
+        expand mod_meta
+    }
+}
+
 tasks.register('apiJar', Jar) {
     dependsOn classes
     archiveClassifier.set "api-source"
@@ -75,10 +81,9 @@ tasks.register('apiJar', Jar) {
 
 tasks.register('remapApiJar', net.fabricmc.loom.task.RemapJarTask) {
     archiveClassifier.set "api"
-    input.set apiJar.archiveFile
+    input = apiJar.archiveFile
     addNestedDependencies = false
     dependsOn apiJar
-    from sourceSets.main.output
     /* Putting it here doesnt seem to work...
     include "fabric.mod_api.json" //Include this so it gets remapped as a dependency
     rename("fabric.mod_api.json", "fabric.mod.json")
