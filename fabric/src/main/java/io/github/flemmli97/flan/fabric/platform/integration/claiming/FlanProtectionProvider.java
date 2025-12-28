@@ -10,7 +10,7 @@ import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class FlanProtectionProvider implements ProtectionProvider {
 
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("flan", "provider");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath("flan", "provider");
 
     public static void register() {
         CommonProtection.register(ID, new FlanProtectionProvider());
@@ -97,7 +97,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
-        ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract(sl.getBlockState(pos).getBlock());
+        Identifier perm = InteractionOverrideManager.getInstance().getBlockInteract(sl.getBlockState(pos).getBlock());
 
         if (perm != null && perm.equals(BuiltinPermission.PROJECTILES))
             perm = BuiltinPermission.OPENCONTAINER;
@@ -118,7 +118,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
-        ResourceLocation permission;
+        Identifier permission;
 
         if (entity instanceof ArmorStand)
             permission = BuiltinPermission.ARMORSTAND;
@@ -136,7 +136,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
 
-        ResourceLocation permission;
+        Identifier permission;
 
         if (entity instanceof ArmorStand || !(entity instanceof LivingEntity))
             permission = BuiltinPermission.BREAKNONLIVING;

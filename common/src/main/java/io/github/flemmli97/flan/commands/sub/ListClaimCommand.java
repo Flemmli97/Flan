@@ -72,7 +72,7 @@ public class ListClaimCommand {
         for (Map.Entry<Level, Collection<Claim>> entry : claims.entrySet()) {
             for (Claim claim : entry.getValue()) {
                 context.getSource().sendSuccess(() -> ClaimUtils.translatedText(
-                        entry.getKey().dimension().location() + " # " + claim.formattedClaim(), ChatFormatting.YELLOW), false);
+                        entry.getKey().dimension().identifier() + " # " + claim.formattedClaim(), ChatFormatting.YELLOW), false);
             }
         }
         return Command.SINGLE_SUCCESS;
@@ -84,11 +84,11 @@ public class ListClaimCommand {
         for (ServerLevel level : src.getServer().getAllLevels()) {
             claims.put(level, ClaimStorage.get(level).getAdminClaims());
         }
-        src.sendSuccess(() -> ClaimUtils.translatedText("flan.listAdminClaims", src.getLevel().dimension().location(), ChatFormatting.GOLD), false);
+        src.sendSuccess(() -> ClaimUtils.translatedText("flan.listAdminClaims", src.getLevel().dimension().identifier(), ChatFormatting.GOLD), false);
         for (Map.Entry<Level, Collection<Claim>> entry : claims.entrySet()) {
             for (Claim claim : entry.getValue()) {
                 src.sendSuccess(() -> ClaimUtils.translatedText(
-                        entry.getKey().dimension().location() + " # " + claim.formattedClaim(), ChatFormatting.YELLOW), false);
+                        entry.getKey().dimension().identifier() + " # " + claim.formattedClaim(), ChatFormatting.YELLOW), false);
             }
         }
         return Command.SINGLE_SUCCESS;

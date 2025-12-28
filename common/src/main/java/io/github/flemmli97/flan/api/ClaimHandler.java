@@ -8,7 +8,7 @@ import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,7 +24,7 @@ public class ClaimHandler {
      * @param pos        The position the player interacts with
      * @param permission The id of the permission to check. For default permissions check {@link BuiltinPermission}
      */
-    public static boolean canInteract(ServerPlayer player, BlockPos pos, ResourceLocation permission) {
+    public static boolean canInteract(ServerPlayer player, BlockPos pos, Identifier permission) {
         return getPermissionStorage(player.level()).getForPermissionCheck(pos).canInteract(player, permission, pos);
     }
 
@@ -61,7 +61,7 @@ public class ClaimHandler {
      * @param key   The old key of the permission
      * @param newId The new datapack permission id
      */
-    public static void registerMapping(String key, ResourceLocation newId) {
+    public static void registerMapping(String key, Identifier newId) {
         BuiltinPermission.registerMapping(key, newId);
     }
 }

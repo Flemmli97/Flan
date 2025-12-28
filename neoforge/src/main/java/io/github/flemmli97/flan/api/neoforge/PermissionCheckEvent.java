@@ -1,7 +1,7 @@
 package io.github.flemmli97.flan.api.neoforge;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.neoforged.bus.api.Event;
@@ -9,7 +9,7 @@ import net.neoforged.bus.api.Event;
 public class PermissionCheckEvent extends Event {
 
     public final ServerPlayer player;
-    public final ResourceLocation permission;
+    public final Identifier permission;
     public final BlockPos pos;
     private InteractionResult result = InteractionResult.PASS;
 
@@ -20,7 +20,7 @@ public class PermissionCheckEvent extends Event {
      * @param permission The permission to check
      * @param pos        The block pos where the action is occuring
      */
-    public PermissionCheckEvent(ServerPlayer player, ResourceLocation permission, BlockPos pos) {
+    public PermissionCheckEvent(ServerPlayer player, Identifier permission, BlockPos pos) {
         this.player = player;
         this.permission = permission;
         this.pos = pos;

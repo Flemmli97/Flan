@@ -3,7 +3,7 @@ package io.github.flemmli97.flan.api.fabric;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 
@@ -19,7 +19,7 @@ public class PermissionCheckEvent {
          * @param pos        The block pos where the action is occuring
          * @return ActionResult#PASS to do nothing. ActionResult#FAIL to prevent the action. Else to allow the action
          */
-        InteractionResult check(ServerPlayer player, ResourceLocation permission, BlockPos pos);
+        InteractionResult check(ServerPlayer player, Identifier permission, BlockPos pos);
     }
 
     public static final Event<PermissionCheck> CHECK = EventFactory.createArrayBacked(PermissionCheck.class,

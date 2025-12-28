@@ -9,8 +9,8 @@ import io.github.flemmli97.flan.api.permission.interactions.ResolvableHolderSet;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -37,19 +37,19 @@ import java.util.Map;
 public class InteractionOverrideManager extends SimpleJsonResourceReloadListener<InteractionOverrideManager.InteractionEntry<?>> {
 
     public static final ResourceKey<? extends Registry<InteractionOverrideManager.InteractionEntry<?>>> ID =
-            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "claim_interactions_override"));
+            ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(Flan.MODID, "claim_interactions_override"));
 
     public static final Codec<ResolvableEntry<Block>> BLOCK_CODEC = ResolvableHolderSet.codec(BuiltInRegistries.BLOCK);
     public static final Codec<ResolvableEntry<Item>> ITEM_CODEC = ResolvableHolderSet.codec(BuiltInRegistries.ITEM);
     public static final Codec<ResolvableEntry<EntityType<?>>> ENTITY_CODEC = ResolvableHolderSet.codec(BuiltInRegistries.ENTITY_TYPE);
 
-    public static final InteractionType<Block> BLOCK_LEFT_CLICK = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "block_left_click"), BLOCK_CODEC, InteractionHolder::new);
-    public static final InteractionType<Block> BLOCK_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "block_interact"), BLOCK_CODEC, InteractionHolder::new);
-    public static final InteractionType<Item> ITEM_USE = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "item_use"), ITEM_CODEC, InteractionHolder::new);
-    public static final InteractionType<EntityType<?>> ENTITY_ATTACK = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "entity_attack"), ENTITY_CODEC, InteractionHolder::new);
-    public static final InteractionType<EntityType<?>> ENTITY_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "entity_interact"), ENTITY_CODEC, InteractionHolder::new);
-    public static final InteractionType<Block> PROJECTILE_BLOCK_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "projectile_block_interact"), BLOCK_CODEC, InteractionHolder::new);
-    public static final InteractionType<EntityType<?>> PROJECTILE_ENTITY_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "projectile_entity_interact"), ENTITY_CODEC, InteractionHolder::new);
+    public static final InteractionType<Block> BLOCK_LEFT_CLICK = new InteractionType<>(Identifier.fromNamespaceAndPath(Flan.MODID, "block_left_click"), BLOCK_CODEC, InteractionHolder::new);
+    public static final InteractionType<Block> BLOCK_INTERACT = new InteractionType<>(Identifier.fromNamespaceAndPath(Flan.MODID, "block_interact"), BLOCK_CODEC, InteractionHolder::new);
+    public static final InteractionType<Item> ITEM_USE = new InteractionType<>(Identifier.fromNamespaceAndPath(Flan.MODID, "item_use"), ITEM_CODEC, InteractionHolder::new);
+    public static final InteractionType<EntityType<?>> ENTITY_ATTACK = new InteractionType<>(Identifier.fromNamespaceAndPath(Flan.MODID, "entity_attack"), ENTITY_CODEC, InteractionHolder::new);
+    public static final InteractionType<EntityType<?>> ENTITY_INTERACT = new InteractionType<>(Identifier.fromNamespaceAndPath(Flan.MODID, "entity_interact"), ENTITY_CODEC, InteractionHolder::new);
+    public static final InteractionType<Block> PROJECTILE_BLOCK_INTERACT = new InteractionType<>(Identifier.fromNamespaceAndPath(Flan.MODID, "projectile_block_interact"), BLOCK_CODEC, InteractionHolder::new);
+    public static final InteractionType<EntityType<?>> PROJECTILE_ENTITY_INTERACT = new InteractionType<>(Identifier.fromNamespaceAndPath(Flan.MODID, "projectile_entity_interact"), ENTITY_CODEC, InteractionHolder::new);
 
     private static InteractionOverrideManager INSTANCE;
 
@@ -68,31 +68,31 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
         return INSTANCE;
     }
 
-    public ResourceLocation getBlockLeftClick(Block block) {
+    public Identifier getBlockLeftClick(Block block) {
         return this.getOverride(BLOCK_LEFT_CLICK, block);
     }
 
-    public ResourceLocation getBlockInteract(Block block) {
+    public Identifier getBlockInteract(Block block) {
         return this.getOverride(BLOCK_INTERACT, block);
     }
 
-    public ResourceLocation getItemUse(Item item) {
+    public Identifier getItemUse(Item item) {
         return this.getOverride(ITEM_USE, item);
     }
 
-    public ResourceLocation getEntityAttack(EntityType<?> entity) {
+    public Identifier getEntityAttack(EntityType<?> entity) {
         return this.getOverride(ENTITY_ATTACK, entity);
     }
 
-    public ResourceLocation getEntityInteract(EntityType<?> entity) {
+    public Identifier getEntityInteract(EntityType<?> entity) {
         return this.getOverride(ENTITY_INTERACT, entity);
     }
 
-    public ResourceLocation getProjectileBlockInteract(Block block) {
+    public Identifier getProjectileBlockInteract(Block block) {
         return this.getOverride(PROJECTILE_BLOCK_INTERACT, block);
     }
 
-    public ResourceLocation getProjectileEntityInteract(Projectile entity) {
+    public Identifier getProjectileEntityInteract(Projectile entity) {
         InteractionHolder<EntityType<?>> holder = this.getHolder(PROJECTILE_ENTITY_INTERACT);
         if (!holder.unresolved()) {
             // Needs to be done here because it needs level access for instantiation
@@ -110,7 +110,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
     /**
      * Returns the overriden permission for the given type and value
      */
-    public <T> ResourceLocation getOverride(InteractionType<T> type, T entry) {
+    public <T> Identifier getOverride(InteractionType<T> type, T entry) {
         return this.getHolder(type).get(entry);
     }
 
@@ -120,7 +120,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, InteractionEntry<?>> data, ResourceManager manager, ProfilerFiller profiler) {
+    protected void apply(Map<Identifier, InteractionEntry<?>> data, ResourceManager manager, ProfilerFiller profiler) {
         this.overrides.clear();
         for (Block block : BuiltInRegistries.BLOCK) {
             InteractionHolder<Block> map = this.getHolder(BLOCK_INTERACT);
@@ -147,11 +147,11 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
 
     public static class InteractionHolder<T> {
 
-        private final Map<T, ResourceLocation> direct = new HashMap<>();
-        private final Map<ResolvableEntry<T>, ResourceLocation> unresolvedTags = new HashMap<>();
-        private final Map<T, ResourceLocation> defaults = new HashMap<>();
+        private final Map<T, Identifier> direct = new HashMap<>();
+        private final Map<ResolvableEntry<T>, Identifier> unresolvedTags = new HashMap<>();
+        private final Map<T, Identifier> defaults = new HashMap<>();
 
-        public ResourceLocation get(T val) {
+        public Identifier get(T val) {
             if (this.unresolved()) {
                 this.resolve();
             }
@@ -178,9 +178,9 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
     }
 
     public record InteractionEntry<T>(InteractionType<T> type,
-                                      List<Pair<ResolvableEntry<T>, ResourceLocation>> elements) {
+                                      List<Pair<ResolvableEntry<T>, Identifier>> elements) {
 
-        public static final Codec<InteractionEntry<?>> CODEC = ResourceLocation.CODEC.dispatch(e -> e.type().getId(),
+        public static final Codec<InteractionEntry<?>> CODEC = Identifier.CODEC.dispatch(e -> e.type().getId(),
                 t -> InteractionType.get(t).getCodec());
     }
 

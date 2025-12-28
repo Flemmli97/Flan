@@ -7,7 +7,7 @@ import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.MenuProvider;
@@ -81,7 +81,7 @@ public class PersonalPermissionScreenHandler extends PagedServerOnlyScreenHandle
         ItemStack stack = slot.getItem();
         ClaimPermission perm;
         try {
-            perm = PermissionManager.getInstance().get(ResourceLocation.parse(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+            perm = PermissionManager.getInstance().get(Identifier.parse(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
                     .copyTag().getStringOr(ServerScreenHelper.PERMISSION_KEY, "")));
             if (perm == null)
                 return false;
@@ -89,7 +89,7 @@ public class PersonalPermissionScreenHandler extends PagedServerOnlyScreenHandle
             return false;
         }
         PlayerClaimData data = PlayerClaimData.get(player);
-        Map<ResourceLocation, Boolean> perms = data.playerDefaultGroups().getOrDefault(this.data, new HashMap<>());
+        Map<Identifier, Boolean> perms = data.playerDefaultGroups().getOrDefault(this.data, new HashMap<>());
         boolean success = data.editDefaultPerms(this.data, perm.getId(), (perms.containsKey(perm.getId()) ? perms.get(perm.getId()) ? 1 : 0 : -1) + 1);
         slot.set(ServerScreenHelper.getFromPersonal(player, perm, this.data));
         if (success)

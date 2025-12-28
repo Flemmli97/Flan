@@ -23,8 +23,8 @@ import net.minecraft.data.worldgen.features.NetherFeatures;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -65,7 +65,7 @@ public class PlayerEvents {
         if (context.getPlayer() instanceof ServerPlayer serverPlayer) {
             BlockState state = serverPlayer.level().getBlockState(context.getClickedPos());
             BlockPos.MutableBlockPos pos = context.getClickedPos().mutable();
-            ResourceLocation perm = InteractionOverrideManager.getInstance().getItemUse(context.getItemInHand().getItem());
+            Identifier perm = InteractionOverrideManager.getInstance().getItemUse(context.getItemInHand().getItem());
             /**
              * {@link ItemInteractEvents#onItemUseBlock} handles this case already.
              * Sadly need to check again. In case its used in a claim. Less expensive than aoe check

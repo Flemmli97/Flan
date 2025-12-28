@@ -16,12 +16,12 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.NameAndId;
@@ -34,8 +34,8 @@ public class AddClaimCommand {
     public static <T extends ArgumentBuilder<CommandSourceStack, T>> void register(ArgumentBuilder<CommandSourceStack, T> builder) {
         builder.then(Commands.literal("add").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.CLAIM_CREATE))
                 .then(Commands.argument("from", BlockPosArgument.blockPos()).then(Commands.argument("to", BlockPosArgument.blockPos()).executes(AddClaimCommand::addClaim)
-                        .then(Commands.argument("dimension", ResourceLocationArgument.id()).requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.CLAIM_ADMIN_CREATE, true))
-                                .suggests((src, build) -> SharedSuggestionProvider.suggest(src.getSource().getServer().levelKeys().stream().map(k -> k.location().toString()).toList(), build))
+                        .then(Commands.argument("dimension", IdentifierArgument.id()).requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.CLAIM_ADMIN_CREATE, true))
+                                .suggests((src, build) -> SharedSuggestionProvider.suggest(src.getSource().getServer().levelKeys().stream().map(k -> k.identifier().toString()).toList(), build))
                                 .then(Commands.argument("player", StringArgumentType.word()).suggests((src, build) -> SharedSuggestionProvider.suggest(Stream.concat(Stream.of("+Admin"), src.getSource().getServer().getPlayerList().getPlayers().stream().map(p -> p.getUUID().toString())).toList(), build))
                                         .executes(AddClaimCommand::addClaimAs)))))
                 .then(Commands.literal("all").executes(AddClaimCommand::addClaimAll))
@@ -55,7 +55,7 @@ public class AddClaimCommand {
 
     private static int addClaimAs(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         String as = StringArgumentType.getString(context, "player");
-        ResourceLocation levelID = ResourceLocationArgument.getId(context, "dimension");
+        Identifier levelID = IdentifierArgument.getId(context, "dimension");
         ServerLevel level = context.getSource().getServer().getLevel(ResourceKey.create(Registries.DIMENSION, levelID));
         if (level == null) {
             context.getSource().sendSuccess(() -> ClaimUtils.translatedText("flan.noSuchLevel", levelID), true);

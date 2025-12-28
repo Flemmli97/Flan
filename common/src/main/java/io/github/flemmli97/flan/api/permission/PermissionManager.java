@@ -5,8 +5,8 @@ import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -22,11 +22,11 @@ import java.util.Map;
 public class PermissionManager extends SimpleJsonResourceReloadListener<ClaimPermission.Builder> {
 
     public static final ResourceKey<? extends Registry<ClaimPermission.Builder>> ID =
-            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "claim_permission"));
+            ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(Flan.MODID, "claim_permission"));
 
     private static PermissionManager INSTANCE;
 
-    private Map<ResourceLocation, ClaimPermission> permissions = ImmutableMap.of();
+    private Map<Identifier, ClaimPermission> permissions = ImmutableMap.of();
     private List<ClaimPermission> sorted = List.of();
 
     private PermissionManager(HolderLookup.Provider provider) {
@@ -46,11 +46,11 @@ public class PermissionManager extends SimpleJsonResourceReloadListener<ClaimPer
     }
 
     @Nullable
-    public ClaimPermission get(ResourceLocation id) {
+    public ClaimPermission get(Identifier id) {
         return this.permissions.get(id);
     }
 
-    public Collection<ResourceLocation> getIds() {
+    public Collection<Identifier> getIds() {
         return this.permissions.keySet();
     }
 
@@ -58,14 +58,14 @@ public class PermissionManager extends SimpleJsonResourceReloadListener<ClaimPer
         return this.sorted;
     }
 
-    public boolean isGlobalPermission(ResourceLocation id) {
+    public boolean isGlobalPermission(Identifier id) {
         ClaimPermission perm = this.get(id);
         return perm != null && perm.global;
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, ClaimPermission.Builder> data, ResourceManager manager, ProfilerFiller profiler) {
-        ImmutableMap.Builder<ResourceLocation, ClaimPermission> builder = ImmutableMap.builder();
+    protected void apply(Map<Identifier, ClaimPermission.Builder> data, ResourceManager manager, ProfilerFiller profiler) {
+        ImmutableMap.Builder<Identifier, ClaimPermission> builder = ImmutableMap.builder();
         data.forEach((res, props) -> {
             if (props.verify())
                 builder.put(res, props.build(res));

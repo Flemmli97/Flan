@@ -42,7 +42,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,13 +96,13 @@ public class CommandClaim {
     }
 
     @Nullable
-    public static Claim getClaimFromMode(CommandContext<CommandSourceStack> context, ServerPlayer player, ResourceLocation perm) {
+    public static Claim getClaimFromMode(CommandContext<CommandSourceStack> context, ServerPlayer player, Identifier perm) {
         PlayerClaimData data = PlayerClaimData.get(player);
         return getClaim(context, player, perm, data.getClaimMode(), false, genericNoPermMessage(context.getSource()));
     }
 
     @Nullable
-    public static Claim getClaim(CommandContext<CommandSourceStack> context, ServerPlayer player, ResourceLocation perm, ClaimMode mode, boolean fallbackMain, Consumer<Optional<Boolean>> cons) {
+    public static Claim getClaim(CommandContext<CommandSourceStack> context, ServerPlayer player, Identifier perm, ClaimMode mode, boolean fallbackMain, Consumer<Optional<Boolean>> cons) {
         BlockPos pos = pos(context);
         Claim claim = ClaimStorage.get(context.getSource().getLevel()).getClaimAt(pos);
         if (mode.isSubclaim) {
@@ -121,7 +121,7 @@ public class CommandClaim {
         return check(player, pos, claim, perm, cons) ? claim : null;
     }
 
-    public static boolean check(ServerPlayer player, BlockPos pos, @Nullable Claim claim, ResourceLocation perm, Consumer<Optional<Boolean>> cons) {
+    public static boolean check(ServerPlayer player, BlockPos pos, @Nullable Claim claim, Identifier perm, Consumer<Optional<Boolean>> cons) {
         if (claim == null) {
             cons.accept(Optional.empty());
             return false;

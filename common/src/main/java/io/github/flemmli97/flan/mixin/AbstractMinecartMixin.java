@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.mixin;
 
 import io.github.flemmli97.flan.event.EntityInteractEvents;
 import io.github.flemmli97.flan.platform.integration.create.CreateCompat;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

@@ -18,7 +18,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerInventoryPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -74,7 +74,7 @@ public class ItemInteractEvents {
             return InteractionResult.PASS;
         if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_USE, stack::is, stack::is))
             return InteractionResult.PASS;
-        ResourceLocation perm = InteractionOverrideManager.getInstance().getItemUse(stack.getItem());
+        Identifier perm = InteractionOverrideManager.getInstance().getItemUse(stack.getItem());
         if (perm != null) {
             boolean success = claim.canInteract(player, perm, pos, true);
             if (success)
@@ -119,7 +119,7 @@ public class ItemInteractEvents {
             return InteractionResult.PASS;
         if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_USE, stack::is, stack::is))
             return InteractionResult.PASS;
-        ResourceLocation perm = InteractionOverrideManager.getInstance().getItemUse(stack.getItem());
+        Identifier perm = InteractionOverrideManager.getInstance().getItemUse(stack.getItem());
         if (perm == null) {
             if (stack.has(DataComponents.JUKEBOX_PLAYABLE))
                 perm = BuiltinPermission.JUKEBOX;
@@ -149,7 +149,7 @@ public class ItemInteractEvents {
 
     private static boolean cantClaimInWorld(ServerLevel level) {
         for (String s : ConfigHandler.CONFIG.blacklistedWorlds) {
-            if (s.equals(level.dimension().location().toString())) {
+            if (s.equals(level.dimension().identifier().toString())) {
                 return true;
             }
         }

@@ -11,7 +11,7 @@ import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.GsonHelper;
@@ -124,7 +124,7 @@ public class Config {
     public int configVersion = 7;
     public int preConfigVersion;
 
-    public Map<String, Map<ResourceLocation, Boolean>> defaultGroups = createHashMap(map -> {
+    public Map<String, Map<Identifier, Boolean>> defaultGroups = createHashMap(map -> {
         map.put("Co-Owner", createHashMap(perms -> PermissionManager.getInstance().getAll().forEach(p -> perms.put(p.getId(), true))));
         map.put("Visitor", createHashMap(perms -> {
             perms.put(BuiltinPermission.BED, true);
@@ -141,7 +141,7 @@ public class Config {
         }));
     });
 
-    protected final Map<String, Map<ResourceLocation, GlobalType>> globalDefaultPerms = createHashMap(map -> map.put("*", createHashMap(perms -> {
+    protected final Map<String, Map<Identifier, GlobalType>> globalDefaultPerms = createHashMap(map -> map.put("*", createHashMap(perms -> {
         perms.put(BuiltinPermission.ALLOW_FLIGHT, GlobalType.ALLTRUE);
         perms.put(BuiltinPermission.MAY_FLIGHT, GlobalType.ALLFALSE);
         perms.put(BuiltinPermission.MONSTERSPAWN, GlobalType.ALLFALSE);
@@ -193,11 +193,11 @@ public class Config {
             this.worldWhitelist = ConfigHandler.fromJson(obj, "worldWhitelist", this.worldWhitelist);
 
             if (obj.has("claimingItem"))
-                this.claimingItem = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse((obj.get("claimingItem").getAsString())));
+                this.claimingItem = BuiltInRegistries.ITEM.getValue(Identifier.parse((obj.get("claimingItem").getAsString())));
             this.claimingNBT = CompoundTag.CODEC.parse(JsonOps.INSTANCE, GsonHelper.getAsJsonObject(obj, "claimingNBT", new JsonObject()))
                     .getOrThrow();
             if (obj.has("inspectionItem"))
-                this.inspectionItem = BuiltInRegistries.ITEM.getValue(ResourceLocation.parse((obj.get("inspectionItem").getAsString())));
+                this.inspectionItem = BuiltInRegistries.ITEM.getValue(Identifier.parse((obj.get("inspectionItem").getAsString())));
             this.inspectionNBT = CompoundTag.CODEC.parse(JsonOps.INSTANCE, GsonHelper.getAsJsonObject(obj, "inspectionNBT", new JsonObject()))
                     .getOrThrow();
             this.main3dClaims = ConfigHandler.fromJson(obj, "main3dClaims", this.main3dClaims);
@@ -254,10 +254,10 @@ public class Config {
             this.defaultGroups.clear();
             JsonObject defP = ConfigHandler.fromJson(obj, "defaultGroups");
             defP.entrySet().forEach(e -> {
-                Map<ResourceLocation, Boolean> perms = new HashMap<>();
+                Map<Identifier, Boolean> perms = new HashMap<>();
                 if (e.getValue().isJsonObject()) {
                     e.getValue().getAsJsonObject().entrySet().forEach(jperm -> {
-                        ResourceLocation id = BuiltinPermission.tryLegacy(jperm.getKey());
+                        Identifier id = BuiltinPermission.tryLegacy(jperm.getKey());
                         perms.put(id, jperm.getValue().getAsBoolean());
                     });
                 }
@@ -266,10 +266,10 @@ public class Config {
             this.globalDefaultPerms.clear();
             JsonObject glob = ConfigHandler.fromJson(obj, "globalDefaultPerms");
             glob.entrySet().forEach(e -> {
-                Map<ResourceLocation, GlobalType> perms = new HashMap<>();
+                Map<Identifier, GlobalType> perms = new HashMap<>();
                 if (e.getValue().isJsonObject()) {
                     e.getValue().getAsJsonObject().entrySet().forEach(jperm -> {
-                        ResourceLocation id = BuiltinPermission.tryLegacy(jperm.getKey());
+                        Identifier id = BuiltinPermission.tryLegacy(jperm.getKey());
                         if (jperm.getValue().isJsonPrimitive() && jperm.getValue().getAsJsonPrimitive().isBoolean())
                             perms.put(id, jperm.getValue().getAsBoolean() ? GlobalType.ALLTRUE : GlobalType.ALLFALSE);
                         else
@@ -379,7 +379,7 @@ public class Config {
         JsonObject global = new JsonObject();
         this.globalDefaultPerms.forEach((key, value) -> {
             JsonObject perm = new JsonObject();
-            Map<ResourceLocation, Object> map = new TreeMap<>(ClaimPermission.NAMESPACE_FIRST);
+            Map<Identifier, Object> map = new TreeMap<>(ClaimPermission.NAMESPACE_FIRST);
             map.putAll(value);
             map.forEach((key1, value1) -> perm.addProperty(key1.toString(), value1.toString()));
             global.add(key, perm);
@@ -394,12 +394,12 @@ public class Config {
         }
     }
 
-    public boolean globallyDefined(ServerLevel level, ResourceLocation perm) {
+    public boolean globallyDefined(ServerLevel level, Identifier perm) {
         return !this.getGlobal(level, perm).canModify();
     }
 
     public void validatePermissionConfigs() {
-        Set<ResourceLocation> missing = new HashSet<>();
+        Set<Identifier> missing = new HashSet<>();
         this.defaultGroups.forEach((group, perms) -> {
             perms.keySet().forEach(id -> {
                 ClaimPermission perm = PermissionManager.getInstance().get(id);
@@ -410,7 +410,7 @@ public class Config {
         if (!missing.isEmpty()) {
             Flan.error("Default groups: Missing permissions for {}", missing);
         }
-        Set<ResourceLocation> missing2 = new HashSet<>();
+        Set<Identifier> missing2 = new HashSet<>();
         this.globalDefaultPerms.forEach((group, perms) -> {
             perms.keySet().forEach(id -> {
                 ClaimPermission perm = PermissionManager.getInstance().get(id);
@@ -423,39 +423,39 @@ public class Config {
         }
     }
 
-    public GlobalType getGlobal(ServerLevel level, ResourceLocation perm) {
+    public GlobalType getGlobal(ServerLevel level, Identifier perm) {
         //Update permission map if not done already
-        Map<ResourceLocation, GlobalType> allMap = ConfigHandler.CONFIG.globalDefaultPerms.get("*");
+        Map<Identifier, GlobalType> allMap = ConfigHandler.CONFIG.globalDefaultPerms.get("*");
         if (allMap != null) {
             level.getServer().getAllLevels().forEach(w -> {
-                Map<ResourceLocation, GlobalType> wMap = ConfigHandler.CONFIG.globalDefaultPerms.getOrDefault(w.dimension().location().toString(), new HashMap<>());
+                Map<Identifier, GlobalType> wMap = ConfigHandler.CONFIG.globalDefaultPerms.getOrDefault(w.dimension().identifier().toString(), new HashMap<>());
                 allMap.forEach((key, value) -> {
                     if (!wMap.containsKey(key))
                         wMap.put(key, value);
                 });
-                ConfigHandler.CONFIG.globalDefaultPerms.put(w.dimension().location().toString(), wMap);
+                ConfigHandler.CONFIG.globalDefaultPerms.put(w.dimension().identifier().toString(), wMap);
             });
             ConfigHandler.CONFIG.globalDefaultPerms.remove("*");
         }
 
-        Map<ResourceLocation, GlobalType> permMap = ConfigHandler.CONFIG.globalDefaultPerms.get(level.dimension().location().toString());
+        Map<Identifier, GlobalType> permMap = ConfigHandler.CONFIG.globalDefaultPerms.get(level.dimension().identifier().toString());
         return permMap == null ? GlobalType.NONE : permMap.getOrDefault(perm, GlobalType.NONE);
     }
 
-    public Stream<Map.Entry<ResourceLocation, GlobalType>> getGloballyDefinedVals(ServerLevel level) {
-        Map<ResourceLocation, GlobalType> allMap = ConfigHandler.CONFIG.globalDefaultPerms.get("*");
+    public Stream<Map.Entry<Identifier, GlobalType>> getGloballyDefinedVals(ServerLevel level) {
+        Map<Identifier, GlobalType> allMap = ConfigHandler.CONFIG.globalDefaultPerms.get("*");
         if (allMap != null) {
             level.getServer().getAllLevels().forEach(w -> {
-                Map<ResourceLocation, GlobalType> wMap = ConfigHandler.CONFIG.globalDefaultPerms.getOrDefault(w.dimension().location().toString(), new HashMap<>());
+                Map<Identifier, GlobalType> wMap = ConfigHandler.CONFIG.globalDefaultPerms.getOrDefault(w.dimension().identifier().toString(), new HashMap<>());
                 allMap.forEach((key, value) -> {
                     if (!wMap.containsKey(key))
                         wMap.put(key, value);
                 });
-                ConfigHandler.CONFIG.globalDefaultPerms.put(w.dimension().location().toString(), wMap);
+                ConfigHandler.CONFIG.globalDefaultPerms.put(w.dimension().identifier().toString(), wMap);
             });
             ConfigHandler.CONFIG.globalDefaultPerms.remove("*");
         }
-        Map<ResourceLocation, GlobalType> permMap = ConfigHandler.CONFIG.globalDefaultPerms.get(level.dimension().location().toString());
+        Map<Identifier, GlobalType> permMap = ConfigHandler.CONFIG.globalDefaultPerms.get(level.dimension().identifier().toString());
         return permMap == null ? Stream.empty() : permMap.entrySet().stream().filter(e -> e.getValue().canModify());
     }
 

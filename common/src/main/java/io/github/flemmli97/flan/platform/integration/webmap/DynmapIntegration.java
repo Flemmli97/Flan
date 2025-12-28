@@ -77,7 +77,7 @@ public class DynmapIntegration {
         } else if (key == Level.NETHER) {
             return "DIM-1";
         }
-        return key.location().getNamespace() + "_" + key.location().getPath();
+        return key.identifier().getNamespace() + "_" + key.identifier().getPath();
     }
 
     private static int lineColor(boolean admin) {

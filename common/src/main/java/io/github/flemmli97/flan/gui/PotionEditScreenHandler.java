@@ -10,7 +10,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.MenuProvider;
@@ -107,7 +107,7 @@ public class PotionEditScreenHandler extends PagedServerOnlyScreenHandler<Claim>
             player.level().getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
                 String[] potion = s.contains("-") ? s.split("-") : s.split(";");
                 int amp = 1;
-                Optional<Holder.Reference<MobEffect>> holder = BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(potion[0]));
+                Optional<Holder.Reference<MobEffect>> holder = BuiltInRegistries.MOB_EFFECT.get(Identifier.parse(potion[0]));
                 if (holder.map(effect -> effect == MobEffects.LUCK && !potion[0].equals("minecraft:luck")).orElse(true)) {
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                     return;
@@ -152,7 +152,7 @@ public class PotionEditScreenHandler extends PagedServerOnlyScreenHandler<Claim>
             String effect = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
                     .copyTag().getStringOr("FlanEffect", "");
             if (!effect.isEmpty())
-                BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(effect))
+                BuiltInRegistries.MOB_EFFECT.get(Identifier.parse(effect))
                         .ifPresent(this.data::removePotion);
             slot.set(ItemStack.EMPTY);
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.BAT_DEATH, 1, 1f);

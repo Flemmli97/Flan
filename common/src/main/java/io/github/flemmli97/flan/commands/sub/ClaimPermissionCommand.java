@@ -17,8 +17,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.commands.arguments.IdentifierArgument;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 public class ClaimPermissionCommand {
@@ -26,13 +26,13 @@ public class ClaimPermissionCommand {
     public static <T extends ArgumentBuilder<CommandSourceStack, T>> void register(ArgumentBuilder<CommandSourceStack, T> builder) {
         builder.then(Commands.literal("permission").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.CMD_PERMISSION))
                 .then(Commands.literal("personal").then(Commands.argument("group", StringArgumentType.string()).suggests(CommandHelpers::personalGroupSuggestion)
-                        .then(Commands.argument("permission", ResourceLocationArgument.id()).suggests((ctx, b) -> CommandHelpers.permSuggestions(ctx, b, true))
+                        .then(Commands.argument("permission", IdentifierArgument.id()).suggests((ctx, b) -> CommandHelpers.permSuggestions(ctx, b, true))
                                 .then(Commands.argument("toggle", StringArgumentType.word())
                                         .suggests((ctx, b) -> SharedSuggestionProvider.suggest(new String[]{"default", "true", "false"}, b)).executes(ClaimPermissionCommand::editPersonalPerm)))))
-                .then(Commands.literal("global").then(Commands.argument("permission", ResourceLocationArgument.id()).suggests((ctx, b) -> CommandHelpers.permSuggestions(ctx, b, false))
+                .then(Commands.literal("global").then(Commands.argument("permission", IdentifierArgument.id()).suggests((ctx, b) -> CommandHelpers.permSuggestions(ctx, b, false))
                         .then(Commands.argument("toggle", StringArgumentType.word()).suggests((ctx, b) -> SharedSuggestionProvider.suggest(new String[]{"default", "true", "false"}, b)).executes(ClaimPermissionCommand::editGlobalPerm))))
                 .then(Commands.literal("group").then(Commands.argument("group", StringArgumentType.string()).suggests(CommandHelpers::groupSuggestion)
-                        .then(Commands.argument("permission", ResourceLocationArgument.id()).suggests((ctx, b) -> CommandHelpers.permSuggestions(ctx, b, true))
+                        .then(Commands.argument("permission", IdentifierArgument.id()).suggests((ctx, b) -> CommandHelpers.permSuggestions(ctx, b, true))
                                 .then(Commands.argument("toggle", StringArgumentType.word())
                                         .suggests((ctx, b) -> SharedSuggestionProvider.suggest(new String[]{"default", "true", "false"}, b)).executes(ClaimPermissionCommand::editGroupPerm))))));
     }
@@ -60,7 +60,7 @@ public class ClaimPermissionCommand {
         Claim claim = CommandClaim.getClaimFromMode(context, player, BuiltinPermission.EDITPERMS);
         if (claim == null)
             return 0;
-        ResourceLocation perm = ResourceLocationArgument.getId(context, "permission");
+        Identifier perm = IdentifierArgument.getId(context, "permission");
         if (group != null && PermissionManager.getInstance().isGlobalPermission(perm)) {
             context.getSource().sendFailure(ClaimUtils.translatedText("flan.nonGlobalOnly", perm, ChatFormatting.DARK_RED));
             return 0;
@@ -88,7 +88,7 @@ public class ClaimPermissionCommand {
             case "default" -> -1;
             default -> 0;
         };
-        ResourceLocation perm = ResourceLocationArgument.getId(context, "permission");
+        Identifier perm = IdentifierArgument.getId(context, "permission");
         if (PermissionManager.getInstance().isGlobalPermission(perm)) {
             context.getSource().sendFailure(ClaimUtils.translatedText("flan.nonGlobalOnly", perm, ChatFormatting.DARK_RED));
             return 0;

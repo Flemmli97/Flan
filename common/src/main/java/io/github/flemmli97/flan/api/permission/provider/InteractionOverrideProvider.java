@@ -14,8 +14,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -33,7 +33,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public abstract class InteractionOverrideProvider implements DataProvider {
 
-    private final Map<ResourceLocation, Builder<?>> data = new HashMap<>();
+    private final Map<Identifier, Builder<?>> data = new HashMap<>();
 
     private final PackOutput output;
 
@@ -61,33 +61,33 @@ public abstract class InteractionOverrideProvider implements DataProvider {
         return "Interaction Overrides";
     }
 
-    public <T> void override(ResourceLocation res, Builder<T> permission) {
-        if (this.data.put(res, permission) != null)
-            throw new IllegalStateException("Override already exists" + res);
+    public <T> void override(Identifier id, Builder<T> permission) {
+        if (this.data.put(id, permission) != null)
+            throw new IllegalStateException("Override already exists" + id);
     }
 
     public static class Builder<T> {
 
-        private static final Codec<List<Pair<Either<TagKey<Block>, ResourceLocation>, ResourceLocation>>> BLOCK_CODEC = idBasedCodec(Registries.BLOCK);
-        private static final Codec<List<Pair<Either<TagKey<Item>, ResourceLocation>, ResourceLocation>>> ITEM_CODEC = idBasedCodec(Registries.ITEM);
-        private static final Codec<List<Pair<Either<TagKey<EntityType<?>>, ResourceLocation>, ResourceLocation>>> ENTITY_CODEC = idBasedCodec(Registries.ENTITY_TYPE);
+        private static final Codec<List<Pair<Either<TagKey<Block>, Identifier>, Identifier>>> BLOCK_CODEC = idBasedCodec(Registries.BLOCK);
+        private static final Codec<List<Pair<Either<TagKey<Item>, Identifier>, Identifier>>> ITEM_CODEC = idBasedCodec(Registries.ITEM);
+        private static final Codec<List<Pair<Either<TagKey<EntityType<?>>, Identifier>, Identifier>>> ENTITY_CODEC = idBasedCodec(Registries.ENTITY_TYPE);
 
         public final InteractionType<T> type;
 
         private final Registry<T> registry;
 
-        private final Codec<List<Pair<Either<TagKey<T>, ResourceLocation>, ResourceLocation>>> codec;
+        private final Codec<List<Pair<Either<TagKey<T>, Identifier>, Identifier>>> codec;
 
-        private final List<Pair<Either<TagKey<T>, ResourceLocation>, ResourceLocation>> entries = new ArrayList<>();
+        private final List<Pair<Either<TagKey<T>, Identifier>, Identifier>> entries = new ArrayList<>();
 
-        private Builder(InteractionType<T> type, Registry<T> registry, Codec<List<Pair<Either<TagKey<T>, ResourceLocation>, ResourceLocation>>> codec) {
+        private Builder(InteractionType<T> type, Registry<T> registry, Codec<List<Pair<Either<TagKey<T>, Identifier>, Identifier>>> codec) {
             this.type = type;
             this.registry = registry;
             this.codec = codec;
         }
 
-        public static <T> Codec<List<Pair<Either<TagKey<T>, ResourceLocation>, ResourceLocation>>> idBasedCodec(ResourceKey<? extends Registry<T>> registry) {
-            Codec<Either<TagKey<T>, ResourceLocation>> tagOrEntry = Codec.either(TagKey.hashedCodec(registry), ResourceLocation.CODEC);
+        public static <T> Codec<List<Pair<Either<TagKey<T>, Identifier>, Identifier>>> idBasedCodec(ResourceKey<? extends Registry<T>> registry) {
+            Codec<Either<TagKey<T>, Identifier>> tagOrEntry = Codec.either(TagKey.hashedCodec(registry), Identifier.CODEC);
             return InteractionType.valueCodec(tagOrEntry);
         }
 
@@ -103,17 +103,17 @@ public abstract class InteractionOverrideProvider implements DataProvider {
             return new Builder<>(type, BuiltInRegistries.ENTITY_TYPE, ENTITY_CODEC);
         }
 
-        public Builder<T> addEntry(T value, ResourceLocation permission) {
+        public Builder<T> addEntry(T value, Identifier permission) {
             this.entries.add(Pair.of(Either.right(this.registry.getKey(value)), permission));
             return this;
         }
 
-        public Builder<T> addEntry(ResourceLocation value, ResourceLocation permission) {
+        public Builder<T> addEntry(Identifier value, Identifier permission) {
             this.entries.add(Pair.of(Either.right(value), permission));
             return this;
         }
 
-        public Builder<T> addEntry(TagKey<T> value, ResourceLocation permission) {
+        public Builder<T> addEntry(TagKey<T> value, Identifier permission) {
             this.entries.add(Pair.of(Either.left(value), permission));
             return this;
         }

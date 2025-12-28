@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,13 +18,13 @@ import java.util.Optional;
  */
 public class ClaimPermission implements Comparable<ClaimPermission> {
 
-    public static final Comparator<ResourceLocation> NAMESPACE_FIRST = Comparator.comparing(ResourceLocation::getNamespace)
-            .thenComparing(ResourceLocation::getPath);
+    public static final Comparator<Identifier> NAMESPACE_FIRST = Comparator.comparing(Identifier::getNamespace)
+            .thenComparing(Identifier::getPath);
     /**
      * Item to show in the gui
      */
     private final ItemStack guiItem;
-    private final ResourceLocation id;
+    private final Identifier id;
     public final boolean defaultVal;
     /**
      * Whether this permission is a global permission or not.
@@ -45,7 +45,7 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
      */
     public final int order;
 
-    private ClaimPermission(ResourceLocation id, ItemStack guiItem, boolean defaultVal, boolean global, boolean globalVal, boolean requireExplicitSet, int order) {
+    private ClaimPermission(Identifier id, ItemStack guiItem, boolean defaultVal, boolean global, boolean globalVal, boolean requireExplicitSet, int order) {
         this.id = id;
         this.guiItem = guiItem;
         this.globalVal = globalVal;
@@ -59,7 +59,7 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
         return this.guiItem.copy();
     }
 
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return this.id;
     }
 
@@ -167,19 +167,19 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
             return !this.guiItem.toStack().isEmpty() && (this.requiredMod == null || CrossPlatformStuff.INSTANCE.isModLoaded(this.requiredMod));
         }
 
-        public ClaimPermission build(ResourceLocation id) {
+        public ClaimPermission build(Identifier id) {
             return new ClaimPermission(id, this.guiItem.toStack(), this.defaultVal, this.global, this.globalVal, this.requireExplicitSet, this.order);
         }
 
-        public record ItemStackHolder(ResourceLocation item, int count, DataComponentPatch components) {
+        public record ItemStackHolder(Identifier item, int count, DataComponentPatch components) {
 
             public static final Codec<ItemStackHolder> CODEC = RecordCodecBuilder.create((instance) ->
-                    instance.group(ResourceLocation.CODEC.fieldOf("id").forGetter(ItemStackHolder::item),
+                    instance.group(Identifier.CODEC.fieldOf("id").forGetter(ItemStackHolder::item),
                             Codec.INT.optionalFieldOf("Count").forGetter(stack -> stack.count() == 1 ? Optional.empty() : Optional.of(stack.count())),
                             DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(stack -> stack.components)
                     ).apply(instance, (item, count, tag) -> new ItemStackHolder(item, count.orElse(1), tag)));
 
-            public ItemStackHolder(ResourceLocation item) {
+            public ItemStackHolder(Identifier item) {
                 this(item, 1, DataComponentPatch.EMPTY);
             }
 

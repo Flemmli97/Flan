@@ -29,12 +29,12 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.AABB;
@@ -60,7 +60,7 @@ import java.util.UUID;
 
 public class PlayerClaimData implements IPlayerData {
 
-    public static final ResourceLocation MINING_SPEED_MOD = ResourceLocation.fromNamespaceAndPath(Flan.MODID, "mining_speed_modifier");
+    public static final Identifier MINING_SPEED_MOD = Identifier.fromNamespaceAndPath(Flan.MODID, "mining_speed_modifier");
 
     private final UUID editDisplay = UUID.randomUUID();
     private final UUID display3D = UUID.randomUUID();
@@ -86,7 +86,7 @@ public class PlayerClaimData implements IPlayerData {
     private boolean adminIgnoreClaim, claimBlockMessage;
     private PendingCommand pendingCommand;
 
-    private final Map<String, Map<ResourceLocation, Boolean>> defaultGroups = new HashMap<>();
+    private final Map<String, Map<Identifier, Boolean>> defaultGroups = new HashMap<>();
 
     private boolean shouldProtectDrop, calculateShouldDrop = true;
 
@@ -279,17 +279,17 @@ public class PlayerClaimData implements IPlayerData {
         return this.adminIgnoreClaim;
     }
 
-    public Map<String, Map<ResourceLocation, Boolean>> playerDefaultGroups() {
+    public Map<String, Map<Identifier, Boolean>> playerDefaultGroups() {
         return this.defaultGroups;
     }
 
-    public boolean editDefaultPerms(String group, ResourceLocation perm, int mode) {
+    public boolean editDefaultPerms(String group, Identifier perm, int mode) {
         if (PermissionManager.getInstance().isGlobalPermission(perm) || ConfigHandler.CONFIG.globallyDefined(this.player.level(), perm))
             return false;
         if (mode > 1)
             mode = -1;
         boolean has = this.defaultGroups.containsKey(group);
-        Map<ResourceLocation, Boolean> perms = has ? this.defaultGroups.get(group) : new HashMap<>();
+        Map<Identifier, Boolean> perms = has ? this.defaultGroups.get(group) : new HashMap<>();
         if (mode == -1)
             perms.remove(perm);
         else
@@ -495,7 +495,7 @@ public class PlayerClaimData implements IPlayerData {
             BlockPos rounded = TeleportUtils.roundedBlockPos(this.player.position().add(0, this.player.getEyeHeight(this.player.getPose()), 0));
             this.shouldProtectDrop = ClaimStorage.get(this.player.level()).getForPermissionCheck(rounded)
                     .canInteract(this.player, BuiltinPermission.LOCKITEMS, rounded)
-                    && !this.player.level().getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
+                    && !this.player.level().getGameRules().get(GameRules.KEEP_INVENTORY);
             this.calculateShouldDrop = false;
         }
         return this.shouldProtectDrop;
@@ -515,7 +515,7 @@ public class PlayerClaimData implements IPlayerData {
         Map<UUID, Long> map = this.fakePlayerNotif.computeIfAbsent(claim.getClaimID(), o -> new HashMap<>());
         Long last = map.get(fakePlayer.getUUID());
         if (last == null || this.player.level().getGameTime() - 1200 > last) {
-            Component claimMsg = ClaimUtils.translatedText("flan.fakePlayerNotification1", claim.getLevel().dimension().location().toString(), pos, ChatFormatting.DARK_RED);
+            Component claimMsg = ClaimUtils.translatedText("flan.fakePlayerNotification1", claim.getLevel().dimension().identifier().toString(), pos, ChatFormatting.DARK_RED);
             this.player.sendSystemMessage(claimMsg);
             String cmdStr = String.format("/flan fakePlayer add %s", fakePlayer.getUUID());
             Component cmd = ClaimUtils.translatedText("flan.clickableComponent")

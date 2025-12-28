@@ -13,7 +13,7 @@ import io.github.flemmli97.flan.gui.ServerScreenHelper;
 import io.github.flemmli97.flan.platform.integration.currency.CommandCurrency;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
-import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;

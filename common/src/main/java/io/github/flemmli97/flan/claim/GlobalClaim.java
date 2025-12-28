@@ -8,14 +8,14 @@ import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 public record GlobalClaim(ServerLevel level) implements IPermissionContainer {
 
     @Override
-    public boolean canInteract(ServerPlayer player, ResourceLocation perm, BlockPos pos, boolean message) {
+    public boolean canInteract(ServerPlayer player, Identifier perm, BlockPos pos, boolean message) {
         ClaimPermission permission = PermissionManager.getInstance().get(perm);
         if (permission == null)
             return false;

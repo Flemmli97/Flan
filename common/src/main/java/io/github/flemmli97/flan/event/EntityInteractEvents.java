@@ -13,7 +13,7 @@ import io.github.flemmli97.flan.utils.VehiclePositionTracker;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -26,20 +26,20 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.OwnableEntity;
-import net.minecraft.world.entity.animal.SnowGolem;
+import net.minecraft.world.entity.animal.golem.SnowGolem;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.ThrownEnderpearl;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.world.entity.vehicle.AbstractMinecartContainer;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEnderpearl;
+import net.minecraft.world.entity.vehicle.boat.Boat;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecartContainer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -61,7 +61,7 @@ public class EntityInteractEvents {
             if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ENTITY_USE,
                     type -> type == entity.getType(), entity.getType()::is))
                 return InteractionResult.PASS;
-            ResourceLocation perm = InteractionOverrideManager.getInstance().getEntityInteract(entity.getType());
+            Identifier perm = InteractionOverrideManager.getInstance().getEntityInteract(entity.getType());
             if (perm != null) {
                 return claim.canInteract(serverPlayer, perm, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             }
@@ -87,7 +87,7 @@ public class EntityInteractEvents {
             if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ENTITY_USE,
                     type -> type == entity.getType(), entity.getType()::is))
                 return InteractionResult.PASS;
-            ResourceLocation perm = InteractionOverrideManager.getInstance().getEntityInteract(entity.getType());
+            Identifier perm = InteractionOverrideManager.getInstance().getEntityInteract(entity.getType());
             if (perm != null) {
                 return claim.canInteract(player, perm, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             }
@@ -119,7 +119,7 @@ public class EntityInteractEvents {
     }
 
     public static boolean canInteract(Entity entity) {
-        ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+        Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
         return ConfigHandler.CONFIG.ignoredEntityTypes.contains(id.getNamespace())
                 || ConfigHandler.CONFIG.ignoredEntityTypes.contains(id.toString())
                 || entity.getTags().stream().anyMatch(ConfigHandler.CONFIG.entityTagIgnore::contains);
@@ -130,7 +130,7 @@ public class EntityInteractEvents {
             return false;
         Entity owner = proj.getOwner();
         if (owner instanceof ServerPlayer player) {
-            ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(proj.getType());
+            Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(proj.getType());
             if (ConfigHandler.CONFIG.ignoredProjectileTypes.contains(id.getNamespace()) || ConfigHandler.CONFIG.ignoredProjectileTypes.contains(id.toString())) {
                 return false;
             }
@@ -138,7 +138,7 @@ public class EntityInteractEvents {
                 BlockHitResult blockRes = (BlockHitResult) res;
                 BlockPos pos = blockRes.getBlockPos();
                 BlockState state = proj.level().getBlockState(pos);
-                ResourceLocation perm = InteractionOverrideManager.getInstance().getProjectileEntityInteract(proj);
+                Identifier perm = InteractionOverrideManager.getInstance().getProjectileEntityInteract(proj);
                 if (perm == null)
                     perm = InteractionOverrideManager.getInstance().getProjectileBlockInteract(state.getBlock());
                 if (perm == null) {
@@ -216,7 +216,7 @@ public class EntityInteractEvents {
             if (entity.hasCustomName() && !claim.canInteract(player, BuiltinPermission.HURTNAMED, pos, message)) {
                 return InteractionResult.FAIL;
             }
-            ResourceLocation perm = InteractionOverrideManager.getInstance().getEntityAttack(entity.getType());
+            Identifier perm = InteractionOverrideManager.getInstance().getEntityAttack(entity.getType());
             if (perm != null)
                 return claim.canInteract(player, perm, pos, message) ? InteractionResult.PASS : InteractionResult.FAIL;
             if (entity instanceof ArmorStand || !(entity instanceof LivingEntity))

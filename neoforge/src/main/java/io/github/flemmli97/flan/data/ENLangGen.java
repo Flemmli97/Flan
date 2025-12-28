@@ -7,7 +7,7 @@ import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
 import io.github.flemmli97.flan.player.ClaimMode;
 import io.github.flemmli97.linguabib.api.ServerLangGen;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.HashSet;
 import java.util.Locale;
@@ -231,7 +231,7 @@ public class ENLangGen extends ServerLangGen {
 
         this.add("flan.wiki", "For more info check out the wiki:");
 
-        for (Map.Entry<ResourceLocation, ClaimPermission.Builder> entry : this.permissionGen.getData().entrySet()) {
+        for (Map.Entry<Identifier, ClaimPermission.Builder> entry : this.permissionGen.getData().entrySet()) {
             ClaimPermission perm = entry.getValue().build(entry.getKey());
             this.add(perm.translationKey(), this.capitalize(perm.getId().getPath()));
             this.add(perm.translationKeyDescription(), entry.getValue().desc.toArray(String[]::new));

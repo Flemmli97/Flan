@@ -32,8 +32,8 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerLevel;
@@ -324,7 +324,7 @@ public class ClaimStorage implements IPermissionStorage {
         return affected;
     }
 
-    public boolean canInteract(BlockPos pos, int radius, ServerPlayer player, ResourceLocation perm, boolean message) {
+    public boolean canInteract(BlockPos pos, int radius, ServerPlayer player, Identifier perm, boolean message) {
         boolean realPlayer = player != null && player.getClass().equals(ServerPlayer.class);
         message = message && realPlayer;
         Set<Claim> affected = this.getNearbyClaims(player.level(), pos, radius, radius);
@@ -490,19 +490,19 @@ public class ClaimStorage implements IPermissionStorage {
         Map<File, List<File>> subClaimMap = new HashMap<>();
         Map<Integer, File> intFileMap = new HashMap<>();
 
-        Set<ResourceLocation> managers = complementOf(BuiltinPermission.EDITCLAIM);
-        Set<ResourceLocation> builders = complementOf(BuiltinPermission.EDITPERMS, BuiltinPermission.EDITCLAIM);
-        Set<ResourceLocation> containers = complementOf(BuiltinPermission.EDITPERMS, BuiltinPermission.EDITCLAIM,
+        Set<Identifier> managers = complementOf(BuiltinPermission.EDITCLAIM);
+        Set<Identifier> builders = complementOf(BuiltinPermission.EDITPERMS, BuiltinPermission.EDITCLAIM);
+        Set<Identifier> containers = complementOf(BuiltinPermission.EDITPERMS, BuiltinPermission.EDITCLAIM,
                 BuiltinPermission.BREAK, BuiltinPermission.PLACE, BuiltinPermission.NOTEBLOCK, BuiltinPermission.REDSTONE, BuiltinPermission.JUKEBOX,
                 BuiltinPermission.ITEMFRAMEROTATE, BuiltinPermission.LECTERNTAKE, BuiltinPermission.ENDCRYSTALPLACE, BuiltinPermission.PROJECTILES,
                 BuiltinPermission.TRAMPLE, BuiltinPermission.RAID, BuiltinPermission.BUCKET, BuiltinPermission.ARMORSTAND, BuiltinPermission.BREAKNONLIVING);
-        Set<ResourceLocation> accessors = complementOf(BuiltinPermission.EDITPERMS, BuiltinPermission.EDITCLAIM,
+        Set<Identifier> accessors = complementOf(BuiltinPermission.EDITPERMS, BuiltinPermission.EDITCLAIM,
                 BuiltinPermission.BREAK, BuiltinPermission.PLACE, BuiltinPermission.OPENCONTAINER, BuiltinPermission.ANVIL, BuiltinPermission.BEACON,
                 BuiltinPermission.NOTEBLOCK, BuiltinPermission.REDSTONE, BuiltinPermission.JUKEBOX, BuiltinPermission.ITEMFRAMEROTATE,
                 BuiltinPermission.LECTERNTAKE, BuiltinPermission.ENDCRYSTALPLACE, BuiltinPermission.PROJECTILES, BuiltinPermission.TRAMPLE, BuiltinPermission.RAID,
                 BuiltinPermission.BUCKET, BuiltinPermission.ANIMALINTERACT, BuiltinPermission.HURTANIMAL, BuiltinPermission.TRADING, BuiltinPermission.ARMORSTAND,
                 BuiltinPermission.BREAKNONLIVING);
-        Map<String, Set<ResourceLocation>> perms = new HashMap<>();
+        Map<String, Set<Identifier>> perms = new HashMap<>();
         perms.put("managers", managers);
         perms.put("builders", builders);
         perms.put("containers", containers);
@@ -571,15 +571,15 @@ public class ClaimStorage implements IPermissionStorage {
         return true;
     }
 
-    private static Set<ResourceLocation> complementOf(ResourceLocation... perms) {
-        Set<ResourceLocation> set = Sets.newHashSet(PermissionManager.getInstance().getIds());
-        for (ResourceLocation perm : perms)
+    private static Set<Identifier> complementOf(Identifier... perms) {
+        Set<Identifier> set = Sets.newHashSet(PermissionManager.getInstance().getIds());
+        for (Identifier perm : perms)
             set.remove(perm);
         return set;
     }
 
     private static Tuple<ServerLevel, Claim> parseFromYaml(File file, Yaml yml, MinecraftServer server,
-                                                           Map<String, Set<ResourceLocation>> perms) throws IOException {
+                                                           Map<String, Set<Identifier>> perms) throws IOException {
         FileReader reader = new FileReader(file);
         Map<String, Object> values = yml.load(reader);
         reader.close();

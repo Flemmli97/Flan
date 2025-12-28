@@ -11,14 +11,14 @@ import io.github.flemmli97.flan.platform.integration.currency.CommonCurrency;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.function.Consumer;
 
 public class CommandCurrencyImpl implements CommandCurrency {
 
-    private static final ResourceLocation EIGHTY_ECONOMY_CURRENCY_NAME = ResourceLocation.fromNamespaceAndPath("eights_economy", "dollars");
+    private static final Identifier EIGHTY_ECONOMY_CURRENCY_NAME = Identifier.fromNamespaceAndPath("eights_economy", "dollars");
 
     @Override
     public boolean sellClaimBlocks(ServerPlayer player, int blocks, float value, Consumer<Component> message) {

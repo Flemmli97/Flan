@@ -5,10 +5,10 @@ import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class CreateCompat {
 
-    public static final ResourceLocation CREATE = ResourceLocation.fromNamespaceAndPath(Flan.MODID, "create_contraption");
+    public static final Identifier CREATE = Identifier.fromNamespaceAndPath(Flan.MODID, "create_contraption");
 
     // Checks if a minecart with a contraption can cross a claims border
     public static boolean canMinecartPass(AbstractMinecart minecart) {

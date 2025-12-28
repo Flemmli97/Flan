@@ -1,11 +1,11 @@
 package io.github.flemmli97.flan.api.permission;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.projectile.AbstractThrownPotion;
-import net.minecraft.world.entity.projectile.ThrownEgg;
-import net.minecraft.world.entity.projectile.ThrownEnderpearl;
-import net.minecraft.world.entity.projectile.windcharge.WindCharge;
+import net.minecraft.world.entity.projectile.hurtingprojectile.windcharge.WindCharge;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.AbstractThrownPotion;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEgg;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEnderpearl;
 import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.BrushItem;
@@ -51,10 +51,10 @@ import java.util.function.Supplier;
  */
 public class ObjectToPermissionMap {
 
-    public static final Map<Predicate<Block>, Supplier<ResourceLocation>> BLOCK_PERMISSION_BUILDER = new HashMap<>();
-    public static final Map<Predicate<Item>, Supplier<ResourceLocation>> ITEM_PERMISSION_BUILDER = new HashMap<>();
-    public static final Map<Predicate<Block>, Supplier<ResourceLocation>> PROJECTILE_BLOCK_PERMISSION_BUILDER = new HashMap<>();
-    public static final Map<Predicate<Entity>, Supplier<ResourceLocation>> PROJECTILE_PERMISSION_BUILDER = new HashMap<>();
+    public static final Map<Predicate<Block>, Supplier<Identifier>> BLOCK_PERMISSION_BUILDER = new HashMap<>();
+    public static final Map<Predicate<Item>, Supplier<Identifier>> ITEM_PERMISSION_BUILDER = new HashMap<>();
+    public static final Map<Predicate<Block>, Supplier<Identifier>> PROJECTILE_BLOCK_PERMISSION_BUILDER = new HashMap<>();
+    public static final Map<Predicate<Entity>, Supplier<Identifier>> PROJECTILE_PERMISSION_BUILDER = new HashMap<>();
 
     /**
      * Register a custom permission to check for the given blocks. Used when trying to interact with blocks
@@ -62,7 +62,7 @@ public class ObjectToPermissionMap {
      * @param pred Predicate for blocks that should return the given permission
      * @param perm The given permission
      */
-    public static void registerBlockPredicateMap(Predicate<Block> pred, Supplier<ResourceLocation> perm) {
+    public static void registerBlockPredicateMap(Predicate<Block> pred, Supplier<Identifier> perm) {
         BLOCK_PERMISSION_BUILDER.put(pred, perm);
     }
 
@@ -72,7 +72,7 @@ public class ObjectToPermissionMap {
      * @param pred Predicate for items that should return the given permission
      * @param perm The given permission
      */
-    public static void registerItemPredicateMap(Predicate<Item> pred, Supplier<ResourceLocation> perm) {
+    public static void registerItemPredicateMap(Predicate<Item> pred, Supplier<Identifier> perm) {
         ITEM_PERMISSION_BUILDER.put(pred, perm);
     }
 
@@ -82,7 +82,7 @@ public class ObjectToPermissionMap {
      * @param pred Predicate for blocks that should return the given permission
      * @param perm The given permission
      */
-    public static void registerProjectileBlockPredicateMap(Predicate<Block> pred, Supplier<ResourceLocation> perm) {
+    public static void registerProjectileBlockPredicateMap(Predicate<Block> pred, Supplier<Identifier> perm) {
         PROJECTILE_BLOCK_PERMISSION_BUILDER.put(pred, perm);
     }
 
@@ -92,7 +92,7 @@ public class ObjectToPermissionMap {
      * @param pred Predicate for entities that should return the given permission
      * @param perm The given permission
      */
-    public static void registerProjectilePredicateMap(Predicate<Entity> pred, Supplier<ResourceLocation> perm) {
+    public static void registerProjectilePredicateMap(Predicate<Entity> pred, Supplier<Identifier> perm) {
         PROJECTILE_PERMISSION_BUILDER.put(pred, perm);
     }
 

@@ -3,7 +3,7 @@ package io.github.flemmli97.flan.claim.attachment;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.flemmli97.flan.claim.Claim;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 
 import java.util.HashMap;
@@ -51,7 +51,7 @@ public class AllowedRegistryListHolder {
             return;
         JsonObject obj = element.getAsJsonObject();
         obj.keySet().forEach(id -> {
-            ClaimAllowListKey<?> key = ClaimAllowListKey.get(ResourceLocation.parse(id));
+            ClaimAllowListKey<?> key = ClaimAllowListKey.get(Identifier.parse(id));
             if (key != null) {
                 this.entries.put(key, key.factory().apply(this.claim).read(obj.getAsJsonArray(id)));
             }

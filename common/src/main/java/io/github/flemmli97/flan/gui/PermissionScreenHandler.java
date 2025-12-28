@@ -7,7 +7,7 @@ import io.github.flemmli97.flan.claim.ClaimUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.MenuProvider;
@@ -94,7 +94,7 @@ public class PermissionScreenHandler extends PagedServerOnlyScreenHandler<ClaimG
         ItemStack stack = slot.getItem();
         ClaimPermission perm;
         try {
-            perm = PermissionManager.getInstance().get(ResourceLocation.parse(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+            perm = PermissionManager.getInstance().get(Identifier.parse(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
                     .copyTag().getStringOr(ServerScreenHelper.PERMISSION_KEY, "")));
             if (perm == null)
                 return false;

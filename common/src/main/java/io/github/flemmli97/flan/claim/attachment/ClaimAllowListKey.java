@@ -6,8 +6,8 @@ import io.github.flemmli97.flan.claim.Claim;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,12 +21,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public record ClaimAllowListKey<T>(ResourceLocation id, String translationKey,
+public record ClaimAllowListKey<T>(Identifier id, String translationKey,
                                    Supplier<ItemStack> guiIcon,
                                    ResourceKey<Registry<T>> registry,
                                    Function<Claim, AllowedRegistryList<T>> factory) {
 
-    private static final Map<ResourceLocation, ClaimAllowListKey<?>> MAP = new LinkedHashMap<>();
+    private static final Map<Identifier, ClaimAllowListKey<?>> MAP = new LinkedHashMap<>();
 
     public static final ClaimAllowListKey<Item> ITEM_USE = new ClaimAllowListKey<>("item", "flan.screenMenuItemUse",
             () -> PotionContents.createItemStack(Items.POTION, Potions.WATER),
@@ -51,16 +51,16 @@ public record ClaimAllowListKey<T>(ResourceLocation id, String translationKey,
             Registries.ITEM, claim -> AllowedRegistryList.ofItemLike(BuiltInRegistries.ITEM, claim));
 
     public ClaimAllowListKey(String path, String translationKey, Supplier<ItemStack> guiIcon, ResourceKey<Registry<T>> registry, Function<Claim, AllowedRegistryList<T>> factory) {
-        this(ResourceLocation.fromNamespaceAndPath(Flan.MODID, path), translationKey, guiIcon, registry, factory);
+        this(Identifier.fromNamespaceAndPath(Flan.MODID, path), translationKey, guiIcon, registry, factory);
         if (MAP.put(this.id(), this) != null)
             throw new IllegalStateException("Key with id " + this.id() + " already exists!");
     }
 
-    public static Map<ResourceLocation, ClaimAllowListKey<?>> keys() {
+    public static Map<Identifier, ClaimAllowListKey<?>> keys() {
         return ImmutableMap.copyOf(MAP);
     }
 
-    public static ClaimAllowListKey<?> get(ResourceLocation id) {
+    public static ClaimAllowListKey<?> get(Identifier id) {
         return MAP.get(id);
     }
 }

@@ -12,7 +12,7 @@ import io.github.flemmli97.flan.player.display.EnumDisplayType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.TriState;
@@ -75,7 +75,7 @@ public class BlockInteractEventsNeoForge {
         IPermissionContainer claim = storage.getForPermissionCheck(placePos);
         if (claim == null)
             return false;
-        ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract(placedBlock.getBlock());
+        Identifier perm = InteractionOverrideManager.getInstance().getBlockInteract(placedBlock.getBlock());
         if (perm != null) {
             if (!claim.canInteract(player, perm, placePos, false)) {
                 player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);

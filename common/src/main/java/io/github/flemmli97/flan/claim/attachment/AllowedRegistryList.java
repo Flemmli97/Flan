@@ -9,7 +9,7 @@ import io.github.flemmli97.flan.gui.ServerScreenHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -75,9 +75,9 @@ public class AllowedRegistryList<T> {
 
     public void addAllowedItem(String value) {
         if (value.startsWith("#"))
-            this.addAllowedItem(Either.right(TagKey.create(this.registry.key(), ResourceLocation.parse(value.substring(1)))));
+            this.addAllowedItem(Either.right(TagKey.create(this.registry.key(), Identifier.parse(value.substring(1)))));
         else {
-            this.registry.getOptional(ResourceLocation.parse(value))
+            this.registry.getOptional(Identifier.parse(value))
                     .ifPresent(direct -> this.addAllowedItem(Either.left(direct)));
         }
     }
@@ -121,9 +121,9 @@ public class AllowedRegistryList<T> {
         array.forEach(e -> {
             String element = e.getAsString();
             if (element.startsWith("#"))
-                this.addAllowedItem(Either.right(TagKey.create(this.registry.key(), ResourceLocation.parse(element.substring(1)))));
+                this.addAllowedItem(Either.right(TagKey.create(this.registry.key(), Identifier.parse(element.substring(1)))));
             else {
-                ResourceLocation id = ResourceLocation.parse(element);
+                Identifier id = Identifier.parse(element);
                 if (this.registry.containsKey(id)) {
                     this.addAllowedItem(Either.left(this.registry.getValue(id)));
                 } else {

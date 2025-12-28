@@ -32,7 +32,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.resource.v1.DataResourceLoader;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.Commands;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -44,7 +44,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 public class FlanFabric implements ModInitializer {
 
-    public static final ResourceLocation EVENT_PHASE = ResourceLocation.fromNamespaceAndPath("flan", "events");
+    public static final Identifier EVENT_PHASE = Identifier.fromNamespaceAndPath("flan", "events");
 
     @Override
     public void onInitialize() {
@@ -64,8 +64,8 @@ public class FlanFabric implements ModInitializer {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PlayerEvents.onLogout(handler.player));
         CommandRegistrationCallback.EVENT.register((dispatcher, reg, env) -> CommandClaim.register(dispatcher, reg, env == Commands.CommandSelection.DEDICATED));
 
-        DataResourceLoader.get().registerReloader(PermissionManager.ID.location(), PermissionManager::create);
-        DataResourceLoader.get().registerReloader(InteractionOverrideManager.ID.location(), InteractionOverrideManager::create);
+        DataResourceLoader.get().registerReloader(PermissionManager.ID.identifier(), PermissionManager::create);
+        DataResourceLoader.get().registerReloader(InteractionOverrideManager.ID.identifier(), InteractionOverrideManager::create);
 
         Flan.permissionAPI = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
         Flan.playerAbilityLib = FabricLoader.getInstance().isModLoaded("playerabilitylib");

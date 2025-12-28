@@ -7,7 +7,7 @@ import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.MenuProvider;
@@ -189,7 +189,7 @@ public class ClaimMenuScreenHandler extends ServerOnlyScreenHandler<Claim> {
                 || claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition()));
     }
 
-    private boolean hasPerm(Claim claim, ServerPlayer player, ResourceLocation perm) {
+    private boolean hasPerm(Claim claim, ServerPlayer player, Identifier perm) {
         if (claim.parentClaim() != null)
             return claim.parentClaim().canInteract(player, perm, player.blockPosition());
         return claim.canInteract(player, perm, player.blockPosition());
