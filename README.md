@@ -40,4 +40,4 @@ dependencies {
 }
 ```
 
-To check if an action can be done simply call `ClaimHandler#canInteract(ServerPlayer player, BlockPos pos, ResourceLocation permission)`
+To check if an action can be done simply call `ClaimHandler#canInteract(ServerPlayer player, BlockPos pos, Identifier permission)`
