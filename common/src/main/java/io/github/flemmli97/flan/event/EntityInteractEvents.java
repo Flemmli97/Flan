@@ -59,7 +59,7 @@ public class EntityInteractEvents {
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
             if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ENTITY_USE,
-                    type -> type == entity.getType(), entity.getType()::is))
+                    type -> type == entity.getType(), entity::is))
                 return InteractionResult.PASS;
             Identifier perm = InteractionOverrideManager.getInstance().getEntityInteract(entity.getType());
             if (perm != null) {
@@ -85,7 +85,7 @@ public class EntityInteractEvents {
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
             if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ENTITY_USE,
-                    type -> type == entity.getType(), entity.getType()::is))
+                    type -> type == entity.getType(), entity::is))
                 return InteractionResult.PASS;
             Identifier perm = InteractionOverrideManager.getInstance().getEntityInteract(entity.getType());
             if (perm != null) {
@@ -122,7 +122,7 @@ public class EntityInteractEvents {
         Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
         return ConfigHandler.CONFIG.ignoredEntityTypes.contains(id.getNamespace())
                 || ConfigHandler.CONFIG.ignoredEntityTypes.contains(id.toString())
-                || entity.getTags().stream().anyMatch(ConfigHandler.CONFIG.entityTagIgnore::contains);
+                || entity.entityTags().stream().anyMatch(ConfigHandler.CONFIG.entityTagIgnore::contains);
     }
 
     public static boolean projectileHit(Projectile proj, HitResult res) {
@@ -156,7 +156,7 @@ public class EntityInteractEvents {
                         pers.setDeltaMovement(vec3d);
                         Vec3 vec3d2 = vec3d.normalize().scale(0.05);
                         pers.setPosRaw(pers.getX() - vec3d2.x, pers.getY() - vec3d2.y, pers.getZ() - vec3d2.z);
-                        pers.playSound(((IPersistentProjectileVars) pers).getSoundEvent(), 1.0F, 1.2F / (pers.level().random.nextFloat() * 0.2F + 0.9F));
+                        pers.playSound(((IPersistentProjectileVars) pers).getSoundEvent(), 1.0F, 1.2F / (pers.level().getRandom().nextFloat() * 0.2F + 0.9F));
                         ((IPersistentProjectileVars) pers).setInGroundState(true);
                         pers.shakeTime = 7;
                         pers.setCritArrow(false);
@@ -211,7 +211,7 @@ public class EntityInteractEvents {
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
             if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ENTITY_ATTACK,
-                    type -> type == entity.getType(), entity.getType()::is))
+                    type -> type == entity.getType(), entity::is))
                 return InteractionResult.PASS;
             if (entity.hasCustomName() && !claim.canInteract(player, BuiltinPermission.HURTNAMED, pos, message)) {
                 return InteractionResult.FAIL;

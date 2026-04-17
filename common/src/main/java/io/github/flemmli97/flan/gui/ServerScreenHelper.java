@@ -24,6 +24,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemLore;
@@ -45,6 +46,10 @@ public class ServerScreenHelper {
     public static ItemStack createStack(Item item, Component name) {
         return createStack(new ItemStack(item), name);
     }
+
+	public static ItemStack createStack(ItemStackTemplate item, Component name) {
+		return createStack(item.create(), name);
+	}
 
     public static ItemStack createStack(ItemStack stack, Component name) {
         Set<DataComponentType<?>> types = stack.getComponents().keySet();

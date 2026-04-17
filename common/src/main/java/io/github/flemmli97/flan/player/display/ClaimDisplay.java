@@ -291,9 +291,9 @@ public class ClaimDisplay {
         public LevelChunk fetchChunk(int x, int z) {
             ChunkPos pos = new ChunkPos(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(z));
             return this.chunkCache.computeIfAbsent(pos, k -> {
-                if (!this.level.hasChunk(pos.x, pos.z))
+                if (!this.level.hasChunk(pos.x(), pos.z()))
                     return null;
-                return this.level.getChunk(pos.x, pos.z);
+                return this.level.getChunk(pos.x(), pos.z());
             });
         }
     }

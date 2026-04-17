@@ -64,13 +64,12 @@ public class FlanFabric implements ModInitializer {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PlayerEvents.onLogout(handler.player));
         CommandRegistrationCallback.EVENT.register((dispatcher, reg, env) -> CommandClaim.register(dispatcher, reg, env == Commands.CommandSelection.DEDICATED));
 
-        DataResourceLoader.get().registerReloader(PermissionManager.ID.identifier(), PermissionManager::create);
-        DataResourceLoader.get().registerReloader(InteractionOverrideManager.ID.identifier(), InteractionOverrideManager::create);
+        DataResourceLoader.get().registerReloadListener(PermissionManager.ID.identifier(), PermissionManager::create);
+        DataResourceLoader.get().registerReloadListener(InteractionOverrideManager.ID.identifier(), InteractionOverrideManager::create);
 
         Flan.permissionAPI = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
         Flan.playerAbilityLib = FabricLoader.getInstance().isModLoaded("playerabilitylib");
         Flan.ftbRanks = FabricLoader.getInstance().isModLoaded("ftbranks");
-        Flan.octoEconomy = FabricLoader.getInstance().isModLoaded("octo-economy-api");
         Flan.diamondCurrency = FabricLoader.getInstance().isModLoaded("diamondeconomy");
         Flan.ftbChunks = FabricLoader.getInstance().isModLoaded("ftbchunks");
         Flan.gomlServer = FabricLoader.getInstance().isModLoaded("goml");

@@ -3,10 +3,8 @@ package io.github.flemmli97.flan.api.permission;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
-import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
@@ -23,7 +21,7 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
     /**
      * Item to show in the gui
      */
-    private final ItemStack guiItem;
+    private final ItemStackTemplate guiItem;
     private final Identifier id;
     public final boolean defaultVal;
     /**
@@ -45,7 +43,7 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
      */
     public final int order;
 
-    private ClaimPermission(Identifier id, ItemStack guiItem, boolean defaultVal, boolean global, boolean globalVal, boolean requireExplicitSet, int order) {
+    private ClaimPermission(Identifier id, ItemStackTemplate guiItem, boolean defaultVal, boolean global, boolean globalVal, boolean requireExplicitSet, int order) {
         this.id = id;
         this.guiItem = guiItem;
         this.globalVal = globalVal;
@@ -55,8 +53,8 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
         this.global = global;
     }
 
-    public ItemStack getItem() {
-        return this.guiItem.copy();
+    public ItemStackTemplate getItem() {
+        return this.guiItem;
     }
 
     public Identifier getId() {
@@ -101,7 +99,7 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
     public static class Builder {
 
         public static final Codec<ClaimPermission.Builder> CODEC = RecordCodecBuilder.create((instance) ->
-                instance.group(ItemStackHolder.CODEC.fieldOf("gui_item").forGetter(d -> d.guiItem),
+                instance.group(ItemStackTemplate.CODEC.fieldOf("gui_item").forGetter(d -> d.guiItem),
                         Codec.BOOL.fieldOf("default_value").forGetter(d -> d.defaultVal),
                         Codec.BOOL.fieldOf("global").forGetter(d -> d.global),
                         Codec.BOOL.optionalFieldOf("global_default_value").forGetter(d -> d.globalVal ? Optional.empty() : Optional.of(false)),
@@ -111,7 +109,7 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
                 ).apply(instance, (item, val, global, globalVal, explicit, order, requiredMod)
                         -> new ClaimPermission.Builder(item, order, null).defaultVal(val).global(global).globalVal(globalVal.orElse(true)).requireExplicitSet(explicit.orElse(false)).requiredMod(requiredMod.orElse(null))));
 
-        private final ItemStackHolder guiItem;
+        private final ItemStackTemplate guiItem;
         /**
          * Only used for datagen
          */
@@ -124,15 +122,11 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
 
         private boolean requireExplicitSet;
 
-        public Builder(ItemStack guiItem, int order, List<String> desc) {
-            this(new ItemStackHolder(guiItem), order, desc);
-        }
-
         /**
          * The builder for a claim permission used in datagen. And reloading.
          * See Claimpermission fields what the fields stand for
          */
-        public Builder(ItemStackHolder guiItem, int order, List<String> desc) {
+        public Builder(ItemStackTemplate guiItem, int order, List<String> desc) {
             this.guiItem = guiItem;
             this.desc = desc;
             this.order = order;
@@ -164,34 +158,11 @@ public class ClaimPermission implements Comparable<ClaimPermission> {
         }
 
         public boolean verify() {
-            return !this.guiItem.toStack().isEmpty() && (this.requiredMod == null || CrossPlatformStuff.INSTANCE.isModLoaded(this.requiredMod));
+            return this.requiredMod == null || CrossPlatformStuff.INSTANCE.isModLoaded(this.requiredMod);
         }
 
         public ClaimPermission build(Identifier id) {
-            return new ClaimPermission(id, this.guiItem.toStack(), this.defaultVal, this.global, this.globalVal, this.requireExplicitSet, this.order);
-        }
-
-        public record ItemStackHolder(Identifier item, int count, DataComponentPatch components) {
-
-            public static final Codec<ItemStackHolder> CODEC = RecordCodecBuilder.create((instance) ->
-                    instance.group(Identifier.CODEC.fieldOf("id").forGetter(ItemStackHolder::item),
-                            Codec.INT.optionalFieldOf("Count").forGetter(stack -> stack.count() == 1 ? Optional.empty() : Optional.of(stack.count())),
-                            DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(stack -> stack.components)
-                    ).apply(instance, (item, count, tag) -> new ItemStackHolder(item, count.orElse(1), tag)));
-
-            public ItemStackHolder(Identifier item) {
-                this(item, 1, DataComponentPatch.EMPTY);
-            }
-
-            public ItemStackHolder(ItemStack item) {
-                this(BuiltInRegistries.ITEM.getKey(item.getItem()), item.getCount(), item.getComponentsPatch());
-            }
-
-            private ItemStack toStack() {
-                ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.getValue(this.item), this.count);
-                stack.applyComponents(this.components);
-                return stack;
-            }
+            return new ClaimPermission(id, this.guiItem, this.defaultVal, this.global, this.globalVal, this.requireExplicitSet, this.order);
         }
     }
 }

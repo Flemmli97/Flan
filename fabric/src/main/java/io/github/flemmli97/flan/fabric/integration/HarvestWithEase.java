@@ -8,7 +8,8 @@ import net.minecraft.server.level.ServerPlayer;
 public class HarvestWithEase {
 
     public static void init() {
-        HarvestWithEaseEvents.HARVEST_CHECK.register((level, blockState, blockPos, player, interactionHand, harvestCheckEvent) -> {
+		// TODO, 26.1 support merged but not released - https://modrinth.com/mod/harvest-with-ease/versions
+        /*HarvestWithEaseEvents.HARVEST_CHECK.register((level, blockState, blockPos, player, interactionHand, harvestCheckEvent) -> {
             if (player instanceof ServerPlayer serverPlayer) {
                 ClaimStorage storage = ClaimStorage.get(serverPlayer.level());
                 if (!storage.getForPermissionCheck(blockPos)
@@ -18,6 +19,6 @@ public class HarvestWithEase {
                 }
             }
             return true;
-        });
+        });*/
     }
 }

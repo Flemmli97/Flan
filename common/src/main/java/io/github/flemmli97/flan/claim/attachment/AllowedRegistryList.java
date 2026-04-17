@@ -7,6 +7,7 @@ import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.gui.ServerScreenHelper;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
@@ -28,8 +29,8 @@ import java.util.function.Predicate;
 public class AllowedRegistryList<T> {
 
     public static final Function<EntityType<?>, Item> ENTITY_AS_ITEM = type -> {
-        Item egg = SpawnEggItem.byId(type);
-        return egg != null ? egg : Items.PIG_SPAWN_EGG;
+        Holder<Item> egg = SpawnEggItem.byId(type).orElse(null);
+        return egg != null ? egg.value() : Items.PIG_SPAWN_EGG;
     };
 
     private final Map<String, Integer> mapping = new HashMap<>();

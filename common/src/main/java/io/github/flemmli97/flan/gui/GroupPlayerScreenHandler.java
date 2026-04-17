@@ -115,7 +115,7 @@ public class GroupPlayerScreenHandler extends PagedServerOnlyScreenHandler<Claim
                 if (fl)
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
                 else {
-                    player.displayClientMessage(ClaimUtils.translatedText("flan.playerGroupAddFail", ChatFormatting.RED), false);
+                    player.sendSystemMessage(ClaimUtils.translatedText("flan.playerGroupAddFail", ChatFormatting.RED));
                     ServerScreenHelper.playSongToPlayer(player, SoundEvents.VILLAGER_NO, 1, 1f);
                 }
             }, () -> {

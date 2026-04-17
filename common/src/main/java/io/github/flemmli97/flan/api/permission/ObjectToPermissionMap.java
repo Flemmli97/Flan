@@ -29,7 +29,7 @@ import net.minecraft.world.level.block.DiodeBlock;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.EnchantingTableBlock;
 import net.minecraft.world.level.block.EnderChestBlock;
-import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.level.block.FarmlandBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.JukeboxBlock;
 import net.minecraft.world.level.block.LeverBlock;
@@ -109,7 +109,7 @@ public class ObjectToPermissionMap {
         registerBlockPredicateMap(block -> block instanceof JukeboxBlock, () -> BuiltinPermission.JUKEBOX);
         registerBlockPredicateMap(block -> block instanceof BasePressurePlateBlock, () -> BuiltinPermission.PRESSUREPLATE);
         registerBlockPredicateMap(block -> block instanceof NetherPortalBlock, () -> BuiltinPermission.PORTAL);
-        registerBlockPredicateMap(block -> block instanceof TurtleEggBlock || block instanceof FarmBlock, () -> BuiltinPermission.TRAMPLE);
+        registerBlockPredicateMap(block -> block instanceof TurtleEggBlock || block instanceof FarmlandBlock, () -> BuiltinPermission.TRAMPLE);
         registerBlockPredicateMap(block -> block instanceof EnderChestBlock, () -> BuiltinPermission.ENDERCHEST);
         registerBlockPredicateMap(block -> block instanceof EnchantingTableBlock, () -> BuiltinPermission.ENCHANTMENTTABLE);
         registerBlockPredicateMap(block -> block instanceof BrushableBlock, () -> BuiltinPermission.ARCHAEOLOGY);

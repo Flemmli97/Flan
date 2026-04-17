@@ -5,7 +5,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -35,13 +35,13 @@ public abstract class PagedServerOnlyScreenHandler<T> extends ServerOnlyScreenHa
     }
 
     @Override
-    public void clicked(int i, int j, ClickType clickType, Player player) {
-        if (this.handlePageFlip(i)) {
+    public void clicked(int slotIndex, int buttonNum, ContainerInput containerInput, Player player) {
+        if (this.handlePageFlip(slotIndex)) {
             for (ContainerListener listener : ((AbstractContainerAccessor) this).listeners())
-                listener.slotChanged(this, i, this.slots.get(i).getItem().copy());
+                listener.slotChanged(this, slotIndex, this.slots.get(slotIndex).getItem().copy());
             return;
         }
-        super.clicked(i, j, clickType, player);
+        super.clicked(slotIndex, buttonNum, containerInput, player);
     }
 
     @Override

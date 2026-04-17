@@ -78,12 +78,12 @@ public class BlockInteractEventsNeoForge {
         Identifier perm = InteractionOverrideManager.getInstance().getBlockInteract(placedBlock.getBlock());
         if (perm != null) {
             if (!claim.canInteract(player, perm, placePos, false)) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+                player.sendOverlayMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED));
                 return true;
             }
         }
         if (!claim.canInteract(player, BuiltinPermission.PLACE, placePos, false)) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+            player.sendOverlayMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED));
             PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
             player.connection.send(new ClientboundContainerSetSlotPacket(-2, 0, player.getInventory().getSelectedSlot(), player.getInventory().getSelectedItem()));
             player.connection.send(new ClientboundContainerSetSlotPacket(-2, 0, 40, player.getInventory().getItem(40)));

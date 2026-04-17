@@ -22,7 +22,8 @@ public class CreateCompat {
     public static boolean canMinecartPass(AbstractMinecart minecart) {
         if (!Flan.create || !(minecart.level() instanceof ServerLevel serverLevel))
             return true;
-        if (minecart.getFirstPassenger() instanceof AbstractContraptionEntity contraption) {
+		// TODO, create mod will support 26.1 later on - https://wiki.createmod.net/users/development-status
+        /*if (minecart.getFirstPassenger() instanceof AbstractContraptionEntity contraption) {
             ClaimStorage storage = ClaimStorage.get(serverLevel);
             Vec3 delta = minecart.getDeltaMovement();
             AABB aabb = contraption.getContraption().bounds.expandTowards(delta);
@@ -76,7 +77,7 @@ public class CreateCompat {
                 }
             }
             return true;
-        }
+        }*/
         return true;
     }
 }

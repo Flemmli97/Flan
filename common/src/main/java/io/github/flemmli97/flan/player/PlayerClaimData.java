@@ -371,10 +371,10 @@ public class PlayerClaimData implements IPlayerData {
         } else if (!this.claimBlockMessage) {
             this.claimBlockMessage = true;
             if (tool && this.shouldDisplayClaimToolMessage()) {
-                this.player.displayClientMessage(ClaimUtils.translatedText("flan.claimBlocksFormat",
-                        this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks(), this.remainingClaimBlocks(), ChatFormatting.GOLD), false);
-                this.player.displayClientMessage(ClaimUtils.translatedText("flan.claimModeFormat",
-                        Component.translatable(this.getClaimMode().translationKey).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD), ChatFormatting.GOLD), true);
+                this.player.sendSystemMessage(ClaimUtils.translatedText("flan.claimBlocksFormat",
+                        this.getClaimBlocks(), this.getAdditionalClaims(), this.usedClaimBlocks(), this.remainingClaimBlocks(), ChatFormatting.GOLD));
+                this.player.sendOverlayMessage(ClaimUtils.translatedText("flan.claimModeFormat",
+                        Component.translatable(this.getClaimMode().translationKey).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD), ChatFormatting.GOLD));
             }
             this.displayClaims(currentClaim);
         }
@@ -414,7 +414,7 @@ public class PlayerClaimData implements IPlayerData {
             } else if (this.player.position().distanceToSqr(this.trappedPos) > 0.15) {
                 this.trappedTick = -1;
                 this.trappedPos = null;
-                this.player.displayClientMessage(ClaimUtils.translatedText("flan.trappedMove", ChatFormatting.RED), false);
+                this.player.sendSystemMessage(ClaimUtils.translatedText("flan.trappedMove", ChatFormatting.RED));
             }
         }
         this.deathPickupTick--;
@@ -452,7 +452,7 @@ public class PlayerClaimData implements IPlayerData {
         this.defaultGroups.clear();
         this.defaultGroups.putAll(data.defaultGroups);
         if (data.setDeathItemOwner()) {
-            this.player.displayClientMessage(ClaimUtils.translatedText("flan.unlockDropsCmd", "/flan unlockDrops", ChatFormatting.GOLD), false);
+            this.player.sendSystemMessage(ClaimUtils.translatedText("flan.unlockDropsCmd", "/flan unlockDrops", ChatFormatting.GOLD));
         }
     }
 

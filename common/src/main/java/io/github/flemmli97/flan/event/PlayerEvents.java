@@ -77,7 +77,7 @@ public class PlayerEvents {
             if (state.getBlock() instanceof BonemealableFeaturePlacerBlock bonemealable) {
                 VegetationPatchConfiguration cfg = featureRange(registry, ((BonemealableBlockAccess) bonemealable).getFeature(), VegetationPatchConfiguration.class);
                 if (cfg != null) {
-                    range = cfg.xzRadius.getMaxValue() + 1;
+                    range = cfg.xzRadius.maxInclusive() + 1;
                     pos.set(pos.getX(), pos.getY() + cfg.verticalRange + 1, pos.getZ());
                 }
             } else if (state.getBlock() instanceof GrassBlock) {
@@ -103,7 +103,7 @@ public class PlayerEvents {
                 pos.set(pos.getX(), pos.getY() + y + 1, pos.getZ());
             }
             if (range > 0 && perm != null && !ClaimStorage.get(serverPlayer.level()).canInteract(pos, range, serverPlayer, perm, false)) {
-                serverPlayer.displayClientMessage(ClaimUtils.translatedText("flan.tooCloseClaim", ChatFormatting.DARK_RED), true);
+                serverPlayer.sendOverlayMessage(ClaimUtils.translatedText("flan.tooCloseClaim", ChatFormatting.DARK_RED));
                 return true;
             }
         }

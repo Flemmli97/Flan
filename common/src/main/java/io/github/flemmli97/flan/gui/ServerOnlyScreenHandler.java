@@ -8,7 +8,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
@@ -91,18 +91,18 @@ public abstract class ServerOnlyScreenHandler<T> extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int i, int j, ClickType clickType, Player player) {
-        if (i < 0)
+    public void clicked(int slotIndex, int buttonNum, ContainerInput containerInput, Player player) {
+        if (slotIndex < 0)
             return;
-        Slot slot = this.slots.get(i);
-        if (clickType != ClickType.PICKUP_ALL && this.isRightSlot(i)) {
+        Slot slot = this.slots.get(slotIndex);
+        if (containerInput != ContainerInput.PICKUP_ALL && this.isRightSlot(slotIndex)) {
             if (((AbstractContainerAccessor) this).containerSync() != null)
                 ((AbstractContainerAccessor) this).containerSync().sendCarriedChange(this, this.getCarried().copy());
-            this.handleSlotClicked((ServerPlayer) player, i, slot, j);
+            this.handleSlotClicked((ServerPlayer) player, slotIndex, slot, buttonNum);
         }
         ItemStack stack = slot.getItem().copy();
         for (ContainerListener listener : ((AbstractContainerAccessor) this).listeners())
-            listener.slotChanged(this, i, stack);
+            listener.slotChanged(this, slotIndex, stack);
     }
 
     @Override
