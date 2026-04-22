@@ -49,33 +49,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class EntityInteractEvents {
 
-    public static InteractionResult useAtEntity(Player player, Level level, InteractionHand hand, Entity entity, EntityHitResult hitResult) {
-        if (!(player instanceof ServerPlayer serverPlayer) || player.isSpectator() || canInteract(entity))
-            return InteractionResult.PASS;
-        if (entity instanceof Enemy)
-            return InteractionResult.PASS;
-        ClaimStorage storage = ClaimStorage.get((ServerLevel) level);
-        BlockPos pos = entity.blockPosition();
-        IPermissionContainer claim = storage.getForPermissionCheck(pos);
-        if (claim != null) {
-            if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ENTITY_USE,
-                    type -> type == entity.getType(), entity::is))
-                return InteractionResult.PASS;
-            Identifier perm = InteractionOverrideManager.getInstance().getEntityInteract(entity.getType());
-            if (perm != null) {
-                return claim.canInteract(serverPlayer, perm, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
-            }
-            if (entity instanceof ArmorStand) {
-                if (!claim.canInteract(serverPlayer, BuiltinPermission.ARMORSTAND, pos, true))
-                    return InteractionResult.FAIL;
-            }
-            if (entity instanceof Mob)
-                return claim.canInteract(serverPlayer, BuiltinPermission.ANIMALINTERACT, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
-        }
-        return InteractionResult.PASS;
-    }
-
-    public static InteractionResult useEntity(Player p, Level level, InteractionHand hand, Entity entity) {
+    public static InteractionResult useEntity(Player p, Level level, InteractionHand hand, Entity entity, EntityHitResult hitResult) {
         if (!(p instanceof ServerPlayer player) || p.isSpectator() || canInteract(entity))
             return InteractionResult.PASS;
         if (entity instanceof Enemy)
@@ -92,6 +66,9 @@ public class EntityInteractEvents {
                 return claim.canInteract(player, perm, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             }
             switch (entity) {
+                case ArmorStand armorStand -> {
+                    return claim.canInteract(player, BuiltinPermission.ARMORSTAND, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
+                }
                 case Boat boat -> {
                     return claim.canInteract(player, BuiltinPermission.BOAT, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
                 }

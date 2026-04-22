@@ -20,8 +20,8 @@ public class EntityInteractEventsNeoForge {
 
     public static void useAtEntity(PlayerInteractEvent.EntityInteractSpecific event) {
         Entity target = event.getTarget();
-        InteractionResult result = EntityInteractEvents.useAtEntity(event.getEntity(), event.getLevel(), event.getHand(), target,
-                new EntityHitResult(target, event.getLocalPos().add(target.getX(), target.getY(), target.getZ())));
+        EntityHitResult hitResult = new EntityHitResult(target, event.getLocalPos().add(target.getX(), target.getY(), target.getZ()));
+        InteractionResult result = EntityInteractEvents.useEntity(event.getEntity(), event.getLevel(), event.getHand(), event.getTarget(), hitResult);
         if (result != InteractionResult.PASS) {
             event.setCancellationResult(result);
             event.setCanceled(true);
@@ -29,7 +29,7 @@ public class EntityInteractEventsNeoForge {
     }
 
     public static void useEntity(PlayerInteractEvent.EntityInteract event) {
-        InteractionResult result = EntityInteractEvents.useEntity(event.getEntity(), event.getLevel(), event.getHand(), event.getTarget());
+        InteractionResult result = EntityInteractEvents.useEntity(event.getEntity(), event.getLevel(), event.getHand(), event.getTarget(), null);
         if (result != InteractionResult.PASS) {
             event.setCancellationResult(result);
             event.setCanceled(true);

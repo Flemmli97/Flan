@@ -1,6 +1,6 @@
 package io.github.flemmli97.flan.platform.integration.create;
 
-import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
+//import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
