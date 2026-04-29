@@ -4,12 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelResource;
@@ -36,21 +34,20 @@ public class ConfigHandler {
     }
 
     public static boolean isClaimingTool(ItemStack stack) {
-        return stack.getItem() == ConfigHandler.CONFIG.claimingItem && partialyMatchNBT(ConfigHandler.CONFIG.claimingNBT, stack);
+        return stack.getItem() == ConfigHandler.CONFIG.claimingItem && partialyMatch(ConfigHandler.CONFIG.claimingNBT, stack);
     }
 
     public static boolean isInspectionTool(ItemStack stack) {
-
-        return stack.getItem() == ConfigHandler.CONFIG.inspectionItem && partialyMatchNBT(ConfigHandler.CONFIG.inspectionNBT, stack);
+        return stack.getItem() == ConfigHandler.CONFIG.inspectionItem && partialyMatch(ConfigHandler.CONFIG.inspectionNBT, stack);
     }
 
-    private static boolean partialyMatchNBT(CompoundTag config, ItemStack stack) {
-        if (config == null)
+    private static boolean partialyMatch(DataComponentMap config, ItemStack stack) {
+        if (config == null || config.isEmpty())
             return true;
-        CompoundTag second = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        if (second.isEmpty())
-            return config.isEmpty();
-        return config.entrySet().stream().allMatch(e -> Objects.equals(e.getValue(), second.get(e.getKey())));
+        return config.stream().allMatch(e -> {
+            Object val = stack.get(e.type());
+            return val != null && Objects.equals(e.value(), val);
+        });
     }
 
     public static int fromJson(JsonObject obj, String key, int fallback) {

@@ -101,9 +101,9 @@ public class ConfigUpdater {
 
             if (buySellHandler.has("ingredient") || buySellHandler.has("sellIngredient")) {
                 Ingredient legacy = buySellHandler.has("ingredient") ? Ingredient.CODEC.parse(ops, buySellHandler.get("ingredient"))
-                        .getOrThrow() : Ingredient.of();
+                                                                       .getOrThrow() : Ingredient.of();
                 legacy = buySellHandler.has("sellIngredient") ? Ingredient.CODEC.parse(ops, buySellHandler.get("sellIngredient"))
-                        .getOrThrow() : legacy;
+                                                                .getOrThrow() : legacy;
                 Optional<ItemStack> stack = legacy.items().map(ItemStack::new).findFirst();
                 if (stack.isPresent()) {
                     buySellHandler.add("sellItems", BuySellHandler.ITEM_STACK_CODEC.encodeStart(ops, stack.get())
