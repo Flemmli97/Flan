@@ -65,6 +65,6 @@ body:
         Use a paste site for the logs. If you copy paste the log in here you will be ignored!
         Here are example links for those sites:  
         [https://gist.github.com/](https://gist.github.com/)
-        [https://paste.gg/](https://paste.gg/)
+        [https://blazing-coop.net/paste](https://blazing-coop.net/paste)
     validations:
       required: true
