@@ -1,7 +1,10 @@
 package io.github.flemmli97.flan.platform.integration.webmap;
 
 import io.github.flemmli97.flan.claim.Claim;
+import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.config.ConfigHandler;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 
 public class WebmapCalls {
 
@@ -43,5 +46,18 @@ public class WebmapCalls {
         }
         if (bluemapLoaded && ConfigHandler.CONFIG.bluemapIntegration)
             BluemapIntegration.addClaimMarker(claim);
+    }
+
+    public static void triggerStylesChange(MinecraftServer server) {
+        if (dynmapLoaded && ConfigHandler.CONFIG.dynmapIntegration) {
+            for (ServerLevel level : server.getAllLevels()) {
+                DynmapIntegration.updateStyles(ClaimStorage.get(level));
+            }
+        }
+        if (bluemapLoaded && ConfigHandler.CONFIG.bluemapIntegration) {
+            for (ServerLevel level : server.getAllLevels()) {
+                DynmapIntegration.updateStyles(ClaimStorage.get(level));
+            }
+        }
     }
 }

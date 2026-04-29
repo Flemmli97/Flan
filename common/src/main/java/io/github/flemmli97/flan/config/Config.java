@@ -9,6 +9,7 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
+import io.github.flemmli97.flan.platform.integration.webmap.WebmapCalls;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -120,6 +121,12 @@ public class Config {
     public boolean bluemapIntegration;
 
     public boolean log;
+
+    public boolean mapDisplay = true;
+    public int adminMapBorderColor = 0xb50909;
+    public int mapBorderColor = 0xffa200;
+    public int adminMapFillColor = 0xff0000;
+    public int mapFillColor = 0xe0e01d;
 
     public int configVersion = 7;
     public int preConfigVersion;
@@ -279,6 +286,7 @@ public class Config {
                 this.globalDefaultPerms.put(e.getKey(), perms);
             });
             ConfigUpdater.postUpdateConfig(this.preConfigVersion, server, this);
+            WebmapCalls.triggerStylesChange(server);
         } catch (IOException e) {
             Flan.LOGGER.error(e);
         }

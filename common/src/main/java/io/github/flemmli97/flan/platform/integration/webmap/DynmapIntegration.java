@@ -2,7 +2,9 @@ package io.github.flemmli97.flan.platform.integration.webmap;
 
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimBox;
+import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import org.dynmap.DynmapCommonAPI;
@@ -12,6 +14,7 @@ import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class DynmapIntegration {
 
@@ -81,11 +84,11 @@ public class DynmapIntegration {
     }
 
     private static int lineColor(boolean admin) {
-        return admin ? 0xb50909 : 0xffa200;
+        return admin ? ConfigHandler.CONFIG.adminMapBorderColor : ConfigHandler.CONFIG.mapBorderColor;
     }
 
     private static int fillColor(boolean admin) {
-        return admin ? 0xff0000 : 0xe0e01d;
+        return admin ? ConfigHandler.CONFIG.adminMapFillColor : ConfigHandler.CONFIG.mapFillColor;
     }
 
     private static String claimLabel(Claim claim) {
@@ -97,5 +100,17 @@ public class DynmapIntegration {
             return prof.orElse("UNKOWN") + "'s Claim";
         }
         return name;
+    }
+
+    public static void updateStyles(ClaimStorage storage) {
+        if (markerSet == null)
+            return;
+        markerSet.getAreaMarkers().forEach(marker -> {
+            Claim claim = storage.getFromUUID(UUID.fromString(marker.getMarkerID()));
+            if (claim != null) {
+                marker.setLineStyle(3, 0.8, lineColor(claim.isAdminClaim()));
+                marker.setFillStyle(0.2, fillColor(claim.isAdminClaim()));
+            }
+        });
     }
 }
