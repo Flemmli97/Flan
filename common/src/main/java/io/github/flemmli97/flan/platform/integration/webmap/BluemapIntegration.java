@@ -138,11 +138,11 @@ public class BluemapIntegration {
     }
 
     private static int lineColor(boolean admin) {
-        return admin ? 0xb50909 : 0xffa200;
+        return admin ? ConfigHandler.CONFIG.adminMapBorderColor : ConfigHandler.CONFIG.mapBorderColor;
     }
 
     private static int fillColor(boolean admin) {
-        return admin ? 0xff0000 : 0xe0e01d;
+        return admin ? ConfigHandler.CONFIG.adminMapFillColor : ConfigHandler.CONFIG.mapFillColor;
     }
 
     private static String claimLabel(Claim claim) {
@@ -165,5 +165,21 @@ public class BluemapIntegration {
     private static void updateMarkers(BlueMapMap map, Consumer<MarkerSet> cons) {
         cons.accept(map.getMarkerSets().get(MARKER_3D));
         cons.accept(map.getMarkerSets().get(MARKER_2D));
+    }
+
+    public static void updateStyles(ClaimStorage storage) {
+        BlueMapAPI.getInstance().flatMap(api -> api.getWorld(storage.getLevel())).ifPresent(world -> {
+            for (BlueMapMap map : world.getMaps()) {
+                updateMarkers(map, markerSet -> {
+                    markerSet.getMarkers().forEach((id, marker) -> {
+                        Claim claim = storage.getFromUUID(UUID.fromString(id));
+                        if (claim != null && marker instanceof ShapeMarker shapeMarker) {
+                            shapeMarker.setLineColor(new Color(lineColor(claim.isAdminClaim()), 0.8F));
+                            shapeMarker.setFillColor(new Color(fillColor(claim.isAdminClaim()), 0.2F));
+                        }
+                    });
+                });
+            }
+        });
     }
 }

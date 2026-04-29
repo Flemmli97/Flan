@@ -69,6 +69,7 @@ public class ClaimStorage implements IPermissionStorage {
     private final Map<UUID, Set<Claim>> playerClaimMap = new HashMap<>();
     private final Set<UUID> dirty = new HashSet<>();
     private final GlobalClaim globalClaim;
+    private final ServerLevel level;
 
     public static ClaimStorage get(ServerLevel level) {
         return ((IClaimStorage) level).flan$get();
@@ -76,6 +77,7 @@ public class ClaimStorage implements IPermissionStorage {
 
     public ClaimStorage(MinecraftServer server, ServerLevel level) {
         this.globalClaim = new GlobalClaim(level);
+        this.level = level;
         this.read(server, level);
         PlayerDataHandler.deleteUnusedClaims(server, this, level);
     }
@@ -85,6 +87,10 @@ public class ClaimStorage implements IPermissionStorage {
         if (this.claimUUIDMap.containsKey(uuid))
             return this.generateUUID();
         return uuid;
+    }
+
+    public ServerLevel getLevel() {
+        return level;
     }
 
     public Claim createAdminClaim(BlockPos pos1, BlockPos pos2, ServerLevel level, boolean is3d) {
