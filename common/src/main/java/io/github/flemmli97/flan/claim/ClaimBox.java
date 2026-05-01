@@ -6,9 +6,7 @@ import net.minecraft.world.phys.AABB;
 public record ClaimBox(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 
     public boolean insideClaim(BlockPos pos) {
-        return this.minX <= pos.getX() && this.maxX >= pos.getX()
-                && this.minZ <= pos.getZ() && this.maxZ >= pos.getZ()
-                && this.minY <= pos.getY() && this.maxY >= pos.getY();
+        return this.intersects(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ(), 0);
     }
 
     public boolean intersects(ClaimBox other) {
@@ -16,11 +14,15 @@ public record ClaimBox(int minX, int minY, int minZ, int maxX, int maxY, int max
     }
 
     public boolean intersects(AABB other) {
-        return this.intersects(other.minX - 1, other.minY, other.minZ - 1, other.maxX, other.maxY, other.maxZ);
+        return this.intersects(other.minX, other.minY, other.minZ, other.maxX, other.maxY, other.maxZ, 1);
     }
 
     public boolean intersects(double x, double y, double z, double X, double Y, double Z) {
-        return this.minX < X && this.maxX > x && this.minY < Y && this.maxY > y && this.minZ < Z && this.maxZ > z;
+        return this.intersects(x, y, z, X, Y, Z, 0);
+    }
+
+    public boolean intersects(double x, double y, double z, double X, double Y, double Z, double padding) {
+        return this.minX <= X && this.maxX + padding >= x && this.minY <= Y && this.maxY + padding >=y && this.minZ <= Z && this.maxZ  + padding >= z;
     }
 
     @Override
