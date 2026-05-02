@@ -51,6 +51,7 @@ dependencies {
         exclude group: "net.fabricmc.fabric-api"
     }
     modCompileOnly diamond_economy
+    modCompileOnly "maven.modrinth:beconomy:${beconomy}"
 
     modCompileOnly "io.github.ladysnake:PlayerAbilityLib:${player_ability_lib}"
 

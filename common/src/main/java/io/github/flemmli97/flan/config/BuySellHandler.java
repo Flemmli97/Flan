@@ -10,7 +10,7 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.gui.ServerScreenHelper;
-import io.github.flemmli97.flan.platform.integration.currency.CommandCurrency;
+import io.github.flemmli97.flan.platform.integration.currency.CurrencyUtils;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.critereon.ItemPredicate;
@@ -81,7 +81,7 @@ public class BuySellHandler {
         }
         switch (this.buyType) {
             case MONEY -> {
-                return CommandCurrency.INSTANCE.buyClaimBlocks(player, blocks, this.buyAmount, message);
+                return CurrencyUtils.buyClaimBlocks(player, blocks, this.buyAmount, message);
             }
             case ITEM -> {
                 if (this.buyItems.isEmpty()) {
@@ -156,7 +156,7 @@ public class BuySellHandler {
         }
         switch (this.sellType) {
             case MONEY -> {
-                return CommandCurrency.INSTANCE.sellClaimBlocks(player, blocks, this.sellAmount, message);
+                return CurrencyUtils.sellClaimBlocks(player, blocks, this.sellAmount, message);
             }
             case ITEM -> {
                 if (this.sellItems.isEmpty()) {

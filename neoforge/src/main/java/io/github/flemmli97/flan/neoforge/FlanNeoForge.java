@@ -8,6 +8,8 @@ import io.github.flemmli97.flan.neoforge.events.EntityInteractEventsNeoForge;
 import io.github.flemmli97.flan.neoforge.events.ItemInteractEventsNeoForge;
 import io.github.flemmli97.flan.neoforge.events.ServerEvents;
 import io.github.flemmli97.flan.neoforge.events.WorldEventsNeoForge;
+import io.github.flemmli97.flan.neoforge.platform.integration.currency.MoneyAndSignsImpl;
+import io.github.flemmli97.flan.platform.integration.currency.ImpactorImpl;
 import io.github.flemmli97.flan.platform.integration.webmap.DynmapIntegration;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.neoforged.bus.api.EventPriority;
@@ -24,10 +26,16 @@ public class FlanNeoForge {
 
     public FlanNeoForge() {
         Flan.ftbRanks = ModList.get().isLoaded("ftbranks");
-        Flan.diceMCMoneySign = ModList.get().isLoaded("dicemcmm");
         Flan.ftbChunks = ModList.get().isLoaded("ftbchunks");
         Flan.mineColonies = ModList.get().isLoaded("minecolonies");
-        Flan.impactor = ModList.get().isLoaded("impactor");
+        Flan.create = ModList.get().isLoaded("create");
+
+        if (ModList.get().isLoaded("impactor")) {
+            ImpactorImpl.register();
+        }
+        if (ModList.get().isLoaded("dicemcmm")) {
+            MoneyAndSignsImpl.register();
+        }
 
         IEventBus bus = NeoForge.EVENT_BUS;
         bus.addListener(WorldEventsNeoForge::modifyExplosion);
@@ -58,9 +66,9 @@ public class FlanNeoForge {
         bus.addListener(ServerEvents::serverTick);
         bus.addListener(this::addReloadListener);
 
-        if (ModList.get().isLoaded("dynmap"))
+        if (ModList.get().isLoaded("dynmap")) {
             DynmapIntegration.reg();
-        Flan.create = ModList.get().isLoaded("create");
+        }
 
         ClaimCriterias.init();
     }
