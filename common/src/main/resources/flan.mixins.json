@@ -28,7 +28,7 @@
     "MinecraftServerMixin",
     "MossBlockCheckMixin",
     "PistonMixin",
-    "PlayerClaimMixin",
+    "ServerPlayerMixin",
     "PlayerMixin",
     "RaidManagerMixin",
     "ReplaceBlockMixin",

@@ -178,6 +178,11 @@ public class ENLangGen extends ServerLangGen {
         this.add(ClaimAllowListKey.ITEM_PICKUP.translationKey(), "Allowed item pickups");
         this.add(ClaimAllowListKey.ITEM_DROP.translationKey(), "Allowed item drops");
         this.add("flan.allowListEmptyTag", "Empty Tag");
+        this.add("flan.screenMenuWhitelist", "Whitelist");
+        this.add("flan.screenMenuBlacklist", "Blacklist");
+        this.add("flan.screenMenuListModeDesc", "Determines how entries in this list behave");
+        this.add("flan.screenMenuListModeDesc.whitelist", "▶ Whitelist: Only entries in here are ignored by permission checks");
+        this.add("flan.screenMenuListModeDesc.blacklist", "▶ Blacklist: Anything not in here are ignored by permission checks");
 
         this.add("flan.chatClaimTextEdit", "[Click for command]");
 
@@ -223,6 +228,8 @@ public class ENLangGen extends ServerLangGen {
 
         this.add("flan.addIgnoreEntry", "Added %1$s to the claims ignore list %2$s");
         this.add("flan.removeIgnoreEntry", "Removed %1$s from the claims ignore list %2$s");
+        this.add("flan.ignoreListState", "Ignore list set to %1$s");
+        this.add("flan.ignoreListState.err", "Unknown state %1$s");
 
         this.add("flan.confirmCommand", "Use '/flan confirm + <confirm | deny>' to confirm or deny running this command.");
         this.add("flan.confirmCommand.args", "No such option %s");
@@ -284,9 +291,9 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.command.fakePlayer", "fakePlayer <add | remove> <uuid>", "Adds/remove a fakeplayer to/from the claim");
         this.add("flan.command.teleport", "teleport { <self | global> <claim name | claim uuid> } | { other <player> <claim name | claim uuid> }", "Teleport to the given claims home position. Use global to teleport to admin claims");
         this.add("flan.command.permission", "permission { global | (<group | personal> <name>) } <permission> <true | false | default>", " Sets global/group/personal permissions. Also editable via the claim menu (for group perm right click on the group in the menu).");
-        this.add("flan.command.ignoreList", "ignoreList <add | remove> <" + ClaimAllowListKey.keys().entrySet().stream().sorted(Map.Entry.comparingByKey(ClaimPermission.NAMESPACE_FIRST)).map(e -> e.getValue().id().toString())
+        this.add("flan.command.ignoreList", "ignoreList <add | remove | state> <" + ClaimAllowListKey.keys().entrySet().stream().sorted(Map.Entry.comparingByKey(ClaimPermission.NAMESPACE_FIRST)).map(e -> e.getValue().id().toString())
                         .collect(Collectors.joining(" | ")) + "> <value>",
-                "Add/remove an entry to/from the claims ignore list. Interactions in this list bypass permission checks");
+                "Add/remove an entry to/from the claims ignore list. Interactions in this list bypass permission checks", "If <state> then allows you to define if it should behave like a whitelist or blacklist");
         this.add("flan.command.confirm", "confirm <confirmg | deny>", "Confirmation for sensitive commands");
 
         this.add("flan.command.reload", "reload", "Reloads the config ingame.");

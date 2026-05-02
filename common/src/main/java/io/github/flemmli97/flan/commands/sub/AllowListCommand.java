@@ -1,6 +1,7 @@
 package io.github.flemmli97.flan.commands.sub;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -17,11 +18,13 @@ import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeH
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.ResourceOrTagKeyArgument;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.util.List;
 import java.util.Map;
 
 public class AllowListCommand {
@@ -29,7 +32,8 @@ public class AllowListCommand {
     public static <T extends ArgumentBuilder<CommandSourceStack, T>> void register(ArgumentBuilder<CommandSourceStack, T> builder) {
         builder.then(Commands.literal("ignoreList").requires(src -> PermissionNodeHandler.INSTANCE.perm(src, PermissionNodeHandler.CMD_CLAIM_IGNORE, false))
                 .then(AllowListCommand.buildClaimEntryCommand(false))
-                .then(AllowListCommand.buildClaimEntryCommand(true)));
+                .then(AllowListCommand.buildClaimEntryCommand(true))
+                .then(AllowListCommand.listToggle()));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> buildClaimEntryCommand(boolean remove) {
@@ -47,6 +51,35 @@ public class AllowListCommand {
                     }
                 });
         return base;
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> listToggle() {
+        LiteralArgumentBuilder<CommandSourceStack> base = Commands.literal("state");
+        ClaimAllowListKey.keys().entrySet().stream().sorted(Map.Entry.comparingByKey(ClaimPermission.NAMESPACE_FIRST))
+                .forEach(entry -> base.then(Commands.literal(entry.getKey().toString())
+                        .then(Commands.argument("state", StringArgumentType.string())
+                                .suggests((src, b) -> SharedSuggestionProvider.suggest(List.of("whitelist", "blacklist"), b))
+                                .executes(src -> toggleListState(src, entry.getValue())))));
+        return base;
+    }
+
+    private static int toggleListState(CommandContext<CommandSourceStack> context, ClaimAllowListKey<?> value) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        Claim claim = CommandClaim.getClaimFromMode(context, player, BuiltinPermission.EDITCLAIM);
+        if (claim == null)
+            return 0;
+        String arg = StringArgumentType.getString(context, "state");
+        switch (arg) {
+            case "blacklist" -> claim.allowedEntries.get(value).setBlacklist(true);
+            case "whitelist" -> claim.allowedEntries.get(value).setBlacklist(false);
+            default -> {
+                context.getSource().sendFailure(ClaimUtils.translatedText("flan.ignoreListState.err", arg));
+                return 0;
+            }
+        }
+        MutableComponent cmdFeed = ClaimUtils.translatedText("flan.ignoreListState", claim.allowedEntries.get(value).blacklist()).withStyle(ChatFormatting.GOLD);
+        context.getSource().sendSuccess(() -> cmdFeed, false);
+        return Command.SINGLE_SUCCESS;
     }
 
     private static int addClaimListEntries(CommandContext<CommandSourceStack> context, ClaimAllowListKey<?> key) throws CommandSyntaxException {
