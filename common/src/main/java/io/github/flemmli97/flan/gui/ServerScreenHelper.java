@@ -10,6 +10,7 @@ import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.linguabib.api.LanguageAPI;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -32,7 +33,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class ServerScreenHelper {
 
@@ -48,10 +51,21 @@ public class ServerScreenHelper {
 
     public static ItemStack createStack(ItemStack stack, Component name) {
         Set<DataComponentType<?>> types = stack.getComponents().keySet();
-        types.forEach(stack::remove);
+        types.stream().filter(remove(stack.getComponentsPatch())).forEach(stack::remove);
         if (name != null)
             stack.set(DataComponents.CUSTOM_NAME, name);
         return stack;
+    }
+
+    private static Predicate<DataComponentType<?>> remove(DataComponentPatch patch) {
+        // Ideally only remove tooltip adding ones but there is no way to actually tell which ones will have a tooltip
+        // There is TooltipProvider but that's not fail-safe either
+        return t -> {
+            Optional<?> val = patch.get(t);
+            return (val == null || val.isEmpty())
+                    && t != DataComponents.CUSTOM_MODEL_DATA
+                    && t != DataComponents.MAX_DAMAGE;
+        };
     }
 
     public static ItemStack fromPermission(Claim claim, ServerPlayer player, ClaimPermission perm, String group) {
