@@ -1,7 +1,9 @@
 package io.github.flemmli97.flan.gui;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimUtils;
+import io.github.flemmli97.flan.claim.attachment.AllowedRegistryList;
 import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
@@ -17,11 +19,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandler<CustomInteractListScreenHandler.Data> {
+public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandler<CustomInteractListScreenHandler.Data> implements TickingGui {
 
     private boolean removeMode;
+
+    private int tick;
+    private List<Pair<Integer, List<ItemStack>>> updaters;
 
     private CustomInteractListScreenHandler(int syncId, Inventory playerInventory, Data data) {
         super(syncId, playerInventory, 6, data);
@@ -42,8 +48,25 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
         player.openMenu(fac);
     }
 
+    private ItemStack listModeItem() {
+        boolean blacklist = this.data.claim.allowedEntries.get(this.data.key).blacklist();
+        ItemStack stack = ServerScreenHelper.createStack(blacklist ? Items.BLACK_BANNER : Items.WHITE_BANNER,
+                ServerScreenHelper.coloredGuiText(blacklist ? "flan.screenMenuBlacklist" : "flan.screenMenuWhitelist", ChatFormatting.GOLD));
+        List<Component> components = new ArrayList<>();
+        components.add(ServerScreenHelper.coloredGuiText("flan.screenMenuListModeDesc", ChatFormatting.GRAY));
+        components.add(Component.empty());
+        if (blacklist) {
+            components.add(ServerScreenHelper.coloredGuiText("flan.screenMenuListModeDesc.blacklist", ChatFormatting.GRAY));
+        } else {
+            components.add(ServerScreenHelper.coloredGuiText("flan.screenMenuListModeDesc.whitelist", ChatFormatting.GRAY));
+        }
+        ServerScreenHelper.addLore(stack, components);
+        return stack;
+    }
+
     @Override
     protected void fillInventoryWith() {
+        this.updaters = new ArrayList<>();
         for (int i = 0; i < 54; i++) {
             if (i == 0) {
                 ItemStack stack = ServerScreenHelper.createStack(Items.TNT,
@@ -56,16 +79,21 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
                 ItemStack stack = ServerScreenHelper.createStack(Items.REDSTONE_BLOCK,
                         ServerScreenHelper.coloredGuiText("flan.screenRemoveMode", this.removeMode, ChatFormatting.DARK_RED));
                 this.slots.get(i).set(stack);
+            } else if (i == 5) {
+                this.slots.get(i).set(this.listModeItem());
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 this.slots.get(i).set(ServerScreenHelper.emptyFiller());
             else {
-                List<ItemStack> stacks = this.data.claim.allowedEntries.get(this.data.key).asStacks();
+                List<List<ItemStack>> stacks = this.data.claim.allowedEntries.get(this.data.key).asStacks();
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + this.getPage() * 28;
                 if (id < stacks.size()) {
-                    ItemStack stack = stacks.get(id);
-                    CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putInt("Index", id));
-                    this.slots.get(i).set(stack);
+                    List<ItemStack> stackEntries = stacks.get(id);
+                    stackEntries.forEach(stack -> CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putInt("Index", id)));
+                    if (stackEntries.size() > 1) {
+                        this.updaters.add(Pair.of(i, stackEntries));
+                    }
+                    this.slots.get(i).set(stackEntries.get(this.tick % stackEntries.size()));
                 } else
                     this.slots.get(i).set(ItemStack.EMPTY);
             }
@@ -74,7 +102,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
 
     @Override
     protected boolean isRightSlot(int slot) {
-        return slot == 0 || slot == 3 || slot == 4 || (slot < 45 && slot > 8 && slot % 9 != 0 && slot % 9 != 8);
+        return slot == 0 || slot == 3 || slot == 4 || slot == 5 || (slot < 45 && slot > 8 && slot % 9 != 0 && slot % 9 != 8);
     }
 
     @Override
@@ -108,6 +136,13 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             return true;
         }
+        if (index == 5) {
+            AllowedRegistryList<?> entry = this.data.claim.allowedEntries.get(this.data.key);
+            entry.setBlacklist(!entry.blacklist());
+            slot.set(this.listModeItem());
+            ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
+            return true;
+        }
         ItemStack stack = slot.getItem();
         if (!stack.isEmpty()) {
             CustomData nbt = stack.get(DataComponents.CUSTOM_DATA);
@@ -125,6 +160,16 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
     protected PageSettings pageSettings() {
         int size = this.data.claim.allowedEntries.get(this.data.key).size();
         return new PageSettings((size - 1) / 28, 47, 51);
+    }
+
+    @Override
+    public void tick() {
+        this.tick++;
+        if (this.updaters == null)
+            return;
+        this.updaters.forEach(p -> {
+            this.slots.get(p.getFirst()).set(p.getSecond().get(this.tick % p.getSecond().size()));
+        });
     }
 
     public record Data(Claim claim, ClaimAllowListKey<?> key) {

@@ -2,6 +2,7 @@ package io.github.flemmli97.flan.claim.attachment;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.Claim;
@@ -37,6 +38,7 @@ public class AllowedRegistryList<T> {
     private final Registry<T> registry;
     private final Claim claim;
     private final Function<T, Item> asItem;
+    private boolean blacklist;
 
     public AllowedRegistryList(Registry<T> registry, Claim claim, Function<T, Item> asItem) {
         this.registry = registry;
@@ -48,13 +50,13 @@ public class AllowedRegistryList<T> {
         return new AllowedRegistryList<>(registry, claim, ItemLike::asItem);
     }
 
-    public List<ItemStack> asStacks() {
+    public List<List<ItemStack>> asStacks() {
         return this.list.stream().map(e ->
-                e.map(v -> new ItemStack(this.asItem.apply(v)), tag -> {
-                    ItemStack any = this.registry.get(tag).map(f ->
-                            f.stream().map(h -> new ItemStack(this.asItem.apply(h.value()))).findFirst().orElse(this.empty())).orElse(this.empty());
-                    any.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText(String.format("#%s", tag.location()), ChatFormatting.GOLD));
-                    return any;
+                e.map(v -> List.of(new ItemStack(this.asItem.apply(v))), tag -> {
+                    List<ItemStack> items = this.registry.get(tag).map(f ->
+                            f.stream().map(h -> new ItemStack(this.asItem.apply(h.value()))).toList()).orElse(List.of(this.empty()));
+                    items.forEach(stack -> stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText(String.format("#%s", tag.location()), ChatFormatting.GOLD)));
+                    return items;
                 })
         ).toList();
     }
@@ -65,6 +67,14 @@ public class AllowedRegistryList<T> {
 
     public int size() {
         return this.list.size();
+    }
+
+    public boolean blacklist() {
+        return this.blacklist;
+    }
+
+    public void setBlacklist(boolean blacklist) {
+        this.blacklist = blacklist;
     }
 
     private ItemStack empty() {
@@ -103,6 +113,9 @@ public class AllowedRegistryList<T> {
     }
 
     public boolean matches(Predicate<T> first, Predicate<TagKey<T>> second) {
+        if (this.blacklist) {
+            return this.list.stream().noneMatch(e -> e.map(first::test, second::test));
+        }
         return this.list.stream().anyMatch(e -> e.map(first::test, second::test));
     }
 
@@ -111,19 +124,30 @@ public class AllowedRegistryList<T> {
     }
 
     public JsonElement save() {
+        JsonObject obj = new JsonObject();
         JsonArray array = new JsonArray();
         this.list.forEach(e -> array.add(this.valueAsString(e)));
-        return array;
+        obj.add("entries", array);
+        obj.addProperty("blacklist", this.blacklist);
+        return obj;
     }
 
-    public AllowedRegistryList<T> read(JsonArray array) {
+    public AllowedRegistryList<T> read(JsonElement element) {
         this.list.clear();
+        JsonArray array;
+        if (element.isJsonArray()) {
+            array = element.getAsJsonArray();
+        } else {
+            JsonObject obj = element.getAsJsonObject();
+            array = obj.getAsJsonArray("entries");
+            this.blacklist = obj.get("blacklist").getAsBoolean();
+        }
         array.forEach(e -> {
-            String element = e.getAsString();
-            if (element.startsWith("#"))
-                this.addAllowedItem(Either.right(TagKey.create(this.registry.key(), Identifier.parse(element.substring(1)))));
+            String entry = e.getAsString();
+            if (entry.startsWith("#"))
+                this.addAllowedItem(Either.right(TagKey.create(this.registry.key(), Identifier.parse(entry.substring(1)))));
             else {
-                Identifier id = Identifier.parse(element);
+                Identifier id = Identifier.parse(entry);
                 if (this.registry.containsKey(id)) {
                     this.addAllowedItem(Either.left(this.registry.getValue(id)));
                 } else {

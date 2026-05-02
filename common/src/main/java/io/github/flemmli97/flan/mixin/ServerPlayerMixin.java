@@ -3,6 +3,7 @@ package io.github.flemmli97.flan.mixin;
 import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.event.PlayerEvents;
+import io.github.flemmli97.flan.gui.TickingGui;
 import io.github.flemmli97.flan.platform.ClaimEvents;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.utils.IPlayerClaimImpl;
@@ -18,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
-public abstract class PlayerClaimMixin extends Player implements IPlayerClaimImpl, VanillaFlightStateTracker, PlayerDropHandler {
+public abstract class ServerPlayerMixin extends Player implements IPlayerClaimImpl, VanillaFlightStateTracker, PlayerDropHandler {
 
     @Unique
     private PlayerClaimData flan$ClaimData;
@@ -29,7 +30,7 @@ public abstract class PlayerClaimMixin extends Player implements IPlayerClaimImp
     @Unique
     private boolean flan$claimFlight, flan$togglingFlight, flan$otherFlightState, flan$forcedDropState;
 
-    private PlayerClaimMixin(Level level, GameProfile gameProfile) {
+    private ServerPlayerMixin(Level level, GameProfile gameProfile) {
         super(level, gameProfile);
     }
 
@@ -45,6 +46,9 @@ public abstract class PlayerClaimMixin extends Player implements IPlayerClaimImp
             ClaimEvents.INSTANCE.borderCross((ServerPlayer) (Object) this, newClaim, this.flan$CurrentClaim);
         this.flan$CurrentClaim = newClaim;
         this.flan$ClaimData.tick(this.flan$CurrentClaim);
+        if (this.containerMenu instanceof TickingGui gui && this.tickCount % gui.updatePeriod() == 0) {
+            gui.tick();
+        }
     }
 
     @Inject(method = "restoreFrom", at = @At("RETURN"))

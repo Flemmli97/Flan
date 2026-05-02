@@ -53,7 +53,7 @@ public class AllowedRegistryListHolder {
         obj.keySet().forEach(id -> {
             ClaimAllowListKey<?> key = ClaimAllowListKey.get(Identifier.parse(id));
             if (key != null) {
-                this.entries.put(key, key.factory().apply(this.claim).read(obj.getAsJsonArray(id)));
+                this.entries.put(key, key.factory().apply(this.claim).read(obj.get(id)));
             }
         });
     }
