@@ -73,6 +73,7 @@ public class Config {
 
     public BuySellHandler buySellHandler = new BuySellHandler();
     public int maxBuyBlocks = -1;
+    public String currencyType = "";
 
     public boolean lenientBlockEntityCheck;
     public List<String> breakBlockBlacklist = Lists.newArrayList(
@@ -119,14 +120,12 @@ public class Config {
 
     public boolean dynmapIntegration;
     public boolean bluemapIntegration;
-
-    public boolean log;
-
-    public boolean mapDisplay = true;
     public int adminMapBorderColor = 0xb50909;
     public int mapBorderColor = 0xffa200;
     public int adminMapFillColor = 0xff0000;
     public int mapFillColor = 0xe0e01d;
+
+    public boolean log;
 
     public int configVersion = 7;
     public int preConfigVersion;
@@ -224,6 +223,7 @@ public class Config {
 
             this.buySellHandler.fromJson(ConfigHandler.fromJson(obj, "buySellHandler"), server);
             this.maxBuyBlocks = ConfigHandler.fromJson(obj, "maxBuyBlocks", this.maxBuyBlocks);
+            this.currencyType = ConfigHandler.fromJson(obj, "currencyType", this.currencyType);
 
             this.lenientBlockEntityCheck = ConfigHandler.fromJson(obj, "lenientBlockEntityCheck", this.lenientBlockEntityCheck);
             this.breakBlockBlacklist.clear();
@@ -339,6 +339,7 @@ public class Config {
 
         obj.add("buySellHandler", this.buySellHandler.toJson(server));
         obj.addProperty("maxBuyBlocks", this.maxBuyBlocks);
+        obj.addProperty("currencyType", this.currencyType);
 
         obj.addProperty("lenientBlockEntityCheck", this.lenientBlockEntityCheck);
         JsonArray blocksBreak = new JsonArray();

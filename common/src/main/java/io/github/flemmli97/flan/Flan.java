@@ -17,8 +17,7 @@ public class Flan {
 
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
-    public static boolean permissionAPI, playerAbilityLib, ftbRanks, diceMCMoneySign, octoEconomy,
-            diamondCurrency, ftbChunks, gomlServer, mineColonies, commonProtApi, impactor, create;
+    public static boolean permissionAPI, playerAbilityLib, ftbRanks, ftbChunks, gomlServer, mineColonies, commonProtApi, create;
 
     public static final DateTimeFormatter ONLINE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 

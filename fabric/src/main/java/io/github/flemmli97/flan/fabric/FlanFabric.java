@@ -13,7 +13,11 @@ import io.github.flemmli97.flan.event.PlayerEvents;
 import io.github.flemmli97.flan.event.WorldEvents;
 import io.github.flemmli97.flan.fabric.integration.HarvestWithEase;
 import io.github.flemmli97.flan.fabric.platform.integration.claiming.FlanProtectionProvider;
+import io.github.flemmli97.flan.fabric.platform.integration.currency.BeconomyImpl;
+import io.github.flemmli97.flan.fabric.platform.integration.currency.DiamondCurrencyImpl;
+import io.github.flemmli97.flan.fabric.platform.integration.currency.OctoEconomyImpl;
 import io.github.flemmli97.flan.fabric.platform.integration.playerability.PlayerAbilityEvents;
+import io.github.flemmli97.flan.platform.integration.currency.ImpactorImpl;
 import io.github.flemmli97.flan.platform.integration.webmap.BluemapIntegration;
 import io.github.flemmli97.flan.platform.integration.webmap.DynmapIntegration;
 import io.github.flemmli97.flan.player.PlayerDataHandler;
@@ -70,21 +74,36 @@ public class FlanFabric implements ModInitializer {
         Flan.permissionAPI = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
         Flan.playerAbilityLib = FabricLoader.getInstance().isModLoaded("playerabilitylib");
         Flan.ftbRanks = FabricLoader.getInstance().isModLoaded("ftbranks");
-        Flan.octoEconomy = FabricLoader.getInstance().isModLoaded("octo-economy-api");
-        Flan.diamondCurrency = FabricLoader.getInstance().isModLoaded("diamondeconomy");
         Flan.ftbChunks = FabricLoader.getInstance().isModLoaded("ftbchunks");
         Flan.gomlServer = FabricLoader.getInstance().isModLoaded("goml");
         Flan.commonProtApi = FabricLoader.getInstance().isModLoaded("common-protection-api");
-        Flan.impactor = FabricLoader.getInstance().isModLoaded("impactor");
         Flan.create = FabricLoader.getInstance().isModLoaded("create");
-        if (Flan.playerAbilityLib)
+
+        if (FabricLoader.getInstance().isModLoaded("impactor")) {
+            ImpactorImpl.register();
+        }
+        if (FabricLoader.getInstance().isModLoaded("octo-economy-api")) {
+            OctoEconomyImpl.register();
+        }
+        if (FabricLoader.getInstance().isModLoaded("diamondeconomy")) {
+            DiamondCurrencyImpl.register();
+        }
+        if (FabricLoader.getInstance().isModLoaded("beconomy")) {
+            BeconomyImpl.register();
+        }
+
+        if (Flan.playerAbilityLib) {
             PlayerAbilityEvents.register();
-        if (FabricLoader.getInstance().isModLoaded("dynmap"))
+        }
+        if (FabricLoader.getInstance().isModLoaded("dynmap")) {
             DynmapIntegration.reg();
-        if (FabricLoader.getInstance().isModLoaded("harvestwithease"))
+        }
+        if (FabricLoader.getInstance().isModLoaded("harvestwithease")) {
             HarvestWithEase.init();
-        if (Flan.commonProtApi)
+        }
+        if (Flan.commonProtApi) {
             FlanProtectionProvider.register();
+        }
         ClaimCriterias.init();
     }
 

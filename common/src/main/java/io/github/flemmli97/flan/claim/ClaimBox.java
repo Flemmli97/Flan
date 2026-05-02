@@ -22,7 +22,7 @@ public record ClaimBox(int minX, int minY, int minZ, int maxX, int maxY, int max
     }
 
     public boolean intersects(double x, double y, double z, double X, double Y, double Z, double padding) {
-        return this.minX <= X && this.maxX + padding >= x && this.minY <= Y && this.maxY + padding >=y && this.minZ <= Z && this.maxZ  + padding >= z;
+        return this.minX <= X && this.maxX + padding >= x && this.minY <= Y && this.maxY + padding >= y && this.minZ <= Z && this.maxZ + padding >= z;
     }
 
     @Override
