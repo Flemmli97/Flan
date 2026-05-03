@@ -1,3 +1,14 @@
+Flan 1.12.6
+================
+- Rewrite nbt config for claim and inspection tool to respect all components now
+- Allow configuring map marker styles (border and fill color)
+- Fix wrong claim boundaries on edges
+- Internally rewrite currency integrations.
+  - Add beconomy integration
+- Update component removal logic for gui items. Should fix some resource pack issues
+- Add tag cycling for guis (applicable to ignore lists)
+- Add toggle for black/whitelist for ignore lists
+
 Flan 1.12.5
 ================
 - Update to 1.21.11  
