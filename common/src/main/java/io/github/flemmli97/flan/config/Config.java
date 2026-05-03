@@ -9,8 +9,8 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -52,9 +52,9 @@ public class Config {
     public boolean worldWhitelist;
 
     public Item claimingItem = Items.GOLDEN_HOE;
-    public CompoundTag claimingNBT = new CompoundTag();
+    public DataComponentMap claimingNBT = DataComponentMap.builder().build();
     public Item inspectionItem = Items.STICK;
-    public CompoundTag inspectionNBT = new CompoundTag();
+    public DataComponentMap inspectionNBT = DataComponentMap.builder().build();
     public boolean main3dClaims = true;
     public int minHeight3d = 10;
     public int nearbyClaimsToolDisplay = 24;
@@ -194,11 +194,11 @@ public class Config {
 
             if (obj.has("claimingItem"))
                 this.claimingItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse((obj.get("claimingItem").getAsString())));
-            this.claimingNBT = CompoundTag.CODEC.parse(JsonOps.INSTANCE, GsonHelper.getAsJsonObject(obj, "claimingNBT", new JsonObject()))
+            this.claimingNBT = DataComponentMap.CODEC.parse(JsonOps.INSTANCE, GsonHelper.getAsJsonObject(obj, "claimingNBT", new JsonObject()))
                     .getOrThrow();
             if (obj.has("inspectionItem"))
                 this.inspectionItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse((obj.get("inspectionItem").getAsString())));
-            this.inspectionNBT = CompoundTag.CODEC.parse(JsonOps.INSTANCE, GsonHelper.getAsJsonObject(obj, "inspectionNBT", new JsonObject()))
+            this.inspectionNBT = DataComponentMap.CODEC.parse(JsonOps.INSTANCE, GsonHelper.getAsJsonObject(obj, "inspectionNBT", new JsonObject()))
                     .getOrThrow();
             this.main3dClaims = ConfigHandler.fromJson(obj, "main3dClaims", this.main3dClaims);
             this.minHeight3d = ConfigHandler.fromJson(obj, "minHeight3d", this.minHeight3d);
@@ -309,10 +309,10 @@ public class Config {
         obj.addProperty("worldWhitelist", this.worldWhitelist);
 
         obj.addProperty("claimingItem", BuiltInRegistries.ITEM.getKey(this.claimingItem).toString());
-        obj.add("claimingNBT", CompoundTag.CODEC.encodeStart(JsonOps.INSTANCE, this.claimingNBT)
+        obj.add("claimingNBT", DataComponentMap.CODEC.encodeStart(JsonOps.INSTANCE, this.claimingNBT)
                 .getOrThrow());
         obj.addProperty("inspectionItem", BuiltInRegistries.ITEM.getKey(this.inspectionItem).toString());
-        obj.add("inspectionNBT", CompoundTag.CODEC.encodeStart(JsonOps.INSTANCE, this.inspectionNBT)
+        obj.add("inspectionNBT", DataComponentMap.CODEC.encodeStart(JsonOps.INSTANCE, this.inspectionNBT)
                 .getOrThrow());
         obj.addProperty("main3dClaims", this.main3dClaims);
         obj.addProperty("minHeight3d", this.minHeight3d);
