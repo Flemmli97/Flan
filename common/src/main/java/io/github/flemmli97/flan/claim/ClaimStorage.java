@@ -123,7 +123,7 @@ public class ClaimStorage implements IPermissionStorage {
             else
                 pos2 = pos2.below(ConfigHandler.CONFIG.defaultClaimDepth);
         } else if (Math.abs(pos1.getY() - pos2.getY()) < ConfigHandler.CONFIG.minHeight3d) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.minClaimHeight", ConfigHandler.CONFIG.minHeight3d, ChatFormatting.RED), false);
+            player.sendSystemMessage(ClaimUtils.translatedText("flan.minClaimHeight", ConfigHandler.CONFIG.minHeight3d, ChatFormatting.RED), false);
             return false;
         }
         Claim claim = new Claim(pos1, pos2, player);
@@ -134,7 +134,7 @@ public class ClaimStorage implements IPermissionStorage {
             AABB aabb = new AABB(respawnData.pos()).inflate(server.spawnProtectionRadius());
             ClaimBox dim = claim.getDimensions();
             if (dim.minX() <= aabb.maxX && dim.maxX() >= aabb.minX && dim.minZ() <= aabb.maxZ && dim.maxZ() >= aabb.minZ) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.conflictSpawn", ChatFormatting.RED), false);
+                player.sendSystemMessage(ClaimUtils.translatedText("flan.conflictSpawn", ChatFormatting.RED), false);
                 return false;
             }
         }
@@ -143,19 +143,19 @@ public class ClaimStorage implements IPermissionStorage {
             PlayerClaimData data = PlayerClaimData.get(player);
             long cooldown = data.nextClaimCooldown();
             if (cooldown > 0) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.claimCooldown", cooldown, ChatFormatting.RED), false);
+                player.sendSystemMessage(ClaimUtils.translatedText("flan.claimCooldown", cooldown, ChatFormatting.RED), false);
                 return false;
             }
             if (claim.getPlane() < ConfigHandler.CONFIG.minClaimsize) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.minClaimSize", ConfigHandler.CONFIG.minClaimsize, ChatFormatting.RED), false);
+                player.sendSystemMessage(ClaimUtils.translatedText("flan.minClaimSize", ConfigHandler.CONFIG.minClaimsize, ChatFormatting.RED), false);
                 return false;
             }
             if (!data.isAdminIgnoreClaim() && ConfigHandler.CONFIG.maxClaims != -1 && !PermissionNodeHandler.INSTANCE.permBelowEqVal(player, PermissionNodeHandler.PERM_MAX_CLAIMS, this.playerClaimMap.getOrDefault(player.getUUID(), Sets.newHashSet()).size() + 1, ConfigHandler.CONFIG.maxClaims)) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.maxClaims", ChatFormatting.RED), false);
+                player.sendSystemMessage(ClaimUtils.translatedText("flan.maxClaims", ChatFormatting.RED), false);
                 return false;
             }
             if (!data.isAdminIgnoreClaim() && !data.canUseClaimBlocks(claim.getPlane())) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.notEnoughBlocks",
+                player.sendSystemMessage(ClaimUtils.translatedText("flan.notEnoughBlocks",
                         claim.getPlane(), data.remainingClaimBlocks(), ChatFormatting.RED), false);
                 return false;
             }
@@ -165,14 +165,14 @@ public class ClaimStorage implements IPermissionStorage {
             data.updateLastClaim();
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
             data.updateScoreboard();
-            player.displayClientMessage(ClaimUtils.translatedText("flan.claimCreateSuccess", ChatFormatting.GOLD), false);
-            player.displayClientMessage(ClaimUtils.translatedText("flan.claimBlocksFormat",
+            player.sendSystemMessage(ClaimUtils.translatedText("flan.claimCreateSuccess", ChatFormatting.GOLD), false);
+            player.sendSystemMessage(ClaimUtils.translatedText("flan.claimBlocksFormat",
                     data.getClaimBlocks(), data.getAdditionalClaims(), data.usedClaimBlocks(), data.remainingClaimBlocks(), ChatFormatting.GOLD), false);
             return true;
         }
         PlayerClaimData data = PlayerClaimData.get(player);
         conflicts.forEach(conf -> data.addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.blockPosition().getY()));
-        player.displayClientMessage(ClaimUtils.translatedText("flan.conflictOther", ChatFormatting.RED), false);
+        player.sendSystemMessage(ClaimUtils.translatedText("flan.conflictOther", ChatFormatting.RED), false);
         return false;
     }
 
@@ -181,7 +181,7 @@ public class ClaimStorage implements IPermissionStorage {
         int[] chunks = getChunkPos(claim);
         for (int x = chunks[0]; x <= chunks[1]; x++) {
             for (int z = chunks[2]; z <= chunks[3]; z++) {
-                List<Claim> claims = this.claims.get(ChunkPos.asLong(x, z));
+                List<Claim> claims = this.claims.get(ChunkPos.pack(x, z));
                 if (claims != null)
                     for (Claim other : claims) {
                         if (claim.intersects(other) && !other.equals(except)) {
@@ -205,7 +205,7 @@ public class ClaimStorage implements IPermissionStorage {
         int[] pos = getChunkPos(claim);
         for (int x = pos[0]; x <= pos[1]; x++)
             for (int z = pos[2]; z <= pos[3]; z++) {
-                this.claims.compute(ChunkPos.asLong(x, z), (key, val) -> {
+                this.claims.compute(ChunkPos.pack(x, z), (key, val) -> {
                     if (val == null)
                         return null;
                     val.remove(claim);
@@ -241,19 +241,19 @@ public class ClaimStorage implements IPermissionStorage {
         Claim newClaim = new Claim(opposite, to, player.getUUID(), player.level());
         if (claim.is3d()) {
             if (Math.abs(minY - to.getY()) < ConfigHandler.CONFIG.minHeight3d) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.minClaimHeight", ConfigHandler.CONFIG.minHeight3d, ChatFormatting.RED), false);
+                player.sendSystemMessage(ClaimUtils.translatedText("flan.minClaimHeight", ConfigHandler.CONFIG.minHeight3d, ChatFormatting.RED), false);
                 return false;
             }
             newClaim.withHeight(Math.max(minY, to.getY()));
         }
         if (newClaim.getPlane() < ConfigHandler.CONFIG.minClaimsize) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.minClaimSize", ConfigHandler.CONFIG.minClaimsize, ChatFormatting.RED), false);
+            player.sendSystemMessage(ClaimUtils.translatedText("flan.minClaimSize", ConfigHandler.CONFIG.minClaimsize, ChatFormatting.RED), false);
             return false;
         }
         Set<DisplayBox> conflicts = this.conflicts(newClaim, claim);
         if (!conflicts.isEmpty()) {
             conflicts.forEach(conf -> PlayerClaimData.get(player).addDisplayClaim(conf, EnumDisplayType.CONFLICT, player.blockPosition().getY()));
-            player.displayClientMessage(ClaimUtils.translatedText("flan.conflictOther", ChatFormatting.RED), false);
+            player.sendSystemMessage(ClaimUtils.translatedText("flan.conflictOther", ChatFormatting.RED), false);
             return false;
         }
         int diff = newClaim.getPlane() - claim.getPlane();
@@ -272,18 +272,18 @@ public class ClaimStorage implements IPermissionStorage {
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
             if (newData instanceof PlayerClaimData)
                 ((PlayerClaimData) newData).updateScoreboard();
-            player.displayClientMessage(ClaimUtils.translatedText("flan.resizeSuccess", ChatFormatting.GOLD), false);
-            player.displayClientMessage(ClaimUtils.translatedText("flan.claimBlocksFormat",
+            player.sendSystemMessage(ClaimUtils.translatedText("flan.resizeSuccess", ChatFormatting.GOLD), false);
+            player.sendSystemMessage(ClaimUtils.translatedText("flan.claimBlocksFormat",
                     newData.getClaimBlocks(), newData.getAdditionalClaims(), newData.usedClaimBlocks(), data.remainingClaimBlocks(), ChatFormatting.GOLD), false);
             return true;
         }
-        player.displayClientMessage(ClaimUtils.translatedText("flan.notEnoughBlocks",
+        player.sendSystemMessage(ClaimUtils.translatedText("flan.notEnoughBlocks",
                 claim.getPlane(), data.remainingClaimBlocks(), ChatFormatting.RED), false);
         return false;
     }
 
     public Claim getClaimAt(BlockPos pos) {
-        long chunk = ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4);
+        long chunk = ChunkPos.pack(pos.getX() >> 4, pos.getZ() >> 4);
         List<Claim> list = this.claims.get(chunk);
         if (list != null)
             for (Claim claim : list) {
@@ -294,7 +294,7 @@ public class ClaimStorage implements IPermissionStorage {
     }
 
     public List<Claim> getClaimsAt(int chunkX, int chunkZ) {
-        return this.claims.getOrDefault(ChunkPos.asLong(chunkX, chunkZ), Collections.emptyList());
+        return this.claims.getOrDefault(ChunkPos.pack(chunkX, chunkZ), Collections.emptyList());
     }
 
     @Override
@@ -309,13 +309,13 @@ public class ClaimStorage implements IPermissionStorage {
      * Gets claims in a radius around the position.
      */
     public Set<Claim> getNearbyClaims(ServerLevel level, BlockPos pos, int rX, int rZ) {
-        ChunkPos c = new ChunkPos(new BlockPos(pos.getX() - rX, pos.getY(), pos.getZ() - rZ));
+        ChunkPos c = ChunkPos.containing(new BlockPos(pos.getX() - rX, pos.getY(), pos.getZ() - rZ));
         Set<Claim> affected = new HashSet<>();
         int posX;
-        for (int x = 0; (posX = SectionPos.sectionToBlockCoord(c.x + x)) <= pos.getX() + rX; x++) {
+        for (int x = 0; (posX = SectionPos.sectionToBlockCoord(c.x() + x)) <= pos.getX() + rX; x++) {
             int posZ;
-            for (int z = 0; (posZ = SectionPos.sectionToBlockCoord(c.z + z)) <= pos.getZ() + rZ; z++) {
-                List<Claim> list = this.claims.get(ChunkPos.asLong(c.x + x, c.z + z));
+            for (int z = 0; (posZ = SectionPos.sectionToBlockCoord(c.z() + z)) <= pos.getZ() + rZ; z++) {
+                List<Claim> list = this.claims.get(ChunkPos.pack(c.x() + x, c.z() + z));
                 if (list != null) {
                     int minX = Math.max(posX, pos.getX() - rX);
                     int minZ = Math.max(posZ, pos.getZ() - rZ);
@@ -341,7 +341,7 @@ public class ClaimStorage implements IPermissionStorage {
                 if (claim.insideClaim(ipos)) {
                     if (!claim.canInteract(player, perm, ipos, message)) {
                         if (message)
-                            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionTooClose", ChatFormatting.DARK_RED), true);
+                            player.sendSystemMessage(ClaimUtils.translatedText("flan.noPermissionTooClose", ChatFormatting.DARK_RED), true);
                         return false;
                     }
                 }
@@ -358,7 +358,7 @@ public class ClaimStorage implements IPermissionStorage {
         int[] pos = getChunkPos(claim);
         for (int x = pos[0]; x <= pos[1]; x++)
             for (int z = pos[2]; z <= pos[3]; z++) {
-                this.claims.merge(ChunkPos.asLong(x, z), Lists.newArrayList(claim), (old, val) -> {
+                this.claims.merge(ChunkPos.pack(x, z), Lists.newArrayList(claim), (old, val) -> {
                     old.add(claim);
                     return old;
                 });

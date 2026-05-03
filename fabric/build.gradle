@@ -1,8 +1,13 @@
 plugins {
-    id 'fabric-loom'
+    id 'net.fabricmc.fabric-loom'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
     id 'com.modrinth.minotaur' version '2.+'
     id 'io.github.flemmli97.multiloader.platform-fabric'
+    id 'io.github.flemmli97.multiloader.tiny-remapper'
+}
+
+remap {
+    mappingVersion = "1.21.11"
 }
 
 repositories {
@@ -27,42 +32,51 @@ repositories {
             includeGroup 'eu.pb4'
         }
     }
-    maven {
-        name = "Create Fabric"
-        url = "https://mvn.devos.one/snapshots"
-        content {
-            includeGroupByRegex 'io.github.fabricators_of_create.*'
-            includeGroup 'com.simibubi.create'
+}
+
+configurations {
+    runtimeElements {
+        // Make the default elements require a capability
+        outgoing {
+            capability("${group}:${mod_id}-full:${version}")
+        }
+    }
+    requiredRuntime {
+        extendsFrom api
+        extendsFrom implementation
+        // Copy additional data from runtimeElements
+        attributes {
+            configurations.runtimeElements.attributes.keySet().each { att ->
+                it.attribute(att, configurations.runtimeElements.attributes.getAttribute(att))
+            }
+        }
+        outgoing {
+            configurations.runtimeElements.outgoing.artifacts.configureEach { art ->
+                it.artifact(art)
+            }
         }
     }
 }
 
 dependencies {
-    modImplementation include("io.github.flemmli97:lingua_bib:${lingua_bib}-fabric")
+    implementation include("io.github.flemmli97:lingua_bib:${lingua_bib}-fabric")
     implementation include('org.yaml:snakeyaml:2.4')
 
-    remapCommon(modCompileOnly("io.github.fabricators_of_create.Porting-Lib:entity:${porting_lib}"))
-    remapCommon(modCompileOnly("com.simibubi.create:create-fabric-1.20.1:${create_fabric}")) {
-        transitive = false
-    }
+    implementation("me.lucko:fabric-permissions-api:${fabric_permissions_api}")
 
-    modImplementation "me.lucko:fabric-permissions-api:${fabric_permissions_api}"
-    modImplementation (octo_economy_api) {
-        exclude group: "net.fabricmc.fabric-api"
-    }
-    modCompileOnly diamond_economy
-    modCompileOnly "maven.modrinth:beconomy:${beconomy}"
+    yarnCompileOnly octo_economy_api
+    yarnCompileOnly diamond_economy
+    yarnCompileOnly "maven.modrinth:beconomy:${beconomy}"
 
-    modCompileOnly "io.github.ladysnake:PlayerAbilityLib:${player_ability_lib}"
+    compileOnly "io.github.ladysnake:PlayerAbilityLib:${player_ability_lib}"
 
     //modRuntimeOnly "dev.ftb.mods:ftb-ranks-fabric:${ftb_ranks}"
     //modRuntimeOnly "dev.ftb.mods:ftb-chunks-fabric:${ftb_chunks}"
-    //CompileOnly cause too many dependency
-    modCompileOnly goml_reserved
-    modCompileOnly "com.jamieswhiteshirt:rtree-3i-lite-fabric:0.3.0"
+    compileOnly goml_reserved
+    compileOnly "com.jamieswhiteshirt:rtree-3i-lite-fabric:0.3.0"
 
-    modCompileOnly harvest_with_ease_fabric
-    modCompileOnly "eu.pb4:common-protection-api:${common_prot_api}"
+    yarnCompileOnly harvest_with_ease_fabric
+    yarnCompileOnly "eu.pb4:common-protection-api:${common_prot_api}"
 }
 
 processResources {
@@ -80,22 +94,11 @@ tasks.register('apiJar', Jar) {
     rename("fabric.mod_api.json", "fabric.mod.json")
 }
 
-tasks.register('remapApiJar', net.fabricmc.loom.task.RemapJarTask) {
-    archiveClassifier.set "api"
-    input = apiJar.archiveFile
-    addNestedDependencies = false
-    dependsOn apiJar
-    /* Putting it here doesnt seem to work...
-    include "fabric.mod_api.json" //Include this so it gets remapped as a dependency
-    rename("fabric.mod_api.json", "fabric.mod.json")
-    */
-}
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact(remapApiJar) {
-                builtBy remapApiJar
+            artifact(apiJar) {
+                builtBy apiJar
             }
         }
     }

@@ -10,6 +10,7 @@ import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.linguabib.api.LanguageAPI;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -33,7 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -61,8 +61,8 @@ public class ServerScreenHelper {
         // Ideally only remove tooltip adding ones but there is no way to actually tell which ones will have a tooltip
         // There is TooltipProvider but that's not fail-safe either
         return t -> {
-            Optional<?> val = patch.get(t);
-            return (val == null || val.isEmpty())
+            Object val = patch.get(DataComponentMap.EMPTY, t);
+            return (val == null)
                     && t != DataComponents.ITEM_MODEL
                     && t != DataComponents.CUSTOM_MODEL_DATA
                     && t != DataComponents.MAX_DAMAGE;

@@ -133,7 +133,7 @@ public class ItemInteractEvents {
             return InteractionResult.PASS;
         }
         if (!hadBlockSuccess) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+            player.sendSystemMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
             PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
         }
         BlockState other = level.getBlockState(placePos.above());
@@ -162,11 +162,11 @@ public class ItemInteractEvents {
             return true;
         if (ConfigHandler.CONFIG.worldWhitelist) {
             if (!cantClaimInWorld(level)) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.landClaimDisabledWorld", ChatFormatting.DARK_RED), false);
+                player.sendSystemMessage(ClaimUtils.translatedText("flan.landClaimDisabledWorld", ChatFormatting.DARK_RED), false);
                 return false;
             }
         } else if (cantClaimInWorld(level)) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.landClaimDisabledWorld", ChatFormatting.DARK_RED), false);
+            player.sendSystemMessage(ClaimUtils.translatedText("flan.landClaimDisabledWorld", ChatFormatting.DARK_RED), false);
             return false;
         }
         return true;
@@ -203,7 +203,7 @@ public class ItemInteractEvents {
 
     public static void claimLandHandling(ServerPlayer player, BlockPos target) {
         if (!PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.CLAIM_CREATE, false)) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), true);
+            player.sendSystemMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), true);
             return;
         }
         if (!canClaimWorld(player.level(), player))
@@ -224,9 +224,9 @@ public class ItemInteractEvents {
                         if (subClaim.isCorner(target)) {
                             data.setEditClaim(subClaim, player.blockPosition().getY());
                             data.setEditingCorner(target);
-                            player.displayClientMessage(ClaimUtils.translatedText("flan.resizeClaim", ChatFormatting.GOLD), false);
+                            player.sendSystemMessage(ClaimUtils.translatedText("flan.resizeClaim", ChatFormatting.GOLD), false);
                         } else {
-                            player.displayClientMessage(ClaimUtils.translatedText("flan.cantClaimHere", ChatFormatting.RED), false);
+                            player.sendSystemMessage(ClaimUtils.translatedText("flan.cantClaimHere", ChatFormatting.RED), false);
                         }
                         data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
                     } else {
@@ -235,7 +235,7 @@ public class ItemInteractEvents {
                                 Set<Claim> fl = claim.resizeSubclaim(data.currentEdit(), data.editingCorner(), target);
                                 if (!fl.isEmpty()) {
                                     fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.MAIN, player.blockPosition().getY()));
-                                    player.displayClientMessage(ClaimUtils.translatedText("flan.conflictOther", ChatFormatting.RED), false);
+                                    player.sendSystemMessage(ClaimUtils.translatedText("flan.conflictOther", ChatFormatting.RED), false);
                                 }
                                 data.setEditClaim(null, 0);
                                 data.setEditingCorner(null);
@@ -246,9 +246,9 @@ public class ItemInteractEvents {
                                 data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
                                 if (!fl.isEmpty()) {
                                     fl.forEach(confl -> data.addDisplayClaim(confl, EnumDisplayType.CONFLICT, player.blockPosition().getY()));
-                                    player.displayClientMessage(ClaimUtils.translatedText("flan.conflictOther", ChatFormatting.RED), false);
+                                    player.sendSystemMessage(ClaimUtils.translatedText("flan.conflictOther", ChatFormatting.RED), false);
                                 } else {
-                                    player.displayClientMessage(ClaimUtils.translatedText("flan.subClaimCreateSuccess", ChatFormatting.GOLD), false);
+                                    player.sendSystemMessage(ClaimUtils.translatedText("flan.subClaimCreateSuccess", ChatFormatting.GOLD), false);
                                 }
                                 data.setEditingCorner(null);
                             }
@@ -259,22 +259,22 @@ public class ItemInteractEvents {
                     if (claim.isCorner(target)) {
                         data.setEditClaim(claim, player.blockPosition().getY());
                         data.setEditingCorner(target);
-                        player.displayClientMessage(ClaimUtils.translatedText("flan.resizeClaim", ChatFormatting.GOLD), false);
+                        player.sendSystemMessage(ClaimUtils.translatedText("flan.resizeClaim", ChatFormatting.GOLD), false);
                     } else if (data.currentEdit() != null) {
                         storage.resizeClaim(data.currentEdit(), data.editingCorner(), target, player);
                         data.setEditClaim(null, 0);
                         data.setEditingCorner(null);
                     } else {
                         data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
-                        player.displayClientMessage(ClaimUtils.translatedText("flan.cantClaimHere", ChatFormatting.RED), false);
+                        player.sendSystemMessage(ClaimUtils.translatedText("flan.cantClaimHere", ChatFormatting.RED), false);
                     }
                 }
             } else {
                 data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
-                player.displayClientMessage(ClaimUtils.translatedText("flan.cantClaimHere", ChatFormatting.RED), false);
+                player.sendSystemMessage(ClaimUtils.translatedText("flan.cantClaimHere", ChatFormatting.RED), false);
             }
         } else if (data.getClaimMode().isSubclaim) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.wrongMode",
+            player.sendSystemMessage(ClaimUtils.translatedText("flan.wrongMode",
                     Component.translatable(data.getClaimMode().translationKey)
                             .withStyle(ChatFormatting.AQUA), ChatFormatting.RED), false);
         } else {
@@ -300,10 +300,10 @@ public class ItemInteractEvents {
             String owner = claim.isAdminClaim() ? "<Admin>" : ClaimUtils.fetchUsername(claim.getOwner(), player.level().getServer()).orElse(claim.getOwner().toString());
             Component text = ClaimUtils.translatedText("flan.inspectBlockOwner",
                     owner, target.getX(), target.getY(), target.getZ(), ChatFormatting.GREEN);
-            player.displayClientMessage(text, false);
+            player.sendSystemMessage(text, false);
             data.addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
         } else
-            player.displayClientMessage(ClaimUtils.translatedText("flan.inspectNoClaim", ChatFormatting.RED), false);
+            player.sendSystemMessage(ClaimUtils.translatedText("flan.inspectNoClaim", ChatFormatting.RED), false);
     }
 
     /**

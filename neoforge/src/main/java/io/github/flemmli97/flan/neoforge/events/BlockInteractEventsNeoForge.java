@@ -23,6 +23,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 
 public class BlockInteractEventsNeoForge {
 
@@ -33,7 +34,7 @@ public class BlockInteractEventsNeoForge {
             event.setCanceled(true);
     }
 
-    public static void breakBlocks(BlockEvent.BreakEvent event) {
+    public static void breakBlocks(BreakBlockEvent event) {
         if (!(event.getLevel() instanceof ServerLevel))
             return;
         if (!BlockInteractEvents.breakBlocks((Level) event.getLevel(), event.getPlayer(), event.getPos(), event.getState(), event.getLevel().getBlockEntity(event.getPos())))
@@ -78,12 +79,12 @@ public class BlockInteractEventsNeoForge {
         Identifier perm = InteractionOverrideManager.getInstance().getBlockInteract(placedBlock.getBlock());
         if (perm != null) {
             if (!claim.canInteract(player, perm, placePos, false)) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+                player.sendSystemMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
                 return true;
             }
         }
         if (!claim.canInteract(player, BuiltinPermission.PLACE, placePos, false)) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+            player.sendSystemMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
             PlayerClaimData.get(player).addDisplayClaim(claim, EnumDisplayType.MAIN, player.blockPosition().getY());
             player.connection.send(new ClientboundContainerSetSlotPacket(-2, 0, player.getInventory().getSelectedSlot(), player.getInventory().getSelectedItem()));
             player.connection.send(new ClientboundContainerSetSlotPacket(-2, 0, 40, player.getInventory().getItem(40)));

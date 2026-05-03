@@ -110,11 +110,11 @@ public class CommandClaim {
             if (sub != null) {
                 if (sub.canInteract(player, perm, pos))
                     return sub;
-                player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
+                player.sendSystemMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
                 return null;
             }
             if (!fallbackMain) {
-                player.displayClientMessage(ClaimUtils.translatedText("flan.noSubClaim", ChatFormatting.RED), false);
+                player.sendSystemMessage(ClaimUtils.translatedText("flan.noSubClaim", ChatFormatting.RED), false);
                 return null;
             }
         }

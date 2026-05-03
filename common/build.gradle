@@ -1,5 +1,21 @@
 plugins {
     id 'io.github.flemmli97.multiloader.platform-common'
+    id 'io.github.flemmli97.multiloader.tiny-remapper'
+}
+
+remap {
+    mappingVersion = "1.21.11"
+}
+
+repositories {
+    maven {
+        name = "Create Fabric"
+        url = "https://mvn.devos.one/snapshots"
+        content {
+            includeGroupByRegex 'io.github.fabricators_of_create.*'
+            includeGroup 'com.simibubi.create'
+        }
+    }
 }
 
 dependencies {
@@ -16,6 +32,11 @@ dependencies {
     }
 
     compileOnly("io.github.flemmli97:lingua_bib:${lingua_bib}-common")
+
+    yarnCommonDependency("io.github.fabricators_of_create.Porting-Lib:entity:${porting_lib}")
+    yarnCommonDependency("com.simibubi.create:create-fabric-1.20.1:${create_fabric}") {
+        transitive = false
+    }
 }
 
 sourceSets.main.resources {

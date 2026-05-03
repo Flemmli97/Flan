@@ -12,7 +12,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -64,7 +64,7 @@ public class StringResultScreenHandler extends AnvilMenu {
     }
 
     @Override
-    public void clicked(int i, int j, ClickType actionType, Player player) {
+    public void clicked(int i, int j, ContainerInput input, Player player) {
         if (i < 0 || !(player instanceof ServerPlayer serverPlayer))
             return;
         Slot slot = this.slots.get(i);

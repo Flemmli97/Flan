@@ -38,7 +38,7 @@ public class LockedLecternScreenHandler extends LecternMenu {
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (id == 3) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), false);
+            player.sendSystemMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED));
             return false;
         }
         return super.clickMenuButton(player, id);

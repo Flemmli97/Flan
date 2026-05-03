@@ -40,8 +40,8 @@ public class OtherClaimingModCheckImpl implements OtherClaimingModCheck {
                     }
                 }
             map.forEach((colony, poss) -> poss.forEach(pos -> {
-                int blockX = pos.x << 4;
-                int blockZ = pos.z << 4;
+                int blockX = pos.x() << 4;
+                int blockZ = pos.z() << 4;
                 set.add(new DisplayBox(blockX, level.getMinY(), blockZ, blockX + 15, level.getMaxY(), blockZ + 15, () -> false, neighbors(pos, poss)));
             }));
         }
@@ -49,13 +49,13 @@ public class OtherClaimingModCheckImpl implements OtherClaimingModCheck {
 
     private static Direction[] neighbors(ChunkPos pos, List<ChunkPos> others) {
         List<Direction> dirs = new ArrayList<>();
-        if (others.contains(new ChunkPos(pos.x, pos.z - 1)))
+        if (others.contains(new ChunkPos(pos.x(), pos.z() - 1)))
             dirs.add(Direction.NORTH);
-        if (others.contains(new ChunkPos(pos.x, pos.z + 1)))
+        if (others.contains(new ChunkPos(pos.x(), pos.z() + 1)))
             dirs.add(Direction.SOUTH);
-        if (others.contains(new ChunkPos(pos.x + 1, pos.z)))
+        if (others.contains(new ChunkPos(pos.x() + 1, pos.z())))
             dirs.add(Direction.EAST);
-        if (others.contains(new ChunkPos(pos.x - 1, pos.z)))
+        if (others.contains(new ChunkPos(pos.x() - 1, pos.z())))
             dirs.add(Direction.WEST);
         return dirs.toArray(new Direction[0]);
     }

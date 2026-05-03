@@ -25,7 +25,7 @@ public record GlobalClaim(ServerLevel level) implements IPermissionContainer {
             if (global.getValue())
                 return true;
             if (message)
-                player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+                player.sendSystemMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
             return false;
         }
         return permission.globalVal;

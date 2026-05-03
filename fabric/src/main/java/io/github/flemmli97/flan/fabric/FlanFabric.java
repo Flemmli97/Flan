@@ -55,6 +55,14 @@ public class FlanFabric implements ModInitializer {
         applyPriorityListener(PlayerBlockBreakEvents.BEFORE, BlockInteractEvents::breakBlocks);
         applyPriorityListener(AttackBlockCallback.EVENT, BlockInteractEvents::startBreakBlocks);
         applyPriorityListener(UseBlockCallback.EVENT, FlanFabric::useBlocks);
+
+        // Fabric now added these events but this mods mixin (wraps those methods) already works
+        // No real benefit in using the event actually as #useBlocks (below) still needs to stay
+        // Here for explanation purposes cause I'll definitely question this later
+//        applyPriorityListener(BlockEvents.USE_ITEM_ON, ...);
+//        applyPriorityListener(BlockEvents.USE_WITHOUT_ITEM, ...);
+//        applyPriorityListener(ItemEvents.USE_ON, ...);
+
         applyPriorityListener(UseEntityCallback.EVENT, ((player, world, hand, entity, hitResult) -> {
             if (hitResult != null)
                 return EntityInteractEvents.useAtEntity(player, world, hand, entity, null);
@@ -68,8 +76,8 @@ public class FlanFabric implements ModInitializer {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PlayerEvents.onLogout(handler.player));
         CommandRegistrationCallback.EVENT.register((dispatcher, reg, env) -> CommandClaim.register(dispatcher, reg, env == Commands.CommandSelection.DEDICATED));
 
-        DataResourceLoader.get().registerReloader(PermissionManager.ID.identifier(), PermissionManager::create);
-        DataResourceLoader.get().registerReloader(InteractionOverrideManager.ID.identifier(), InteractionOverrideManager::create);
+        DataResourceLoader.get().registerReloadListener(PermissionManager.ID.identifier(), PermissionManager::create);
+        DataResourceLoader.get().registerReloadListener(InteractionOverrideManager.ID.identifier(), InteractionOverrideManager::create);
 
         Flan.permissionAPI = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
         Flan.playerAbilityLib = FabricLoader.getInstance().isModLoaded("playerabilitylib");

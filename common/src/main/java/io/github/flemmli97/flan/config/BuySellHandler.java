@@ -26,6 +26,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +46,7 @@ public class BuySellHandler {
                 return stack;
             }));
 
-    private static ItemStack fromResults(List<ItemResult> stacks) {
+    private static ItemStackTemplate fromResults(List<ItemResult> stacks) {
         ItemStack stack = new ItemStack(Items.EMERALD);
         stack.set(DataComponents.CUSTOM_NAME, Component.translatable("flan.buy_sell.item")
                 .setStyle(Style.EMPTY.withItalic(false).applyFormat(ChatFormatting.AQUA)));
@@ -55,7 +56,7 @@ public class BuySellHandler {
                     .setStyle(Style.EMPTY.withItalic(false).applyFormat(ChatFormatting.GREEN)));
         }
         ServerScreenHelper.addLore(stack, stackComp);
-        return stack;
+        return ItemStackTemplate.fromNonEmptyStack(stack);
     }
 
     private static int[] xpCalc;

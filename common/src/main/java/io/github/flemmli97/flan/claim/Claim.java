@@ -342,7 +342,7 @@ public class Claim implements IPermissionContainer {
                         return true;
                 }
                 if (message)
-                    player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+                    player.sendSystemMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
                 if (perm.equals(BuiltinPermission.FAKEPLAYER))
                     this.getOwnerPlayer().ifPresent(p -> PlayerClaimData.get(p).notifyFakePlayerInteraction(player, pos, this));
                 return false;
@@ -360,7 +360,7 @@ public class Claim implements IPermissionContainer {
             if (this.hasPerm(perm))
                 return true;
             if (message)
-                player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+                player.sendSystemMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
             if (perm.equals(BuiltinPermission.FAKEPLAYER))
                 this.getOwnerPlayer().ifPresent(p -> PlayerClaimData.get(p).notifyFakePlayerInteraction(player, pos, this));
             return false;
@@ -379,7 +379,7 @@ public class Claim implements IPermissionContainer {
                 if (map.get(perm))
                     return true;
                 if (message)
-                    player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+                    player.sendSystemMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
                 if (perm.equals(BuiltinPermission.FAKEPLAYER))
                     this.getOwnerPlayer().ifPresent(p -> PlayerClaimData.get(p).notifyFakePlayerInteraction(player, pos, this));
                 return false;
@@ -388,7 +388,7 @@ public class Claim implements IPermissionContainer {
         if (this.hasPerm(perm))
             return true;
         if (message)
-            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
+            player.sendSystemMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
         if (perm.equals(BuiltinPermission.FAKEPLAYER))
             this.getOwnerPlayer().ifPresent(p -> PlayerClaimData.get(p).notifyFakePlayerInteraction(player, pos, this));
         return false;
@@ -683,10 +683,10 @@ public class Claim implements IPermissionContainer {
         if (ConfigHandler.CONFIG.claimDisplayActionBar) {
             if (subtitle != null) {
                 MutableComponent message = title.copy().append(Component.literal(" | ").setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE))).append(subtitle);
-                player.displayClientMessage(message, true);
+                player.sendSystemMessage(message, true);
                 return;
             }
-            player.displayClientMessage(title, true);
+            player.sendSystemMessage(title, true);
             return;
         }
         player.connection.send(new ClientboundSetTitleTextPacket(title));

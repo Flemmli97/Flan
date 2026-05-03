@@ -137,7 +137,7 @@ public class ClaimTextHandler extends ServerOnlyScreenHandler<Claim> {
                     String command = "/flan claimMessage" + (index == 2 || index == 3 ? " enter" : " leave")
                             + (index == 2 || index == 4 ? " title" : " subtitle") + " text ";
                     text.withStyle(Style.EMPTY.withClickEvent(new ClickEvent.SuggestCommand(command)));
-                    player.displayClientMessage(text, false);
+                    player.sendSystemMessage(text, false);
                 }
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             }
