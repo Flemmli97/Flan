@@ -3,14 +3,14 @@ package io.github.flemmli97.flan.neoforge.platform.integration.currency;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.economy.CurrencyHandler;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.function.Consumer;
 
 public class MoneyAndSignsImpl implements CurrencyHandler {
 
-    public static final Identifier ID = Identifier.fromNamespaceAndPath(Flan.MODID, "money_and_signs");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Flan.MODID, "money_and_signs");
 
     public static void register() {
     }
