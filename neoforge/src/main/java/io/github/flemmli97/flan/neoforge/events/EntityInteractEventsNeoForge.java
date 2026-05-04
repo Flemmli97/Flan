@@ -3,11 +3,9 @@ package io.github.flemmli97.flan.neoforge.events;
 import io.github.flemmli97.flan.event.EntityInteractEvents;
 import io.github.flemmli97.flan.event.PlayerEvents;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.golem.SnowGolem;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityMobGriefingEvent;
 import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
@@ -18,17 +16,10 @@ import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 
 public class EntityInteractEventsNeoForge {
 
+    /**
+     * This runs before PlayerInteractEvent.EntityInteract and will block it if canceled so now doesn't need 2 events anymore
+     */
     public static void useAtEntity(PlayerInteractEvent.EntityInteractSpecific event) {
-        Entity target = event.getTarget();
-        InteractionResult result = EntityInteractEvents.useAtEntity(event.getEntity(), event.getLevel(), event.getHand(), target,
-                new EntityHitResult(target, event.getLocalPos().add(target.getX(), target.getY(), target.getZ())));
-        if (result != InteractionResult.PASS) {
-            event.setCancellationResult(result);
-            event.setCanceled(true);
-        }
-    }
-
-    public static void useEntity(PlayerInteractEvent.EntityInteract event) {
         InteractionResult result = EntityInteractEvents.useEntity(event.getEntity(), event.getLevel(), event.getHand(), event.getTarget());
         if (result != InteractionResult.PASS) {
             event.setCancellationResult(result);

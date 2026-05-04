@@ -24,7 +24,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.animal.golem.SnowGolem;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
@@ -49,32 +48,6 @@ import net.minecraft.world.phys.Vec3;
 
 public class EntityInteractEvents {
 
-    public static InteractionResult useAtEntity(Player player, Level level, InteractionHand hand, Entity entity, EntityHitResult hitResult) {
-        if (!(player instanceof ServerPlayer serverPlayer) || player.isSpectator() || canInteract(entity))
-            return InteractionResult.PASS;
-        if (entity instanceof Enemy)
-            return InteractionResult.PASS;
-        ClaimStorage storage = ClaimStorage.get((ServerLevel) level);
-        BlockPos pos = entity.blockPosition();
-        IPermissionContainer claim = storage.getForPermissionCheck(pos);
-        if (claim != null) {
-            if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ENTITY_USE,
-                    type -> type == entity.getType(), entity::is))
-                return InteractionResult.PASS;
-            Identifier perm = InteractionOverrideManager.getInstance().getEntityInteract(entity.getType());
-            if (perm != null) {
-                return claim.canInteract(serverPlayer, perm, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
-            }
-            if (entity instanceof ArmorStand) {
-                if (!claim.canInteract(serverPlayer, BuiltinPermission.ARMORSTAND, pos, true))
-                    return InteractionResult.FAIL;
-            }
-            if (entity instanceof Mob)
-                return claim.canInteract(serverPlayer, BuiltinPermission.ANIMALINTERACT, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
-        }
-        return InteractionResult.PASS;
-    }
-
     public static InteractionResult useEntity(Player p, Level level, InteractionHand hand, Entity entity) {
         if (!(p instanceof ServerPlayer player) || p.isSpectator() || canInteract(entity))
             return InteractionResult.PASS;
@@ -92,23 +65,26 @@ public class EntityInteractEvents {
                 return claim.canInteract(player, perm, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
             }
             switch (entity) {
-                case Boat boat -> {
+                case Boat _ -> {
                     return claim.canInteract(player, BuiltinPermission.BOAT, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
                 }
-                case AbstractMinecart minecart -> {
+                case AbstractMinecart _ -> {
                     if (entity instanceof AbstractMinecartContainer)
                         return claim.canInteract(player, BuiltinPermission.OPENCONTAINER, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
                     return claim.canInteract(player, BuiltinPermission.MINECART, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
                 }
-                case AbstractVillager villager -> {
+                case AbstractVillager _ -> {
                     return claim.canInteract(player, BuiltinPermission.TRADING, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
                 }
-                case ItemFrame itemFrame -> {
+                case ItemFrame _ -> {
                     return claim.canInteract(player, BuiltinPermission.ITEMFRAMEROTATE, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
                 }
                 case OwnableEntity ownable -> {
                     if (ownable.getOwnerReference() != null && ownable.getOwnerReference().matches(player))
                         return InteractionResult.PASS;
+                }
+                case ArmorStand _ -> {
+                    return claim.canInteract(player, BuiltinPermission.ARMORSTAND, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
                 }
                 default -> {
                 }

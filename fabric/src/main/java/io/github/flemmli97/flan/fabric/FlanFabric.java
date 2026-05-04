@@ -62,12 +62,7 @@ public class FlanFabric implements ModInitializer {
 //        applyPriorityListener(BlockEvents.USE_ITEM_ON, ...);
 //        applyPriorityListener(BlockEvents.USE_WITHOUT_ITEM, ...);
 //        applyPriorityListener(ItemEvents.USE_ON, ...);
-
-        applyPriorityListener(UseEntityCallback.EVENT, ((player, world, hand, entity, hitResult) -> {
-            if (hitResult != null)
-                return EntityInteractEvents.useAtEntity(player, world, hand, entity, null);
-            return EntityInteractEvents.useEntity(player, world, hand, entity);
-        }));
+        applyPriorityListener(UseEntityCallback.EVENT, ((player, world, hand, entity, _) -> EntityInteractEvents.useEntity(player, world, hand, entity)));
         applyPriorityListener(UseItemCallback.EVENT, ItemInteractEvents::useItem);
 
         ServerLifecycleEvents.SERVER_STARTING.register(FlanFabric::serverLoad);

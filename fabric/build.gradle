@@ -34,30 +34,6 @@ repositories {
     }
 }
 
-configurations {
-    runtimeElements {
-        // Make the default elements require a capability
-        outgoing {
-            capability("${group}:${mod_id}-full:${version}")
-        }
-    }
-    requiredRuntime {
-        extendsFrom api
-        extendsFrom implementation
-        // Copy additional data from runtimeElements
-        attributes {
-            configurations.runtimeElements.attributes.keySet().each { att ->
-                it.attribute(att, configurations.runtimeElements.attributes.getAttribute(att))
-            }
-        }
-        outgoing {
-            configurations.runtimeElements.outgoing.artifacts.configureEach { art ->
-                it.artifact(art)
-            }
-        }
-    }
-}
-
 dependencies {
     implementation include("io.github.flemmli97:lingua_bib:${lingua_bib}-fabric")
     implementation include('org.yaml:snakeyaml:2.4')
