@@ -76,10 +76,9 @@ tasks.register('apiJar', Jar) {
 
 tasks.register('remapApiJar', net.fabricmc.loom.task.RemapJarTask) {
     archiveClassifier.set "api"
-    input.set apiJar.archiveFile
+    inputFile.set apiJar.archiveFile
     addNestedDependencies = false
     dependsOn apiJar
-    from sourceSets.main.output
     /* Putting it here doesnt seem to work...
     include "fabric.mod_api.json" //Include this so it gets remapped as a dependency
     rename("fabric.mod_api.json", "fabric.mod.json")
