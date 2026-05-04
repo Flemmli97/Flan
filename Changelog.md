@@ -1,6 +1,6 @@
 Flan 1.11.16
 ================
-- Hotfix fix zy_tw formatting error
+- Hotfix fix zh_tw formatting error
 
 Flan 1.11.15
 ================
