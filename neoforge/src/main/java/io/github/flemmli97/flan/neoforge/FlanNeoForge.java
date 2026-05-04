@@ -48,7 +48,6 @@ public class FlanNeoForge {
         bus.addListener(EventPriority.HIGHEST, BlockInteractEventsNeoForge::placeBlock);
         bus.addListener(EventPriority.HIGHEST, BlockInteractEventsNeoForge::placeBlocks);
         bus.addListener(EventPriority.HIGHEST, EntityInteractEventsNeoForge::useAtEntity);
-        bus.addListener(EventPriority.HIGHEST, EntityInteractEventsNeoForge::useEntity);
         bus.addListener(EventPriority.HIGHEST, EntityInteractEventsNeoForge::projectileHit);
         bus.addListener(EventPriority.HIGHEST, EntityInteractEventsNeoForge::preventDamage);
 
