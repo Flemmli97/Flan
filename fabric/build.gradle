@@ -82,7 +82,7 @@ tasks.register('apiJar', Jar) {
 
 tasks.register('remapApiJar', net.fabricmc.loom.task.RemapJarTask) {
     archiveClassifier.set "api"
-    input = apiJar.archiveFile
+    inputFile.set apiJar.archiveFile
     addNestedDependencies = false
     dependsOn apiJar
     /* Putting it here doesnt seem to work...
