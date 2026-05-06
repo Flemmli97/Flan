@@ -13,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.NameAndId;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -65,7 +66,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean canBreakBlock(Level level, BlockPos pos, GameProfile profile, @Nullable Player player) {
+    public boolean canBreakBlock(Level level, BlockPos pos, NameAndId profile, @Nullable Player player) {
         if (!(level instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
@@ -74,7 +75,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean canExplodeBlock(Level level, BlockPos pos, Explosion explosion, GameProfile profile, @Nullable Player player) {
+    public boolean canExplodeBlock(Level level, BlockPos pos, Explosion explosion, NameAndId profile, @Nullable Player player) {
         if (!(level instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
@@ -83,7 +84,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean canPlaceBlock(Level level, BlockPos pos, GameProfile profile, @Nullable Player player) {
+    public boolean canPlaceBlock(Level level, BlockPos pos, NameAndId profile, @Nullable Player player) {
         if (!(level instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
@@ -92,7 +93,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean canInteractBlock(Level level, BlockPos pos, GameProfile profile, @Nullable Player player) {
+    public boolean canInteractBlock(Level level, BlockPos pos, NameAndId profile, @Nullable Player player) {
         if (!(level instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
@@ -113,7 +114,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean canInteractEntity(Level level, Entity entity, GameProfile profile, @Nullable Player player) {
+    public boolean canInteractEntity(Level level, Entity entity, NameAndId profile, @Nullable Player player) {
         if (!(level instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
@@ -131,7 +132,7 @@ public class FlanProtectionProvider implements ProtectionProvider {
     }
 
     @Override
-    public boolean canDamageEntity(Level level, Entity entity, GameProfile profile, @Nullable Player player) {
+    public boolean canDamageEntity(Level level, Entity entity, NameAndId profile, @Nullable Player player) {
         if (!(level instanceof ServerLevel sl)) return true;
 
         ServerPlayer sp = tryResolvePlayer(sl, profile);
@@ -152,14 +153,14 @@ public class FlanProtectionProvider implements ProtectionProvider {
         return ClaimStorage.get(sl).getForPermissionCheck(entity.blockPosition()).canInteract(sp, permission, entity.blockPosition());
     }
 
-    private static ServerPlayer tryResolvePlayer(ServerLevel l, GameProfile profile) {
-        if (profile.equals(UNKNOWN))
+    private static ServerPlayer tryResolvePlayer(ServerLevel l, NameAndId nameAndId) {
+        if (nameAndId.equals(UNKNOWN))
             return null;
 
-        ServerPlayer online = l.getServer().getPlayerList().getPlayer(profile.id());
+        ServerPlayer online = l.getServer().getPlayerList().getPlayer(nameAndId.id());
 
         if (online != null) return online;
 
-        return FakePlayer.get(l, profile);
+        return FakePlayer.get(l, new GameProfile(nameAndId.id(), nameAndId.name()));
     }
 }
