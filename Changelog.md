@@ -1,3 +1,8 @@
+Flan 1.12.7
+================
+- Fix claim display fake blocks position [@Wesley1808](https://github.com/Wesley1808)
+- Add es_es lang [@cferreras](https://github.com/cferreras)
+
 Flan 1.12.6
 ================
 - Rewrite nbt config for claim and inspection tool to respect all components now
