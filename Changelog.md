@@ -1,3 +1,12 @@
+Flan 1.12.7
+================
+- Fix claim display fake blocks position [@Wesley1808](https://github.com/Wesley1808)
+- Update common protection api integration [@Wesley1808](https://github.com/Wesley1808)
+- Add es_es lang [@cferreras](https://github.com/cferreras)
+- Fix dimension-fix path being wrong.
+  - For all people that already ran with 1.12.6 you need to move the `claims` folder under `dimensions/...`  
+    to `data` so e.g. `dimensions/minecraft/overworld/claims` -> `dimensions/minecraft/overworld/data/claims`
+
 Flan 1.12.6
 ================
 - Update to 26.1
