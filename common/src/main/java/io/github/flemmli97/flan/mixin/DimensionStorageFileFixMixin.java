@@ -22,9 +22,9 @@ public abstract class DimensionStorageFileFixMixin extends FileFix {
     @Inject(method = "makeFixer", at = @At(value = "HEAD"))
     private void addClaimStorageFixer(CallbackInfo info) {
         this.addFileFixOperation(FileFixOperations.groupMove(Map.of(
-                        "data", "dimensions/minecraft/overworld",
-                        "DIM-1/data", "dimensions/minecraft/the_nether",
-                        "DIM1/data", "dimensions/minecraft/the_end"),
+                        "data", "dimensions/minecraft/overworld/data",
+                        "DIM-1/data", "dimensions/minecraft/the_nether/data",
+                        "DIM1/data", "dimensions/minecraft/the_end/data"),
                 List.of(FileFixOperations.moveSimple("claims"))));
     }
 
