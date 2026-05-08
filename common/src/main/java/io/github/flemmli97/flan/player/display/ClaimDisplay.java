@@ -60,8 +60,8 @@ public class ClaimDisplay {
                 Height heightPos = getHeight(pos.getX(), pos.getZ(), height, chunkCache);
                 if (heightPos != null) {
                     if (heightPos.solid != heightPos.water)
-                        verticesNew.add(new BlockPos(box.minX(), heightPos.water, box.minZ()));
-                    verticesNew.add(new BlockPos(box.minX(), heightPos.solid, box.minZ()));
+                        verticesNew.add(new BlockPos(pos.getX(), heightPos.water, pos.getZ()));
+                    verticesNew.add(new BlockPos(pos.getX(), heightPos.solid, pos.getZ()));
                 }
             }
             vertices = verticesNew;
