@@ -1,5 +1,3 @@
-modLoader="javafml"
-loaderVersion = "[${neoforge_loader_version},)"
 license="All rights reserved"
 issueTrackerURL="https://github.com/Flemmli97/Flan/issues"
 [[mixins]]
