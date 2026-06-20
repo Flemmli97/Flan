@@ -5,7 +5,7 @@ import io.github.flemmli97.flan.claim.ClaimBox;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.util.Tuple;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
@@ -23,8 +23,8 @@ public class TeleportUtils {
     }
 
     public static Vec3 getTeleportPos(Entity entity, Vec3 entityPos, ClaimStorage storage, Area2D dim, boolean checkSub, BlockPos.MutableBlockPos bPos, BiFunction<Claim, BlockPos, Boolean> check) {
-        Tuple<Direction, Vec3> pos = nearestOutside(dim, entityPos);
-        bPos.set(pos.getB().x(), pos.getB().y(), pos.getB().z());
+        Pair<Direction, Vec3> pos = nearestOutside(dim, entityPos);
+        bPos.set(pos.getSecond().x(), pos.getSecond().y(), pos.getSecond().z());
         Claim claim = storage.getClaimAt(bPos);
         if (checkSub) {
             Claim sub = claim != null ? claim.getSubClaim(bPos) : null;
@@ -32,7 +32,7 @@ public class TeleportUtils {
                 claim = sub;
         }
         if (claim == null || check.apply(claim, bPos)) {
-            Vec3 ret = pos.getB();
+            Vec3 ret = pos.getSecond();
             BlockPos rounded = roundedBlockPos(ret);
             int y = entity.level().getChunk(rounded.getX() >> 4, rounded.getZ() >> 4)
                     .getHeight(Heightmap.Types.MOTION_BLOCKING, rounded.getX() & 15, rounded.getZ() & 15);
@@ -42,7 +42,7 @@ public class TeleportUtils {
             return new Vec3(rounded.getX() + 0.5, y + 1, rounded.getZ() + 0.5);
         }
         ClaimBox newDim = claim.getDimensions();
-        switch (pos.getA()) {
+        switch (pos.getFirst()) {
             case NORTH -> dim.minZ = newDim.minZ();
             case SOUTH -> dim.maxZ = newDim.maxZ();
             case EAST -> dim.maxX = newDim.maxX();
@@ -51,7 +51,7 @@ public class TeleportUtils {
         return getTeleportPos(entity, entityPos, storage, dim, checkSub, bPos, check);
     }
 
-    private static Tuple<Direction, Vec3> nearestOutside(Area2D dim, Vec3 from) {
+    private static Pair<Direction, Vec3> nearestOutside(Area2D dim, Vec3 from) {
         double northDist = Math.abs(from.z() - dim.minZ);
         double southDist = Math.abs(dim.maxZ - from.z());
         double westDist = Math.abs(from.x() - dim.minX);
@@ -59,21 +59,21 @@ public class TeleportUtils {
         if (northDist > southDist) {
             if (eastDist > westDist) {
                 if (southDist > westDist)
-                    return new Tuple<>(Direction.WEST, new Vec3(dim.minX - 1.5, from.y(), from.z()));
-                return new Tuple<>(Direction.SOUTH, new Vec3(from.x(), from.y(), dim.maxZ + 1.5));
+                    return Pair.of(Direction.WEST, new Vec3(dim.minX - 1.5, from.y(), from.z()));
+                return Pair.of(Direction.SOUTH, new Vec3(from.x(), from.y(), dim.maxZ + 1.5));
             }
             if (southDist > eastDist)
-                return new Tuple<>(Direction.EAST, new Vec3(dim.maxX + 1.5, from.y(), from.z()));
-            return new Tuple<>(Direction.SOUTH, new Vec3(from.x(), from.y(), dim.maxZ + 1.5));
+                return Pair.of(Direction.EAST, new Vec3(dim.maxX + 1.5, from.y(), from.z()));
+            return Pair.of(Direction.SOUTH, new Vec3(from.x(), from.y(), dim.maxZ + 1.5));
         }
         if (eastDist > westDist) {
             if (northDist > westDist)
-                return new Tuple<>(Direction.WEST, new Vec3(dim.minX - 1.5, from.y(), from.z()));
-            return new Tuple<>(Direction.NORTH, new Vec3(from.x(), from.y(), dim.minZ - 1.5));
+                return Pair.of(Direction.WEST, new Vec3(dim.minX - 1.5, from.y(), from.z()));
+            return Pair.of(Direction.NORTH, new Vec3(from.x(), from.y(), dim.minZ - 1.5));
         }
         if (northDist > eastDist)
-            return new Tuple<>(Direction.EAST, new Vec3(dim.maxX + 1.5, from.y(), from.z()));
-        return new Tuple<>(Direction.NORTH, new Vec3(from.x(), from.y(), dim.minZ - 1.5));
+            return Pair.of(Direction.EAST, new Vec3(dim.maxX + 1.5, from.y(), from.z()));
+        return Pair.of(Direction.NORTH, new Vec3(from.x(), from.y(), dim.minZ - 1.5));
     }
 
     public static class Area2D {

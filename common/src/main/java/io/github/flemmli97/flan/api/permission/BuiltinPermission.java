@@ -41,7 +41,7 @@ public class BuiltinPermission {
     public static final Identifier INTERACTBLOCK = register("interact_block", new ItemStackTemplate(Items.GOLD_NUGGET), "Generic permission for block interaction.", "Fallback to OPENCONTAINER", "Gets used for all blocks OPENCONTAINER doesn't check for");
     public static final Identifier INTERACTSIGN = register("interact_sign", new ItemStackTemplate(Items.BIRCH_SIGN), "Permission to edit signs (e.g. dyeing them)");
     public static final Identifier ANVIL = register("anvil", new ItemStackTemplate(Items.ANVIL), "Permission to use anvils");
-    public static final Identifier BED = register("bed", new ItemStackTemplate(Items.RED_BED), "Permission to use beds");
+    public static final Identifier BED = register("bed", new ItemStackTemplate(Items.BED.red()), "Permission to use beds");
     public static final Identifier BEACON = register("beacon", new ItemStackTemplate(Items.BEACON), "Permission to use beacons");
     public static final Identifier DOOR = register("door", new ItemStackTemplate(Items.OAK_DOOR), "Permission to use doors");
     public static final Identifier FENCEGATE = register("fence_gate", new ItemStackTemplate(Items.OAK_FENCE_GATE), "Permission to use fence gates");

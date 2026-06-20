@@ -50,7 +50,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
 
     private ItemStack listModeItem() {
         boolean blacklist = this.data.claim.allowedEntries.get(this.data.key).blacklist();
-        ItemStack stack = ServerScreenHelper.createStack(blacklist ? Items.BLACK_BANNER : Items.WHITE_BANNER,
+        ItemStack stack = ServerScreenHelper.createStack(blacklist ? Items.BANNER.black() : Items.BANNER.white(),
                 ServerScreenHelper.coloredGuiText(blacklist ? "flan.screenMenuBlacklist" : "flan.screenMenuWhitelist", ChatFormatting.GOLD));
         List<Component> components = new ArrayList<>();
         components.add(ServerScreenHelper.coloredGuiText("flan.screenMenuListModeDesc", ChatFormatting.GRAY));

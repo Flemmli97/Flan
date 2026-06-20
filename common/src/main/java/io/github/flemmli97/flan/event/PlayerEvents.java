@@ -77,8 +77,8 @@ public class PlayerEvents {
             if (state.getBlock() instanceof BonemealableFeaturePlacerBlock bonemealable) {
                 VegetationPatchConfiguration cfg = featureRange(registry, ((BonemealableBlockAccess) bonemealable).getFeature(), VegetationPatchConfiguration.class);
                 if (cfg != null) {
-                    range = cfg.xzRadius.maxInclusive() + 1;
-                    pos.set(pos.getX(), pos.getY() + cfg.verticalRange + 1, pos.getZ());
+                    range = cfg.xzRadius().maxInclusive() + 1;
+                    pos.set(pos.getX(), pos.getY() + cfg.verticalRange() + 1, pos.getZ());
                 }
             } else if (state.getBlock() instanceof GrassBlock) {
                 range = 4;

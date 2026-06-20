@@ -19,7 +19,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Tuple;
+import com.mojang.datafixers.util.Pair;
 
 import java.util.Set;
 
@@ -52,7 +52,7 @@ public class ExpandCommand {
             return 0;
         }
         ClaimBox dims = claim.getDimensions();
-        Tuple<BlockPos, BlockPos> corners = calculateCorners(dims, facing, amount, claim.parentClaim() != null ? claim.parentClaim().getDimensions() : null);
+        Pair<BlockPos, BlockPos> corners = calculateCorners(dims, facing, amount, claim.parentClaim() != null ? claim.parentClaim().getDimensions() : null);
         boolean success = performExpansion(player, storage, claim, corners);
         if (!success) {
             sendExpandError(context.getSource(), "flan.expandFailed");
@@ -63,25 +63,25 @@ public class ExpandCommand {
     }
 
     //change expand tuple to own methode for more usability
-    private static Tuple<BlockPos, BlockPos> calculateCorners(ClaimBox dims, Direction facing, int amount, ClaimBox restriction) {
+    private static Pair<BlockPos, BlockPos> calculateCorners(ClaimBox dims, Direction facing, int amount, ClaimBox restriction) {
         return switch (facing) {
-            case SOUTH -> new Tuple<>(
+            case SOUTH -> Pair.of(
                     new BlockPos(dims.maxX(), dims.minY(), dims.maxZ()),
                     new BlockPos(dims.maxX(), dims.maxY(), restriction != null ? Math.min(dims.maxZ() + amount, restriction.maxZ()) : dims.maxZ() + amount));
-            case EAST -> new Tuple<>(
+            case EAST -> Pair.of(
                     new BlockPos(dims.maxX(), dims.minY(), dims.maxZ()),
                     new BlockPos(restriction != null ? Math.min(dims.maxX() + amount, restriction.maxX()) : dims.maxX() + amount, dims.maxY(), dims.maxZ()));
-            case NORTH -> new Tuple<>(
+            case NORTH -> Pair.of(
                     new BlockPos(dims.minX(), dims.minY(), dims.minZ()),
                     new BlockPos(dims.minX(), dims.maxY(), restriction != null ? Math.max(dims.minZ() - amount, restriction.minZ()) : dims.minZ() - amount));
-            case WEST -> new Tuple<>(
+            case WEST -> Pair.of(
                     new BlockPos(dims.minX(), dims.minY(), dims.minZ()),
                     new BlockPos(restriction != null ? Math.max(dims.minX() - amount, restriction.minX()) : dims.minX() - amount, dims.maxY(), dims.minZ()));
             //adding up and down for diagonical logic in future
-            case UP -> new Tuple<>(
+            case UP -> Pair.of(
                     new BlockPos(dims.minX(), dims.maxY(), dims.minZ()),
                     new BlockPos(dims.maxX(), restriction != null ? Math.min(dims.maxY() + amount, restriction.maxY()) : dims.maxY() + amount, dims.maxZ()));
-            case DOWN -> new Tuple<>(
+            case DOWN -> Pair.of(
                     new BlockPos(dims.minX(), dims.minY(), dims.minZ()),
                     new BlockPos(dims.maxX(), restriction != null ? Math.max(dims.minY() - amount, restriction.minY()) : dims.minY() - amount, dims.maxZ()));
         };
@@ -104,16 +104,16 @@ public class ExpandCommand {
         return claim;
     }
 
-    private static boolean performExpansion(ServerPlayer player, ClaimStorage storage, Claim claim, Tuple<BlockPos, BlockPos> corners) {
+    private static boolean performExpansion(ServerPlayer player, ClaimStorage storage, Claim claim, Pair<BlockPos, BlockPos> corners) {
         if (claim.isSubclaim()) {
             Claim parent = claim.parentClaim();
             if (parent == null) {
                 return false;
             }
-            Set<Claim> conflicts = parent.resizeSubclaim(claim, corners.getA(), corners.getB());
+            Set<Claim> conflicts = parent.resizeSubclaim(claim, corners.getFirst(), corners.getSecond());
             return conflicts.isEmpty();
         } else {
-            return storage.resizeClaim(claim, corners.getA(), corners.getB(), player);
+            return storage.resizeClaim(claim, corners.getFirst(), corners.getSecond(), player);
         }
     }
 

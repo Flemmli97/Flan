@@ -43,12 +43,12 @@ public class ConfirmScreenHandler extends ServerOnlyScreenHandler<Object> {
         for (int i = 0; i < this.inventory.getContainerSize(); i++) {
             switch (i) {
                 case 3 -> {
-                    ItemStack stack = ServerScreenHelper.createStack(Items.GREEN_WOOL,
+                    ItemStack stack = ServerScreenHelper.createStack(Items.WOOL.green(),
                             ServerScreenHelper.coloredGuiText("flan.screenYes", ChatFormatting.GREEN));
                     this.slots.get(i).set(stack);
                 }
                 case 5 -> {
-                    ItemStack stack = ServerScreenHelper.createStack(Items.RED_WOOL,
+                    ItemStack stack = ServerScreenHelper.createStack(Items.WOOL.red(),
                             ServerScreenHelper.coloredGuiText("flan.screenNo", ChatFormatting.RED));
                     this.slots.get(i).set(stack);
                 }
