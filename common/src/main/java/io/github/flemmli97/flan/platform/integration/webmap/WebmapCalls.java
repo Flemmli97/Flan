@@ -56,7 +56,7 @@ public class WebmapCalls {
         }
         if (bluemapLoaded && ConfigHandler.CONFIG.bluemapIntegration) {
             for (ServerLevel level : server.getAllLevels()) {
-                DynmapIntegration.updateStyles(ClaimStorage.get(level));
+                BluemapIntegration.updateStyles(ClaimStorage.get(level));
             }
         }
     }
