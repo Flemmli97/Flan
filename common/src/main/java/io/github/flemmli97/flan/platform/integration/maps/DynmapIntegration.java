@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.platform.integration.webmap;
+package io.github.flemmli97.flan.platform.integration.maps;
 
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimBox;
@@ -27,7 +27,7 @@ public class DynmapIntegration {
             public void apiEnabled(DynmapCommonAPI dynmapCommonAPI) {
                 MarkerAPI markerAPI = dynmapCommonAPI.getMarkerAPI();
                 markerSet = markerAPI.createMarkerSet(MARKER_ID, MARKER_LABEL, dynmapCommonAPI.getMarkerAPI().getMarkerIcons(), false);
-                WebmapCalls.dynmapLoaded = true;
+                MapCalls.dynmapLoaded = true;
             }
         });
     }
@@ -36,11 +36,11 @@ public class DynmapIntegration {
         if (markerSet == null)
             return;
         ClaimBox dim = claim.getDimensions();
-        AreaMarker marker = markerSet.createAreaMarker(claim.getClaimID().toString(), claimLabel(claim), true, getWorldName(claim.getLevel()),
+        AreaMarker marker = markerSet.createAreaMarker(claim.getClaimID().toString(), MapUtils.claimLabel(claim), true, getWorldName(claim.getLevel()),
                 new double[]{dim.minX(), dim.maxX()}, new double[]{dim.minZ(), dim.maxZ()}, false);
         if (marker != null) {
-            marker.setLineStyle(3, 0.8, lineColor(claim.isAdminClaim()));
-            marker.setFillStyle(0.2, fillColor(claim.isAdminClaim()));
+            marker.setLineStyle(3, 0.8, MapUtils.lineColor(claim.isAdminClaim()));
+            marker.setFillStyle(0.2, MapUtils.fillColor(claim.isAdminClaim()));
             marker.setRangeY(dim.minY(), dim.maxY());
         }
     }
@@ -58,7 +58,7 @@ public class DynmapIntegration {
             return;
         AreaMarker marker = markerSet.findAreaMarker(claim.getClaimID().toString());
         if (marker != null)
-            marker.setLabel(claimLabel(claim));
+            marker.setLabel(MapUtils.claimLabel(claim));
     }
 
     static void changeClaimOwner(Claim claim) {
@@ -67,7 +67,7 @@ public class DynmapIntegration {
         if (claim.getClaimName() == null || claim.getClaimName().isEmpty()) {
             AreaMarker marker = markerSet.findAreaMarker(claim.getClaimID().toString());
             if (marker != null)
-                marker.setLabel(claimLabel(claim));
+                marker.setLabel(MapUtils.claimLabel(claim));
         }
     }
 
@@ -83,33 +83,14 @@ public class DynmapIntegration {
         return key.location().getNamespace() + "_" + key.location().getPath();
     }
 
-    private static int lineColor(boolean admin) {
-        return admin ? ConfigHandler.CONFIG.adminMapBorderColor : ConfigHandler.CONFIG.mapBorderColor;
-    }
-
-    private static int fillColor(boolean admin) {
-        return admin ? ConfigHandler.CONFIG.adminMapFillColor : ConfigHandler.CONFIG.mapFillColor;
-    }
-
-    private static String claimLabel(Claim claim) {
-        String name = claim.getClaimName();
-        if (name == null || name.isEmpty()) {
-            if (claim.isAdminClaim())
-                return "Admin Claim";
-            Optional<String> prof = ClaimUtils.fetchUsername(claim.getOwner(), claim.getLevel().getServer());
-            return prof.orElse("UNKOWN") + "'s Claim";
-        }
-        return name;
-    }
-
     public static void updateStyles(ClaimStorage storage) {
         if (markerSet == null)
             return;
         markerSet.getAreaMarkers().forEach(marker -> {
             Claim claim = storage.getFromUUID(UUID.fromString(marker.getMarkerID()));
             if (claim != null) {
-                marker.setLineStyle(3, 0.8, lineColor(claim.isAdminClaim()));
-                marker.setFillStyle(0.2, fillColor(claim.isAdminClaim()));
+                marker.setLineStyle(3, 0.8, MapUtils.lineColor(claim.isAdminClaim()));
+                marker.setFillStyle(0.2, MapUtils.fillColor(claim.isAdminClaim()));
             }
         });
     }

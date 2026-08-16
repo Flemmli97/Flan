@@ -9,7 +9,7 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
-import io.github.flemmli97.flan.platform.integration.webmap.WebmapCalls;
+import io.github.flemmli97.flan.platform.integration.maps.MapCalls;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -286,7 +286,7 @@ public class Config {
                 this.globalDefaultPerms.put(e.getKey(), perms);
             });
             ConfigUpdater.postUpdateConfig(this.preConfigVersion, this);
-            WebmapCalls.triggerStylesChange(server);
+            MapCalls.triggerStylesChange(server);
         } catch (IOException e) {
             Flan.LOGGER.error(e);
         }

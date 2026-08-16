@@ -3,7 +3,7 @@ package io.github.flemmli97.flan.neoforge.events;
 import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.PlayerEvents;
-import io.github.flemmli97.flan.platform.integration.webmap.BluemapIntegration;
+import io.github.flemmli97.flan.platform.integration.maps.BluemapIntegration;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerDataHandler;
 import net.neoforged.fml.ModList;

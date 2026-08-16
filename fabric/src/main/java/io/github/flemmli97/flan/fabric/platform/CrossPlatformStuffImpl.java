@@ -4,7 +4,7 @@ import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.fabric.platform.integration.playerability.PlayerAbilityEvents;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
-import io.github.flemmli97.flan.platform.integration.webmap.BluemapIntegration;
+import io.github.flemmli97.flan.platform.integration.maps.BluemapIntegration;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;

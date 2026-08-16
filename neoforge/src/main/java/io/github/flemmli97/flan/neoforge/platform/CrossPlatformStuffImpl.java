@@ -3,7 +3,7 @@ package io.github.flemmli97.flan.neoforge.platform;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
-import io.github.flemmli97.flan.platform.integration.webmap.BluemapIntegration;
+import io.github.flemmli97.flan.platform.integration.maps.BluemapIntegration;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;

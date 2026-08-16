@@ -17,7 +17,7 @@ import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.integration.claiming.OtherClaimingModCheck;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
-import io.github.flemmli97.flan.platform.integration.webmap.WebmapCalls;
+import io.github.flemmli97.flan.platform.integration.maps.MapCalls;
 import io.github.flemmli97.flan.player.ClaimMode;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
 import io.github.flemmli97.flan.player.PlayerClaimData;
@@ -215,7 +215,7 @@ public class ClaimStorage implements IPermissionStorage {
             claim.remove();
             claim.getOwnerPlayer().ifPresent(o -> PlayerClaimData.get(o).updateScoreboard());
         }
-        WebmapCalls.removeMarker(claim);
+        MapCalls.removeMarker(claim);
         return this.claimUUIDMap.remove(claim.getClaimID()) != null;
     }
 
@@ -365,7 +365,7 @@ public class ClaimStorage implements IPermissionStorage {
             old.add(claim);
             return old;
         });
-        WebmapCalls.addClaimMarker(claim);
+        MapCalls.addClaimMarker(claim);
     }
 
     public boolean transferOwner(Claim claim, ServerPlayer player, UUID newOwner) {
@@ -387,7 +387,7 @@ public class ClaimStorage implements IPermissionStorage {
             return old;
         });
         this.dirty.add(claim.getOwner());
-        WebmapCalls.changeClaimOwner(claim);
+        MapCalls.changeClaimOwner(claim);
         return true;
     }
 
