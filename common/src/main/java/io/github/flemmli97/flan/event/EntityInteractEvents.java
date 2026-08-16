@@ -172,7 +172,7 @@ public class EntityInteractEvents {
                 if (proj instanceof ThrownEnderpearl) {
                     ClaimStorage storage = ClaimStorage.get((ServerLevel) proj.level());
                     IPermissionContainer claim = storage.getForPermissionCheck(proj.blockPosition());
-                    return claim.canInteract(player, BuiltinPermission.ENDERPEARL, proj.blockPosition(), true);
+                    return !claim.canInteract(player, BuiltinPermission.ENDERPEARL, proj.blockPosition(), true);
                 }
                 Entity hit = ((EntityHitResult) res).getEntity();
                 boolean fail = attackSimple(player, hit, true) != InteractionResult.PASS;
