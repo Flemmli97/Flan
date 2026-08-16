@@ -106,8 +106,13 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
             for (EntityType<?> type : BuiltInRegistries.ENTITY_TYPE) {
                 InteractionHolder<EntityType<?>> map = this.getHolder(PROJECTILE_ENTITY_INTERACT);
                 ObjectToPermissionMap.PROJECTILE_PERMISSION_BUILDER.entrySet().stream().filter(e -> {
-                    Entity dummy = type.create(entity.level());
-                    return e.getKey().test(dummy);
+                    try {
+                        Entity dummy = type.create(entity.level());
+                        return e.getKey().test(dummy);
+                    } catch (Exception ex) {
+                        Flan.LOGGER.error("Could not init dummy EntityType {}", type.getDescriptionId());
+                        return false;
+                    }
                 }).map(Map.Entry::getValue).findFirst().ifPresent(sub -> map.defaults.put(type, sub.get()));
             }
         }
