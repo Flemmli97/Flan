@@ -9,7 +9,7 @@ import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
-import io.github.flemmli97.flan.platform.integration.maps.WebmapCalls;
+import io.github.flemmli97.flan.platform.integration.maps.MapCalls;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -120,6 +120,7 @@ public class Config {
 
     public boolean dynmapIntegration;
     public boolean bluemapIntegration;
+    public boolean journeymapIntegration;
     public int adminMapBorderColor = 0xb50909;
     public int mapBorderColor = 0xffa200;
     public int adminMapFillColor = 0xff0000;
@@ -256,6 +257,7 @@ public class Config {
             this.offlineProtectActivation = ConfigHandler.fromJson(obj, "offlineProtectActivation", this.offlineProtectActivation);
             this.dynmapIntegration = ConfigHandler.fromJson(obj, "dynmapIntegration", this.dynmapIntegration);
             this.bluemapIntegration = ConfigHandler.fromJson(obj, "bluemapIntegration", this.bluemapIntegration);
+            this.journeymapIntegration = ConfigHandler.fromJson(obj, "journeymapIntegration", this.journeymapIntegration);
             this.log = ConfigHandler.fromJson(obj, "enableLogs", this.log);
 
             this.defaultGroups.clear();
@@ -286,7 +288,7 @@ public class Config {
                 this.globalDefaultPerms.put(e.getKey(), perms);
             });
             ConfigUpdater.postUpdateConfig(this.preConfigVersion, server, this);
-            WebmapCalls.triggerStylesChange(server);
+            MapCalls.triggerStylesChange(server);
         } catch (IOException e) {
             Flan.LOGGER.error(e);
         }
@@ -376,6 +378,7 @@ public class Config {
         obj.addProperty("offlineProtectActivation", this.offlineProtectActivation);
         obj.addProperty("dynmapIntegration", this.dynmapIntegration);
         obj.addProperty("bluemapIntegration", this.bluemapIntegration);
+        obj.addProperty("journeymapIntegration", this.journeymapIntegration);
         obj.addProperty("enableLogs", this.log);
 
         JsonObject defPerm = new JsonObject();

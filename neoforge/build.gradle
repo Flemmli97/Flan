@@ -36,6 +36,7 @@ dependencies {
 
     //CompileOnly cause dependencies
     compileOnly "com.ldtteam:minecolonies:${minecolonies}"
+    //runtimeOnly "curse.maven:journeymap-32274:${journeymap_neo}"
 }
 
 tasks.register('apiJar', Jar) {

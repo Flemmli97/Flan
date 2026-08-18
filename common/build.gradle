@@ -31,6 +31,8 @@ dependencies {
         exclude group: "net.kyori"
     }
 
+    commonDependency "info.journeymap:journeymap-api-common:${journeymap_api}"
+
     compileOnly("io.github.flemmli97:lingua_bib:${lingua_bib}-common")
 
     yarnCommonDependency("io.github.fabricators_of_create.Porting-Lib:entity:${porting_lib}")

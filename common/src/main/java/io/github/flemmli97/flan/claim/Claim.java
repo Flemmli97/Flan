@@ -19,8 +19,8 @@ import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
 import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.ClaimEvents;
+import io.github.flemmli97.flan.platform.integration.maps.MapCalls;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
-import io.github.flemmli97.flan.platform.integration.maps.WebmapCalls;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.player.display.ClaimDisplayBox;
@@ -184,7 +184,7 @@ public class Claim implements IPermissionContainer {
             return;
         this.minY = Math.min(this.minY, pos.getY());
         this.setDirty(true);
-        WebmapCalls.onExtendDownwards(this);
+        MapCalls.onExtendDownwards(this);
     }
 
     public UUID getClaimID() {
@@ -199,7 +199,7 @@ public class Claim implements IPermissionContainer {
     public void setClaimName(String name) {
         this.claimName = name;
         this.setDirty(true);
-        WebmapCalls.changeClaimName(this);
+        MapCalls.changeClaimName(this);
     }
 
     public UUID getOwner() {

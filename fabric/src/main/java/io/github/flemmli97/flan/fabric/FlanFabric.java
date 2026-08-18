@@ -25,6 +25,7 @@ import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
@@ -69,6 +70,11 @@ public class FlanFabric implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(FlanFabric::serverFinishLoad);
         ServerTickEvents.START_SERVER_TICK.register(WorldEvents::serverTick);
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PlayerEvents.onLogout(handler.player));
+        ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> {
+            if (entity instanceof ServerPlayer player) {
+                PlayerEvents.onJoinLevel(player);
+            }
+        });
         CommandRegistrationCallback.EVENT.register((dispatcher, reg, env) -> CommandClaim.register(dispatcher, reg, env == Commands.CommandSelection.DEDICATED));
 
         DataResourceLoader.get().registerReloadListener(PermissionManager.ID.identifier(), PermissionManager::create);

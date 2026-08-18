@@ -55,5 +55,12 @@ subprojects {
                 includeGroupByRegex 'com.github.*'
             }
         }
+        maven {
+            name = 'JourneyMap'
+            url = 'https://jm.gserv.me/repository/maven-snapshots/'
+            content {
+                includeGroup 'info.journeymap'
+            }
+        }
     }
 }

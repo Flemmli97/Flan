@@ -32,14 +32,14 @@ public class BluemapIntegration {
         if (ConfigHandler.CONFIG.bluemapIntegration) {
             BlueMapAPI.onEnable(api -> {
                 initMaps(server, api);
-                WebmapCalls.bluemapLoaded = true;
+                MapCalls.bluemapLoaded = true;
                 lastEnabled = true;
             });
         }
     }
 
     public static void updateBluemapState(MinecraftServer server) {
-        if (!WebmapCalls.bluemapLoaded)
+        if (!MapCalls.bluemapLoaded)
             return;
         if (lastEnabled == ConfigHandler.CONFIG.bluemapIntegration)
             return;

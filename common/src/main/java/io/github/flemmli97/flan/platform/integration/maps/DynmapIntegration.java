@@ -27,7 +27,7 @@ public class DynmapIntegration {
             public void apiEnabled(DynmapCommonAPI dynmapCommonAPI) {
                 MarkerAPI markerAPI = dynmapCommonAPI.getMarkerAPI();
                 markerSet = markerAPI.createMarkerSet(MARKER_ID, MARKER_LABEL, dynmapCommonAPI.getMarkerAPI().getMarkerIcons(), false);
-                WebmapCalls.dynmapLoaded = true;
+                MapCalls.dynmapLoaded = true;
             }
         });
     }
