@@ -11,13 +11,11 @@ import de.bluecolored.bluemap.api.math.Shape;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimBox;
 import io.github.flemmli97.flan.claim.ClaimStorage;
-import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;

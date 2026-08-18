@@ -36,6 +36,8 @@ dependencies {
 
     //CompileOnly cause dependencies
     compileOnly "com.ldtteam:minecolonies:${minecolonies}"
+    runtimeOnly "dev.ftb.mods:ftb-ranks-neoforge:${ftb_ranks}"
+    runtimeOnly "curse.maven:journeymap-32274:${journeymap_neo}"
 }
 
 tasks.register('apiJar', Jar) {

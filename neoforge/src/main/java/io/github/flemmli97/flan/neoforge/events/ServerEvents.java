@@ -8,6 +8,7 @@ import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerDataHandler;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
@@ -44,5 +45,9 @@ public class ServerEvents {
 
     public static void serverTick(ServerTickEvent.Pre event) {
         LogoutTracker.getInstance(event.getServer()).tick();
+    }
+
+    public static void joinLevel(EntityJoinLevelEvent event) {
+        PlayerEvents.onJoinLevel(event.getEntity());
     }
 }

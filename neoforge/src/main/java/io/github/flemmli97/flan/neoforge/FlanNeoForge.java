@@ -64,6 +64,7 @@ public class FlanNeoForge {
         bus.addListener(ServerEvents::serverFinishLoad);
         bus.addListener(ServerEvents::disconnect);
         bus.addListener(ServerEvents::serverTick);
+        bus.addListener(ServerEvents::joinLevel);
         bus.addListener(this::addReloadListener);
 
         if (ModList.get().isLoaded("dynmap")) {

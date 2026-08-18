@@ -9,6 +9,8 @@ import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
 import io.github.flemmli97.flan.mixin.IHungerAccessor;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
+import io.github.flemmli97.flan.platform.integration.maps.JourneymapIntegration;
+import io.github.flemmli97.flan.platform.integration.maps.MapCalls;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.utils.IOwnedItem;
@@ -55,6 +57,14 @@ public class PlayerEvents {
     public static void readClaimData(Player player) {
         if (player instanceof ServerPlayer)
             PlayerClaimData.get((ServerPlayer) player).read(player.getServer());
+    }
+
+    public static void onJoinLevel(Entity entity) {
+        if (entity instanceof ServerPlayer player) {
+            if (MapCalls.journeymapLoaded) {
+                JourneymapIntegration.onJoinWorld(player);
+            }
+        }
     }
 
     public static void onLogout(Player player) {

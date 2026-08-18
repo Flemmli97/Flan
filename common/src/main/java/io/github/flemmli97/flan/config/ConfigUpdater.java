@@ -96,9 +96,9 @@ public class ConfigUpdater {
 
             if (buySellHandler.has("ingredient") || buySellHandler.has("sellIngredient")) {
                 Ingredient legacy = buySellHandler.has("ingredient") ? Ingredient.CODEC.parse(JsonOps.INSTANCE, buySellHandler.get("ingredient"))
-                        .getOrThrow() : Ingredient.EMPTY;
+                                                                       .getOrThrow() : Ingredient.EMPTY;
                 legacy = buySellHandler.has("sellIngredient") ? Ingredient.CODEC.parse(JsonOps.INSTANCE, buySellHandler.get("sellIngredient"))
-                        .getOrThrow() : legacy;
+                                                                .getOrThrow() : legacy;
                 if (!legacy.isEmpty() && !legacy.getItems()[0].isEmpty()) {
                     buySellHandler.add("sellItems", BuySellHandler.ITEM_STACK_CODEC.encodeStart(JsonOps.INSTANCE, legacy.getItems()[0])
                             .result().map(e -> {

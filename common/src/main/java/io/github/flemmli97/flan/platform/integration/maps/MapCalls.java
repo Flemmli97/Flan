@@ -27,7 +27,7 @@ public class MapCalls {
         if (bluemapLoaded && ConfigHandler.CONFIG.bluemapIntegration)
             BluemapIntegration.removeMarker(claim);
         if (journeymapLoaded && ConfigHandler.CONFIG.journeymapIntegration)
-            JourneymapIntegration.addClaimMarker(claim);
+            JourneymapIntegration.removeMarker(claim);
     }
 
     public static void changeClaimName(Claim claim) {
@@ -36,7 +36,7 @@ public class MapCalls {
         if (bluemapLoaded && ConfigHandler.CONFIG.bluemapIntegration)
             BluemapIntegration.changeClaimName(claim);
         if (journeymapLoaded && ConfigHandler.CONFIG.journeymapIntegration)
-            JourneymapIntegration.addClaimMarker(claim);
+            JourneymapIntegration.changeClaimName(claim);
     }
 
     public static void changeClaimOwner(Claim claim) {
@@ -45,7 +45,7 @@ public class MapCalls {
         if (bluemapLoaded && ConfigHandler.CONFIG.bluemapIntegration)
             BluemapIntegration.changeClaimOwner(claim);
         if (journeymapLoaded && ConfigHandler.CONFIG.journeymapIntegration)
-            JourneymapIntegration.addClaimMarker(claim);
+            JourneymapIntegration.changeClaimOwner(claim);
     }
 
     public static void onExtendDownwards(Claim claim) {

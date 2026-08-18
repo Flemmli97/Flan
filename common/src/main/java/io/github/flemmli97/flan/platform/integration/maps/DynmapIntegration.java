@@ -3,8 +3,6 @@ package io.github.flemmli97.flan.platform.integration.maps;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimBox;
 import io.github.flemmli97.flan.claim.ClaimStorage;
-import io.github.flemmli97.flan.claim.ClaimUtils;
-import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import org.dynmap.DynmapCommonAPI;
@@ -13,7 +11,6 @@ import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public class DynmapIntegration {
