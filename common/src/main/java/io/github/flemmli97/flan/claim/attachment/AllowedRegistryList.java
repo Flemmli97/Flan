@@ -86,11 +86,15 @@ public class AllowedRegistryList<T> {
     }
 
     public void addAllowedItem(String value) {
-        if (value.startsWith("#"))
-            this.addAllowedItem(Either.right(TagKey.create(this.registry.key(), Identifier.parse(value.substring(1)))));
-        else {
-            this.registry.getOptional(Identifier.parse(value))
-                    .ifPresent(direct -> this.addAllowedItem(Either.left(direct)));
+        if (value.startsWith("#")) {
+            Identifier id = Identifier.tryParse(value.substring(1));
+            if (id != null)
+                this.addAllowedItem(Either.right(TagKey.create(this.registry.key(), id)));
+        } else {
+            Identifier id = Identifier.tryParse(value);
+            if (id != null)
+                this.registry.getOptional(id)
+                        .ifPresent(direct -> this.addAllowedItem(Either.left(direct)));
         }
     }
 
