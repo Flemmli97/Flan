@@ -1,3 +1,11 @@
+Flan 1.12.8
+================
+- Fix bluemap crash
+- Fix projectile test crash
+- Add journeymap integration
+- Fix wrong enderpearl check [@ElectricSteve](https://github.com/electricsteve)
+- Fix crash when using invalid id in allow screen [@SPGesus](https://github.com/SPGesus)
+
 Flan 1.12.7
 ================
 - Fix claim display fake blocks position [@Wesley1808](https://github.com/Wesley1808)
