@@ -57,7 +57,7 @@ subprojects {
         }
         maven {
             name = 'JourneyMap'
-            url = 'https://jm.gserv.me/repository/maven-snapshots/'
+            url = 'https://maven.blamejared.com/'
             content {
                 includeGroup 'info.journeymap'
             }

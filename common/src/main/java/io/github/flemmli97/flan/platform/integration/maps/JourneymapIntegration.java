@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-@JourneyMapPlugin(apiVersion = "1.0.0")
+@JourneyMapPlugin(apiVersion = "2.0.0")
 public class JourneymapIntegration implements IServerPlugin {
 
     private static IServerAPI API;
