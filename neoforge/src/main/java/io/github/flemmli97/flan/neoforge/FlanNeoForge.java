@@ -10,7 +10,7 @@ import io.github.flemmli97.flan.neoforge.events.ServerEvents;
 import io.github.flemmli97.flan.neoforge.events.WorldEventsNeoForge;
 import io.github.flemmli97.flan.neoforge.platform.integration.currency.MoneyAndSignsImpl;
 import io.github.flemmli97.flan.platform.integration.currency.ImpactorImpl;
-import io.github.flemmli97.flan.platform.integration.webmap.DynmapIntegration;
+import io.github.flemmli97.flan.platform.integration.maps.DynmapIntegration;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;

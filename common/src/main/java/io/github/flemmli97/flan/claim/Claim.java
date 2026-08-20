@@ -20,7 +20,7 @@ import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.ClaimEvents;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
-import io.github.flemmli97.flan.platform.integration.webmap.WebmapCalls;
+import io.github.flemmli97.flan.platform.integration.maps.WebmapCalls;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerClaimData;
 import io.github.flemmli97.flan.player.display.ClaimDisplayBox;

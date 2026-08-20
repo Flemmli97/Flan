@@ -1,4 +1,4 @@
-package io.github.flemmli97.flan.platform.integration.webmap;
+package io.github.flemmli97.flan.platform.integration.maps;
 
 import de.bluecolored.bluemap.api.BlueMapAPI;
 import de.bluecolored.bluemap.api.BlueMapMap;

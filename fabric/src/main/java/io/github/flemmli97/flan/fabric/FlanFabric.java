@@ -18,8 +18,8 @@ import io.github.flemmli97.flan.fabric.platform.integration.currency.DiamondCurr
 import io.github.flemmli97.flan.fabric.platform.integration.currency.OctoEconomyImpl;
 import io.github.flemmli97.flan.fabric.platform.integration.playerability.PlayerAbilityEvents;
 import io.github.flemmli97.flan.platform.integration.currency.ImpactorImpl;
-import io.github.flemmli97.flan.platform.integration.webmap.BluemapIntegration;
-import io.github.flemmli97.flan.platform.integration.webmap.DynmapIntegration;
+import io.github.flemmli97.flan.platform.integration.maps.BluemapIntegration;
+import io.github.flemmli97.flan.platform.integration.maps.DynmapIntegration;
 import io.github.flemmli97.flan.player.PlayerDataHandler;
 import io.github.flemmli97.flan.scoreboard.ClaimCriterias;
 import net.fabricmc.api.ModInitializer;

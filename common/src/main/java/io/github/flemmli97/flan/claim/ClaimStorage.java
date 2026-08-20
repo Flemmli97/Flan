@@ -16,7 +16,7 @@ import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.platform.integration.claiming.OtherClaimingModCheck;
 import io.github.flemmli97.flan.platform.integration.permissions.PermissionNodeHandler;
-import io.github.flemmli97.flan.platform.integration.webmap.WebmapCalls;
+import io.github.flemmli97.flan.platform.integration.maps.WebmapCalls;
 import io.github.flemmli97.flan.player.ClaimMode;
 import io.github.flemmli97.flan.player.OfflinePlayerData;
 import io.github.flemmli97.flan.player.PlayerClaimData;
