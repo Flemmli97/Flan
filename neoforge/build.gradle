@@ -1,6 +1,4 @@
 plugins {
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id 'com.modrinth.minotaur' version '2.+'
     id 'io.github.flemmli97.multiloader.platform-neoforge'
 }
 
