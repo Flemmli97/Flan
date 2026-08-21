@@ -1,7 +1,8 @@
 plugins {
     id 'fabric-loom' version '1.14-SNAPSHOT' apply false
     id 'net.neoforged.moddev' version '2.0.107' apply false
-    id 'io.github.flemmli97.multiloader.discord_hook' version '1.+'
+    id 'me.modmuss50.mod-publish-plugin' version '2.2.0'
+    id 'io.github.flemmli97.multiloader.discord_hook' version '2.+'
 }
 
 subprojects {

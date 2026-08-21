@@ -1,7 +1,4 @@
 plugins {
-    id 'fabric-loom'
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id 'com.modrinth.minotaur' version '2.+'
     id 'io.github.flemmli97.multiloader.platform-fabric'
 }
 
@@ -40,11 +37,6 @@ repositories {
 dependencies {
     modImplementation include("io.github.flemmli97:lingua_bib:${lingua_bib}-fabric")
     implementation include('org.yaml:snakeyaml:2.4')
-
-    remapCommon(modCompileOnly("io.github.fabricators_of_create.Porting-Lib:entity:${porting_lib}"))
-    remapCommon(modCompileOnly("com.simibubi.create:create-fabric-1.20.1:${create_fabric}")) {
-        transitive = false
-    }
 
     modImplementation "me.lucko:fabric-permissions-api:${fabric_permissions_api}"
     modImplementation (octo_economy_api) {
