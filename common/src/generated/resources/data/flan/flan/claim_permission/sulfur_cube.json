@@ -1,0 +1,8 @@
+{
+  "default_value": false,
+  "global": false,
+  "gui_item": {
+    "id": "minecraft:sulfur_cube_spawn_egg"
+  },
+  "order": 51
+}

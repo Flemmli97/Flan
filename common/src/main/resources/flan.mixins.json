@@ -43,6 +43,7 @@
     "ServerWorldMixin",
     "SetBlockPropertiesMixin",
     "StructureManagerAccessor",
+    "SulfurCubeMixin",
     "TurtleEggMixin"
   ],
   "server": [

@@ -83,6 +83,7 @@ public class BuiltinPermission {
     public static final Identifier CLAIMMESSAGE = register("claim_message", new ItemStackTemplate(Items.OAK_SIGN), false, "Permission to edit the enter/leave message");
     public static final Identifier ARCHAEOLOGY = register("archeology", new ItemStackTemplate(Items.BRUSH), false, false, "Allow players to brush blocks in this claim");
     public static final Identifier WIND_CHARGE = register("wind_charge", new ItemStackTemplate(Items.WIND_CHARGE), "Permission to use wind charges");
+    public static final Identifier SULFUR_CUBE = register("sulfur_cube", new ItemStackTemplate(Items.SULFUR_CUBE_SPAWN_EGG), "Permission to hit sulfur cubes containing blocks");
 
     public static final Identifier HURTPLAYER = register("hurt_player", new ItemStackTemplate(Items.DIAMOND_SWORD), false, true, "Permission to hurt other players");
     public static final Identifier EXPLOSIONS = register("explosions", new ItemStackTemplate(Items.TNT), false, true, "Toggle explosions in claim");
