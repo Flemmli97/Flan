@@ -5,6 +5,7 @@ Flan 1.12.8
 - Add journeymap integration
 - Fix wrong enderpearl check [@ElectricSteve](https://github.com/electricsteve)
 - Fix crash when using invalid id in allow screen [@SPGesus](https://github.com/SPGesus)
+- Fix spear dealing knockback (so e.g. breaking item frames) in claims
 
 Flan 1.12.7
 ================
