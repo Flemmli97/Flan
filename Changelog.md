@@ -1,5 +1,7 @@
 Flan 1.12.8
 ================
+- Update to 26.2
+  - Also add sulfur cube permission for hitting sulfur cubes with blocks inside
 - Fix bluemap crash
 - Fix projectile test crash
 - Add journeymap integration
