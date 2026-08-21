@@ -7,6 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.data.IPermissionStorage;
@@ -38,7 +39,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelData;
@@ -545,17 +545,17 @@ public class ClaimStorage implements IPermissionStorage {
             }
             for (File parent : intFileMap.values()) {
                 try {
-                    Tuple<ServerLevel, Claim> parentClaim = parseFromYaml(parent, yml, server, perms);
+                    Pair<ServerLevel, Claim> parentClaim = parseFromYaml(parent, yml, server, perms);
                     List<File> childs = subClaimMap.get(parent);
                     if (childs != null && !childs.isEmpty()) {
                         for (File childF : childs)
-                            parentClaim.getB().addSubClaimGriefprevention(parseFromYaml(childF, yml, server, perms).getB());
+                            parentClaim.getSecond().addSubClaimGriefprevention(parseFromYaml(childF, yml, server, perms).getSecond());
                     }
-                    ClaimStorage storage = ClaimStorage.get(parentClaim.getA());
-                    Set<DisplayBox> conflicts = storage.conflicts(parentClaim.getB(), null);
+                    ClaimStorage storage = ClaimStorage.get(parentClaim.getFirst());
+                    Set<DisplayBox> conflicts = storage.conflicts(parentClaim.getSecond(), null);
                     if (conflicts.isEmpty()) {
-                        parentClaim.getB().setClaimID(storage.generateUUID());
-                        storage.addClaim(parentClaim.getB());
+                        parentClaim.getSecond().setClaimID(storage.generateUUID());
+                        storage.addClaim(parentClaim.getSecond());
                     } else {
                         src.sendSuccess(() -> ClaimUtils.translatedText("flan.readConflict", parent.getName(), conflicts, ChatFormatting.DARK_RED), false);
                         for (DisplayBox claim : conflicts) {
@@ -584,8 +584,8 @@ public class ClaimStorage implements IPermissionStorage {
         return set;
     }
 
-    private static Tuple<ServerLevel, Claim> parseFromYaml(File file, Yaml yml, MinecraftServer server,
-                                                           Map<String, Set<Identifier>> perms) throws IOException {
+    private static Pair<ServerLevel, Claim> parseFromYaml(File file, Yaml yml, MinecraftServer server,
+                                                          Map<String, Set<Identifier>> perms) throws IOException {
         FileReader reader = new FileReader(file);
         Map<String, Object> values = yml.load(reader);
         reader.close();
@@ -646,7 +646,7 @@ public class ClaimStorage implements IPermissionStorage {
                 accessors.forEach(s -> claim.setPlayerGroup(UUID.fromString(s), "Accessors", true));
             }
         }
-        return new Tuple<>(level, claim);
+        return Pair.of(level, claim);
     }
 
     @SuppressWarnings("unchecked")

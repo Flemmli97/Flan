@@ -35,7 +35,7 @@ public record ClaimAllowListKey<T>(Identifier id, String translationKey,
             () -> new ItemStack(Items.DIAMOND_PICKAXE),
             Registries.BLOCK, claim -> AllowedRegistryList.ofItemLike(BuiltInRegistries.BLOCK, claim));
     public static final ClaimAllowListKey<Block> BLOCK_USE = new ClaimAllowListKey<>("block_use", "flan.screenMenuBlockUse",
-            () -> new ItemStack(Items.RED_BANNER),
+            () -> new ItemStack(Items.BANNER.red()),
             Registries.BLOCK, claim -> AllowedRegistryList.ofItemLike(BuiltInRegistries.BLOCK, claim));
     public static final ClaimAllowListKey<EntityType<?>> ENTITY_ATTACK = new ClaimAllowListKey<>("entity_attack", "flan.screenMenuEntityAttack",
             () -> new ItemStack(Items.DIAMOND_SWORD),

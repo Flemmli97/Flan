@@ -42,7 +42,7 @@ public class ServerScreenHelper {
     public static final String PERMISSION_KEY = Flan.MODID + ".permission";
 
     public static ItemStack emptyFiller() {
-        return createStack(Items.GRAY_STAINED_GLASS_PANE, ClaimUtils.translatedText(""));
+        return createStack(Items.STAINED_GLASS_PANE.gray(), ClaimUtils.translatedText(""));
     }
 
     public static ItemStack createStack(Item item, Component name) {

@@ -19,7 +19,7 @@ public class EntityInteractEventsNeoForge {
     /**
      * This runs before PlayerInteractEvent.EntityInteract and will block it if canceled so now doesn't need 2 events anymore
      */
-    public static void useAtEntity(PlayerInteractEvent.EntityInteractSpecific event) {
+    public static void useAtEntity(PlayerInteractEvent.EntityInteract event) {
         InteractionResult result = EntityInteractEvents.useEntity(event.getEntity(), event.getLevel(), event.getHand(), event.getTarget());
         if (result != InteractionResult.PASS) {
             event.setCancellationResult(result);

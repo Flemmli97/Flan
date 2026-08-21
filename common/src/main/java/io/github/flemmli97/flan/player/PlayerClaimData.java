@@ -345,7 +345,7 @@ public class PlayerClaimData implements IPlayerData {
             BlockPos pos = ItemInteractEvents.rayTargetPos(this.player);
             if (pos != null && !pos.equals(this.firstCorner)) {
                 this.clientBlockDisplayTracker.displayFakeBlocks(this.display3D,
-                        new ClientBlockDisplayTracker.DisplayData(pos, Blocks.YELLOW_WOOL.defaultBlockState()));
+                        new ClientBlockDisplayTracker.DisplayData(pos, Blocks.WOOL.yellow().defaultBlockState()));
             } else {
                 this.clientBlockDisplayTracker.resetFakeBlocks(this.display3D);
             }

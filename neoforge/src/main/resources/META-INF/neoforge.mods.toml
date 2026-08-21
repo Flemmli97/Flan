@@ -9,7 +9,7 @@ modId="flan"
 version="${version}"
 displayName="Flan"
 displayURL = "${homepage_neoforge}"
-logoFile="icon.png"
+iconFile="icon.png"
 authors="Flemmli97"
 description = '''Flan (NeoForge version): A serverside claiming mod'''
 [[dependencies.flan]]

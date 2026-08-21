@@ -4,7 +4,7 @@ import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimBox;
 import io.github.flemmli97.flan.claim.ClaimStorage;
-import journeymap.api.v2.client.display.Context;
+import journeymap.api.v2.common.Context;
 import journeymap.api.v2.common.JourneyMapPlugin;
 import journeymap.api.v2.server.IServerAPI;
 import journeymap.api.v2.server.IServerPlugin;
