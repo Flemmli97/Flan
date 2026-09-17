@@ -7,7 +7,6 @@ import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.claim.ClaimStorage;
 import io.github.flemmli97.flan.claim.ClaimUtils;
 import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
-import io.github.flemmli97.flan.mixin.BonemealableBlockAccess;
 import io.github.flemmli97.flan.mixin.IHungerAccessor;
 import io.github.flemmli97.flan.platform.CrossPlatformStuff;
 import io.github.flemmli97.flan.platform.integration.maps.JourneymapIntegration;
@@ -20,15 +19,13 @@ import io.github.flemmli97.flan.utils.TeleportUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.data.worldgen.features.NetherFeatures;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -37,13 +34,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableFeaturePlacerBlock;
-import net.minecraft.world.level.block.GrassBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
-import net.minecraft.world.level.levelgen.feature.configurations.NetherForestVegetationConfig;
-import net.minecraft.world.level.levelgen.feature.configurations.TwistingVinesConfig;
-import net.minecraft.world.level.levelgen.feature.configurations.VegetationPatchConfiguration;
 import net.minecraft.world.phys.Vec3;
 
 public class PlayerEvents {
@@ -83,34 +74,12 @@ public class PlayerEvents {
             if (perm != null && !ClaimStorage.get(serverPlayer.level()).getForPermissionCheck(pos).canInteract(serverPlayer, perm, pos, false))
                 return false;
             int range = 0;
-            RegistryAccess registry = serverPlayer.level().registryAccess();
-            if (state.getBlock() instanceof BonemealableFeaturePlacerBlock bonemealable) {
-                VegetationPatchConfiguration cfg = featureRange(registry, ((BonemealableBlockAccess) bonemealable).getFeature(), VegetationPatchConfiguration.class);
-                if (cfg != null) {
-                    range = cfg.xzRadius().maxInclusive() + 1;
-                    pos.set(pos.getX(), pos.getY() + cfg.verticalRange() + 1, pos.getZ());
-                }
-            } else if (state.getBlock() instanceof GrassBlock) {
+            // Due to large amount of datadriven things getting actual range is not feasible anymore so we just hardcode it to 4
+            // Most bonemeal action affect a 5x5 anyway (range 2)
+            if (state.getBlock() instanceof BonemealableFeaturePlacerBlock
+                    || state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.CRIMSON_NYLIUM)
+                    || state.is(Blocks.WARPED_NYLIUM)) {
                 range = 4;
-            } else if (state.is(Blocks.CRIMSON_NYLIUM)) {
-                NetherForestVegetationConfig cfg = featureRange(registry, NetherFeatures.CRIMSON_FOREST_VEGETATION_BONEMEAL, NetherForestVegetationConfig.class);
-                if (cfg != null) {
-                    range = cfg.spreadWidth;
-                    pos.set(pos.getX(), pos.getY() + cfg.spreadHeight + 1, pos.getZ());
-                }
-            } else if (state.is(Blocks.WARPED_NYLIUM)) {
-                NetherForestVegetationConfig cfg = featureRange(registry, NetherFeatures.WARPED_FOREST_VEGETATION_BONEMEAL, NetherForestVegetationConfig.class);
-                NetherForestVegetationConfig cfg2 = featureRange(registry, NetherFeatures.NETHER_SPROUTS_BONEMEAL, NetherForestVegetationConfig.class);
-                TwistingVinesConfig cfg3 = featureRange(registry, NetherFeatures.TWISTING_VINES_BONEMEAL, TwistingVinesConfig.class);
-                int w1 = cfg == null ? 0 : cfg.spreadWidth;
-                int w2 = cfg2 == null ? 0 : cfg2.spreadWidth;
-                int w3 = cfg3 == null ? 0 : cfg3.spreadWidth();
-                int h1 = cfg == null ? 0 : cfg.spreadHeight;
-                int h2 = cfg2 == null ? 0 : cfg2.spreadHeight;
-                int h3 = cfg3 == null ? 0 : cfg3.spreadHeight();
-                range = Math.max(Math.max(w1, w2), w3);
-                int y = Math.max(Math.max(h1, h2), h3);
-                pos.set(pos.getX(), pos.getY() + y + 1, pos.getZ());
             }
             if (range > 0 && perm != null && !ClaimStorage.get(serverPlayer.level()).canInteract(pos, range, serverPlayer, perm, false)) {
                 serverPlayer.sendSystemMessage(ClaimUtils.translatedText("flan.tooCloseClaim", ChatFormatting.DARK_RED), true);
@@ -134,15 +103,6 @@ public class PlayerEvents {
 
     public static boolean canSculkTrigger(BlockPos pos, ServerPlayer player) {
         return ClaimStorage.get(player.level()).getForPermissionCheck(pos).canInteract(player, BuiltinPermission.SCULK, pos, false);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends FeatureConfiguration> T featureRange(RegistryAccess registry, ResourceKey<ConfiguredFeature<?, ?>> key, Class<T> clss) {
-        return registry.get(key).map(r -> {
-            if (clss.isInstance(r.value().config()))
-                return (T) r.value().config();
-            return null;
-        }).orElse(null);
     }
 
     public static boolean xpAbsorb(Player player) {
@@ -197,7 +157,7 @@ public class PlayerEvents {
             if (!allow) {
                 if (player.getInventory().add(stack) && !stack.isEmpty()) {
                     dropHandler.flan$setForcedDrop(true);
-                    ItemEntity itemEntity = player.drop(stack, false);
+                    ItemEntity itemEntity = player.drop(stack, false, Prediction.SERVER_ONLY);
                     dropHandler.flan$setForcedDrop(false);
                     if (itemEntity != null) {
                         itemEntity.setNoPickUpDelay();

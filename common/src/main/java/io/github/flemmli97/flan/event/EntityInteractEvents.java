@@ -28,8 +28,9 @@ import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.animal.golem.SnowGolem;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.decoration.Cushion;
 import net.minecraft.world.entity.decoration.ItemFrame;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.cubemob.SulfurCube;
 import net.minecraft.world.entity.npc.villager.AbstractVillager;
@@ -86,6 +87,9 @@ public class EntityInteractEvents {
                 }
                 case ArmorStand _ -> {
                     return claim.canInteract(player, BuiltinPermission.ARMORSTAND, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
+                }
+                case Cushion _ -> {
+                    return claim.canInteract(player, BuiltinPermission.CUSHION, pos, true) ? InteractionResult.PASS : InteractionResult.FAIL;
                 }
                 default -> {
                 }
@@ -161,7 +165,7 @@ public class EntityInteractEvents {
                     ((IPersistentProjectileVars) pers).setPiercedEntities(pierced);
                     ((IPersistentProjectileVars) pers).setPiercingLevel((byte) (pers.getPierceLevel() + 1));
                 }
-                proj.hurtMarked = true;
+                proj.syncVelocity = true;
                 return fail;
             }
         }
@@ -220,7 +224,7 @@ public class EntityInteractEvents {
         return true;
     }
 
-    public static boolean canEndermanInteract(EnderMan enderman, BlockPos pos) {
+    public static boolean canEndermanInteract(Enderman enderman, BlockPos pos) {
         if (enderman.level().isClientSide())
             return true;
         ClaimStorage storage = ClaimStorage.get((ServerLevel) enderman.level());
@@ -312,8 +316,7 @@ public class EntityInteractEvents {
             BlockPos pos = entity.blockPosition();
             IPermissionContainer claim = storage.getForPermissionCheck(pos);
             return claim != null && !claim.canInteract(player, BuiltinPermission.SULFUR_CUBE, pos, true);
-        }
-        else if (source.is(DamageTypeTags.IS_EXPLOSION) && !entity.level().isClientSide()) {
+        } else if (source.is(DamageTypeTags.IS_EXPLOSION) && !entity.level().isClientSide()) {
             IPermissionContainer claim = ClaimStorage.get((ServerLevel) entity.level()).getForPermissionCheck(entity.blockPosition());
             return claim != null && !claim.canInteract(null, BuiltinPermission.EXPLOSIONS, entity.blockPosition());
         }

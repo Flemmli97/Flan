@@ -12,7 +12,7 @@ public class DataEvent {
     @SubscribeEvent
     public static void data(GatherDataEvent.Server event) {
         DataGenerator data = event.getGenerator();
-        PermissionGen permissionGen = new PermissionGen(data.getPackOutput(), event.getLookupProvider());
+        PermissionGen permissionGen = new PermissionGen(data.getPackOutput(), event.getReloadableLookupProvider());
         data.addProvider(true, permissionGen);
         data.addProvider(true, new InteractionOverrideGen(data.getPackOutput()));
         ENLangGen enLang = new ENLangGen(data.getPackOutput(), permissionGen);

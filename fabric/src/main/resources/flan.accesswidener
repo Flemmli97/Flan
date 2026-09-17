@@ -1,0 +1,2 @@
+accessWidener	v1	official
+accessible method net/minecraft/server/packs/resources/SimpleJsonResourceReloadListener <init> (Lcom/mojang/serialization/DynamicOps;Lcom/mojang/serialization/Codec;Lnet/minecraft/resources/FileToIdConverter;)V

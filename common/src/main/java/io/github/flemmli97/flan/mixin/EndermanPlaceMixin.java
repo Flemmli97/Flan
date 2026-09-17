@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.mixin;
 
 import io.github.flemmli97.flan.event.EntityInteractEvents;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Final;
@@ -12,12 +12,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(targets = "net/minecraft/world/entity/monster/EnderMan$EndermanLeaveBlockGoal")
+@Mixin(targets = "net/minecraft/world/entity/monster/Enderman$EndermanLeaveBlockGoal")
 public abstract class EndermanPlaceMixin {
 
     @Final
     @Shadow
-    private EnderMan enderman;
+    private Enderman enderman;
 
     @Inject(method = "canPlaceBlock(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;)Z", at = @At(value = "HEAD"), cancellable = true)
     private void placeCheck(Level level, BlockPos posAbove, BlockState carriedState, BlockState stateAbove, BlockState state, BlockPos pos, CallbackInfoReturnable<Boolean> info) {

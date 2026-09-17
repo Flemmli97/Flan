@@ -299,6 +299,8 @@
   "flan.permission.flan:wind_charge.desc.0": "Permission to use wind charges",
   "flan.permission.flan:sulfur_cube": "Sulfur Cube",
   "flan.permission.flan:sulfur_cube.desc.0": "Permission to hit sulfur cubes containing blocks",
+  "flan.permission.flan:cushion": "Cushion",
+  "flan.permission.flan:cushion.desc.0": "Permission to interact with cushions",
   "flan.permission.flan:hurt_player": "Hurt Player",
   "flan.permission.flan:hurt_player.desc.0": "Permission to hurt other players",
   "flan.permission.flan:explosions": "Explosions",

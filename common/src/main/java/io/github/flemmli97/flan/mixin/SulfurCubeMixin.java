@@ -14,7 +14,7 @@ public class SulfurCubeMixin {
 
     @Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true)
     private void onHurtServer(ServerLevel level, DamageSource source, float damage, CallbackInfoReturnable<Boolean> info) {
-        if(EntityInteractEvents.sulfurCubeDamage((SulfurCube) (Object) this, source)) {
+        if (EntityInteractEvents.sulfurCubeDamage((SulfurCube) (Object) this, source)) {
             info.setReturnValue(false);
         }
     }

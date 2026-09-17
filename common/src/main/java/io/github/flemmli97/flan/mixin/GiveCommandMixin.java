@@ -13,10 +13,10 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(GiveCommand.class)
 public abstract class GiveCommandMixin {
 
-    @WrapOperation(method = "giveItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;drop(Lnet/minecraft/world/item/ItemStack;Z)Lnet/minecraft/world/entity/item/ItemEntity;"))
-    private static ItemEntity handleDrop(ServerPlayer player, ItemStack stack, boolean thrower, Operation<ItemEntity> original) {
+    @WrapOperation(method = "giveItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;createItemStackToDrop(Lnet/minecraft/world/item/ItemStack;ZZ)Lnet/minecraft/world/entity/item/ItemEntity;"))
+    private static ItemEntity handleDrop(ServerPlayer player, ItemStack stack, boolean randomly, boolean thrown, Operation<ItemEntity> original) {
         ((PlayerDropHandler) player).flan$setForcedDrop(true);
-        ItemEntity entity = original.call(player, stack, thrower);
+        ItemEntity entity = original.call(player, stack, randomly, thrown);
         ((PlayerDropHandler) player).flan$setForcedDrop(false);
         return entity;
     }

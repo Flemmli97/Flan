@@ -35,7 +35,7 @@ import net.minecraft.world.level.block.JukeboxBlock;
 import net.minecraft.world.level.block.LeverBlock;
 import net.minecraft.world.level.block.NetherPortalBlock;
 import net.minecraft.world.level.block.NoteBlock;
-import net.minecraft.world.level.block.RedStoneWireBlock;
+import net.minecraft.world.level.block.RedstoneWireBlock;
 import net.minecraft.world.level.block.TargetBlock;
 import net.minecraft.world.level.block.TntBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
@@ -105,7 +105,7 @@ public class ObjectToPermissionMap {
         registerBlockPredicateMap(block -> block instanceof TrapDoorBlock, () -> BuiltinPermission.TRAPDOOR);
         registerBlockPredicateMap(block -> block instanceof LeverBlock || block instanceof ButtonBlock, () -> BuiltinPermission.BUTTONLEVER);
         registerBlockPredicateMap(block -> block instanceof NoteBlock, () -> BuiltinPermission.NOTEBLOCK);
-        registerBlockPredicateMap(block -> block instanceof DiodeBlock || block instanceof RedStoneWireBlock || block instanceof DaylightDetectorBlock, () -> BuiltinPermission.REDSTONE);
+        registerBlockPredicateMap(block -> block instanceof DiodeBlock || block instanceof RedstoneWireBlock || block instanceof DaylightDetectorBlock, () -> BuiltinPermission.REDSTONE);
         registerBlockPredicateMap(block -> block instanceof JukeboxBlock, () -> BuiltinPermission.JUKEBOX);
         registerBlockPredicateMap(block -> block instanceof BasePressurePlateBlock, () -> BuiltinPermission.PRESSUREPLATE);
         registerBlockPredicateMap(block -> block instanceof NetherPortalBlock, () -> BuiltinPermission.PORTAL);

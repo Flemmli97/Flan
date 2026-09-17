@@ -2,7 +2,7 @@ package io.github.flemmli97.flan.mixin;
 
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.BonemealableFeaturePlacerBlock;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
@@ -10,5 +10,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface BonemealableBlockAccess {
 
     @Accessor("feature")
-    ResourceKey<ConfiguredFeature<?, ?>> getFeature();
+    ResourceKey<Feature> getFeature();
 }

@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryCodecs;
+import net.minecraft.core.registries.codec.RegistryCodecs;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -12,7 +12,7 @@ import java.util.Iterator;
 public record ResolvableHolderSet<T>(HolderSet<T> holders) implements ResolvableEntry<T> {
 
     public static <T> Codec<ResolvableEntry<T>> codec(Registry<T> registry) {
-        return RegistryCodecs.homogeneousList(registry.key())
+        return RegistryCodecs.holderSet(registry.key())
                 .xmap(ResolvableHolderSet::new, h -> ((ResolvableHolderSet<T>) h).holders());
     }
 

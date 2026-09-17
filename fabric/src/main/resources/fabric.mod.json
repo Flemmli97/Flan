@@ -24,6 +24,7 @@
     "flan.mixins.json",
     "flan.fabric.mixins.json"
   ],
+  "accessWidener": "flan.accesswidener",
   "depends": {
     "fabric-api": ">=${fabric_api_version}",
     "minecraft": ">=${minecraft_version}"

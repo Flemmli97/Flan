@@ -1,0 +1,8 @@
+{
+  "default_value": false,
+  "global": false,
+  "gui_item": {
+    "id": "minecraft:white_cushion"
+  },
+  "order": 52
+}

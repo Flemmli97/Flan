@@ -1,10 +1,12 @@
 package io.github.flemmli97.flan.api.permission;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -30,7 +32,7 @@ public class PermissionManager extends SimpleJsonResourceReloadListener<ClaimPer
     private List<ClaimPermission> sorted = List.of();
 
     private PermissionManager(HolderLookup.Provider provider) {
-        super(provider, ClaimPermission.Builder.CODEC, ID);
+        super(provider.createSerializationContext(JsonOps.INSTANCE), ClaimPermission.Builder.CODEC, FileToIdConverter.registry(ID));
     }
 
     public static PermissionManager create(HolderLookup.Provider provider) {

@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public abstract class ChunkGeneratorMixin {
 
     @ModifyVariable(method = "tryGenerateStructure", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/world/level/StructureManager;setStartForStructure(Lnet/minecraft/core/SectionPos;Lnet/minecraft/world/level/levelgen/structure/Structure;Lnet/minecraft/world/level/levelgen/structure/StructureStart;Lnet/minecraft/world/level/chunk/StructureAccess;)V"))
+            target = "Lnet/minecraft/world/level/StructureManager;setStartForStructure(Lnet/minecraft/world/level/levelgen/structure/Structure;Lnet/minecraft/world/level/levelgen/structure/StructureStart;Lnet/minecraft/world/level/chunk/StructureAccess;)V"))
     private StructureStart onStructureGenerate(StructureStart origin, StructureSet.StructureSelectionEntry structureSelectionEntry, StructureManager structureManager) {
         WorldEvents.onStructureGen(origin, structureManager);
         return origin;

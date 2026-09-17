@@ -23,6 +23,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -182,7 +183,7 @@ public class BuySellHandler {
                         soldStacks.add(new ItemResult(toGive.copy(), toGive.getCount(), item.amount()));
                         boolean bl = player.getInventory().add(toGive);
                         if (!bl || !toGive.isEmpty()) {
-                            ItemEntity itemEntity = player.drop(toGive, false);
+                            ItemEntity itemEntity = player.drop(toGive, false, Prediction.SERVER_ONLY);
                             if (itemEntity != null) {
                                 itemEntity.setNoPickUpDelay();
                                 itemEntity.setTarget(player.getUUID());
@@ -214,9 +215,9 @@ public class BuySellHandler {
     private boolean matches(ItemPredicate predicate, ItemStack stack) {
         if (predicate.components().exact().alwaysMatches() || predicate.components().isEmpty()) {
             if (stack.getComponentsPatch()
-                    .entrySet().stream()
-                    .anyMatch(e -> e.getKey() != DataComponents.CUSTOM_NAME
-                            && e.getKey() != DataComponents.REPAIR_COST && e.getKey() != DataComponents.DAMAGE)) {
+                    .split().added().stream()
+                    .anyMatch(e -> e.type() != DataComponents.CUSTOM_NAME
+                            && e.type() != DataComponents.REPAIR_COST && e.type() != DataComponents.DAMAGE)) {
                 return false;
             }
         }
