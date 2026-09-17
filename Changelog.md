@@ -1,14 +1,14 @@
 Flan 1.12.8
 ================
 - Update to 26.3
-  - Add cushion permission
-  ~~- Also add sulfur cube permission for hitting sulfur cubes with blocks inside~~
-~~- Fix bluemap crash~~
-~~- Fix projectile test crash~~
-~~- Add journeymap integration~~
-~~- Fix wrong enderpearl check [@ElectricSteve](https://github.com/electricsteve)~~
-~~- Fix crash when using invalid id in allow screen [@SPGesus](https://github.com/SPGesus)~~
-~~- Fix spear dealing knockback (so e.g. breaking item frames) in claims~~
+  - Add cushion permission  
+  ~~- Also add sulfur cube permission for hitting sulfur cubes with blocks inside~~  
+~~- Fix bluemap crash~~  
+~~- Fix projectile test crash~~  
+~~- Add journeymap integration~~  
+~~- Fix wrong enderpearl check [@ElectricSteve](https://github.com/electricsteve)~~  
+~~- Fix crash when using invalid id in allow screen [@SPGesus](https://github.com/SPGesus)~~  
+~~- Fix spear dealing knockback (so e.g. breaking item frames) in claims~~  
 
 Flan 1.12.7
 ================
