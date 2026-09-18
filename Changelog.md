@@ -1,3 +1,7 @@
+Flan 1.12.8.b
+================
+- Fix fabric mixins [@Wesley1808](https://github.com/Wesley1808)
+
 Flan 1.12.8
 ================
 - Update to 26.3
