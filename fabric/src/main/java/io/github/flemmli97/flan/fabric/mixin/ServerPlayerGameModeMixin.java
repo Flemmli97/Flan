@@ -67,7 +67,7 @@ public abstract class ServerPlayerGameModeMixin implements ItemUseBlockFlags {
      * Disable mismatched block warning if the cause was due to claim prevention
      */
     @WrapWithCondition(
-            method = "handleBlockBreakAction",
+            method = "abortDestroyBlock",
             at = @At(value = "INVOKE", target = "Lorg/slf4j/Logger;warn(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V", remap = false)
     )
     private boolean shouldWarn(Logger logger, String warn, Object obj, Object obj2) {
