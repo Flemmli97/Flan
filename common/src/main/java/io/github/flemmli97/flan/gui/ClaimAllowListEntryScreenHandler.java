@@ -61,7 +61,7 @@ public class ClaimAllowListEntryScreenHandler extends ServerOnlyScreenHandler<Cl
             if (val != null) {
                 ItemStack stack = ServerScreenHelper.createStack(val.guiIcon().get(),
                         ServerScreenHelper.coloredGuiText(val.translationKey(), ChatFormatting.GOLD));
-                if (!this.hasPerm(this.data, this.player, BuiltinPermission.EDITCLAIM))
+                if (!this.hasPermFor(val, this.data, this.player, BuiltinPermission.EDITCLAIM))
                     ServerScreenHelper.addLore(stack, ServerScreenHelper.coloredGuiText("flan.screenNoPerm", ChatFormatting.DARK_RED));
                 this.slots.get(i).set(stack);
             } else if (i == 0) {
@@ -82,7 +82,7 @@ public class ClaimAllowListEntryScreenHandler extends ServerOnlyScreenHandler<Cl
     protected boolean handleSlotClicked(ServerPlayer player, int index, Slot slot, int clickType) {
         ClaimAllowListKey<?> val = UI_VALUES.get(index);
         if (val != null) {
-            if (this.hasPerm(this.data, player, BuiltinPermission.EDITPERMS)) {
+            if (this.hasPermFor(val, this.data, player, BuiltinPermission.EDITPERMS)) {
                 player.closeContainer();
                 player.level().getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, val, this.data));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
@@ -94,6 +94,13 @@ public class ClaimAllowListEntryScreenHandler extends ServerOnlyScreenHandler<Cl
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
         }
         return true;
+    }
+
+    private boolean hasPermFor(ClaimAllowListKey<?> key, Claim claim, ServerPlayer player, Identifier perm) {
+        if (key.admin()) {
+            return claim.isAdminIgnore(player);
+        }
+        return this.hasPerm(claim, player, perm);
     }
 
     private boolean hasPerm(Claim claim, ServerPlayer player, Identifier perm) {

@@ -3,11 +3,16 @@ package io.github.flemmli97.flan.claim.attachment;
 import com.google.common.collect.ImmutableMap;
 import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.Claim;
+import io.github.flemmli97.flan.gui.ServerScreenHelper;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -24,7 +29,8 @@ import java.util.function.Supplier;
 public record ClaimAllowListKey<T>(Identifier id, String translationKey,
                                    Supplier<ItemStack> guiIcon,
                                    ResourceKey<Registry<T>> registry,
-                                   Function<Claim, AllowedRegistryList<T>> factory) {
+                                   Function<Claim, AllowedRegistryList<T>> factory,
+                                   boolean admin) {
 
     private static final Map<Identifier, ClaimAllowListKey<?>> MAP = new LinkedHashMap<>();
 
@@ -49,11 +55,25 @@ public record ClaimAllowListKey<T>(Identifier id, String translationKey,
     public static final ClaimAllowListKey<Item> ITEM_DROP = new ClaimAllowListKey<>("item_drop", "flan.screenMenuItemDrop",
             () -> new ItemStack(Items.WHEAT_SEEDS),
             Registries.ITEM, claim -> AllowedRegistryList.ofItemLike(BuiltInRegistries.ITEM, claim));
+    public static final ClaimAllowListKey<DamageType> DAMAGE_TYPES = new ClaimAllowListKey<>("damage_types", "flan.screenMenuDamageTypes",
+            () -> new ItemStack(Items.IRON_SWORD),
+            Registries.DAMAGE_TYPE, claim -> new AllowedRegistryList<>(claim.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE), claim,
+            s -> namedOf(s, Items.IRON_SWORD)), true);
 
     public ClaimAllowListKey(String path, String translationKey, Supplier<ItemStack> guiIcon, ResourceKey<Registry<T>> registry, Function<Claim, AllowedRegistryList<T>> factory) {
-        this(Identifier.fromNamespaceAndPath(Flan.MODID, path), translationKey, guiIcon, registry, factory);
+        this(path, translationKey, guiIcon, registry, factory, false);
+    }
+
+    public ClaimAllowListKey(String path, String translationKey, Supplier<ItemStack> guiIcon, ResourceKey<Registry<T>> registry, Function<Claim, AllowedRegistryList<T>> factory, boolean admin) {
+        this(Identifier.fromNamespaceAndPath(Flan.MODID, path), translationKey, guiIcon, registry, factory, admin);
         if (MAP.put(this.id(), this) != null)
             throw new IllegalStateException("Key with id " + this.id() + " already exists!");
+    }
+
+    private static <T> ItemStack namedOf(Holder<T> val, Item item) {
+        ItemStack stack = new ItemStack(item);
+        stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText(val.getRegisteredName(), ChatFormatting.GOLD));
+        return stack;
     }
 
     public static Map<Identifier, ClaimAllowListKey<?>> keys() {

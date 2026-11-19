@@ -122,7 +122,7 @@ public class CommandHelpers {
         ClaimStorage storage = ClaimStorage.get(player.level());
         Claim claim = storage.getClaimAt(player.blockPosition());
         if (claim != null && claim.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition())) {
-            list = claim.allowedEntries.get(key).asString();
+            list = claim.allowedEntries().get(key).asString();
         }
         return SharedSuggestionProvider.suggest(list, build);
     }

@@ -72,7 +72,7 @@ public class ItemInteractEvents {
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim == null)
             return InteractionResult.PASS;
-        if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_USE, stack::is, stack::is))
+        if (claim instanceof Claim real && real.allowedEntries().isAllowed(ClaimAllowListKey.ITEM_USE, stack::is, stack::is))
             return InteractionResult.PASS;
         Identifier perm = InteractionOverrideManager.getInstance().getItemUse(stack.getItem());
         if (perm != null) {
@@ -117,7 +117,7 @@ public class ItemInteractEvents {
             return InteractionResult.PASS;
         if (BLACK_LISTED_ITEMS.contains(stack.getItem()))
             return InteractionResult.PASS;
-        if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_USE, stack::is, stack::is))
+        if (claim instanceof Claim real && real.allowedEntries().isAllowed(ClaimAllowListKey.ITEM_USE, stack::is, stack::is))
             return InteractionResult.PASS;
         Identifier perm = InteractionOverrideManager.getInstance().getItemUse(stack.getItem());
         if (perm == null) {

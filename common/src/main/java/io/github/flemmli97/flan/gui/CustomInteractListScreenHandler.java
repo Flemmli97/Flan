@@ -49,7 +49,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
     }
 
     private ItemStack listModeItem() {
-        boolean blacklist = this.data.claim.allowedEntries.get(this.data.key).blacklist();
+        boolean blacklist = this.data.claim.allowedEntries().get(this.data.key).blacklist();
         ItemStack stack = ServerScreenHelper.createStack(blacklist ? Items.BANNER.black() : Items.BANNER.white(),
                 ServerScreenHelper.coloredGuiText(blacklist ? "flan.screenMenuBlacklist" : "flan.screenMenuWhitelist", ChatFormatting.GOLD));
         List<Component> components = new ArrayList<>();
@@ -84,7 +84,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
             } else if (i < 9 || i > 44 || i % 9 == 0 || i % 9 == 8)
                 this.slots.get(i).set(ServerScreenHelper.emptyFiller());
             else {
-                List<List<ItemStack>> stacks = this.data.claim.allowedEntries.get(this.data.key).asStacks();
+                List<List<ItemStack>> stacks = this.data.claim.allowedEntries().get(this.data.key).asStacks();
                 int row = i / 9 - 1;
                 int id = (i % 9) + row * 7 - 1 + this.getPage() * 28;
                 if (id < stacks.size()) {
@@ -116,7 +116,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
         if (index == 3) {
             player.closeContainer();
             player.level().getServer().execute(() -> StringResultScreenHandler.createNewStringResult(player, (s) -> {
-                this.data.claim.allowedEntries.get(this.data.key).addAllowedItem(s);
+                this.data.claim.allowedEntries().get(this.data.key).addAllowedItem(s);
                 player.closeContainer();
                 player.level().getServer().execute(() -> CustomInteractListScreenHandler.openMenu(player, this.data.key, this.data.claim));
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.ANVIL_USE, 1, 1f);
@@ -137,7 +137,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
             return true;
         }
         if (index == 5) {
-            AllowedRegistryList<?> entry = this.data.claim.allowedEntries.get(this.data.key);
+            AllowedRegistryList<?> entry = this.data.claim.allowedEntries().get(this.data.key);
             entry.setBlacklist(!entry.blacklist());
             slot.set(this.listModeItem());
             ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
@@ -148,7 +148,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
             CustomData nbt = stack.get(DataComponents.CUSTOM_DATA);
             int idx = nbt != null ? nbt.copyTag().getIntOr("Index", 0) : 0;
             if (this.removeMode) {
-                this.data.claim.allowedEntries.get(this.data.key).removeAllowedItem(idx);
+                this.data.claim.allowedEntries().get(this.data.key).removeAllowedItem(idx);
                 slot.set(ItemStack.EMPTY);
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.BAT_DEATH, 1, 1f);
             }
@@ -158,7 +158,7 @@ public class CustomInteractListScreenHandler extends PagedServerOnlyScreenHandle
 
     @Override
     protected PageSettings pageSettings() {
-        int size = this.data.claim.allowedEntries.get(this.data.key).size();
+        int size = this.data.claim.allowedEntries().get(this.data.key).size();
         return new PageSettings((size - 1) / 28, 47, 51);
     }
 

@@ -74,7 +74,7 @@ public class BlockInteractEvents {
         ClaimStorage storage = ClaimStorage.get((ServerLevel) level);
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
-            if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.BLOCK_BREAK, state::is, state::is))
+            if (claim instanceof Claim real && real.allowedEntries().isAllowed(ClaimAllowListKey.BLOCK_BREAK, state::is, state::is))
                 return true;
             Identifier id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
             if (contains(id, level.getBlockEntity(pos), ConfigHandler.CONFIG.breakBlockBlacklist, ConfigHandler.CONFIG.breakBlockEntityTagBlacklist))
@@ -114,7 +114,7 @@ public class BlockInteractEvents {
         IPermissionContainer claim = storage.getForPermissionCheck(hitResult.getBlockPos());
         if (claim != null) {
             BlockState state = level.getBlockState(hitResult.getBlockPos());
-            if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.BLOCK_USE, state::is, state::is))
+            if (claim instanceof Claim real && real.allowedEntries().isAllowed(ClaimAllowListKey.BLOCK_USE, state::is, state::is))
                 return InteractionResult.PASS;
             Identifier id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
             BlockEntity blockEntity = level.getBlockEntity(hitResult.getBlockPos());

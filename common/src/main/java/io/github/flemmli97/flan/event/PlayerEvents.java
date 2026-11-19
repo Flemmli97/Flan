@@ -132,7 +132,7 @@ public class PlayerEvents {
                 BlockPos pos = sPlayer.blockPosition();
                 IPermissionContainer claim = storage.getForPermissionCheck(pos);
                 if (claim != null) {
-                    if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_PICKUP, itemEntity.getItem()::is, itemEntity.getItem()::is)) {
+                    if (claim instanceof Claim real && real.allowedEntries().isAllowed(ClaimAllowListKey.ITEM_PICKUP, itemEntity.getItem()::is, itemEntity.getItem()::is)) {
                         return true;
                     }
                     return claim.canInteract(sPlayer, BuiltinPermission.PICKUP, pos, false);
@@ -150,7 +150,7 @@ public class PlayerEvents {
             IPermissionContainer claim = storage.getForPermissionCheck(pos);
             boolean allow = true;
             if (claim != null) {
-                if (!(claim instanceof Claim real) || !real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_DROP, stack::is, stack::is)) {
+                if (!(claim instanceof Claim real) || !real.allowedEntries().isAllowed(ClaimAllowListKey.ITEM_DROP, stack::is, stack::is)) {
                     allow = claim.canInteract((ServerPlayer) player, BuiltinPermission.DROP, pos, false);
                 }
             }
