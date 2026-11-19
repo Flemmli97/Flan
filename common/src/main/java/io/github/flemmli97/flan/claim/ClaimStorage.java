@@ -399,7 +399,10 @@ public class ClaimStorage implements IPermissionStorage {
     }
 
     public Collection<Claim> getAdminClaims() {
-        return ImmutableSet.copyOf(this.playerClaimMap.get(null));
+        Set<Claim> adminClaims = this.playerClaimMap.get(null);
+        if (adminClaims == null)
+            return Set.of();
+        return ImmutableSet.copyOf(adminClaims);
     }
 
     public Map<UUID, Set<Claim>> getClaims() {
