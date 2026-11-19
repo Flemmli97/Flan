@@ -53,7 +53,8 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
     public static final InteractionType<EntityType<?>> ENTITY_ATTACK = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "entity_attack"), ENTITY_CODEC, InteractionHolder::new);
     public static final InteractionType<EntityType<?>> ENTITY_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "entity_interact"), ENTITY_CODEC, InteractionHolder::new);
     public static final InteractionType<Block> PROJECTILE_BLOCK_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "projectile_block_interact"), BLOCK_CODEC, InteractionHolder::new);
-    public static final InteractionType<EntityType<?>> PROJECTILE_ENTITY_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "projectile_entity_interact"), ENTITY_CODEC, InteractionHolder::new);
+    // Requires resolving some things so should not be accessible easily
+    private static final InteractionType<EntityType<?>> PROJECTILE_ENTITY_INTERACT = new InteractionType<>(ResourceLocation.fromNamespaceAndPath(Flan.MODID, "projectile_entity_interact"), ENTITY_CODEC, InteractionHolder::new);
 
     private static InteractionOverrideManager INSTANCE;
 
@@ -101,7 +102,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
 
     public ResourceLocation getProjectileEntityInteract(Projectile entity) {
         InteractionHolder<EntityType<?>> holder = this.getHolder(PROJECTILE_ENTITY_INTERACT);
-        if (!holder.unresolved()) {
+        if (holder.unresolved()) {
             // Needs to be done here because it needs level access for instantiation
             for (EntityType<?> type : BuiltInRegistries.ENTITY_TYPE) {
                 InteractionHolder<EntityType<?>> map = this.getHolder(PROJECTILE_ENTITY_INTERACT);
@@ -109,7 +110,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
                     try {
                         Entity dummy = type.create(entity.level());
                         return e.getKey().test(dummy);
-                    } catch (Exception ex) {
+                    } catch (Throwable ex) {
                         Flan.LOGGER.error("Could not init dummy EntityType {}", type.getDescriptionId());
                         return false;
                     }
