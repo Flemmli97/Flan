@@ -8,6 +8,7 @@
   "flan.claimModeFormat": "%1$s Claim Mode",
   "flan.listClaims": "Listing all claims:",
   "flan.listAdminClaims": "Listing all admin-claims in %1$s:",
+  "flan.listAdminClaims.none": "Nothing",
   "flan.onlyOnePlayer": "Only one player can be used as argument",
   "flan.ownerTransferSuccess": "New Claimowner now: %1$s",
   "flan.ownerTransferFail": "Only the owner may transfer claims",

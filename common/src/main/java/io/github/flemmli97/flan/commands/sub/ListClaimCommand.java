@@ -84,11 +84,15 @@ public class ListClaimCommand {
         for (ServerLevel level : src.getServer().getAllLevels()) {
             claims.put(level, ClaimStorage.get(level).getAdminClaims());
         }
-        src.sendSuccess(() -> ClaimUtils.translatedText("flan.listAdminClaims", src.getLevel().dimension().location(), ChatFormatting.GOLD), false);
         for (Map.Entry<Level, Collection<Claim>> entry : claims.entrySet()) {
-            for (Claim claim : entry.getValue()) {
-                src.sendSuccess(() -> ClaimUtils.translatedText(
-                        entry.getKey().dimension().location() + " # " + claim.formattedClaim(), ChatFormatting.YELLOW), false);
+            src.sendSuccess(() -> ClaimUtils.translatedText("flan.listAdminClaims", entry.getKey().dimension().location(), ChatFormatting.GOLD), false);
+            if (entry.getValue().isEmpty()) {
+                src.sendSuccess(() -> ClaimUtils.translatedText("flan.listAdminClaims.none", ChatFormatting.RED), false);
+            } else {
+                for (Claim claim : entry.getValue()) {
+                    src.sendSuccess(() -> ClaimUtils.translatedText(
+                            entry.getKey().dimension().location() + " # " + claim.formattedClaim(), ChatFormatting.YELLOW), false);
+                }
             }
         }
         return Command.SINGLE_SUCCESS;
