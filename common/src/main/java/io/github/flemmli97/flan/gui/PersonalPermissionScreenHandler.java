@@ -32,7 +32,7 @@ public class PersonalPermissionScreenHandler extends PagedServerOnlyScreenHandle
         super(syncId, playerInventory, 6, group);
     }
 
-    public static void openClaimMenu(Player player, String group) {
+    public static void openMenu(Player player, String group) {
         MenuProvider fac = new MenuProvider() {
             @Override
             public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
