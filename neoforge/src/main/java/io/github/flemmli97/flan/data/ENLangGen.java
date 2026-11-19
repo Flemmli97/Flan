@@ -38,6 +38,7 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.claimModeFormat", "%1$s Claim Mode");
         this.add("flan.listClaims", "Listing all claims:");
         this.add("flan.listAdminClaims", "Listing all admin-claims in %1$s:");
+        this.add("flan.listAdminClaims.none", "Nothing");
         this.add("flan.onlyOnePlayer", "Only one player can be used as argument");
         this.add("flan.ownerTransferSuccess", "New Claimowner now: %1$s");
         this.add("flan.ownerTransferFail", "Only the owner may transfer claims");
