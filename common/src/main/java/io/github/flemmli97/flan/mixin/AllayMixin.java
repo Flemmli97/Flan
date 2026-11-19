@@ -24,7 +24,7 @@ public abstract class AllayMixin {
         if (AllayAi.getLikedPlayer(allay).map(p -> {
             Claim claim = ClaimStorage.get(p.serverLevel()).getClaimAt(allay.blockPosition());
             if (claim != null) {
-                if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_PICKUP, stack::is, stack::is)) {
+                if (claim instanceof Claim real && real.allowedEntries().isAllowed(ClaimAllowListKey.ITEM_PICKUP, stack::is, stack::is)) {
                     return false;
                 }
                 return !claim.canInteract(p, BuiltinPermission.PICKUP, allay.blockPosition(), false);
@@ -42,7 +42,7 @@ public abstract class AllayMixin {
                 return false;
             Claim claim = ClaimStorage.get(p.serverLevel()).getClaimAt(itemEntity.blockPosition());
             if (claim != null) {
-                if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ITEM_PICKUP, itemEntity.getItem()::is, itemEntity.getItem()::is)) {
+                if (claim instanceof Claim real && real.allowedEntries().isAllowed(ClaimAllowListKey.ITEM_PICKUP, itemEntity.getItem()::is, itemEntity.getItem()::is)) {
                     return false;
                 }
                 return !claim.canInteract(p, BuiltinPermission.PICKUP, itemEntity.blockPosition(), false);

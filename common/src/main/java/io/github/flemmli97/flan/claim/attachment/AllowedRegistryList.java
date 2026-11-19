@@ -8,6 +8,7 @@ import io.github.flemmli97.flan.Flan;
 import io.github.flemmli97.flan.claim.Claim;
 import io.github.flemmli97.flan.gui.ServerScreenHelper;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
@@ -23,38 +24,39 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class AllowedRegistryList<T> {
 
-    public static final Function<EntityType<?>, Item> ENTITY_AS_ITEM = type -> {
-        Item egg = SpawnEggItem.byId(type);
-        return egg != null ? egg : Items.PIG_SPAWN_EGG;
+    public static final Function<Holder<EntityType<?>>, ItemStack> ENTITY_AS_ITEM = type -> {
+        Item egg = SpawnEggItem.byId(type.value());
+        return new ItemStack(egg != null ? egg : Items.PIG_SPAWN_EGG);
     };
 
     private final Map<String, Integer> mapping = new HashMap<>();
-    private final List<Either<T, TagKey<T>>> list = new ArrayList<>();
+    private final List<Either<Holder<T>, TagKey<T>>> list = new ArrayList<>();
     private final Registry<T> registry;
     private final Claim claim;
-    private final Function<T, Item> asItem;
+    private final Function<Holder<T>, ItemStack> asItem;
     private boolean blacklist;
 
-    public AllowedRegistryList(Registry<T> registry, Claim claim, Function<T, Item> asItem) {
+    public AllowedRegistryList(Registry<T> registry, Claim claim, Function<Holder<T>, ItemStack> asItem) {
         this.registry = registry;
         this.claim = claim;
         this.asItem = asItem;
     }
 
     public static <T extends ItemLike> AllowedRegistryList<T> ofItemLike(Registry<T> registry, Claim claim) {
-        return new AllowedRegistryList<>(registry, claim, ItemLike::asItem);
+        return new AllowedRegistryList<>(registry, claim, s -> new ItemStack(s.value().asItem()));
     }
 
     public List<List<ItemStack>> asStacks() {
         return this.list.stream().map(e ->
-                e.map(v -> List.of(new ItemStack(this.asItem.apply(v))), tag -> {
+                e.map(v -> List.of(this.asItem.apply(v)), tag -> {
                     List<ItemStack> items = this.registry.getTag(tag).map(f ->
-                            f.stream().map(h -> new ItemStack(this.asItem.apply(h.value()))).toList()).orElse(List.of(this.empty()));
+                            f.stream().map(this.asItem).toList()).orElse(List.of(this.empty()));
                     items.forEach(stack -> stack.set(DataComponents.CUSTOM_NAME, ServerScreenHelper.coloredGuiText(String.format("#%s", tag.location()), ChatFormatting.GOLD)));
                     return items;
                 })
@@ -91,12 +93,12 @@ public class AllowedRegistryList<T> {
         } else {
             ResourceLocation id = ResourceLocation.tryParse(value);
             if (id != null)
-                this.registry.getOptional(id)
+                this.registry.getHolder(id)
                         .ifPresent(direct -> this.addAllowedItem(Either.left(direct)));
         }
     }
 
-    public void addAllowedItem(Either<T, TagKey<T>> allowed) {
+    public void addAllowedItem(Either<Holder<T>, TagKey<T>> allowed) {
         if (this.mapping.put(this.valueAsString(allowed), this.list.size()) == null) {
             this.list.add(allowed);
             this.claim.setDirty(true);
@@ -110,7 +112,7 @@ public class AllowedRegistryList<T> {
 
     public void removeAllowedItem(int index) {
         if (index >= 0 && index < this.list.size()) {
-            Either<T, TagKey<T>> val = this.list.remove(index);
+            Either<Holder<T>, TagKey<T>> val = this.list.remove(index);
             this.mapping.remove(this.valueAsString(val));
             this.claim.setDirty(true);
         }
@@ -118,13 +120,13 @@ public class AllowedRegistryList<T> {
 
     public boolean matches(Predicate<T> first, Predicate<TagKey<T>> second) {
         if (this.blacklist) {
-            return this.list.stream().noneMatch(e -> e.map(first::test, second::test));
+            return this.list.stream().noneMatch(e -> e.map(v -> first.test(v.value()), second::test));
         }
-        return this.list.stream().anyMatch(e -> e.map(first::test, second::test));
+        return this.list.stream().anyMatch(e -> e.map(v -> first.test(v.value()), second::test));
     }
 
-    private String valueAsString(Either<T, TagKey<T>> val) {
-        return val.map(i -> this.registry.getKey(i).toString(), tag -> "#" + tag.location());
+    private String valueAsString(Either<Holder<T>, TagKey<T>> val) {
+        return val.map(Holder::getRegisteredName, tag -> "#" + tag.location());
     }
 
     public JsonElement save() {
@@ -152,8 +154,9 @@ public class AllowedRegistryList<T> {
                 this.addAllowedItem(Either.right(TagKey.create(this.registry.key(), ResourceLocation.parse(entry.substring(1)))));
             else {
                 ResourceLocation id = ResourceLocation.parse(entry);
-                if (this.registry.containsKey(id)) {
-                    this.addAllowedItem(Either.left(this.registry.get(id)));
+                Optional<Holder.Reference<T>> h = this.registry.getHolder(id);
+                if (h.isPresent()) {
+                    this.addAllowedItem(Either.left(h.get()));
                 } else {
                     Flan.LOGGER.error("No such registry item for {} with id: {}", this.registry.key(), id);
                 }

@@ -58,7 +58,7 @@ public class EntityInteractEvents {
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
-            if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ENTITY_USE,
+            if (claim instanceof Claim real && real.allowedEntries().isAllowed(ClaimAllowListKey.ENTITY_USE,
                     type -> type == entity.getType(), entity.getType()::is))
                 return InteractionResult.PASS;
             ResourceLocation perm = InteractionOverrideManager.getInstance().getEntityInteract(entity.getType());
@@ -84,7 +84,7 @@ public class EntityInteractEvents {
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
-            if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ENTITY_USE,
+            if (claim instanceof Claim real && real.allowedEntries().isAllowed(ClaimAllowListKey.ENTITY_USE,
                     type -> type == entity.getType(), entity.getType()::is))
                 return InteractionResult.PASS;
             ResourceLocation perm = InteractionOverrideManager.getInstance().getEntityInteract(entity.getType());
@@ -192,6 +192,13 @@ public class EntityInteractEvents {
     }
 
     public static boolean preventDamage(Entity entity, DamageSource source) {
+        if (entity instanceof Player) {
+            IPermissionContainer claim = ClaimStorage.get((ServerLevel) entity.level()).getForPermissionCheck(entity.blockPosition());
+            if (claim instanceof Claim real && real.allowedEntries().get(ClaimAllowListKey.DAMAGE_TYPES)
+                    .matches(t -> t.equals(source.type()), source::is)) {
+                return true;
+            }
+        }
         if (source.getEntity() instanceof ServerPlayer)
             return attackSimple((ServerPlayer) source.getEntity(), entity, true) != InteractionResult.PASS;
         else if (source.is(DamageTypeTags.IS_EXPLOSION) && !entity.level().isClientSide && !(entity instanceof ServerPlayer || entity instanceof Enemy)) {
@@ -210,7 +217,7 @@ public class EntityInteractEvents {
         BlockPos pos = entity.blockPosition();
         IPermissionContainer claim = storage.getForPermissionCheck(pos);
         if (claim != null) {
-            if (claim instanceof Claim real && real.allowedEntries.isAllowed(ClaimAllowListKey.ENTITY_ATTACK,
+            if (claim instanceof Claim real && real.allowedEntries().isAllowed(ClaimAllowListKey.ENTITY_ATTACK,
                     type -> type == entity.getType(), entity.getType()::is))
                 return InteractionResult.PASS;
             if (entity.hasCustomName() && !claim.canInteract(player, BuiltinPermission.HURTNAMED, pos, message)) {

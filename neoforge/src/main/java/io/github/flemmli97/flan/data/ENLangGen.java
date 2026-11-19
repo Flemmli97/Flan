@@ -178,6 +178,7 @@ public class ENLangGen extends ServerLangGen {
         this.add(ClaimAllowListKey.ENTITY_USE.translationKey(), "Allowed entity interactions");
         this.add(ClaimAllowListKey.ITEM_PICKUP.translationKey(), "Allowed item pickups");
         this.add(ClaimAllowListKey.ITEM_DROP.translationKey(), "Allowed item drops");
+        this.add(ClaimAllowListKey.DAMAGE_TYPES.translationKey(), "Damage prevention");
         this.add("flan.allowListEmptyTag", "Empty Tag");
         this.add("flan.screenMenuWhitelist", "Whitelist");
         this.add("flan.screenMenuBlacklist", "Blacklist");

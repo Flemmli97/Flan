@@ -90,7 +90,7 @@ public class Claim implements IPermissionContainer {
 
     private final Map<Holder<MobEffect>, Pair<Integer, Integer>> potions = new HashMap<>();
 
-    public final AllowedRegistryListHolder allowedEntries = new AllowedRegistryListHolder(this);
+    private final AllowedRegistryListHolder allowedEntries = new AllowedRegistryListHolder(this);
 
     public Component enterTitle, enterSubtitle, leaveTitle, leaveSubtitle;
 
@@ -402,12 +402,12 @@ public class Claim implements IPermissionContainer {
         return player.getUUID().equals(this.owner) || this.isAdminIgnore(player);
     }
 
-    private boolean isAdminIgnore(ServerPlayer player) {
+    public boolean isAdminIgnore(ServerPlayer player) {
         if (player == null)
             return true;
         if (PlayerClaimData.get(player).isAdminIgnoreClaim())
             return !this.isAdminClaim() || PermissionNodeHandler.INSTANCE.perm(player, PermissionNodeHandler.ADMIN_BYPASS, true);
-        return this.isAdminClaim() && player.hasPermissions(2);
+        return this.isAdminClaim() && player.hasPermissions(ConfigHandler.CONFIG.permissionLevel);
     }
 
     /**
@@ -801,7 +801,7 @@ public class Claim implements IPermissionContainer {
                 allowedEntryObj.add(ClaimAllowListKey.ENTITY_ATTACK.id().toString(), ConfigHandler.arrayFromJson(obj, "AllowedEntityAttack"));
             if (obj.has("AllowedEntityUse"))
                 allowedEntryObj.add(ClaimAllowListKey.ENTITY_USE.id().toString(), ConfigHandler.arrayFromJson(obj, "AllowedEntityUse"));
-            this.allowedEntries.load(allowedEntryObj);
+            this.allowedEntries().load(allowedEntryObj);
 
             this.globalPerm.clear();
             this.permissions.clear();
@@ -871,7 +871,7 @@ public class Claim implements IPermissionContainer {
         obj.add("Potions", potions);
         if (this.parent != null)
             obj.addProperty("Parent", this.parent.toString());
-        obj.add("AllowedEntries", this.allowedEntries.save());
+        obj.add("AllowedEntries", this.allowedEntries().save());
         if (!this.globalPerm.isEmpty()) {
             JsonElement gPerm;
             if (this.parent == null) {
@@ -1007,6 +1007,10 @@ public class Claim implements IPermissionContainer {
 
     public DisplayBox display() {
         return new ClaimDisplayBox(this, this::getDimensions, this::isRemoved);
+    }
+
+    public AllowedRegistryListHolder allowedEntries() {
+        return this.allowedEntries;
     }
 
     public enum InfoType {
