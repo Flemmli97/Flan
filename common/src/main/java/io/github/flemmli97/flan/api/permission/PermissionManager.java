@@ -71,6 +71,9 @@ public class PermissionManager extends SimpleJsonResourceReloadListener<ClaimPer
         data.forEach((res, props) -> {
             if (props.verify())
                 builder.put(res, props.build(res));
+            if (res.equals(InteractionOverrideManager.IGNORED)) {
+                Flan.LOGGER.warn("Id {} is special! Using this is discouraged as your permission will not work as intended", res);
+            }
         });
         this.permissions = builder.build();
         this.sorted = this.permissions.values().stream().sorted().toList();

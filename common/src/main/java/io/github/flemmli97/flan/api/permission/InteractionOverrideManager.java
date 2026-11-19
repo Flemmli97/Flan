@@ -41,6 +41,8 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
     public static final ResourceKey<? extends Registry<InteractionOverrideManager.InteractionEntry<?>>> ID =
             ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(Flan.MODID, "claim_interactions_override"));
 
+    public static final Identifier IGNORED = Identifier.fromNamespaceAndPath(Flan.MODID, "ignored");
+
     public static final Codec<ResolvableEntry<Block>> BLOCK_CODEC = ResolvableHolderSet.codec(BuiltInRegistries.BLOCK);
     public static final Codec<ResolvableEntry<Item>> ITEM_CODEC = ResolvableHolderSet.codec(BuiltInRegistries.ITEM);
     public static final Codec<ResolvableEntry<EntityType<?>>> ENTITY_CODEC = ResolvableHolderSet.codec(BuiltInRegistries.ENTITY_TYPE);

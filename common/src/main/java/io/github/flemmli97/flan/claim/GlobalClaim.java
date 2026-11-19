@@ -2,6 +2,7 @@ package io.github.flemmli97.flan.claim;
 
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
+import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.config.Config;
 import io.github.flemmli97.flan.config.ConfigHandler;
@@ -16,6 +17,8 @@ public record GlobalClaim(ServerLevel level) implements IPermissionContainer {
 
     @Override
     public boolean canInteract(ServerPlayer player, Identifier perm, BlockPos pos, boolean message) {
+        if (perm.equals(InteractionOverrideManager.IGNORED))
+            return true;
         ClaimPermission permission = PermissionManager.getInstance().get(perm);
         if (permission == null)
             return false;
