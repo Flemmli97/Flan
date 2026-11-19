@@ -76,11 +76,15 @@ public class BlockInteractEventsNeoForge {
         if (claim == null)
             return false;
         ResourceLocation perm = InteractionOverrideManager.getInstance().getBlockInteract(placedBlock.getBlock());
+        if (perm == null) {
+            perm = InteractionOverrideManager.getInstance().getItemUse(placedBlock.getBlock().asItem());
+        }
         if (perm != null) {
             if (!claim.canInteract(player, perm, placePos, false)) {
                 player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);
                 return true;
             }
+            return false;
         }
         if (!claim.canInteract(player, BuiltinPermission.PLACE, placePos, false)) {
             player.displayClientMessage(ClaimUtils.translatedText("flan.noPermissionSimple", ChatFormatting.DARK_RED), true);

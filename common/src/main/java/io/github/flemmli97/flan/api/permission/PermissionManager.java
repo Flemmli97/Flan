@@ -94,6 +94,9 @@ public class PermissionManager extends SimpleJsonResourceReloadListener {
                         .getOrThrow();
                 if (props.verify())
                     builder.put(res, props.build(res));
+                if (res.equals(InteractionOverrideManager.IGNORED)) {
+                    Flan.LOGGER.warn("Id {} is special! Using this is discouraged as your permission will not work as intended", res);
+                }
             } catch (Exception ex) {
                 Flan.LOGGER.error("Couldn't parse claim permission json {} {}", res, ex, ex.fillInStackTrace());
             }

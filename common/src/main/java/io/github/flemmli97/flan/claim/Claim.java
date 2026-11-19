@@ -10,6 +10,7 @@ import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.flan.api.data.IPermissionContainer;
 import io.github.flemmli97.flan.api.permission.BuiltinPermission;
 import io.github.flemmli97.flan.api.permission.ClaimPermission;
+import io.github.flemmli97.flan.api.permission.InteractionOverrideManager;
 import io.github.flemmli97.flan.api.permission.PermissionManager;
 import io.github.flemmli97.flan.claim.attachment.AllowedRegistryListHolder;
 import io.github.flemmli97.flan.claim.attachment.ClaimAllowListKey;
@@ -309,6 +310,8 @@ public class Claim implements IPermissionContainer {
 
     @Override
     public boolean canInteract(ServerPlayer player, ResourceLocation perm, BlockPos pos, boolean message) {
+        if (perm.equals(InteractionOverrideManager.IGNORED))
+            return true;
         boolean realPlayer = player != null && player.getClass().equals(ServerPlayer.class);
         message = message && realPlayer && player.connection != null; //dont send messages to fake players
         //Delegate interaction to FAKEPLAYER perm if a fake player

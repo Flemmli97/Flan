@@ -41,6 +41,8 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
     public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Flan.MODID, "claim_interactions_override");
     public static final String DIRECTORY = String.format("%s/%s", ID.getNamespace(), ID.getPath());
 
+    public static final ResourceLocation IGNORED = ResourceLocation.fromNamespaceAndPath(Flan.MODID, "ignored");
+
     private static final Gson GSON = new GsonBuilder().create();
 
     public static final Codec<ResolvableEntry<Block>> BLOCK_CODEC = ResolvableHolderSet.codec(BuiltInRegistries.BLOCK);
