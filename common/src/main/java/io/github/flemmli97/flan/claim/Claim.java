@@ -106,7 +106,9 @@ public class Claim implements IPermissionContainer {
     //New claim
     public Claim(BlockPos pos1, BlockPos pos2, ServerPlayer creator) {
         this(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ(), Math.min(pos1.getY(), pos2.getY()), creator.getUUID(), creator.level(), PlayerClaimData.get(creator).playerDefaultGroups().isEmpty());
-        PlayerClaimData.get(creator).playerDefaultGroups().forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0, true)));
+        PlayerClaimData playerData = PlayerClaimData.get(creator);
+        playerData.playerDefaultGroups().forEach((s, m) -> m.forEach((perm, bool) -> this.editPerms(null, s, perm, bool ? 1 : 0, true)));
+        playerData.defaultGroupMembers().forEach((member, group) -> this.setPlayerGroup(member, group, false));
         Collection<Claim> all = ClaimStorage.get(creator.level()).allClaimsFromPlayer(creator.getUUID());
         String name = String.format(ConfigHandler.CONFIG.defaultClaimName, "%1$s", all.size());
         if (!name.isEmpty()) {

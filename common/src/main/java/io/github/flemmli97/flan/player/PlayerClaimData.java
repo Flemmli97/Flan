@@ -33,6 +33,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.NameAndId;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -51,9 +52,12 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -87,6 +91,7 @@ public class PlayerClaimData implements IPlayerData {
     private PendingCommand pendingCommand;
 
     private final Map<String, Map<Identifier, Boolean>> defaultGroups = new HashMap<>();
+    private final Map<UUID, String> defaultPlayersGroups = new HashMap<>();
 
     private boolean shouldProtectDrop, calculateShouldDrop = true;
 
@@ -283,6 +288,34 @@ public class PlayerClaimData implements IPlayerData {
         return this.defaultGroups;
     }
 
+    public Map<UUID, String> defaultGroupMembers() {
+        return this.defaultPlayersGroups;
+    }
+
+    public boolean setPlayerGroup(UUID player, String group, boolean force) {
+        if (group == null) {
+            this.defaultPlayersGroups.remove(player);
+            return true;
+        }
+        if (!this.defaultPlayersGroups.containsKey(player) || force) {
+            this.defaultPlayersGroups.put(player, group);
+            return true;
+        }
+        return false;
+    }
+
+    public List<NameAndId> playersFromGroup(MinecraftServer server, String group) {
+        List<UUID> l = new ArrayList<>();
+        this.defaultPlayersGroups.forEach((uuid, g) -> {
+            if (g.equals(group))
+                l.add(uuid);
+        });
+        List<NameAndId> profs = new ArrayList<>();
+        l.forEach(uuid -> server.services().nameToIdCache().get(uuid).ifPresent(profs::add));
+        profs.sort(Comparator.comparing(NameAndId::name));
+        return profs;
+    }
+
     public boolean editDefaultPerms(String group, Identifier perm, int mode) {
         if (PermissionManager.getInstance().isGlobalPermission(perm) || ConfigHandler.CONFIG.globallyDefined(this.player.level(), perm))
             return false;
@@ -451,6 +484,8 @@ public class PlayerClaimData implements IPlayerData {
         this.additionalClaimBlocks = data.additionalClaimBlocks;
         this.defaultGroups.clear();
         this.defaultGroups.putAll(data.defaultGroups);
+        this.defaultPlayersGroups.clear();
+        this.defaultPlayersGroups.putAll(data.defaultPlayersGroups);
         if (data.setDeathItemOwner()) {
             this.player.sendSystemMessage(ClaimUtils.translatedText("flan.unlockDropsCmd", "/flan unlockDrops", ChatFormatting.GOLD), false);
         }
@@ -556,6 +591,11 @@ public class PlayerClaimData implements IPlayerData {
                 defPerm.add(key, perm);
             });
             obj.add("DefaultGroups", defPerm);
+            if (!this.defaultPlayersGroups.isEmpty()) {
+                JsonObject pl = new JsonObject();
+                this.defaultPlayersGroups.forEach((uuid, s) -> pl.addProperty(uuid.toString(), s));
+                obj.add("DefaultPlayerPerms", pl);
+            }
             obj.addProperty("FakePlayerNotification", this.fakePlayerNotification);
 
             JsonWriter jsonWriter = ConfigHandler.GSON.newJsonWriter(Files.newBufferedWriter(file, StandardCharsets.UTF_8));
@@ -589,6 +629,8 @@ public class PlayerClaimData implements IPlayerData {
                             this.editDefaultPerms(e.getKey(), BuiltinPermission.tryLegacy(p.getKey()), p.getValue().getAsBoolean() ? 1 : 0));
                 }
             });
+            ConfigHandler.fromJson(obj, "DefaultPlayerPerms").entrySet()
+                    .forEach(key -> this.defaultPlayersGroups.put(UUID.fromString(key.getKey()), key.getValue().getAsString()));
             this.fakePlayerNotification = ConfigHandler.fromJson(obj, "FakePlayerNotification", true);
             updateScoreFor(this.player, ClaimCriterias.AMOUNT, this.claimBlocks + this.additionalClaimBlocks);
             this.updateClaimScores();

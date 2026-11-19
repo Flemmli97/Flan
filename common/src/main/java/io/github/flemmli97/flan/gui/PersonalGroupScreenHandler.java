@@ -116,8 +116,13 @@ public class PersonalGroupScreenHandler extends PagedServerOnlyScreenHandler<Obj
                 slot.set(ItemStack.EMPTY);
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.BAT_DEATH, 1, 1f);
             } else {
-                player.closeContainer();
-                player.level().getServer().execute(() -> PersonalPermissionScreenHandler.openClaimMenu(player, name));
+                if (clickType == 1) {
+                    player.closeContainer();
+                    player.level().getServer().execute(() -> PersonalPermissionScreenHandler.openMenu(player, name));
+                } else {
+                    player.closeContainer();
+                    player.level().getServer().execute(() -> PersonalPlayerGroupScreenHandler.openMenu(player, name));
+                }
                 ServerScreenHelper.playSongToPlayer(player, SoundEvents.UI_BUTTON_CLICK, 1, 1f);
             }
         }
