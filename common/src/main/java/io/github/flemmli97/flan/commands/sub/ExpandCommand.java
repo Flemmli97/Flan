@@ -66,16 +66,16 @@ public class ExpandCommand {
     private static Pair<BlockPos, BlockPos> calculateCorners(ClaimBox dims, Direction facing, int amount, ClaimBox restriction) {
         return switch (facing) {
             case SOUTH -> Pair.of(
-                    new BlockPos(dims.maxX(), dims.minY(), dims.maxZ()),
+                    new BlockPos(dims.maxX(), dims.maxY(), dims.maxZ()),
                     new BlockPos(dims.maxX(), dims.maxY(), restriction != null ? Math.min(dims.maxZ() + amount, restriction.maxZ()) : dims.maxZ() + amount));
             case EAST -> Pair.of(
-                    new BlockPos(dims.maxX(), dims.minY(), dims.maxZ()),
+                    new BlockPos(dims.maxX(), dims.maxY(), dims.maxZ()),
                     new BlockPos(restriction != null ? Math.min(dims.maxX() + amount, restriction.maxX()) : dims.maxX() + amount, dims.maxY(), dims.maxZ()));
             case NORTH -> Pair.of(
-                    new BlockPos(dims.minX(), dims.minY(), dims.minZ()),
+                    new BlockPos(dims.minX(), dims.maxY(), dims.minZ()),
                     new BlockPos(dims.minX(), dims.maxY(), restriction != null ? Math.max(dims.minZ() - amount, restriction.minZ()) : dims.minZ() - amount));
             case WEST -> Pair.of(
-                    new BlockPos(dims.minX(), dims.minY(), dims.minZ()),
+                    new BlockPos(dims.minX(), dims.maxY(), dims.minZ()),
                     new BlockPos(restriction != null ? Math.max(dims.minX() - amount, restriction.minX()) : dims.minX() - amount, dims.maxY(), dims.minZ()));
             //adding up and down for diagonical logic in future
             case UP -> Pair.of(

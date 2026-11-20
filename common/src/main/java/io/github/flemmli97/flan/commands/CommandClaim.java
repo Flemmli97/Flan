@@ -105,7 +105,7 @@ public class CommandClaim {
     public static Claim getClaim(CommandContext<CommandSourceStack> context, ServerPlayer player, Identifier perm, ClaimMode mode, boolean fallbackMain, Consumer<Optional<Boolean>> cons) {
         BlockPos pos = pos(context);
         Claim claim = ClaimStorage.get(context.getSource().getLevel()).getClaimAt(pos);
-        if (mode.isSubclaim) {
+        if (claim != null && mode.isSubclaim) {
             Claim sub = claim.getSubClaim(pos);
             if (sub != null) {
                 if (sub.canInteract(player, perm, pos))
