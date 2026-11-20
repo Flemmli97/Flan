@@ -31,6 +31,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.PlainTextContents;
@@ -954,7 +955,7 @@ public class Claim implements IPermissionContainer {
     public List<Component> infoString(ServerPlayer player, InfoType infoType) {
         boolean perms = this.canInteract(player, BuiltinPermission.EDITPERMS, player.blockPosition());
         List<Component> l = new ArrayList<>();
-        l.add(ClaimUtils.translatedText("=============================================", ChatFormatting.GREEN));
+        l.add(ClaimUtils.translatedText("/===========================================\\", ChatFormatting.GREEN));
         String ownerName = this.isAdminClaim() ? "Admin" : ClaimUtils.fetchUsername(this.owner, this.level.getServer(), true).orElse(this.owner.toString());
         String claimName = this.getClaimName();
         if (this.parent == null) {
@@ -972,7 +973,8 @@ public class Claim implements IPermissionContainer {
             if (infoType == InfoType.ALL || infoType == InfoType.GLOBAL)
                 l.add(fromPermissionMap("flan.claimInfoPerms", this.globalPerm));
             if (infoType == InfoType.ALL || infoType == InfoType.GROUP) {
-                l.add(ClaimUtils.translatedText("flan.claimGroupInfoHeader", ChatFormatting.GOLD));
+                var groupsHeader = ClaimUtils.translatedText("flan.claimGroupInfoHeader", ChatFormatting.GOLD);
+                boolean shownHeader = false;
                 Map<String, List<String>> nameToGroup = new HashMap<>();
                 for (Map.Entry<UUID, String> e : this.playersGroups.entrySet()) {
                     ClaimUtils.fetchUsername(e.getKey(), this.level.getServer(), true).ifPresent(name ->
@@ -983,13 +985,22 @@ public class Claim implements IPermissionContainer {
                     );
                 }
                 for (Map.Entry<String, Map<Identifier, Boolean>> e : this.permissions.entrySet()) {
+                    List<String> playerNames = nameToGroup.getOrDefault(e.getKey(), new ArrayList<>());
+                    // If nobody is part of this group, don't show permissions
+                    if (playerNames.isEmpty())
+                        continue;
+                    // Show groups header only if there's any groups to show
+                    if (!shownHeader) {
+                        l.add(groupsHeader);
+                        shownHeader = true;
+                    }
                     l.add(ClaimUtils.translatedText(String.format("  %s:", e.getKey()), ChatFormatting.YELLOW));
                     l.add(fromPermissionMap("flan.claimGroupPerms", e.getValue()));
-                    l.add(ClaimUtils.translatedText("flan.claimGroupPlayers", nameToGroup.getOrDefault(e.getKey(), new ArrayList<>()), ChatFormatting.RED));
+                    l.add(ClaimUtils.translatedText("flan.claimGroupPlayers", playerNames, ChatFormatting.RED));
                 }
             }
         }
-        l.add(ClaimUtils.translatedText("=============================================", ChatFormatting.GREEN));
+        l.add(ClaimUtils.translatedText("\\===========================================/", ChatFormatting.GREEN));
         return l;
     }
 
@@ -1003,7 +1014,8 @@ public class Claim implements IPermissionContainer {
             i++;
         }
         mapComp.append("]");
-        return Component.translatable(lang, mapComp).withStyle(ChatFormatting.DARK_BLUE);
+        Component hoverPerms = Component.translatable(lang, mapComp).withStyle(s -> s.withColor(ChatFormatting.DARK_BLUE).withHoverEvent(new HoverEvent.ShowText(mapComp)));
+        return hoverPerms;
     }
 
     public DisplayBox display() {
