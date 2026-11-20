@@ -342,6 +342,8 @@
   "flan.permission.flan:sculk": "Sculk",
   "flan.permission.flan:sculk.desc.0": "Permission for sculk sensors.",
   "flan.permission.flan:sculk.desc.1": "Shriekers are handled under PLAYERMOBSPAWN",
+  "flan.permission.flan:copper_golem": "Copper Golem",
+  "flan.permission.flan:copper_golem.desc.0": "Permission for coppergolems to move across claim borders",
   "flan.permission.flan:create_contraption": "Create Contraption",
   "flan.permission.flan:create_contraption.desc.0": "Gives permission to allow minecart contraptions to pass through claim border.",
   "flan.permission.flan:create_contraption.desc.1": "Note if this is disabled and your contraption goes out of the claim it can't go back in!",

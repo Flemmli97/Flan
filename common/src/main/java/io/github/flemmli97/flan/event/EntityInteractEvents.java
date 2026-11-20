@@ -24,7 +24,9 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.animal.golem.CopperGolem;
 import net.minecraft.world.entity.animal.golem.SnowGolem;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.decoration.ArmorStand;
@@ -271,6 +273,29 @@ public class EntityInteractEvents {
         return !claim.canInteract(null, BuiltinPermission.LIGHTNING, entity.blockPosition(), false);
     }
 
+    public static boolean preventMobInteractionAt(Entity entity, BlockPos target) {
+        Identifier permission = entity instanceof CopperGolem ? BuiltinPermission.COPPER_GOLEM : null;
+        if (permission == null) {
+            return false;
+        }
+        ClaimStorage storage = ClaimStorage.get((ServerLevel) entity.level());
+        Claim claim = storage.getClaimAt(entity.blockPosition());
+        if (claim != null) {
+            Claim sub = claim.getSubClaim(entity.blockPosition());
+            if (sub != null) {
+                claim = sub;
+            }
+        }
+        Claim targetClaim = storage.getClaimAt(target);
+        if (targetClaim != null) {
+            Claim sub = targetClaim.getSubClaim(entity.blockPosition());
+            if (sub != null) {
+                targetClaim = sub;
+            }
+        }
+        return targetClaim != null && claim != targetClaim && !targetClaim.canInteract(null, permission, entity.blockPosition(), false);
+    }
+
     public static void handleVehiclePass(Entity entity) {
         if (entity.level().isClientSide())
             return;
@@ -289,6 +314,8 @@ public class EntityInteractEvents {
         }
         BlockPos oldPos = last != null ? ofPos(last)
                 : BlockPos.containing(entity.xo, entity.yo, entity.zo);
+        if (oldPos.equals(entity.blockPosition()))
+            return;
         Claim claimOld = storage.getClaimAt(oldPos);
         if (claimOld != null) {
             sub = claimOld.getSubClaim(entity.blockPosition());
@@ -306,6 +333,42 @@ public class EntityInteractEvents {
                 entity.ejectPassengers();
             }
             entity.teleportTo(tp.x(), tp.y(), tp.z());
+        }
+    }
+
+    public static void handleEntityPassBorder(Entity entity) {
+        if (entity.level().isClientSide())
+            return;
+        Identifier permission = entity instanceof CopperGolem ? BuiltinPermission.COPPER_GOLEM : null;
+        if (permission == null) {
+            return;
+        }
+        ClaimStorage storage = ClaimStorage.get((ServerLevel) entity.level());
+        Claim claim = storage.getClaimAt(entity.blockPosition());
+        if (claim != null) {
+            Claim sub = claim.getSubClaim(entity.blockPosition());
+            if (sub != null) {
+                claim = sub;
+            }
+        }
+        BlockPos oldPos = BlockPos.containing(entity.xo, entity.yo, entity.zo);
+        if (oldPos.equals(entity.blockPosition()))
+            return;
+        Claim claimOld = storage.getClaimAt(oldPos);
+        if (claimOld != null) {
+            Claim sub = claimOld.getSubClaim(entity.blockPosition());
+            if (sub != null) {
+                claimOld = sub;
+            }
+        }
+        if (claim != null && claimOld != claim && !claim.canInteract(null, permission, entity.blockPosition(), false)) {
+            BlockPos rounded = TeleportUtils.roundedBlockPos(entity.position());
+            Vec3 tp = TeleportUtils.getTeleportPos(entity, entity.position(), storage,
+                    new TeleportUtils.Area2D(claim.getDimensions()), true, rounded.mutable(),
+                    (c, nPos) -> c.canInteract(null, BuiltinPermission.VEHICLE_PASS, nPos, false));
+            entity.teleportTo(tp.x(), tp.y(), tp.z());
+            if (entity instanceof Mob mob)
+                mob.getNavigation().stop();
         }
     }
 

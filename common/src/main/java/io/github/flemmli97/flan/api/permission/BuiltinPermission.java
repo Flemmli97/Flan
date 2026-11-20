@@ -102,6 +102,7 @@ public class BuiltinPermission {
     public static final Identifier PLAYERMOBSPAWN = register("player_mob_spawn", new ItemStackTemplate(Items.WARDEN_SPAWN_EGG), false, true, "Permission for affected players to spawn mobs with interactions", "E.g. wardens, or endermites with enderpearls");
     public static final Identifier VEHICLE_PASS = register("vehicle_pass", new ItemStackTemplate(Items.CHEST_MINECART), false, true, "Allows vehicles such as minecarts or boats to pass claim borders", "Prevents e.g. hopper minecarts from coming inside claims");
     public static final Identifier SCULK = register("sculk", new ItemStackTemplate(Items.SCULK_SENSOR), false, true, "Permission for sculk sensors.", "Shriekers are handled under PLAYERMOBSPAWN");
+    public static final Identifier COPPER_GOLEM = register("copper_golem", new ItemStackTemplate(Items.COPPER_CHEST.weathering().unaffected()), false, true, "Permission for coppergolems to move across claim borders");
 
     static {
         registerMapping("flan:mob_spawn", MONSTERSPAWN);

@@ -1,0 +1,8 @@
+{
+  "default_value": false,
+  "global": true,
+  "gui_item": {
+    "id": "minecraft:copper_chest"
+  },
+  "order": 69
+}
