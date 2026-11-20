@@ -1,3 +1,17 @@
+Flan 1.12.9
+================
+- Personal groups can now contain players so you can create new claims with predefined groups better now
+- Add special id `flan:ignore` to ignore lists. Using this allows the defined value to bypass all claim checks.
+  - E.g. having an item always be placeable is now possible
+- Add copper golem permission. Golems can now no longer cross claim borders or target chests across borders
+- Add damage prevention feature
+  - Setup similar to ignore lists
+  - Prevents players from taking damage from the damage types in the list
+- Improve `info` command chat result [@jacob1](https://github.com/jacob1)
+- Fix projectile impact causing lag due to constant init
+- Fix `listAdminClaims` nullpointer
+- Fix `expand` command not working properly [@jacob1](https://github.com/jacob1)
+
 Flan 1.12.8.b
 ================
 - Fix fabric mixins [@Wesley1808](https://github.com/Wesley1808)
