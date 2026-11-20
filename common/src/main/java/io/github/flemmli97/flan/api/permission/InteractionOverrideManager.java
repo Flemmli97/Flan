@@ -160,6 +160,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
         private final Map<T, Identifier> direct = new HashMap<>();
         private final Map<ResolvableEntry<T>, Identifier> unresolvedTags = new HashMap<>();
         private final Map<T, Identifier> defaults = new HashMap<>();
+        private boolean resolved;
 
         public Identifier get(T val) {
             if (this.unresolved()) {
@@ -169,7 +170,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
         }
 
         public boolean unresolved() {
-            return !this.unresolvedTags.isEmpty() || !this.defaults.isEmpty();
+            return !this.resolved;
         }
 
         private void resolve() {
@@ -184,6 +185,7 @@ public class InteractionOverrideManager extends SimpleJsonResourceReloadListener
                     this.direct.put(key, value);
             });
             this.defaults.clear();
+            this.resolved = true;
         }
     }
 
