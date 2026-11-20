@@ -977,7 +977,7 @@ public class Claim implements IPermissionContainer {
             if (infoType == InfoType.ALL || infoType == InfoType.GLOBAL)
                 l.add(fromPermissionMap("flan.claimInfoPerms", this.globalPerm));
             if (infoType == InfoType.ALL || infoType == InfoType.GROUP) {
-                var groupsHeader = ClaimUtils.translatedText("flan.claimGroupInfoHeader", ChatFormatting.GOLD);
+                Component groupsHeader = ClaimUtils.translatedText("flan.claimGroupInfoHeader", ChatFormatting.GOLD);
                 boolean shownHeader = false;
                 Map<String, List<String>> nameToGroup = new HashMap<>();
                 for (Map.Entry<UUID, String> e : this.playersGroups.entrySet()) {
@@ -989,10 +989,6 @@ public class Claim implements IPermissionContainer {
                     );
                 }
                 for (Map.Entry<String, Map<Identifier, Boolean>> e : this.permissions.entrySet()) {
-                    List<String> playerNames = nameToGroup.getOrDefault(e.getKey(), new ArrayList<>());
-                    // If nobody is part of this group, don't show permissions
-                    if (playerNames.isEmpty())
-                        continue;
                     // Show groups header only if there's any groups to show
                     if (!shownHeader) {
                         l.add(groupsHeader);
@@ -1000,7 +996,7 @@ public class Claim implements IPermissionContainer {
                     }
                     l.add(ClaimUtils.translatedText(String.format("  %s:", e.getKey()), ChatFormatting.YELLOW));
                     l.add(fromPermissionMap("flan.claimGroupPerms", e.getValue()));
-                    l.add(ClaimUtils.translatedText("flan.claimGroupPlayers", playerNames, ChatFormatting.RED));
+                    l.add(ClaimUtils.translatedText("flan.claimGroupPlayers", nameToGroup.getOrDefault(e.getKey(), new ArrayList<>()), ChatFormatting.RED));
                 }
             }
         }
@@ -1018,8 +1014,7 @@ public class Claim implements IPermissionContainer {
             i++;
         }
         mapComp.append("]");
-        Component hoverPerms = Component.translatable(lang, mapComp).withStyle(s -> s.withColor(ChatFormatting.DARK_BLUE).withHoverEvent(new HoverEvent.ShowText(mapComp)));
-        return hoverPerms;
+        return Component.translatable(lang).withStyle(s -> s.withColor(ChatFormatting.BLUE).withHoverEvent(new HoverEvent.ShowText(mapComp)));
     }
 
     public DisplayBox display() {

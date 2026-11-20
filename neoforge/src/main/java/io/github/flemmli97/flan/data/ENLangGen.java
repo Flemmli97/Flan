@@ -264,7 +264,7 @@ public class ENLangGen extends ServerLangGen {
         this.add("flan.expandBeyondParent", "Cannot expand subclaim beyond parent claim boundaries!");
         this.add("flan.expandConflict", "Expansion conflicts with existing subclaims!");
         this.add("flan.expandFailed", "Failed to expand claim due to an unknown error.");
-        this.add("flan.expandSuccess", "Claim successfully expanded by <amount> blocks!");
+        this.add("flan.expandSuccess", "Claim successfully expanded by %s blocks!");
         this.add("flan.expandUpDisabled", "Vertical expansion (upwards) is disabled!");
         this.add("flan.expandDownDisabled", "Vertical expansion (downwards) is disabled!");
         this.add("flan.expandError", "An error occurred during expansion: %s");

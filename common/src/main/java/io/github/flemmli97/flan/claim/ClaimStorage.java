@@ -92,7 +92,7 @@ public class ClaimStorage implements IPermissionStorage {
     }
 
     public ServerLevel getLevel() {
-        return level;
+        return this.level;
     }
 
     public Claim createAdminClaim(BlockPos pos1, BlockPos pos2, ServerLevel level, boolean is3d) {
