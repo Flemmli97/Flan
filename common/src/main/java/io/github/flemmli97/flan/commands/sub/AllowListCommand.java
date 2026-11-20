@@ -96,7 +96,7 @@ public class AllowListCommand {
         if (claim == null)
             return 0;
         if (key.admin() && !claim.isAdminIgnore(player)) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
+            context.getSource().sendFailure(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED));
             return 0;
         }
         String result = addClaimListEntry(context, key, claim);
@@ -111,7 +111,7 @@ public class AllowListCommand {
         if (claim == null)
             return 0;
         if (key.admin() && !claim.isAdminIgnore(player)) {
-            player.displayClientMessage(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED), false);
+            context.getSource().sendFailure(ClaimUtils.translatedText("flan.noPermission", ChatFormatting.DARK_RED));
             return 0;
         }
         String value = context.getArgument("entry", ResourceOrTagKeyArgument.Result.class).asPrintable();
